@@ -114,13 +114,18 @@ export function buildMarketView({ priceRows = [], snapshotRows = [], marketRow =
     }
   }
 
+  const seriesTotal = coins.reduce((acc, c) => acc + (Number.isFinite(c.supply) ? c.supply : 0), 0);
+  const seriesDelta = coins.reduce((acc, c) => acc + (Number.isFinite(c.supplyDelta24h) ? c.supplyDelta24h : 0), 0);
   return {
     generatedAt: nowMs,
     source: 'helix-via-cron',
     observedAt,
     market: {
-      totalCirculatingUsd: marketRow?.total ?? null,
-      delta24hUsd: marketRow?.delta ?? null,
+      // Prefer the sum of era-consistent per-coin supplies: Helix's trends
+      // total_supply layer understates vs its own chains layer, so a stored
+      // market_snapshots total is only a fallback.
+      totalCirculatingUsd: seriesTotal || (marketRow?.total ?? null),
+      delta24hUsd: seriesDelta || (marketRow?.delta ?? null),
       ts: marketRow?.ts ?? null,
     },
     coins,
