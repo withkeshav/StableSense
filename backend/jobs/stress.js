@@ -3,11 +3,42 @@ import { loadEnv } from '../lib/env.js';
 import db from '../lib/db.js';
 import { computePegStress, generateAlerts } from '../../src/lib/derive.js';
 import { finishJob, startJob } from '../lib/job-run.js';
+import {
+  filterTrackedEvents,
+  mapHelixEventToLabel,
+  mapHelixEventToRow,
+  mapStressRow,
+  normalizeEventsPayload,
+  statsFromSeries,
+} from './lib/stressHelix.js';
 
 loadEnv();
 
+async function helixGetJson(url) {
+  const helixKey = process.env.HELIX_API_KEY || '';
+  const headers = { 'User-Agent': 'stablesense-cron/1.0' };
+  if (helixKey) headers.Authorization = `Bearer ${helixKey}`;
+  let lastErr = null;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 20000);
+    try {
+      const res = await fetch(url, { headers, signal: ctrl.signal });
+      clearTimeout(timer);
+      if (!res.ok) throw new Error(`GET ${url} -> ${res.status}`);
+      return await res.json();
+    } catch (err) {
+      clearTimeout(timer);
+      lastErr = err;
+      if (attempt === 1) throw err;
+    }
+  }
+  throw lastErr;
+}
+
 const job = startJob('stress');
 try {
+if (process.env.LEGACY_UPSTREAMS === '1') {
 
 // Materialize the latest snapshot rows into the {coin}Detail shape that
 // derive.js expects (chainBalances -> tokens[] -> circulating.peggedUSD).
@@ -90,24 +121,14 @@ const stress = computePegStress({
 
 // z-score per coin: reuse the same 30-point baseline logic as the frontend
 // buildWhaleWatchRows, but aggregate across chains for a coin-level score.
+// Stats math lives in lib/stressHelix.js so the Helix path shares it.
 function coinZScore(detail) {
   const series = [];
   for (const chainData of Object.values(detail?.chainBalances || {})) {
     const tokens = (chainData?.tokens || []).slice(-30);
     for (const t of tokens) series.push(t?.circulating?.peggedUSD || 0);
   }
-  if (series.length < 8) return { z: 0, delta: 0, normalized: 0 };
-  const deltas = [];
-  for (let i = 1; i < series.length; i += 1) deltas.push(series[i] - series[i - 1]);
-  const currentDelta = deltas[deltas.length - 1] || 0;
-  const baseline = deltas.slice(0, -1);
-  const avg = baseline.reduce((a, b) => a + b, 0) / (baseline.length || 1);
-  const variance = baseline.reduce((acc, v) => acc + (v - avg) ** 2, 0) / (baseline.length || 1);
-  const sd = Math.sqrt(variance);
-  const z = sd > 0 ? (Math.abs(currentDelta) - avg) / sd : 0;
-  const total = series.reduce((a, b) => a + b, 0) || 1;
-  const normalized = (currentDelta / total) * 100;
-  return { z: Math.min(z, 10), delta: currentDelta, normalized };
+  return statsFromSeries(series);
 }
 
 const insertStress = db.prepare(
@@ -240,6 +261,107 @@ console.log(`[alert_events] open=${eventRows.length} resolved=${resolved}`);
 console.log('[stress] done');
   const sourceTs = alerts.reduce((max, a) => Math.max(max, a.observedAt || 0), 0) || now;
   finishJob(job, { ok: true, sourceTs });
+} else {
+const helixBase = process.env.HELIX_API_BASE || 'https://helix.withkeshav.com';
+const coins = getActiveCoins();
+const now = Date.now();
+const symbols = coins.map((c) => c.symbol);
+
+const insertStress = db.prepare(
+  `INSERT OR REPLACE INTO stress_series (ts, symbol, peg_stress_index, z_score, raw_delta, normalized_delta)
+   VALUES (@ts, @symbol, @stress, @z, @delta, @normalized)`
+);
+
+const insertLabel = db.prepare(
+  `INSERT OR REPLACE INTO labels (ts, symbol, alert_type, severity, explanation, magnitude)
+   VALUES (@ts, @symbol, @type, @severity, @explanation, @magnitude)`
+);
+
+const insertStressBatch = db.transaction((rows) => {
+  for (const r of rows) insertStress.run(r);
+});
+
+const insertLabelBatch = db.transaction((rows) => {
+  for (const r of rows) insertLabel.run(r);
+});
+
+const insertEvent = db.prepare(
+  `INSERT OR REPLACE INTO alert_events (
+     event_id, rule, classification, symbol, severity, state, headline, explanation,
+     magnitude, gross_flow, net_supply_delta, source_ts_current, source_ts_previous,
+     interval_hours, interval_label, observed_at, detected_at, published_at,
+     involved_chains, provenance, confidence, cadence_valid, updated_at
+   ) VALUES (
+     @event_id, @rule, @classification, @symbol, @severity, @state, @headline, @explanation,
+     @magnitude, @gross_flow, @net_supply_delta, @source_ts_current, @source_ts_previous,
+     @interval_hours, @interval_label, @observed_at, @detected_at, @published_at,
+     @involved_chains, @provenance, @confidence, @cadence_valid, @updated_at
+   )`
+);
+
+const insertEventBatch = db.transaction((rows) => {
+  for (const r of rows) insertEvent.run(r);
+});
+
+// 1) Stress rows from Helix trends: peg_stress_index is the newest
+// depeg_index, z/raw/normalized reuse the shared stats core over prices.
+const stressRows = [];
+let newestSourceTs = 0;
+for (const coin of coins) {
+  const trends = await helixGetJson(`${helixBase}/api/trends?asset=${coin.symbol}`);
+  const points = Array.isArray(trends?.points) ? trends.points : [];
+  const row = mapStressRow(coin.symbol, points, now);
+  if (!row) {
+    console.log(`[stress] ${coin.symbol}: no Helix points`);
+    continue;
+  }
+  stressRows.push(row);
+  if (row.ts > newestSourceTs) newestSourceTs = row.ts;
+}
+if (stressRows.length) insertStressBatch(stressRows);
+console.log(`[stress] stress_series: ${stressRows.length} rows`);
+
+// 2) Canonical alerts from Helix events (newest first per tracked asset).
+let eventsPayload = null;
+try {
+  eventsPayload = await helixGetJson(`${helixBase}/api/events?limit=100`);
+} catch {
+  eventsPayload = null;
+}
+const tracked = eventsPayload ? filterTrackedEvents(normalizeEventsPayload(eventsPayload), symbols) : [];
+console.log(`[stress] helix events: ${tracked.length} rows`);
+
+const labelRows = [];
+const eventRows = [];
+for (const ev of tracked) {
+  const label = mapHelixEventToLabel(ev);
+  if (label) labelRows.push(label);
+  const row = mapHelixEventToRow(ev, now);
+  if (row) eventRows.push(row);
+}
+if (labelRows.length) {
+  insertLabelBatch(labelRows);
+  console.log(`[labels] labels: ${labelRows.length} rows`);
+} else {
+  console.log('[labels] no active alerts this cycle');
+}
+if (eventRows.length) insertEventBatch(eventRows);
+
+const openIds = new Set(eventRows.map((r) => r.event_id));
+const staleOpen = db.prepare(`SELECT event_id FROM alert_events WHERE state = 'open'`).all();
+const resolveStmt = db.prepare(`UPDATE alert_events SET state = 'resolved', updated_at = ? WHERE event_id = ?`);
+let resolved = 0;
+for (const row of staleOpen) {
+  if (!openIds.has(row.event_id)) {
+    resolveStmt.run(now, row.event_id);
+    resolved += 1;
+  }
+}
+console.log(`[alert_events] open=${eventRows.length} resolved=${resolved}`);
+
+console.log('[stress] done');
+  finishJob(job, { ok: true, sourceTs: newestSourceTs || now });
+}
 } catch (err) {
   finishJob(job, { ok: false, error: err });
   console.error(`[stress] failed: ${err.message || err}`);

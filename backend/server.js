@@ -16,6 +16,9 @@ app.get('/api/healthz', async () => {
   const events = db.prepare('SELECT COUNT(*) AS n, MAX(updated_at) AS ts FROM alert_events').get();
   const jobs = readJobs();
   const failed = Object.values(jobs).find((j) => j && j.finishedAt && !j.ok);
+  const helixBase = process.env.HELIX_API_BASE || 'https://helix.withkeshav.com';
+  const helixLegacy = process.env.LEGACY_UPSTREAMS === '1';
+  const helixJob = jobs?.stress ?? null;
   return {
     ok: true,
     db: 'ok',
@@ -26,6 +29,11 @@ app.get('/api/healthz', async () => {
     alertEventCount: events?.n ?? 0,
     jobs,
     lastJobError: failed?.error ?? null,
+    helix: {
+      base: helixBase,
+      lastStatus: helixLegacy ? 'legacy' : (helixJob?.finishedAt ? (helixJob.ok ? 'ok' : 'error') : 'unknown'),
+      lastAttemptAt: helixJob?.finishedAt ?? null,
+    },
     now: Date.now(),
   };
 });
