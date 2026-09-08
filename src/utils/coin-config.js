@@ -8,7 +8,7 @@ export const STABLECOIN_REGISTRY = {
     symbol: 'USDT',
     coingeckoId: 'tether',
     llamaStablecoinId: 1,
-    color: '#4b8cf0',
+    color: '#22c55e',
     thresholds: {
       pegCriticalBps: 50,
       pegWarnBps: 10,
@@ -20,7 +20,7 @@ export const STABLECOIN_REGISTRY = {
     symbol: 'USDC',
     coingeckoId: 'usd-coin',
     llamaStablecoinId: 2,
-    color: '#477fda',
+    color: '#3b82f6',
     thresholds: {
       pegCriticalBps: 50,
       pegWarnBps: 10,

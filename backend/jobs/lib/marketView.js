@@ -34,7 +34,7 @@ function isFiniteNumber(v) {
  * @param {string|null} [args.symbol] Optional single-coin filter (e.g. "USDT").
  * @returns {{generatedAt:number,source:string,observedAt:number|null,market:{totalCirculatingUsd:number|null,delta24hUsd:number|null,ts:number|null},coins:Array<object>,dataQuality:Array<{coin:string,reason:string}>}}
  */
-export function buildMarketView({ priceRows = [], snapshotRows = [], marketRow = null, nowMs = Date.now(), symbol = null } = {}) {
+export function buildMarketView({ priceRows = [], snapshotRows = [], marketRow = null, nowMs = Date.now(), symbol = null, historyRows = [], supplySeriesDays = 30 } = {}) {
   const wanted = symbol ? String(symbol).toUpperCase() : null;
   const tracked = wanted && TRACKED_COINS.includes(wanted) ? [wanted] : TRACKED_COINS;
 
@@ -115,5 +115,59 @@ export function buildMarketView({ priceRows = [], snapshotRows = [], marketRow =
     },
     coins,
     dataQuality,
+    supplyHistory: buildSupplyHistory(historyRows, supplySeriesDays),
   };
+}
+
+/**
+ * Coin-level daily supply series for the dashboard chart, from the raw
+ * snapshots table (NOT from the chains map, whose per-chain latest ts varies
+ * by chain and caused sawtooth/duplicate-day rendering).
+ * Dedupe: one row per coin+UTC-day+casing-normalized chain (largest ts wins).
+ * Era rule: if a day contains a row from the daily-layer era (ts at
+ * 00:00:00 UTC), keep only era rows so old chains never mix into a new-era
+ * total; days with only 10-min-era rows sum normally.
+ * @param {Array<{coin:string, chain:string, ts:number, circulatingUsd:number|null}>} historyRows
+ * @param {number} days
+ */
+export function buildSupplyHistory(historyRows, days = 30) {
+  const cutoff = Date.now() - days * 86_400_000;
+  const byKey = new Map();
+  for (const r of historyRows || []) {
+    if (!r || typeof r.coin !== 'string' || typeof r.chain !== 'string') continue;
+    const ts = Number(r.ts);
+    if (!Number.isFinite(ts) || ts < cutoff) continue;
+    const d = new Date(ts);
+    const day = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+    const chainKey = `${r.coin}||${day}||${String(r.chain).trim().toLowerCase()}`;
+    const prev = byKey.get(chainKey);
+    // Within one chain-day: a midnight (daily-layer era) row beats an
+    // intraday row even when the intraday ts is newer, so era data survives
+    // the dedupe on days written by both layers.
+    const rank = (x) => (x.ts % 86_400_000 === 0 ? 1 : 0);
+    if (!prev || rank({ ts }) > rank(prev) || (rank({ ts }) === rank(prev) && ts > prev.ts)) {
+      byKey.set(chainKey, { coin: r.coin, day, ts, value: r.circulatingUsd ?? null });
+    }
+  }
+  const perCoinDay = new Map();
+  for (const { coin, day, ts, value } of byKey.values()) {
+    const key = `${coin}||${day}`;
+    const b = perCoinDay.get(key) || { coin, day, rows: [] };
+    b.rows.push({ ts, value });
+    perCoinDay.set(key, b);
+  }
+  const out = {};
+  for (const b of perCoinDay.values()) {
+    // Era rule across chains: daily-layer era rows all sit exactly at
+    // midnight UTC. If any chain reported a midnight row for this day, the
+    // day is an era day and ONLY midnight rows count, so intraday-era chains
+    // (which would otherwise be added on top) cannot inflate the total.
+    const eraRows = b.rows.filter((r) => r.ts % 86_400_000 === 0);
+    const counted = eraRows.length ? eraRows : b.rows;
+    if (!counted.some((r) => typeof r.value === 'number' && Number.isFinite(r.value))) continue;
+    const sum = counted.reduce((acc, r) => acc + (Number.isFinite(r.value) ? r.value : 0), 0);
+    (out[b.coin] = out[b.coin] || []).push({ ts: Date.parse(`${b.day}T00:00:00Z`), value: sum });
+  }
+  for (const coin of Object.keys(out)) out[coin].sort((a, b) => a.ts - b.ts);
+  return out;
 }

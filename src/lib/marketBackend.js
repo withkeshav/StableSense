@@ -112,6 +112,13 @@ export function transformMarketPayload(payload) {
   data.spotObservedAt = observed;
   data.supplyObservedAt = observed;
   data.marketObservedAt = observed;
+
+  // Backend-computed daily supply history (deduped, casing-normalized, era-
+  // consistent). Charts consume this directly instead of rebuilding series
+  // from per-chain shims, whose per-chain latest timestamps caused duplicate
+  // days and sawtooth artifacts.
+  data.supplyHistory = payload?.supplyHistory ?? {};
+
   data.dataQuality = Array.isArray(payload?.dataQuality) ? payload.dataQuality : [];
   return data;
 }

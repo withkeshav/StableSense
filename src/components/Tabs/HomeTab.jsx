@@ -33,10 +33,15 @@ export default function HomeTab({ data, alerts, setActiveTab, refreshIntervalSec
   const supplySeriesByCoin = useMemo(() => {
     const m = {};
     coins.forEach((c) => {
-      m[c.symbol] = buildSupplySeries(detailsByCoin[c.symbol]);
+      // Prefer the backend's deduped daily series; fall back to the shim
+      // rebuild only if it is missing (should not happen post-phase-2).
+      const backend = data?.supplyHistory?.[c.symbol];
+      m[c.symbol] = Array.isArray(backend) && backend.length
+        ? backend
+        : buildSupplySeries(detailsByCoin[c.symbol]);
     });
     return m;
-  }, [coins, detailsByCoin]);
+  }, [coins, detailsByCoin, data]);
 
   const [supplyLog, setSupplyLog] = useState(false);
   const [supplyPct, setSupplyPct] = useState(false);
@@ -68,7 +73,7 @@ export default function HomeTab({ data, alerts, setActiveTab, refreshIntervalSec
 
   const supplyLabels = useMemo(() => {
     const any = coins.map((c) => supplySeriesByCoin[c.symbol]).find((s) => s.length);
-    return (any || []).map((p) => new Date(p.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+    return (any || []).map((p) => new Date(p.ts ?? p.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }));
   }, [coins, supplySeriesByCoin]);
 
   const pegLabels = useMemo(() => {
