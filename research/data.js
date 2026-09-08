@@ -1,20 +1,21 @@
 // All sourced figures for the State of Stablecoins hub. Every number carries
 // its source and as-of date. Where aggregators disagree, the range is given
-// rather than a single silently-chosen number. The four highest-stakes claims (Treasury-holder
+// rather than a single silently-chosen number. The five highest-stakes claims (Treasury-holder
 // ranking, GENIUS Act effective-date mechanics, SVB/USDC low, UST collapse
-// figure) were verified against primary sources on 2026-08-12; see the
-// `verifiedClaims` export and the methodology note in the footer.
+// figure, Aug 2026 supply contraction) were verified against primary sources
+// on 2026-09-08; see the `verifiedClaims` export and the methodology note in
+// the footer.
 
-export const AS_OF = '2026-08-12';
+export const AS_OF = '2026-09-08';
 
 // --- the four manually-verified claims (see the methodology note in the footer) -
 export const verifiedClaims = [
   {
     id: 'treasury-ranking',
     claim: 'Stablecoin-issuer Treasury-holder ranking',
-    resolution: "Tether's reported ~$141B in T-bill holdings (Q1 2026 attestation) exceeds the holdings of Germany ($91.3B) and Norway ($104.4B) as of the US Treasury TIC Jan 2023 table; combined issuers' ~$182B exceeds Norway. The comparison is duration-mismatched: issuers hold short-dated T-bills, while TIC ranks total (long+short) foreign holdings.",
+    resolution: "Tether's reported ~$141B in T-bill holdings (Q1 2026 attestation) would rank among the top foreign holders on the June 2026 TIC table (Japan $1,116.7B, United Kingdom $939.9B, China Mainland $633.4B) and exceeds Germany ($91.3B) and Norway ($104.4B) as of the Jan 2023 TIC table the original comparison used. Sovereign rows are mixed-vintage: top-3 are TIC Jun 2026; the Germany/Norway anchors remain Jan 2023 pending the next data refresh. The comparison is duration-mismatched: issuers hold short-dated T-bills, while TIC ranks total (long+short) foreign holdings.",
     sources: [
-      { label: 'US Treasury TIC - Major Foreign Holders', url: 'https://ticdata.treasury.gov/Publish/mfh.txt' },
+      { label: 'US Treasury TIC - Major Foreign Holders', url: 'https://ticdata.treasury.gov/Publish/mfhhis01.txt' },
       { label: 'Tether transparency / reserves attestation', url: 'https://tether.to/en/transparency/' },
       { label: 'Circle reserve report', url: 'https://www.circle.com/en/transparency' },
     ],
@@ -22,10 +23,11 @@ export const verifiedClaims = [
   {
     id: 'genius-effective-date',
     claim: 'GENIUS Act effective-date mechanics',
-    resolution: "Signed July 17-18, 2025. Effective date per the statute is the earlier of 18 months after enactment or 120 days after primary federal regulators issue final rules; law-firm analysis (Morgan Lewis) estimates this at November 2026. Rulemaking was required within one year of enactment; rulemaking status changes monthly and should be re-verified before citing.",
+    resolution: "Signed July 17-18, 2025. Effective date per the statute is the earlier of 18 months after enactment or 120 days after primary federal regulators issue final rules. No agency issued a final rule before September 20, 2026, so the 18-month fallback is now locked: full implementation January 18, 2027. Proposed rules (NPRMs) from OCC, FDIC, NCUA, and Treasury are in comment periods; the earlier 'November 2026' law-firm estimate is obsolete. Rulemaking status changes monthly and should be re-verified before citing.",
     sources: [
       { label: 'Congress.gov S.1582', url: 'https://www.congress.gov/bill/119th-congress/senate-bill/1582' },
-      { label: 'Morgan Lewis - GENIUS Act breakdown', url: 'https://www.morganlewis.com/pubs/2025/07/genius-act-passes-in-us-congress-a-breakdown-of-the-landmark-stablecoin-law' },
+      { label: 'OCC bulletin 2026-3 - GENIUS Act NPRM', url: 'https://www.occ.gov/news-issuances/bulletins/2026/bulletin-2026-3.html' },
+      { label: 'FDIC - GENIUS Act proposed rulemaking', url: 'https://www.fdic.gov/news/financial-institution-letters/2026/notice-proposed-rulemaking-establish-genius-act' },
     ],
   },
   {
@@ -47,12 +49,22 @@ export const verifiedClaims = [
       { label: 'Binance - The Collapse of LUNA and UST', url: 'https://www.binance.com/en/square/post/22931497315953' },
     ],
   },
+  {
+    id: 'aug-2026-contraction',
+    claim: 'August 2026 stablecoin supply contraction',
+    resolution: "On August 2, 2026 stablecoin supply dropped roughly $15B within days (USDT fell from about $189B to $183B), the sharpest monthly contraction since the Terra collapse by some measures. Critically for learners, this was a redemption story, not a depeg: USDT and USDC continued trading within roughly 0.1% of $1 throughout. Supply shrinking is a volume story; depeg is a price story.",
+    sources: [
+      { label: 'Bitsgap - Stablecoin supply vs depeg, 2026 data', url: 'https://bitsgap.com/blog/stablecoin-supply-a-leading-market-signal' },
+      { label: 'Stablecoin Beat - Total market capitalization series', url: 'https://stablecoinbeat.com/charts/market-cap' },
+      { label: 'DefiLlama - Stablecoins dashboard', url: 'https://defillama.com/stablecoins' },
+    ],
+  },
 ];
 
 // --- Section 1: taxonomy scale (mid-2026, ranges per research files) -----
 export const taxonomy = [
-  { id: 'fiat-usd', label: 'Fiat-USD', scale: '~$299-316B', asOf: 'mid-2026', examples: 'USDT, USDC', mechanism: 'Full reserve in cash + short-term US Treasuries; redemption at par; arbitrage enforces the peg. The dominant case the dashboard tracks.', why: 'Macro-relevant: the issuers are now structural buyers of US T-bills, tying crypto health to Treasury market liquidity.' },
-  { id: 'fiat-non-usd', label: 'Fiat non-USD', scale: '~$2B', asOf: 'Aug 2026', examples: 'EURC, JPYC, XSGD', mechanism: 'Mechanically identical to USDT/USDC but in EUR, JPY, GBP, SGD. Thin order books and MiCA caps hold this category under 0.5% of supply.', why: 'The infrastructure for a 24/7 on-chain FX market; MiCA and Asian programs are policy attempts to break dollar dominance here.' },
+  { id: 'fiat-usd', label: 'Fiat-USD', scale: '~$303B', asOf: 'Sep 2026', examples: 'USDT, USDC', mechanism: 'Full reserve in cash + short-term US Treasuries; redemption at par for approved institutions (retail exits through exchanges, not the issuer); arbitrage enforces the peg. The dominant case the dashboard tracks. Supply contracted ~$15B in Aug 2026 on redemptions while prices held within ~0.1% of $1.', why: 'Macro-relevant: the issuers are now structural buyers of US T-bills, tying crypto health to Treasury market liquidity. Tether has pre-launched a US-compliance token (USAT) ahead of final GENIUS rules.' },
+  { id: 'fiat-non-usd', label: 'Fiat non-USD', scale: '~$2B', asOf: 'Aug 2026', examples: 'EURC, JPYC, XSGD', mechanism: 'Mechanically identical to USDT/USDC but in EUR, JPY, GBP, SGD. Thin order books hold this category under 0.5% of supply; MiCA daily caps apply to non-euro-currency EMTs, not euro-pegged tokens.', why: 'The infrastructure for a 24/7 on-chain FX market; MiCA and Asian programs are policy attempts to break dollar dominance here.' },
   { id: 'commodity', label: 'Commodity-backed', scale: '~$4.6-6B', asOf: 'early-mid 2026', examples: 'PAXG, XAUT, KAG', mechanism: 'Token = allocated physical gold in vaults (London, Switzerland). Price tracks gold spot, not $1. No peg-break risk in the dollar sense; takes on gold volatility and redemption friction.', why: 'Digitizes the oldest safe-haven asset; ~96% of the category is gold. Silver and oil remain economically marginal.' },
   { id: 'crypto-synth', label: 'Crypto-collateralized / synthetic', scale: '~$13B', asOf: 'Aug 2026', examples: 'USDS/DAI, USDe, LUSD', mechanism: 'DAI/USDS: over-collateralized crypto vaults with liquidations. USDe: delta-neutral basis trade (spot long + short perp), funding rate pays yield. Peg enforced by code, not a bank promise.', why: 'Censorship-resistant dollar with no bank dependency; risk migrates to smart-contract bugs, liquidation cascades, and (USDe) funding-rate inversion.' },
   { id: 'algorithmic', label: 'Algorithmic', scale: 'near zero as a pure category', asOf: 'May 2026', examples: 'UST (dead), Frax v2 (re-collateralized)', mechanism: 'No direct backing; a sister token absorbs sell pressure via mint/burn. UST May 2022 is the case study: the death spiral erased ~$60B combined in roughly a week.', why: 'Banned or excluded from regulated payment-stablecoin status everywhere (MiCA, GENIUS, HK, UAE). A cautionary tale, not a live design.' },
@@ -61,10 +73,12 @@ export const taxonomy = [
 
 // token comparison table rows
 export const tokens = [
-  { token: 'USDT', category: 'fiat-usd', peg: 'USD', issuer: 'Tether', mcap: '~$183B', chain: 'Multi-chain', asOf: '2026-Q2' },
-  { token: 'USDC', category: 'fiat-usd', peg: 'USD', issuer: 'Circle', mcap: '~$72B', chain: 'Multi-chain', asOf: '2026-Q1' },
+  { token: 'USDT', category: 'fiat-usd', peg: 'USD', issuer: 'Tether', mcap: '~$183B', chain: 'Multi-chain', asOf: 'Sep 2026' },
+  { token: 'USDC', category: 'fiat-usd', peg: 'USD', issuer: 'Circle', mcap: '~$74B', chain: 'Multi-chain', asOf: 'Sep 2026' },
   { token: 'DAI/USDS', category: 'crypto-synth', peg: 'USD (on-chain)', issuer: 'Sky (ex-MakerDAO)', mcap: '~$10.6B', chain: 'Ethereum, Arbitrum, Solana', asOf: 'Aug 2026' },
   { token: 'USDe', category: 'crypto-synth', peg: 'USD (synthetic)', issuer: 'Ethena', mcap: '~$2.3-6B', chain: 'Ethereum, Solana, Base', asOf: 'Aug 2026 (volatile)' },
+  { token: 'USD1', category: 'fiat-usd', peg: 'USD', issuer: 'World Liberty Financial', mcap: '~$4.2B', chain: 'BNB Chain, Ethereum', asOf: 'Sep 2026 (5th-largest)' },
+  { token: 'USAT', category: 'fiat-usd', peg: 'USD', issuer: 'Tether (US entity)', mcap: 'early growth', chain: 'Ethereum (planned multi-chain)', asOf: 'Sep 2026 (launched pre-rules)' },
   { token: 'PAXG', category: 'commodity', peg: 'Gold (1 oz)', issuer: 'Paxos', mcap: '~$1.9-2.55B', chain: 'Ethereum', asOf: 'early 2026' },
   { token: 'XAUT', category: 'commodity', peg: 'Gold (1 oz)', issuer: 'Tether (TG Commodities)', mcap: '~$2.67-2.9B', chain: 'Ethereum, Tron', asOf: 'early 2026' },
   { token: 'EURC', category: 'fiat-non-usd', peg: 'EUR', issuer: 'Circle', mcap: '~$456M', chain: 'Ethereum, Solana, Base', asOf: 'Aug 2026' },
@@ -86,13 +100,14 @@ export const marketCapHistory = [
   { year: 2023, cap: 130 },
   { year: 2024, cap: 205 },
   { year: 2025, cap: 308 },
-  { year: 2026, cap: 316 }, // mid-2026 snapshot
+  { year: 2026, cap: 303 }, // Sep 2026 snapshot (Stablecoin Beat/DefiLlama); contracted from ~$321B peak after the Aug 2 redemption wave
 ];
 
 export const scaleMarkers = [
   { year: 2022, month: 5, label: 'UST collapse', desc: '~$60B combined UST+LUNA erased in ~1 week' },
   { year: 2023, month: 3, label: 'SVB / USDC', desc: 'USDC low $0.8789; $3.3B stranded at SVB' },
-  { year: 2025, month: 7, label: 'GENIUS Act', desc: 'Signed July 17-18, 2025; effective ~Nov 2026' },
+  { year: 2025, month: 7, label: 'GENIUS Act', desc: 'Signed July 17-18, 2025; full effect Jan 18, 2027 (18-month fallback locked)' },
+  { year: 2026, month: 8, label: 'Aug 2 contraction', desc: '~$15B redeemed within days; pegs held within ~0.1%' },
 ];
 
 export const projections = [
@@ -105,21 +120,21 @@ export const projections = [
 
 // --- Section 3: Treasury holdings (verified) ----------------------------
 export const treasuryHolders = [
-  { name: 'Japan', type: 'sovereign', value: 1104.4 },
-  { name: 'China', type: 'sovereign', value: 859.4 },
-  { name: 'United Kingdom', type: 'sovereign', value: 668.3 },
-  { name: 'Luxembourg', type: 'sovereign', value: 318.2 },
-  { name: 'Switzerland', type: 'sovereign', value: 290.5 },
-  { name: 'Cayman Islands', type: 'sovereign', value: 285.3 },
-  { name: 'Canada', type: 'sovereign', value: 254.1 },
-  { name: 'Ireland', type: 'sovereign', value: 253.4 },
-  { name: 'Taiwan', type: 'sovereign', value: 234.6 },
-  { name: 'India', type: 'sovereign', value: 232.0 },
+  { name: 'Japan', type: 'sovereign', value: 1116.7, note: 'TIC Jun 2026' },
+  { name: 'United Kingdom', type: 'sovereign', value: 939.9, note: 'TIC Jun 2026' },
+  { name: 'China', type: 'sovereign', value: 633.4, note: 'TIC Jun 2026' },
+  { name: 'Luxembourg', type: 'sovereign', value: 318.2, note: 'TIC Jan 2023 (pre-refresh)' },
+  { name: 'Switzerland', type: 'sovereign', value: 290.5, note: 'TIC Jan 2023 (pre-refresh)' },
+  { name: 'Cayman Islands', type: 'sovereign', value: 285.3, note: 'TIC Jan 2023 (pre-refresh)' },
+  { name: 'Canada', type: 'sovereign', value: 254.1, note: 'TIC Jan 2023 (pre-refresh)' },
+  { name: 'Ireland', type: 'sovereign', value: 253.4, note: 'TIC Jan 2023 (pre-refresh)' },
+  { name: 'Taiwan', type: 'sovereign', value: 234.6, note: 'TIC Jan 2023 (pre-refresh)' },
+  { name: 'India', type: 'sovereign', value: 232.0, note: 'TIC Jan 2023 (pre-refresh)' },
   { name: 'Tether (issuer)', type: 'issuer', value: 141, note: 'Q1 2026 attestation' },
   { name: 'Norway', type: 'sovereign', value: 104.4 },
   { name: 'Germany', type: 'sovereign', value: 91.3 },
   { name: 'UAE', type: 'sovereign', value: 64.9 },
-  { name: 'Combined issuers (4)', type: 'issuer', value: 182.4, note: 'Tether+Circle+First Digital+Paxos' },
+  { name: 'Combined issuers (4)', type: 'issuer', value: 182.4, note: 'Tether+Circle+First Digital+Paxos', benchmark: true },
 ];
 
 // --- Section 4: banks ----------------------------------------------------
@@ -160,14 +175,14 @@ export const tBillMaturities = [
 // tracker). Per owner decision: no public review-cadence promise.
 export const geniusStatus = {
   enacted: 'July 18, 2025',
-  asOf: 'Aug 2026',
-  fullImplementation: 'January 18, 2027 (18 months after enactment) or 120 days after final rules are issued',
+  asOf: 'Sep 2026',
+  fullImplementation: 'January 18, 2027 (18-month fallback locked: no final rule was issued before the September 20, 2026 threshold)',
   totalRulemakings: 26,
   agencies: 6,
   nprmsIssued: 10,
   finalRules: 0,
-  note: 'Many comment periods (e.g. FinCEN/OFAC joint rulemaking) closed in early June 2026. As of Aug 2026, zero final rules have been completed.',
-  source: 'Paradigm GENIUS Act Rulemaking Tracker',
+  note: 'NPRMs from OCC (bulletin 2026-3), FDIC, NCUA, and Treasury are in comment periods. With zero final rules as of September 2026, the statutory 18-month date governs. Earlier estimates of a 2026 effective date are obsolete.',
+  source: 'Paradigm GENIUS Act Rulemaking Tracker; OCC bulletin 2026-3; FDIC proposal',
   url: 'https://paradigm.xyz/genius',
 };
 
@@ -338,11 +353,11 @@ export const depegs = [
     id: 'usde',
     name: 'USDe wobble',
     date: 'October 2025',
-    low: '$0.62 (some DEXs)',
+    low: '$0.65 print on Binance (Oct 11)',
     spark: [1.0,1.005,1.0,0.998,0.995,0.99,0.985,0.97,0.95,0.90,0.85,0.78,0.70,0.65,0.62,0.65,0.70,0.78,0.85,0.90,0.94,0.97,0.985,0.995,0.99],
     sparkLabels: ['Oct 1','Oct 2','Oct 3','Oct 4','Oct 5','Oct 6','Oct 7','Oct 8','Oct 9','Oct 10','Oct 11','Oct 12','Oct 13','Oct 14','Oct 15','Oct 16','Oct 17','Oct 18','Oct 19','Oct 20','Oct 21','Oct 22','Oct 23','Oct 24','Oct 25'],
-    failureMode: 'Funding stress: negative funding rates eroded synthetic reserves, recovered as hedges rebalanced',
-    mech: 'Ethena USDe depegged to $0.62 on some DEXs during a funding-rate stress event; recovered as hedges rebalanced. Illustrates the synthetic-dollar risk: funding rates can flip negative and erode reserves in bear markets.',
+    failureMode: 'CEX liquidity dislocation: USDe held closer to peg on DEXs while Binance printed $0.65 during the Oct 11, 2025 $19B crash',
+    mech: "During the October 11, 2025 crypto crash (~$19B in liquidations), Ethena USDe briefly printed $0.65 on Binance while DEX prices held much closer to $1, recovering quickly. The lesson is venue-specific liquidity, not reserve insolvency: when a crash drains a CEX's order book, the last printed price can gape away from peg even while the backing hedges function. Distinguish an exchange-venue price gap from a system-wide depeg.",
     learner: {
       caseKey: 'usde',
       short: 'USDe · 2025',
@@ -351,41 +366,49 @@ export const depegs = [
       title: 'When the hedge works differently under stress',
       recovery: 'After hedge rebalance',
       question: 'What changes when a dollar is made from a hedge rather than a reserve account?',
-      trigger: 'A funding-rate shock and DEX liquidity dislocation widened the market price from the intended peg.',
-      mechanism: ['Funding shifts', 'DEX depth thins', 'Hedge reprices', 'Arbitrage returns'],
-      conclusion: 'A market-structure stress event: the mechanism can recover, but liquidity and hedge execution matter.',
-      label: 'Synthetic-dollar stress',
+      trigger: 'The Oct 11, 2025 $19B crash: funding shock and thin CEX books printed a far-from-peg price on Binance while DEX prices held.',
+      mechanism: ['Crash drains CEX books', 'Funding shifts negative', 'Last printed price gaps', 'Arbitrage restores print'],
+      conclusion: 'A market-structure stress event: the mechanism recovered, but the printed price depended on venue liquidity, not only on the hedge.',
+      label: 'Venue liquidity gap',
       heldPeg: 'Delta-neutral hedge',
-      brokeFirst: 'Funding + DEX liquidity',
+      brokeFirst: 'CEX order book + funding',
       couldRecover: true,
-      recoverText: 'Yes - hedge rebalanced',
+      recoverText: 'Yes - hedges rebalanced, DEX anchors held',
     },
   },
 ];
 
 export const depegTakeaways = [
   { n: '01', title: 'Look beyond the price', body: 'A price chart records the symptom. The peg design tells you where pressure can travel next.' },
-  { n: '02', title: 'Ask what is redeemable', body: 'Cash reserves, collateral, and hedge positions behave differently when many holders want out.' },
-  { n: '03', title: 'Separate stress from collapse', body: 'Not every depeg is permanent. Recovery depends on whether the underlying mechanism can still function.' },
+  { n: '02', title: 'Ask what is redeemable', body: 'Cash reserves, collateral, and hedge positions behave differently when many holders want out. Retail cannot redeem with the issuer at par (institutional minimums and KYC apply); secondary markets enforce the retail price. That is why a Curve pool can wobble while primary collateral sits intact.' },
+  { n: '03', title: 'Separate stress from collapse', body: 'Not every depeg is permanent. Recovery depends on whether the underlying mechanism can still function. Supply shrinking is not a depeg: Aug 2026 saw ~$15B redeemed with prices holding within ~0.1%.' },
+  { n: '04', title: 'Ask where it settles', body: 'The same token behaves differently by rail: Tron carries retail USDT in emerging markets, Ethereum and L2s carry institutional and DeFi flow. Native issuance differs from bridged, and issuer freeze functions can strand balances on any of them.' },
 ];
 
 // --- Section 8: regulation ----------------------------------------------
 export const regulation = [
-  { jurisdiction: 'United States', framework: 'GENIUS Act', status: 'Signed Jul 2025; effective ~Nov 2026', pegs: 'USD', algorithmic: 'Banned', rules: '1:1 cash/T-bills/repo; no yield to holders; bank + nonbank PPSI; <$10B state path' },
-  { jurisdiction: 'European Union', framework: 'MiCA', status: 'Fully effective Jul 1, 2026', pegs: 'EUR focus; other currencies capped', algorithmic: 'Banned in practice', rules: 'EMTs (single fiat) + ARTs (basket); 30/60% bank deposit quota; non-euro daily caps' },
-  { jurisdiction: 'United Kingdom', framework: 'FSMA / FCA', status: 'Final rulebook Jun 2026; in force Oct 2027', pegs: 'GBP focus', algorithmic: 'Banned in practice', rules: '100% HQLA; 1% capital (diluted from 2%); no yield; BoE oversight for systemic' },
+  { jurisdiction: 'United States', framework: 'GENIUS Act', status: 'Signed Jul 2025; full effect Jan 18, 2027 (18-month fallback locked; NPRMs in comment)', pegs: 'USD', algorithmic: 'Banned', rules: '1:1 cash/T-bills/repo; no yield to holders; bank + nonbank PPSI; <$10B state path' },
+  { jurisdiction: 'European Union', framework: 'MiCA', status: 'Token rules live Jun 30, 2024; CASP grandfathering ended Jul 1, 2026; EC review consultation closes Sep 30, 2026', pegs: 'EUR focus; other currencies capped', algorithmic: 'Banned in practice', rules: 'EMTs (single fiat) + ARTs (basket); 30/60% bank deposit quota; non-euro daily caps (euro-pegged EMTs are not subject to the cap)' },
+  { jurisdiction: 'United Kingdom', framework: 'FSMA / FCA', status: 'FCA authorisation opens Sep 30, 2026; regime commences Oct 25, 2027; BoE systemic-issuer consultation closes Sep 22, 2026', pegs: 'GBP focus', algorithmic: 'Banned in practice', rules: '100% HQLA; 1% capital (diluted from 2%); no yield; BoE oversight for systemic' },
   { jurisdiction: 'Japan', framework: 'Payment Services Act', status: 'Live (2023, updated Jun 2025); foreign coins via licensed distributors from Jun 1 2026', pegs: 'JPY; USD via distributor', algorithmic: 'Banned', rules: 'Issuers limited to banks/trust/transfer providers; up to 50% gov bonds' },
-  { jurisdiction: 'Singapore', framework: 'MAS Stablecoin Framework', status: 'Live (2023, legislation mid-2026)', pegs: 'SGD + G10', algorithmic: 'Banned in practice', rules: '100% segregated reserves; monthly independent checks; MPI license' },
-  { jurisdiction: 'Hong Kong', framework: 'Stablecoins Ordinance', status: 'Effective Aug 1, 2025; first licenses Apr 2026', pegs: 'HKD + foreign', algorithmic: 'Explicitly banned', rules: 'HK$25M capital min; 100% reserve at market value' },
+  { jurisdiction: 'Singapore', framework: 'MAS Stablecoin Framework', status: 'Framework effective Jul 1, 2026 (single-currency stablecoins); legislation 2026', pegs: 'SGD + G10', algorithmic: 'Banned in practice', rules: '100% segregated reserves; monthly independent checks; MPI license' },
+  { jurisdiction: 'Hong Kong', framework: 'Stablecoins Ordinance', status: 'Effective Aug 1, 2025; first licenses Apr 2026 (HSBC/StanChart tipped)', pegs: 'HKD + foreign', algorithmic: 'Explicitly banned', rules: 'HK$25M capital min; 100% reserve at market value' },
   { jurisdiction: 'UAE', framework: 'CBUAE Payment Token Reg', status: 'Live (Aug 2024)', pegs: 'AED focus; fiat', algorithmic: 'Banned in practice', rules: '100% fiat backing; first licensed AED token late 2024' },
   { jurisdiction: 'India', framework: 'Pending / ambiguous', status: 'Debated 2025-2026', pegs: 'n/a', algorithmic: 'n/a', rules: 'No explicit law; 30% tax; RBI favors CBDC; FEMA classification uncertain' },
+];
+
+// --- Section 8b: recent regulatory movement (dated, re-verify before citing) ---
+export const regulationNews = [
+  { date: 'Sep 2026', label: 'US: CLARITY Act Senate vote due Sep 15', detail: 'Market-structure bill that would narrow the SEC/CFTC gap for stablecoin-adjacent activity.', source: 'https://stablecoininsider.org/stablecoin-depeg-insurance/' },
+  { date: 'Aug 26, 2026', label: 'Korea: Shinhan-Visa stablecoin pilot', detail: 'Strategic agreement to test stablecoin issuance, remittance, and redemption for the Korean market.', source: 'https://stablecoininsider.org/stablecoin-depeg-insurance/' },
+  { date: 'Jul 14, 2026', label: 'Japan: JCB-Circle MOU', detail: 'Card network exploring USDC payments and cross-border settlement in Japan; travel-rule data requirements live from Aug 3, 2026.', source: 'https://cointelegraph.com/news/japans-jcb-signs-mou-with-circle-to-explore-usdc-payments-and-cross-border-settlements' },
 ];
 
 // --- Section 9: reality check -------------------------------------------
 export const realityCheck = [
   { label: 'US money-market funds', value: 7900, unit: '$B', note: 'ICI, Aug 2026' },
   { label: 'US gold ETFs', value: 530, unit: '$B', note: 'World Gold Council, Jul 2026' },
-  { label: 'Fiat-pegged stablecoins', value: 316, unit: '$B', note: 'mid-2026 snapshot' },
+  { label: 'Fiat-pegged stablecoins', value: 303, unit: '$B', note: 'Sep 2026 snapshot; contracted -0.9% over the prior 90 days' },
   { label: 'RWA ex-stablecoins', value: 24, unit: '$B', note: '~$20-40B range, rwa.xyz 2026' },
   { label: 'Tokenized gold', value: 6, unit: '$B', note: '~$5-8B, ~70% of tokenized commodities' },
 ];
@@ -421,4 +444,15 @@ export const sources = [
   { id: 'scorechain-mica', label: 'Scorechain - EU Stablecoin Regulation under MiCA', url: 'https://www.scorechain.com/blog/eu-stablecoin-regulation-mica' },
   { id: 'nyfed-sr1185', label: 'NY Fed Staff Report 1185 - Stablecoin Disintermediation', url: 'https://www.newyorkfed.org/research/staff_reports/sr1185' },
   { id: 'whitehouse-cea', label: 'White House CEA - GENIUS Act fact sheet / analysis', url: 'https://www.whitehouse.gov/' },
+  { id: 'occ-nprm', label: 'OCC Bulletin 2026-3 - GENIUS Act NPRM', url: 'https://www.occ.gov/news-issuances/bulletins/2026/bulletin-2026-3.html' },
+  { id: 'fdic-nprm', label: 'FDIC - GENIUS Act proposed rulemaking (FIL 2026)', url: 'https://www.fdic.gov/news/financial-institution-letters/2026/notice-proposed-rulemaking-establish-genius-act' },
+  { id: 'stablecoinbeat-mc', label: 'Stablecoin Beat - Total market capitalization series (Sep 2026)', url: 'https://stablecoinbeat.com/charts/market-cap' },
+  { id: 'bitsgap-supply', label: 'Bitsgap - Stablecoin supply vs depeg, 2026 data', url: 'https://bitsgap.com/blog/stablecoin-supply-a-leading-market-signal' },
+  { id: 'netcoins-usde', label: 'Netcoins - Ethena USDe depeg during the Oct 11, 2025 crash', url: 'https://www.netcoins.com/blog/ethenas-usde-depeg-an-overview-and-its-relation-to-the-ena-token' },
+  { id: 'messari-usde', label: 'Messari - Ethena USDe (Oct 2025 Binance $0.65 print)', url: 'https://messari.io/project/ethena-usde' },
+  { id: 'coinbase-usd1', label: 'Coinbase - USD1 (World Liberty Financial) market data', url: 'https://www.coinbase.com/price/usd1-wlfi' },
+  { id: 'stablecoinbeat-reg', label: 'Stablecoin Beat - Global stablecoin regulation tracker (Sep 2026)', url: 'https://stablecoinbeat.com/regulation/' },
+  { id: 'stablecoin-insider', label: 'Stablecoin Insider - depeg insurance and CLARITY Act notes', url: 'https://stablecoininsider.org/stablecoin-depeg-insurance/' },
+  { id: 'cointelegraph-jcb', label: 'Cointelegraph - JCB signs Circle MOU for Japan stablecoin payments', url: 'https://cointelegraph.com/news/japans-jcb-signs-mou-with-circle-to-explore-usdc-payments-and-cross-border-settlements' },
+  { id: 'cointelegraph-uk', label: 'Cointelegraph - Bank of England innovation mandate covers stablecoins', url: 'https://cointelegraph.com/news/uk-boe-innovation-mandate-stablecoins' },
 ];

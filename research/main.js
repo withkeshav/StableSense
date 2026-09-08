@@ -396,16 +396,30 @@ async function treasuryChart() {
   const grid = gridColor();
   const gold = getComputedStyle(document.documentElement).getPropertyValue('--hub-gold').trim();
   const sorted = [...data.treasuryHolders].sort((a, b) => b.value - a.value);
+  const bars = sorted.filter((h) => !h.benchmark);
+  const bench = sorted.find((h) => h.benchmark);
   new Chart(canvas, {
     type: 'bar',
     data: {
-      labels: sorted.map((h) => h.name),
-      datasets: [{
-        label: 'US Treasury holdings ($B)',
-        data: sorted.map((h) => h.value),
-        backgroundColor: sorted.map((h) => (h.type === 'issuer' ? gold : catColor('fiat-usd'))),
-        borderWidth: 0,
-      }],
+      labels: bars.map((h) => h.name),
+      datasets: [
+        {
+          label: 'US Treasury holdings ($B)',
+          data: bars.map((h) => h.value),
+          backgroundColor: bars.map((h) => (h.type === 'issuer' ? gold : catColor('fiat-usd'))),
+          borderWidth: 0,
+        },
+        {
+          label: 'Combined issuers (4): benchmark, not a holder',
+          data: bars.map((h) => (bench ? bench.value : null)),
+          type: 'line',
+          borderColor: gold,
+          borderDash: [6, 4],
+          pointRadius: 0,
+          fill: false,
+          borderWidth: 1.5,
+        },
+      ],
     },
     options: {
       indexAxis: 'y',
@@ -413,7 +427,7 @@ async function treasuryChart() {
       maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
-        tooltip: { callbacks: { label: (ctx) => `$${ctx.parsed.x}B${sorted[ctx.dataIndex].note ? ' (' + sorted[ctx.dataIndex].note + ')' : ''}` } },
+        tooltip: { callbacks: { label: (ctx) => (ctx.datasetIndex === 0 ? `$${ctx.parsed.x}B${bars[ctx.dataIndex].note ? ' (' + bars[ctx.dataIndex].note + ')' : ''}` : `Combined issuers: $${bench.value}B (aggregate of Tether+Circle+First Digital+Paxos; shown for scale only)`) } },
       },
       scales: { x: { grid: { color: grid }, ticks: { color: ink, callback: (v) => '$' + v + 'B' } }, y: { grid: { display: false }, ticks: { color: ink } } },
       animation: prefersReducedMotion ? false : { duration: 1400 },
@@ -429,16 +443,19 @@ async function dollarizationChart() {
   const ink = inkColor();
   const grid = gridColor();
   const gold = getComputedStyle(document.documentElement).getPropertyValue('--hub-gold').trim();
-  const rows = data.dollarizationCountries.map((c, i) => ({
-    ...c,
-    rankVal: c.gdpPct !== null ? c.gdpPct : (4 - i * 0.5),
-  })).sort((a, b) => b.rankVal - a.rankVal);
+  // Qualitative intensity rank (author-assigned from documented evidence),
+  // NOT a % of GDP: only Turkey has a measured % (4.3%, Chainalysis). Ties
+  // allowed. The tooltip shows each country's evidence detail.
+  const intensity = { Turkey: 4, Argentina: 4, Nigeria: 3, Lebanon: 2, Venezuela: 2 };
+  const rows = data.dollarizationCountries
+    .map((c) => ({ ...c, rankVal: intensity[c.country] ?? 1 }))
+    .sort((a, b) => b.rankVal - a.rankVal);
   new Chart(canvas, {
     type: 'bar',
     data: {
       labels: rows.map((c) => c.country),
       datasets: [{
-        label: 'Stablecoin purchases as % of GDP (Turkey measured; others ranked qualitatively)',
+        label: 'Documented adoption intensity (qualitative rank, 4 = most documented; not % of GDP)',
         data: rows.map((c) => c.rankVal),
         backgroundColor: rows.map((c) => (c.gdpPct !== null ? gold : catColor('fiat-usd') + 'aa')),
         borderWidth: 0,
@@ -449,9 +466,9 @@ async function dollarizationChart() {
       maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
-        tooltip: { callbacks: { label: (ctx) => rows[ctx.dataIndex].detail } },
+        tooltip: { callbacks: { label: (ctx) => rows[ctx.dataIndex].detail + (rows[ctx.dataIndex].gdpPct !== null ? ` (measured: ~${rows[ctx.dataIndex].gdpPct}% of GDP)` : '') } },
       },
-      scales: { x: { grid: { display: false }, ticks: { color: ink } }, y: { grid: { color: grid }, ticks: { color: ink, callback: (v) => v + '%' } } },
+      scales: { x: { grid: { display: false }, ticks: { color: ink } }, y: { grid: { color: grid }, ticks: { color: ink, stepSize: 1, callback: (v) => v } } },
       animation: prefersReducedMotion ? false : { duration: 1200 },
     },
   });
@@ -559,6 +576,13 @@ function buildRegulation() {
     </tr>`).join('');
   };
   render('all');
+  const newsWrap = document.getElementById('reg-news');
+  if (newsWrap && Array.isArray(data.regulationNews)) {
+    newsWrap.innerHTML = (data.regulationNews || []).map((n) => `<div class="reg-news-item" style="margin:0.6rem 0;padding:0.6rem 0.9rem;border-left:3px solid var(--hub-gold, #d4a017)">
+      <strong>${n.label}</strong> <span class="as-of">(${n.date})</span>
+      <p style="margin:0.3rem 0 0">${n.detail} <a href="${n.source}" target="_blank" rel="noopener noreferrer">Source</a></p>
+    </div>`).join('');
+  }
   document.querySelectorAll('#reg-chips .hub-chip').forEach((chip) => {
     chip.addEventListener('click', () => {
       document.querySelectorAll('#reg-chips .hub-chip').forEach((c) => c.classList.remove('active'));
@@ -631,8 +655,8 @@ function remittanceCalc() {
     const schedule = cfg.traditionalSchedules.find((s) => s.id === (scheduleEl ? scheduleEl.value : cfg.defaultTraditional)) || cfg.traditionalSchedules[0];
     const days = parseFloat(daysEl ? daysEl.value : cfg.defaultDaysInTransit) || 0;
     const rate = parseFloat(rateEl ? rateEl.value : cfg.defaultOpportunityRate) || 0;
-    const includeOnramp = onrampEl && onrampEl.checked;
-    const includeOfframp = offrampEl && offrampEl.checked;
+    const includeOnramp = onrampEl ? onrampEl.checked : true;
+    const includeOfframp = offrampEl ? offrampEl.checked : true;
     const stable = cfg.stablecoin;
 
     // Traditional: stated fee + FX markup + float, never one hero number.

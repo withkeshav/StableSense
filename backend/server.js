@@ -2,6 +2,7 @@ import Fastify from 'fastify';
 import { loadEnv } from './lib/env.js';
 import db from './lib/db.js';
 import { readJobs } from './lib/job-run.js';
+import { buildMarketView } from './jobs/lib/marketView.js';
 
 loadEnv();
 
@@ -78,6 +79,23 @@ app.get('/api/history', async (req) => {
     .prepare('SELECT coin, chain, circulating_usd, ts FROM snapshots WHERE ts = (SELECT MAX(ts) FROM snapshots) ORDER BY circulating_usd DESC LIMIT 50')
     .all();
   return { data: chains };
+});
+
+// Local market snapshot written by the fetch cron (Helix via cron). Serves the
+// newest prices row per coin, the newest snapshot row per coin+chain, and the
+// newest market_snapshots row. SQLite only; no upstream calls in this path.
+app.get('/api/market', async (req) => {
+  const symbol = req.query?.symbol ? String(req.query.symbol).toUpperCase() : null;
+  const priceRows = db.prepare(
+    'SELECT p.coin AS coin, p.ts AS ts, p.price AS price, p.change_24h AS change24h FROM prices p WHERE p.ts = (SELECT MAX(ts) FROM prices WHERE coin = p.coin)'
+  ).all();
+  const snapshotRows = db.prepare(
+    'SELECT s.coin AS coin, s.chain AS chain, s.ts AS ts, s.circulating_usd AS circulatingUsd, s.delta_24h_usd AS delta24h FROM snapshots s WHERE s.ts = (SELECT MAX(ts) FROM snapshots WHERE coin = s.coin AND chain = s.chain)'
+  ).all();
+  const marketRow = db.prepare(
+    'SELECT ts AS ts, total_circulating_usd AS total, delta_24h_usd AS delta FROM market_snapshots ORDER BY ts DESC LIMIT 1'
+  ).get() || null;
+  return buildMarketView({ priceRows, snapshotRows, marketRow, nowMs: Date.now(), symbol });
 });
 
 // Stored alert labels (Pass 4). Returns recent alert history so the Learn tab

@@ -273,16 +273,16 @@
       </div>
       <div class="calc-row calc-presets">
         <span class="calc-preset-label">Stablecoin path:</span>
-        <button type="button" id="calc-preset-hold" class="calc-preset active">Hold and accept (ramps off)</button>
-        <button type="button" id="calc-preset-full" class="calc-preset">Full cash-to-cash</button>
+        <button type="button" id="calc-preset-hold" class="calc-preset">Hold and accept (ramps off)</button>
+        <button type="button" id="calc-preset-full" class="calc-preset active">Full cash-to-cash</button>
       </div>
       <div class="calc-row calc-checks">
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
-          <input type="checkbox" id="calc-onramp" style="width:auto;min-height:auto">
+          <input type="checkbox" id="calc-onramp" checked style="width:auto;min-height:auto">
           On-ramp (+0.5%)
         </label>
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
-          <input type="checkbox" id="calc-offramp" style="width:auto;min-height:auto">
+          <input type="checkbox" id="calc-offramp" checked style="width:auto;min-height:auto">
           Off-ramp (+0.5%)
         </label>
       </div>
@@ -410,9 +410,10 @@
         <tbody></tbody>
       </table>
     </div>
+    <div id="reg-news"></div>
     <p class="as-of" style="margin-top:0.8rem">Regulatory status is the most stale-fast category in this report. MiCA enforcement dates, GENIUS rulemaking, UK Oct 2027 go-live, Hong Kong license counts all change monthly. Always timestamp.</p>
 
-    <h3 style="margin-top:2rem" id="genius-status">GENIUS Act rulemaking status (as of Aug 2026)</h3>
+    <h3 style="margin-top:2rem" id="genius-status">GENIUS Act rulemaking status (as of Sep 2026)</h3>
     <div class="genius-status-block" id="genius-status-block"></div>
     <p class="as-of" id="genius-source"></p>
   </div>

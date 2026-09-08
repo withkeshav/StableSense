@@ -1,14 +1,12 @@
-import { getActiveCoins, STABLECOIN_REGISTRY } from '../utils/coin-config.js';
+import { STABLECOIN_REGISTRY } from '../utils/coin-config.js';
 import { CACHE_PREFIX } from '../utils/storage.js';
 import { aiApiBase } from '../config.js';
-import { extractMarketObservedAt, extractSpotObservedAt, extractSupplyObservedAt } from './freshness.js';
+import { transformMarketPayload } from './marketBackend.js';
 
-const LLAMA_BASE = 'https://stablecoins.llama.fi';
 const CG_BASE = 'https://api.coingecko.com/api/v3';
 
 const TTL = {
   fast: 60_000,
-  history: 3_600_000,
   chart: 300_000,
 };
 const FETCH_TIMEOUT_MS = 20000;
@@ -123,19 +121,6 @@ export async function cachedRequest(key, url, { ttl = TTL.fast, swr = true, sign
   return fetchAndStore(key, url, signal);
 }
 
-function llamaStablecoinsUrl() {
-  return `${LLAMA_BASE}/stablecoins?includePrices=false`;
-}
-
-function llamaStablecoinUrl(id) {
-  return `${LLAMA_BASE}/stablecoin/${id}?includeTotals=true`;
-}
-
-function cgSimpleUrl(coins) {
-  const ids = coins.map((c) => c.coingeckoId).join(',');
-  return `${CG_BASE}/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_last_updated_at=true`;
-}
-
 function cgChartUrl(id) {
   return `${CG_BASE}/coins/${id}/market_chart?vs_currency=usd&days=90&interval=daily`;
 }
@@ -145,111 +130,32 @@ function cgTickersUrl(id) {
 }
 
 /**
- * Normalize DefiLlama's native chainCirculating shape
- * `{ chain: { circulating, circulatingPrevDay } }` into the
- * `{ chain: { current, circulatingPrevDay } }` shape the UI expects.
+ * Dashboard market data from the local backend (/api/market, Helix via the
+ * fetch cron). The ONLY source for the dashboard path; loadCoinChart below
+ * still uses CoinGecko for the 90d coin-tab chart and tickers.
+ * On network error with a warm cache, cachedRequest returns the stale copy
+ * instead of throwing, so the dashboard never blanks after loading once.
  */
-function normalizeChainCirculating(asset) {
-  const out = {};
-  for (const [chain, info] of Object.entries(asset?.chainCirculating || {})) {
-    out[chain] = {
-      current: info?.circulating || info?.current || null,
-      circulatingPrevDay: info?.circulatingPrevDay || null,
-    };
-  }
-  return out;
-}
-
-function sumPeggedUSD(assets, key) {
-  return (assets || []).reduce((sum, asset) => sum + (asset?.[key]?.peggedUSD || 0), 0);
-}
-
-function assembleLlama(data, llama, coins) {
-  // Case-insensitive symbol match, with id-priority disambiguation.
-  // DefiLlama can return multiple assets sharing the same symbol (e.g.
-  // id=146 "USDe" Ethena and id=264 "USDE" XBANKING). When that happens,
-  // prefer the asset whose id matches the registry's llamaStablecoinId.
-  const registryById = new Map();
-  for (const c of coins) {
-    registryById.set(String(c.llamaStablecoinId), c);
-  }
-  const lowerToCoin = new Map();
-  for (const c of coins) {
-    lowerToCoin.set(c.symbol.toLowerCase(), c);
-  }
-  const seen = new Set();
-  const peggedAssets = (llama?.peggedAssets || [])
-    .filter((a) => a && a.symbol)
-    .map((a) => {
-      const coin = lowerToCoin.get(a.symbol.toLowerCase());
-      if (!coin) return null;
-      // disambiguate: if this asset's id does not match the registry id,
-      // and another asset with the same symbol + matching id exists, skip
-      if (String(a.id) !== String(coin.llamaStablecoinId)) {
-        const hasBetterMatch = (llama?.peggedAssets || []).some(
-          (b) => b && b.symbol && b.symbol.toLowerCase() === coin.symbol.toLowerCase() && String(b.id) === String(coin.llamaStablecoinId)
-        );
-        if (hasBetterMatch) return null;
-      }
-      return { ...a, chainCirculating: normalizeChainCirculating(a) };
-    })
-    .filter((a) => a && !seen.has(a.symbol.toLowerCase()) && seen.add(a.symbol.toLowerCase()));
-  data.allStables = {
-    totalMarketCap: {
-      peggedUSD: sumPeggedUSD(llama?.peggedAssets, 'circulating'),
-      prevDay: { peggedUSD: sumPeggedUSD(llama?.peggedAssets, 'circulatingPrevDay') },
-    },
-    peggedAssets,
-    chains: llama?.chains || [],
-  };
-  data.chainData = data.allStables.chains;
+export async function fetchMarketFromBackend({ signal, symbol } = {}) {
+  const upper = symbol ? String(symbol).toUpperCase() : null;
+  const key = upper ? `backendMarket:${upper}` : 'backendMarket';
+  const path = upper ? `/api/market?symbol=${encodeURIComponent(upper)}` : '/api/market';
+  const payload = await cachedRequest(key, backendUrl(path), { ttl: TTL.fast, swr: true, signal });
+  return transformMarketPayload(payload);
 }
 
 /**
- * Assemble the browser-direct dashboard payload. Light endpoints
- * (stablecoin snapshot + spot prices) drive the home screen; per-coin
- * daily history is served cache-first so repeat loads are instant.
- * Each upstream failure degrades independently and never blanks the UI.
+ * Dashboard entry point used by App.jsx. Backend only; never falls back to
+ * direct upstream calls. When /api/market fails with no cached copy, throw
+ * so App.jsx shows its existing failure message.
  */
 export async function fetchDashboardData({ signal } = {}) {
-  const coins = getActiveCoins();
-  const results = await Promise.allSettled([
-    cachedRequest('llamaStablecoins', llamaStablecoinsUrl(), { ttl: TTL.fast, swr: true, signal }),
-    cachedRequest('cgSimple', cgSimpleUrl(coins), { ttl: TTL.fast, swr: true, signal }),
-  ]);
-  const llama = results[0].status === 'fulfilled' ? results[0].value : null;
-  const cg = results[1].status === 'fulfilled' ? results[1].value : null;
-  if (!llama && !cg) {
+  try {
+    return await fetchMarketFromBackend({ signal });
+  } catch (err) {
+    if (err?.name === 'AbortError') throw err;
     throw new Error('All market data sources are unavailable.');
   }
-
-  const data = {};
-  data.cgSimple = cg || {};
-  assembleLlama(data, llama, coins);
-  data.dataQuality = [];
-
-  await Promise.all(
-    coins.map(async (coin) => {
-      const detail = await cachedRequest(
-        `llamaDetail:${coin.symbol}`,
-        llamaStablecoinUrl(coin.llamaStablecoinId),
-        { ttl: TTL.history, swr: true, signal }
-      ).catch(() => null);
-      const key = `${coin.symbol.toLowerCase()}Detail`;
-      if (!detail) {
-        data[key] = {};
-        data.dataQuality.push({ coin: coin.symbol, reason: 'DefiLlama detail fetch failed' });
-      } else {
-        data[key] = detail;
-      }
-    })
-  );
-
-  data.fetchedAt = Date.now();
-  data.spotObservedAt = extractSpotObservedAt(data);
-  data.supplyObservedAt = extractSupplyObservedAt(data);
-  data.marketObservedAt = extractMarketObservedAt(data);
-  return data;
 }
 
 /**
