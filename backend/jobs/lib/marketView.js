@@ -46,13 +46,16 @@ export function buildMarketView({ priceRows = [], snapshotRows = [], marketRow =
   }
 
   const chainsByCoin = {};
+  const chainNorm = (name) => String(name || '').trim().toLowerCase();
   for (const r of snapshotRows || []) {
     if (!r || typeof r.coin !== 'string' || typeof r.chain !== 'string') continue;
-    const key = `${r.coin}||${r.chain}`;
-    const bucket = chainsByCoin[key] || null;
+    // Helix casing is inconsistent across its snapshot tables ("Tron" vs
+    // "tron"); normalize so the same rail cannot double-count.
+    const normKey = `${r.coin}||${chainNorm(r.chain)}`;
+    const bucket = chainsByCoin[normKey] || null;
     if (!bucket || (r.ts ?? -Infinity) > (bucket.ts ?? -Infinity)) {
-      chainsByCoin[key] = {
-        chain: r.chain,
+      chainsByCoin[normKey] = {
+        chain: chainNorm(r.chain),
         supply: r.circulatingUsd ?? null,
         delta24h: r.delta24h ?? null,
         ts: r.ts ?? null,
