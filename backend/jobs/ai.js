@@ -103,6 +103,7 @@ async function callModel(model) {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
+      'x-opencode-session': 'stablesense-ai-' + new Date().toISOString().slice(0, 10),
       authorization: `Bearer ${process.env.OPENAI_API_KEY || ''}`,
     },
     body: JSON.stringify({
