@@ -321,14 +321,20 @@ for (const coin of coins) {
 if (stressRows.length) insertStressBatch(stressRows);
 console.log(`[stress] stress_series: ${stressRows.length} rows`);
 
-// 2) Canonical alerts from Helix events (newest first per tracked asset).
-let eventsPayload = null;
-try {
-  eventsPayload = await helixGetJson(`${helixBase}/api/events?limit=100`);
-} catch {
-  eventsPayload = null;
+// 2) Canonical alerts from Helix events, fetched per tracked asset
+// (the global feed window contains mostly untracked coins; ?asset= filters).
+let tracked = [];
+for (const symbol of symbols) {
+  let payload = null;
+  try {
+    payload = await helixGetJson(`${helixBase}/api/events?asset=${symbol}&limit=25`);
+  } catch {
+    payload = null;
+  }
+  const rows = payload ? filterTrackedEvents(normalizeEventsPayload(payload), [symbol]) : [];
+  tracked.push(...rows);
+  console.log(`[stress] helix events ${symbol}: ${rows.length}`);
 }
-const tracked = eventsPayload ? filterTrackedEvents(normalizeEventsPayload(eventsPayload), symbols) : [];
 console.log(`[stress] helix events: ${tracked.length} rows`);
 
 const labelRows = [];

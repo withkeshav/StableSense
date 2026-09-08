@@ -94,6 +94,10 @@ export function mapStressRow(symbol, points, fallbackTs) {
  */
 export function normalizeEventsPayload(payload) {
   if (Array.isArray(payload)) return payload.filter((e) => e && typeof e === 'object');
+  if (payload && Array.isArray(payload.events)) {
+    // Production shape (verified live 2026-09-08): {"generated_at", "events": [...]}
+    return payload.events.filter((e) => e && typeof e === 'object');
+  }
   if (payload && Array.isArray(payload.data)) {
     return payload.data.filter((e) => e && typeof e === 'object');
   }

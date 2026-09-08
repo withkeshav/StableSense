@@ -150,6 +150,11 @@ describe('events payload shapes and tracked filter', () => {
     expect(normalizeEventsPayload({})).toEqual([]);
   });
 
+  it('normalizes the production {"generated_at","events":[...]} shape', () => {
+    const ev = helixEvent();
+    expect(normalizeEventsPayload({ generated_at: '2026-09-08T00:00:00Z', events: [ev] })).toEqual([ev]);
+  });
+
   it('keeps tracked assets newest first', () => {
     const oldEv = helixEvent({ id: 'old', asset_symbol: 'USDT', timestamp: new Date(T0).toISOString() });
     const newEv = helixEvent({ id: 'new', asset_symbol: 'USDT', timestamp: new Date(T0 + 99 * MIN10).toISOString() });
