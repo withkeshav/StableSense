@@ -56,7 +56,13 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
     }));
   }, [rows]);
 
-  const supplySeries = useMemo(() => buildSupplySeries(detail), [detail]);
+  const supplySeries = useMemo(() => {
+    // Backend's deduped daily series is the source of truth; the shim
+    // rebuild is only a fallback for missing data.
+    const backend = data?.supplyHistory?.[symbol];
+    if (Array.isArray(backend) && backend.length) return backend;
+    return buildSupplySeries(detail);
+  }, [data, symbol, detail]);
   const [supplyLog, setSupplyLog] = useState(false);
   const [supplyPct, setSupplyPct] = useState(false);
 
@@ -79,7 +85,7 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
 
   const supplyLineData = useMemo(
     () => {
-      const labels = supplySeries.map((p) => new Date(p.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+      const labels = supplySeries.map((p) => new Date(p.ts ?? p.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }));
       const values = supplyPct ? toPercentFromFirst(supplySeries).map((p) => p.value) : supplySeries.map((p) => p.value);
       return {
         labels,
@@ -298,8 +304,9 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
               ariaLabel={`${symbol} circulating supply`}
               shareTitle={`${symbol} supply`}
               shareRange="History"
-              shareInterpretation={`${symbol} circulating supply path from DefiLlama-backed history.`}
+              shareInterpretation={`${symbol} circulating supply from Helix-fed history, deduplicated per day.`}
               shareDefinition={`Circulating ${symbol} supply over time for this dashboard.`}
+              shareAsOf={data?.observedAt ?? null}
             />
           </div>
         </article>

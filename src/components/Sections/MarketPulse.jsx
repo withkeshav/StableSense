@@ -13,6 +13,7 @@ export default function MarketPulse({
   onToggleCompare,
   narrow = false,
   onLearn,
+  observedAt = null,
 }) {
   return (
     <section class="content-grid main-insights mb-4">
@@ -45,6 +46,7 @@ export default function MarketPulse({
             shareRange="Tracked coins"
             shareInterpretation="Circulating supply of the stablecoins tracked on this dashboard. Smaller coins stay comparable when Log or % mode is selected."
             shareDefinition="Combined circulating value path for tracked coins only - not total global stablecoin market cap."
+            shareAsOf={observedAt}
           />
         </div>
         <footer class="chart-footer">

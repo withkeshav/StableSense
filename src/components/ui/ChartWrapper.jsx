@@ -95,6 +95,7 @@ export default function ChartWrapper({
   shareInterpretation = '',
   shareDefinition = 'Market observation from live StableSense data.',
   shareHighlight = '',
+  shareAsOf = null,
   enableShare = true,
   sharePlacement = 'toolbar',
 }) {
@@ -231,6 +232,7 @@ export default function ChartWrapper({
           interpretation={shareInterpretation}
           definition={shareDefinition}
           highlight={shareHighlight}
+          asOf={shareAsOf}
         />
       ) : null}
     </div>

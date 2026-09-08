@@ -224,6 +224,7 @@ export default function HomeTab({ data, alerts, setActiveTab, refreshIntervalSec
         onToggleCompare={() => setCompareAll((v) => !v)}
         narrow={narrow}
         onLearn={() => setActiveTab('learn')}
+        observedAt={data?.observedAt ?? null}
       />
       <SignalSummary
         data={data}

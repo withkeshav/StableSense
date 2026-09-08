@@ -18,6 +18,7 @@ export default function ShareSheet({
   definition = 'Market observation from live StableSense data.',
   highlight = '',
   sourceUrl = 'stablesense.withkeshav.com',
+  asOf = null,
 }) {
   const [format, setFormat] = useState('square');
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -64,14 +65,24 @@ export default function ShareSheet({
   if (!open) return null;
 
   const current = FORMAT_LIST.find((item) => item.id === format) || FORMAT_LIST[1];
-  const stamp = new Date().toLocaleString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    timeZoneName: 'short',
-  });
+  // Prefer the chart's data timestamp ("as of" the data); fall back to now.
+  const stamp = asOf
+    ? new Date(asOf).toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZoneName: 'short',
+      })
+    : new Date().toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZoneName: 'short',
+      });
   const read = interpretation || 'Live market observation. This is a price and market picture, not a reserve-quality or investment conclusion.';
 
   const download = () => {

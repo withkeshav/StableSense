@@ -74,6 +74,8 @@ export function buildMarketView({ priceRows = [], snapshotRows = [], marketRow =
   for (const r of Object.values(priceByCoin)) consider(r.ts);
   for (const c of Object.values(chainsByCoin)) consider(c.ts);
 
+  const history = buildSupplyHistory(historyRows, supplySeriesDays);
+
   const hasAnyRows = Object.keys(priceByCoin).length > 0 || Object.keys(chainsByCoin).length > 0;
   const dataQuality = [];
   let coins = [];
@@ -86,18 +88,26 @@ export function buildMarketView({ priceRows = [], snapshotRows = [], marketRow =
     for (const coin of tracked) {
       const price = priceByCoin[coin] || null;
       const chains = chainsFor(coin);
+      // Current supply: prefer the era-consistent daily series (newest point)
+      // over the chains map, whose per-chain latest timestamps mix the two
+      // Helix layers and double-count across eras.
+      const series = history[coin] || [];
+      const seriesNewest = series.length ? series[series.length - 1] : null;
+      const chainSupplies = chains.map((c) => c.supply).filter(isFiniteNumber);
+      const supply = seriesNewest ? seriesNewest.value : (chainSupplies.length ? chainSupplies.reduce((a, b) => a + b, 0) : null);
+      const supplyDelta = seriesNewest && series.length >= 2
+        ? seriesNewest.value - series[series.length - 2].value
+        : (chains.map((c) => c.delta24h).filter(isFiniteNumber).reduce((a, b) => a + b, 0) || null);
       if (!price) dataQuality.push({ coin, reason: 'no prices row' });
-      if (!chains.length) dataQuality.push({ coin, reason: 'no snapshot rows' });
-      const supplies = chains.map((c) => c.supply).filter(isFiniteNumber);
-      const deltas = chains.map((c) => c.delta24h).filter(isFiniteNumber);
+      if (!chains.length && !seriesNewest) dataQuality.push({ coin, reason: 'no snapshot rows' });
       coins.push({
         symbol: coin,
         name: COIN_NAMES[coin] || coin,
         price: price?.price ?? null,
         change24h: price?.change24h ?? null,
         ts: price?.ts ?? null,
-        supply: supplies.length ? supplies.reduce((a, b) => a + b, 0) : null,
-        supplyDelta24h: deltas.length ? deltas.reduce((a, b) => a + b, 0) : null,
+        supply,
+        supplyDelta24h: supplyDelta,
         depegIndex: null,
         chains,
       });
