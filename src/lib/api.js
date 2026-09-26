@@ -9,6 +9,14 @@ const TTL = {
   fast: 60_000,
   chart: 300_000,
 };
+
+/**
+ * How old a cached /api/market payload may be and still be rendered straight
+ * away. The backend fetch cron runs every 10 minutes, so a payload older than
+ * this is not a live view. Refetching first is what keeps one clock from
+ * claiming today while the other claims nine days ago.
+ */
+const MAX_MARKET_STALE_MS = 2 * 3600_000;
 const FETCH_TIMEOUT_MS = 20000;
 
 const memoryCache = new Map();
@@ -105,7 +113,7 @@ async function fetchAndStore(key, url, signal) {
  * On a network error, the last known cached copy is returned instead of
  * throwing, so the dashboard never blanks after it has loaded once.
  */
-export async function cachedRequest(key, url, { ttl = TTL.fast, swr = true, signal } = {}) {
+export async function cachedRequest(key, url, { ttl = TTL.fast, swr = true, signal, maxStale = null } = {}) {
   const mem = readMemory(key);
   if (mem && Date.now() - mem.ts < ttl && !mem.revalidating) return mem.data;
 
@@ -114,7 +122,11 @@ export async function cachedRequest(key, url, { ttl = TTL.fast, swr = true, sign
     if (!mem) writeMemory(key, local.data);
     return local.data;
   }
-  if (local && swr && local.data != null) {
+  // A cached copy past `maxStale` is not a live view. Refetch instead of
+  // serving it, so the freshness clocks never pair a week-old payload with a
+  // seconds-old health check.
+  const tooStale = maxStale != null && local && Date.now() - local.ts > maxStale;
+  if (local && swr && local.data != null && !tooStale) {
     void revalidate(key, url);
     return local.data;
   }
@@ -140,7 +152,12 @@ export async function fetchMarketFromBackend({ signal, symbol } = {}) {
   const upper = symbol ? String(symbol).toUpperCase() : null;
   const key = upper ? `backendMarket:${upper}` : 'backendMarket';
   const path = upper ? `/api/market?symbol=${encodeURIComponent(upper)}` : '/api/market';
-  const payload = await cachedRequest(key, backendUrl(path), { ttl: TTL.fast, swr: true, signal });
+  const payload = await cachedRequest(key, backendUrl(path), {
+    ttl: TTL.fast,
+    swr: true,
+    maxStale: MAX_MARKET_STALE_MS,
+    signal,
+  });
   return transformMarketPayload(payload);
 }
 

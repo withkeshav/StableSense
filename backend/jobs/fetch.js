@@ -110,7 +110,15 @@ const market = await getJson(`${LLAMA_BASE}/stablecoins`);
 const total = (market?.peggedAssets || []).reduce((sum, a) => sum + (a?.circulating?.peggedUSD || 0), 0);
 const prevDay = (market?.peggedAssets || []).reduce((sum, a) => sum + (a?.circulatingPrevDay?.peggedUSD || 0), 0);
 if (typeof total === 'number' && total > 0) {
-  db.prepare('INSERT INTO market_snapshots (ts, total_circulating_usd, delta_24h_usd) VALUES (?, ?, ?)').run(
+  // Upsert for the same reason as the Helix branch below: ts is the PRIMARY
+  // KEY, and a repeat tick inside the same millisecond must not kill the run.
+  db.prepare(
+    `INSERT INTO market_snapshots (ts, total_circulating_usd, delta_24h_usd)
+     VALUES (?, ?, ?)
+     ON CONFLICT(ts) DO UPDATE SET
+       total_circulating_usd = excluded.total_circulating_usd,
+       delta_24h_usd = excluded.delta_24h_usd`
+  ).run(
     now,
     total,
     prevDay > 0 ? total - prevDay : null
@@ -185,7 +193,18 @@ console.log(`[fetch] prices: ${priceRows.length} rows`);
 
 const market = buildMarketSnapshot(trendsBySymbol);
 if (market && typeof market.total === 'number' && market.total > 0) {
-  db.prepare('INSERT INTO market_snapshots (ts, total_circulating_usd, delta_24h_usd) VALUES (?, ?, ?)').run(
+  // market_snapshots.ts is the PRIMARY KEY and comes from the newest Helix
+  // point, which repeats when a cron tick lands before Helix advances. A plain
+  // INSERT then threw UNIQUE constraint failed and killed the whole fetch run
+  // (prices already written, snapshot job marked failed). Upsert instead: the
+  // newest value for that timestamp wins, and a repeat tick is a no-op.
+  db.prepare(
+    `INSERT INTO market_snapshots (ts, total_circulating_usd, delta_24h_usd)
+     VALUES (?, ?, ?)
+     ON CONFLICT(ts) DO UPDATE SET
+       total_circulating_usd = excluded.total_circulating_usd,
+       delta_24h_usd = excluded.delta_24h_usd`
+  ).run(
     market.ts,
     market.total,
     market.delta

@@ -138,6 +138,50 @@ describe('transformMarketPayload allStables shim', () => {
   });
 });
 
+describe('cachedRequest maxStale: a week-old payload is not served as live', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.resetModules();
+  });
+
+  function stubStorage(entry) {
+    const store = new Map();
+    if (entry) store.set('stablesense:v2:backendMarket', JSON.stringify(entry));
+    vi.stubGlobal('localStorage', {
+      getItem: (k) => (store.has(k) ? store.get(k) : null),
+      setItem: (k, v) => store.set(k, v),
+      removeItem: (k) => store.delete(k),
+    });
+  }
+
+  it('refetches instead of returning a cached payload older than maxStale', async () => {
+    const DAY = 86_400_000;
+    // Cached nine days ago, the case that produced "Market data observed 9d ago"
+    // next to a live "Historical snapshot updated 11m ago".
+    stubStorage({ ts: Date.now() - 9 * DAY, data: marketPayload({ observedAt: Date.now() - 9 * DAY }) });
+    const fresh = marketPayload({ observedAt: Date.now() - 60_000 });
+    const fetchMock = vi.fn(async () => ({ ok: true, json: async () => fresh }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const { cachedRequest } = await import('./api.js');
+    const out = await cachedRequest('backendMarket', '/api/market', { maxStale: 2 * 3600_000 });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(out.observedAt).toBe(fresh.observedAt);
+  });
+
+  it('still serves a stale copy within maxStale while revalidating', async () => {
+    stubStorage({ ts: Date.now() - 30 * 60_000, data: marketPayload({ observedAt: 1_786_000_000_000 }) });
+    const fetchMock = vi.fn(async () => ({ ok: true, json: async () => marketPayload() }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const { cachedRequest } = await import('./api.js');
+    const out = await cachedRequest('backendMarket', '/api/market', { maxStale: 2 * 3600_000 });
+
+    expect(out.observedAt).toBe(1_786_000_000_000);
+  });
+});
+
 describe('fetchDashboardData via mocked backend', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
