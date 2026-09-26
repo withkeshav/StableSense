@@ -4,6 +4,15 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.6.3] - 2026-09-26
+
+### Fixed
+- **Stale-data warning on launch was produced by the client, not the backend.** `cachedRequest` served a stale-while-revalidate copy of `/api/market` with no upper age limit, while `/api/healthz` is fetched live and never cached. On a cold launch with an old cached payload the two clocks came from different days and the dashboard printed a live "Historical snapshot updated 11m ago" beside a much older "Market data observed ..." and fired "Do not treat them as one clock". Both figures were individually true; pairing them was not. `/api/market` now refetches past `MAX_MARKET_STALE_MS` (2h, twelve times the 10-minute fetch cron cadence) instead of rendering a payload that is no longer a live view. The fallback-on-network-error behaviour is unchanged, and the other cached callers (coin chart, tickers) keep plain stale-while-revalidate.
+- **The fetch job could die mid-run on a duplicate timestamp.** `market_snapshots.ts` is the PRIMARY KEY and is taken from the newest Helix point, which repeats whenever a cron tick lands before Helix advances. The plain `INSERT` then threw `UNIQUE constraint failed: market_snapshots.ts` and killed the whole run after prices had already been written, marking `jobs.fetch` failed. Reproduced on the VPS by running `fetch.js` twice back to back; the second run failed. Both write branches now upsert on `ts`, so a repeat tick updates instead of crashing.
+
+### Tests
+- Test count 198 to 203. Added `maxStale` cases for the cache policy (refetch when older than the limit, still serve within it) and `backend/jobs/lib/marketSnapshotUpsert.test.js`, which asserts the upsert is idempotent and also that the previous plain `INSERT` genuinely threw, so the guard is not theoretical.
+
 ## [3.6.2] - 2026-09-26
 
 ### Fixed

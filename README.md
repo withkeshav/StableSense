@@ -1,8 +1,8 @@
 # StableSense
 
-![Version](https://img.shields.io/badge/version-3.6.2-2A6FDB)
+![Version](https://img.shields.io/badge/version-3.6.3-2A6FDB)
 ![License: Source-Available](https://img.shields.io/badge/license-source--available-blue)
-![Tests](https://img.shields.io/badge/tests-198%20passing-green)
+![Tests](https://img.shields.io/badge/tests-203%20passing-green)
 ![Node](https://img.shields.io/badge/node-%3E%3D18-339933)
 
 Stablecoin intelligence platform covering **USDT, USDC, DAI, USDe and PYUSD**: peg stress monitoring, cross-chain mint/burn flows, whale-watch anomaly detection, AI-generated market narratives, an in-app Research entry, and a built-in learning tab that explains how stablecoins and pegs actually work.
