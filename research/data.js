@@ -7,13 +7,13 @@
 // and the methodology note in the footer. AS_OF below is the last date the
 // whole dataset was re-checked, so it moves whenever a pass changes any figure.
 
-export const AS_OF = '2026-09-21';
+export const AS_OF = '2026-09-26';
 
-// Hub build marker rendered in the footer freshness badge. Kept as an
-// explicit constant so a version bump touches one data file plus the badge
-// fallback, rather than a hand-edited string that can drift from the value
-// the build actually injects.
-export const HUB_BUILD = '3.6.2';
+// Hub build marker rendered in the footer freshness badge. Derived from
+// package.json at build time via vite.config.research.mjs (__HUB_BUILD__), so
+// it can never drift out of sync with the app version the way a hand-edited
+// literal did. The fallback is the dev-server case, where no define runs.
+export const HUB_BUILD = typeof __HUB_BUILD__ === 'string' ? __HUB_BUILD__ : 'dev';
 
 // --- the four manually-verified claims (see the methodology note in the footer) -
 export const verifiedClaims = [
@@ -90,9 +90,9 @@ export const tokens = [
   { token: 'XAUT', category: 'commodity', peg: 'Gold (1 oz)', issuer: 'Tether (TG Commodities)', mcap: '~$2.67-2.9B', chain: 'Ethereum, Tron', asOf: 'early 2026' },
   { token: 'EURC', category: 'fiat-non-usd', peg: 'EUR', issuer: 'Circle', mcap: '~$456M', chain: 'Ethereum, Solana, Base', asOf: 'Aug 2026' },
   { token: 'JPYC', category: 'fiat-non-usd', peg: 'JPY', issuer: 'JPYC Inc.', mcap: '~$55M', chain: 'Ethereum, Polygon', asOf: 'Aug 2026' },
-  { token: 'BUIDL', category: 'rwa', peg: '$1 (fund NAV)', issuer: 'BlackRock / Securitize', mcap: '~$2-2.8B', chain: 'Ethereum, Solana, Polygon', asOf: 'mid-2026' },
+  { token: 'BUIDL', category: 'rwa', peg: '$1 (fund NAV)', issuer: 'BlackRock / Securitize', mcap: '~$2.7-3.5B', chain: 'Ethereum, Solana, Polygon and 5 more', asOf: '2026-08-07 to 2026-09-26' },
   { token: 'BENJI', category: 'rwa', peg: '$1 (fund NAV)', issuer: 'Franklin Templeton', mcap: '~$368M-2.4B', chain: 'Stellar, Ethereum, Solana', asOf: 'mid-2026' },
-  { token: 'OUSG', category: 'rwa', peg: '$1 (fund NAV)', issuer: 'Ondo Finance', mcap: '~$700M', chain: 'Ethereum, Solana, Polygon', asOf: 'mid-2026' },
+  { token: 'OUSG', category: 'rwa', peg: '$1 (fund NAV)', issuer: 'Ondo Finance', mcap: '~$319-334M', chain: 'Ethereum, Polygon, Solana, XRP Ledger', asOf: '2026-09-17 (Ondo product page)' },
 ];
 
 // --- Section 2: scale and trajectory --------------------------------------
@@ -421,7 +421,133 @@ export const realityCheck = [
 ];
 
 // --- deduplicated source list (merged from all 3 research files) ---------
+/**
+ * Who earns the float: disclosed issuer economics, primary-sourced.
+ * Every figure carries its own as-of date and states what it measures.
+ * Tether publishes no line called "reserve income"; its single net line is
+ * "Financial result" in the change-in-net-equity table. Circle does publish
+ * "reserve income". They are not the same measure and must not be compared
+ * as if they were.
+ */
+export const floatEconomics = [
+  {
+    issuer: 'Tether',
+    measure: 'Net operating profit, Q2 2026',
+    value: '+$1.50B',
+    asOf: 'Q2 2026 (pub. 2026-07-31)',
+    note: 'Tether\'s own release headline. The term is not defined in any Tether document; Tether does not state that mark-to-market is excluded.',
+  },
+  {
+    issuer: 'Tether',
+    measure: 'Change in net equity, Q2 2026 standalone',
+    value: 'about -$4.21B',
+    asOf: 'Q2 2026 (2026-06-30)',
+    note: 'Derived from Tether\'s own change-in-net-equity table: H1 2026 is -$3,171m and Q1 2026 was +$1,040m. Tether publishes no reconciliation between this and the headline above.',
+  },
+  {
+    issuer: 'Tether',
+    measure: 'FY2025 financial result',
+    value: '+$10.11B',
+    asOf: 'FY2025 (2025-12-31)',
+    note: 'Exact figure, 10,106 USD millions. Dividends of 10,855 were distributed, so equity fell year on year.',
+  },
+  {
+    issuer: 'Circle',
+    measure: 'Reserve income, Q2 2026',
+    value: '$667.7M',
+    asOf: 'Q2 2026 (2026-06-30)',
+    note: 'From the 10-Q. 95.2% of Circle\'s Q2 2026 total revenue (96.0% for FY2025). This is the income on reserves, before the distribution split.',
+  },
+  {
+    issuer: 'Circle',
+    measure: 'Coinbase-only distribution, Q2 2026',
+    value: '$324.6M',
+    asOf: 'Q2 2026 (2026-06-30)',
+    note: '46.3% of the $701.3M revenue line. Do not confuse with the $412.5M total distribution, transaction and other costs, which is a different, larger figure.',
+  },
+  {
+    issuer: 'Circle',
+    measure: 'Net loss from continuing operations, FY2025',
+    value: '-$69.5M',
+    asOf: 'FY2025 (2025-12-31)',
+    note: 'A net loss despite reserve income of $2.64B, driven by $844.9M of compensation expense. Reserve income grew 58.7% year on year.',
+  },
+];
+
+/**
+ * The GENIUS Act no-yield rule, stated from the statute text itself.
+ * Section 4(a)(11), codified at 12 U.S.C. 5903(a)(11), Public Law 119-27.
+ */
+export const yieldBan = {
+  citation: 'GENIUS Act Sec. 4(a)(11), 12 U.S.C. 5903(a)(11)',
+  quote: 'No permitted payment stablecoin issuer or foreign payment stablecoin issuer shall pay the holder of any payment stablecoin any form of interest or yield (whether in cash, tokens, or other consideration) solely in connection with the holding, use, or retention of such payment stablecoin.',
+  payor: 'The issuers only. There is no de minimis, no safe harbour, and no exception; the only qualifier is the word "solely".',
+  silence: 'The Act contains no "economically equivalent to interest" test. A whole-Act keyword sweep of the 142,949-character statute text returns "yield" exactly once (in the ban) and zero hits for reward, incentive, loyalty, dividend, bonus, rebate, cash back, cashback, points, airdrop, distributor, proceeds, surplus, income, revenue, retain, or economically. What it permits for rewards and loyalty programmes is therefore UNKNOWN: the statute is silent, and the silence is total.',
+  reserveIncome: 'Reserve assets must be interest-bearing by construction (T-bills of 93 days or less, or overnight repo backed by them). The Act nowhere requires or forbids passing that income on. Retention of reserve income is UNREGULATED rather than permitted or prohibited.',
+  effective: 'No later than January 18, 2027. The statute says "the earlier of" 18 months after enactment or 120 days after final implementing regulations, so a final rule issued mid-2026 would bring it into force sooner. January 18, 2027 is the outer limit, not a fixed date.',
+};
+
+/**
+ * The three clocks of an agentic payment. A stablecoin rail can be live while
+ * the authorization layer above it is only a draft, and the two are routinely
+ * reported as though they were the same thing.
+ */
+export const agenticRails = [
+  { name: 'x402', operator: 'x402 Foundation (Linux Foundation), originated at Coinbase', layer: 'Settlement rail', asset: 'USDC primarily, any ERC-20/SPL', status: 'LIVE', detail: 'Protocol live since 2025; Foundation operational launch 2026-07-14.' },
+  { name: 'MPP', operator: 'Stripe + Tempo Labs', layer: 'Settlement rail, with identity as an extension', asset: 'Stablecoin (Tempo USDC.e, Solana USDC), cards, Lightning', status: 'LIVE (production)', detail: 'Tempo chain mainnet 2026-03-18; Stripe stablecoin settlement live on it.' },
+  { name: 'ACP', operator: 'OpenAI + Stripe', layer: 'Authorization, checkout, credential relay', asset: 'None named; the merchant\'s own PSP settles', status: 'SPEC LIVE (beta)', detail: 'Native in-chat purchase was withdrawn 2026-03. No GMV, transaction count or live merchant count is published by anyone.' },
+  { name: 'AP2', operator: 'Google, now FIDO Alliance', layer: 'Authorization and identity evidence', asset: 'Instrument-agnostic; no money movement', status: 'ANNOUNCED + open spec v0.2', detail: 'No production deployment is sourceable. The repo\'s own samples steer users to mocked PSPs.' },
+  { name: 'Visa TAP', operator: 'Visa (+ Cloudflare)', layer: 'Authorization and agent identity', asset: 'Visa card rails settle', status: 'PILOT, self-disclaimed', detail: 'Visa\'s only published figure is "hundreds" of transactions, Dec 2025. No 2026 count exists.' },
+  { name: 'Mastercard Agent Pay / Agentic Tokens', operator: 'Mastercard', layer: 'Network and authorization', asset: 'Card rails; stablecoins only via AP4M', status: 'Consumer: enabled/pilot. AP4M: ANNOUNCED', detail: 'Mastercard publishes no agent transaction count; its own Q2 2026 deck contains zero occurrences of the word "agent".' },
+  { name: 'ERC-8004', operator: 'MetaMask, Ethereum Foundation, Google, Coinbase authors', layer: 'Identity, discovery, reputation', asset: 'NONE (payments explicitly out of scope)', status: 'DRAFT since 2025-08-13', detail: 'Registries deployed and called on-chain, but no first-party source names a production marketplace transacting through them.' },
+];
+
+/**
+ * Agentic payment volume, every published figure, with its publisher and what
+ * it actually counts. The spread is the finding: these are not the same
+ * quantity measured more or less precisely, they are different quantities.
+ */
+export const agenticVolume = [
+  { figure: '$996,474 across 18.1M transactions, 22,082 buyers, 38,123 sellers', window: 'trailing ~30 days to 2026-09-26', publisher: 'x402scan (operator: Merit Systems)', label: 'MEASURED for what it indexes; a self-report as to completeness' },
+  { figure: '$24.24M across 75.41M transactions', window: '"last 30 days", undated on the page', publisher: 'x402.org (the Foundation)', label: 'SELF-REPORT, no methodology and no timestamp on the landing page' },
+  { figure: 'more than 100 million x402 payments across Base and Solana', window: 'cumulative, window unbounded', publisher: 'Coinbase CDP docs', label: 'SELF-REPORT, a vendor counting its own facilitator' },
+  { figure: '$52.7M across 198.9M settlement transactions', window: 'cumulative since May 2025, as of 2026-09-09', publisher: 'TRM Labs', label: 'MEASURED, independent third party' },
+  { figure: '$2.59bn across 18.3M payments', window: 'August 2026', publisher: 'Bitquery', label: 'MEASURED by a publisher-operated indexer' },
+  { figure: '$38,000 across ~184,600 transactions', window: 'cumulative to 2026-04-21', publisher: 'Visa + Artemis Analytics', label: 'MEASURED by Artemis, co-published by a Tempo validator' },
+  { figure: '$25,000 across ~115,000 transactions, ~2,800 buyers', window: 'cumulative to 2026-04-21, wash and test excluded', publisher: 'Visa + Artemis, adjusted', label: 'MEASURED, adjusted' },
+];
+
+/**
+ * Where the money actually lands, per transaction. This is the section the
+ * headline totals hide: the median x402 transaction is about one cent.
+ */
+export const agenticTicketSize = [
+  { measure: 'x402 median ticket, August 2026', value: '$0.006 Base, $0.001 Optimism, $0.01 Polygon', publisher: 'Bitquery', note: 'Per-chain medians. Arbitrum at $25.61 and Ethereum at $72.16 are outliers driven by a small number of large calls.' },
+  { measure: 'x402 ticket distribution', value: 'median $0.01 to $0.10; 76% of activity below a $0.30 floor', publisher: 'Keyrock, in conversation with Coinbase and Tempo', note: 'Vendor-sourced measurement.' },
+  { measure: 'x402 index census', value: 'median $0.009; 99th percentile $0.28; 51.4% under one cent', publisher: 'third-party census', note: 'SECONDARY, modelled from price lists times call counts, not measured on-chain.' },
+  { measure: 'x402 mean settled value', value: '$0.265 raw, $0.129 on screened commerce', publisher: 'TRM Labs', note: 'MEASURED, independent.' },
+  { measure: 'ERC-8004 agents on Base, value at stake', value: 'per-agent median $0.70, mean $16.74', publisher: 'Xiong et al., arXiv:2606.26028', note: 'MEASURED, independent academic. This is per agent, not per transaction.' },
+];
+
 export const sources = [
+  { id: 'tether-q2-2026', label: 'Tether - Q2 2026 attestation release ($1.5B net operating profit claim)', url: 'https://tether.io/news/tether-posts-strong-q2-performance-generates-1-5b-net-operating-profit-maintains-4-11b-reserve-buffer-and-expands-gold-holdings-to-more-than-146-tons/' },
+  { id: 'genius-pl119-27', label: 'US Code - 12 U.S.C. 5903 (GENIUS Act Sec. 4), yield prohibition and 93-day reserve cap', url: 'https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title12-section5903&num=0&edition=prelim' },
+  { id: 'x402-foundation', label: 'x402 Foundation - protocol homepage and 30-day network panel', url: 'https://x402.org/' },
+  { id: 'x402scan', label: 'x402scan (Merit Systems) - live x402 transaction index', url: 'https://www.x402scan.com/' },
+  { id: 'trm-x402', label: 'TRM Labs - "Who\'s actually paying? Measuring AI agent payments on-chain"', url: 'https://www.trmlabs.com/trm-tech-blog/whos-actually-paying-measuring-ai-agent-payments-onchain' },
+  { id: 'bitquery-x402', label: 'Bitquery - x402 AI agent payments on-chain audit', url: 'https://bitquery.io/investigations/x402-ai-agent-payments-audit' },
+  { id: 'keyrock-agent', label: 'Keyrock - "Who Pays the Agent?" (median ticket size, $0.30 card-fee floor)', url: 'https://keyrock.com/who-pays-the-agent/' },
+  { id: 'visa-artemis-agentic', label: 'Visa + Artemis Analytics - Agentic Payments from the Ground Up (PDF)', url: 'https://www.visa.com/vcom-assets/content/dam/visa/reimagine-visa/thought-leadership/documents/agentic-payments-report.pdf' },
+  { id: 'stripe-mpp', label: 'Stripe - Machine Payments Protocol launch post', url: 'https://stripe.com/blog/machine-payments-protocol' },
+  { id: 'tempo-mainnet', label: 'Tempo - mainnet launch (MPP introduced alongside)', url: 'https://tempo.xyz/blog/mainnet' },
+  { id: 'mpp-overview', label: 'MPP - protocol overview (co-authored by Tempo and Stripe)', url: 'https://mpp.dev/overview' },
+  { id: 'acp-docs', label: 'Agentic Commerce Protocol (ACP) - documentation', url: 'https://www.agenticcommerce.dev/docs' },
+  { id: 'ap2-protocol', label: 'AP2 - Agent Payments Protocol homepage', url: 'https://ap2-protocol.org/' },
+  { id: 'fido-ap2', label: 'FIDO Alliance - trusted AI agent interactions standards', url: 'https://fidoalliance.org/fido-alliance-to-develop-standards-for-trusted-ai-agent-interactions/' },
+  { id: 'visa-tap-dev', label: 'Visa - Trusted Agent Protocol (TAP) capability page', url: 'https://developer.visa.com/capabilities/trusted-agent-protocol' },
+  { id: 'visa-tap-pr', label: 'Visa - press release: "hundreds" of agent-initiated transactions (Dec 2025)', url: 'https://usa.visa.com/about-visa/newsroom/press-releases.releaseId.21961.html' },
+  { id: 'cdp-x402', label: 'Coinbase CDP - x402 (vendor self-report on payment count)', url: 'https://docs.cdp.coinbase.com/x402/welcome' },
+  { id: 'erc8004', label: 'ERC-8004 - Trustless Agents (draft; payments explicitly out of scope)', url: 'https://eips.ethereum.org/EIPS/eip-8004' },
   { id: 'tic', label: 'US Treasury TIC - Major Foreign Holders of Treasuries', url: 'https://ticdata.treasury.gov/Publish/mfh.txt' },
   { id: 'tether-transp', label: 'Tether transparency / reserves attestation', url: 'https://tether.to/en/transparency/' },
   { id: 'circle-transp', label: 'Circle reserve report', url: 'https://www.circle.com/en/transparency' },

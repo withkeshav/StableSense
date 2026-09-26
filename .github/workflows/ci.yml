@@ -25,6 +25,12 @@ jobs:
       - name: Run unit tests
         run: npm test
 
+      # Guards the hub's data model: every new depth-pass row must be complete,
+      # Tether's negative figure must stay negative, ERC-8004 must not read as a
+      # payment layer, and no em/en dash may enter the content.
+      - name: Verify research hub data
+        run: node scripts/verify-hub-depth.mjs
+
       - name: Production build
         run: npm run build
 

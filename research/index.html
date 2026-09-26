@@ -39,6 +39,8 @@
       <a href="#remittances">Payments</a>
       <a href="#depegs">Depegs</a>
       <a href="#regulation">Regulation</a>
+      <a href="#float">The float</a>
+      <a href="#agentic">Agent economy</a>
       <a href="/" class="to-dashboard" target="_blank" rel="noopener noreferrer">Open the live dashboard &rsaquo;</a>
       <button id="hub-theme-toggle" class="hub-chip" style="cursor:pointer" title="Toggle theme">Theme</button>
     </nav>
@@ -419,12 +421,144 @@
   </div>
 </section>
 
-<!-- SECTION 9: REALITY CHECK -->
+<!-- SECTION 9: WHO EARNS THE FLOAT -->
+<section class="section" id="float">
+  <div class="section-inner">
+    <div class="kicker">09 - Who earns the float</div>
+    <h2>The interest on your dollar, and who keeps it</h2>
+    <p class="section-thesis">A stablecoin issuer holds reserves that earn interest and pays the holder nothing. The gap between what the reserves earn and what the holder receives is the entire business. It is large, and the two biggest issuers report it in ways that are not comparable to each other.</p>
+
+    <div id="float-economics-wrap" class="float-economics-wrap"></div>
+    <noscript>
+      <div class="hub-table-wrap">
+        <table class="hub-table">
+          <thead><tr><th>Issuer</th><th>Measure</th><th class="num">Value</th><th>As of</th></tr></thead>
+          <tbody>
+            <tr><td>Tether</td><td>Net operating profit, as the release names it</td><td class="num">+$1.50B</td><td>Q2 2026</td></tr>
+            <tr><td>Tether</td><td>Change in net equity, Q2 standalone (derived from its own table)</td><td class="num">about -$4.21B</td><td>Q2 2026</td></tr>
+            <tr><td>Tether</td><td>FY2025 financial result</td><td class="num">+$10.11B</td><td>FY2025</td></tr>
+            <tr><td>Circle</td><td>Reserve income</td><td class="num">$667.7M</td><td>Q2 2026</td></tr>
+            <tr><td>Circle</td><td>Coinbase-only distribution</td><td class="num">$324.6M</td><td>Q2 2026</td></tr>
+            <tr><td>Circle</td><td>Net loss from continuing operations</td><td class="num">-$69.5M</td><td>FY2025</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="as-of">Tether publishes no line called "reserve income"; its only net measure is "Financial result" in its change-in-net-equity table, and it publishes no reconciliation between that and the release headline above. Circle publishes an explicit reserve income figure. The two are not the same measure. Sources: Tether Q2 2026 attestation and release; Circle 10-Q and FY2025 results.</p>
+    </noscript>
+
+    <div class="hub-accordion" style="margin-top:2rem">
+      <div class="hub-accordion-item open">
+        <button class="hub-accordion-trigger" aria-expanded="true">Why the two issuers' numbers are not comparable<span class="hub-accordion-mark">&rsaquo;</span></button>
+        <div class="hub-accordion-panel">
+          <p>Tether publishes no line item called "reserve income". Its only net measure is a single line labelled "Financial result" inside the change-in-net-equity table of its attestation. Circle publishes an explicit "reserve income" figure. These are different measures, and treating them as the same number is the most common error in coverage of this market.</p>
+          <p>Tether's own documents disagree with each other on its headline. Its Q2 2026 news release leads with a positive "$1.5 billion net operating profit". Its own attestation, for the same period, reports a change in net equity of minus $3,171 million for the first half, and Q1 2026 was plus $1,040 million. That makes Q2 standalone about minus $4.21 billion. Both figures come from Tether; Tether publishes no reconciliation between them, and no Tether document defines the term "net operating profit" or states that unrealised mark-to-market is excluded. This is the single most load-bearing fact in this section, and it is invisible from either the press coverage or the release alone.</p>
+          <p>Circle, by contrast, is the simpler case and the more surprising one. Its reserve income is genuine and large, $2.64 billion for FY2025 (96.0% of its revenue), but it recorded a <strong>net loss</strong> of $69.5 million that year. Compensation expense of $844.9 million drove that, of which $424 million was stock-based compensation tied to its IPO. Almost the whole business is the float, and the pay bill took it below zero.</p>
+        </div>
+      </div>
+      <div class="hub-accordion-item">
+        <button class="hub-accordion-trigger" aria-expanded="false">The rule that forbids paying it out<span class="hub-accordion-mark">&rsaquo;</span></button>
+        <div class="hub-accordion-panel">
+          <p id="yield-ban-quote"></p>
+          <p id="yield-ban-scope"></p>
+          <p id="yield-ban-silence"></p>
+          <p id="yield-ban-reserve"></p>
+          <noscript>
+            <p><strong>GENIUS Act Sec. 4(a)(11), 12 U.S.C. 5903(a)(11):</strong> No permitted payment stablecoin issuer or foreign payment stablecoin issuer shall pay the holder of any payment stablecoin any form of interest or yield (whether in cash, tokens, or other consideration) solely in connection with the holding, use, or retention of such payment stablecoin.</p>
+            <p><strong>Who it binds:</strong> the issuers only. No de minimis, no safe harbour, no exception; the only qualifier is the word "solely".</p>
+            <p><strong>What it does not say:</strong> the Act contains no "economically equivalent to interest" test. The statute is silent on rewards and loyalty programmes, and the silence is total.</p>
+            <p><strong>The reserve side:</strong> reserve assets must be interest-bearing by construction. The Act nowhere requires or forbids passing that income on, so retaining it is unregulated rather than permitted.</p>
+          </noscript>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 10: AGENTIC PAYMENT RAILS -->
+<section class="section" id="agentic">
+  <div class="section-inner">
+    <div class="kicker">10 - The agent economy</div>
+    <h2>Machines that pay, and the three clocks they run on</h2>
+    <p class="section-thesis">This is the most-reported and least-measured part of the market. Two things are routinely conflated: whether a payment <em>rail</em> is live, and whether the <em>authorization</em> layer above it is. A rail can be settling real money while the protocol that is supposed to decide whether a machine is allowed to spend is still a draft. The table separates them.</p>
+
+    <div id="agentic-rails-wrap" class="agentic-rails-wrap"></div>
+    <noscript>
+      <div class="hub-table-wrap">
+        <table class="hub-table">
+          <thead><tr><th>Protocol</th><th>Layer</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>x402</td><td>Settlement rail</td><td>LIVE</td></tr>
+            <tr><td>MPP (Stripe + Tempo)</td><td>Settlement rail</td><td>LIVE (production)</td></tr>
+            <tr><td>ACP (OpenAI + Stripe)</td><td>Authorization, checkout</td><td>SPEC LIVE (beta)</td></tr>
+            <tr><td>AP2 (Google, now FIDO)</td><td>Authorization and identity</td><td>ANNOUNCED + open spec v0.2</td></tr>
+            <tr><td>Visa TAP</td><td>Authorization and identity</td><td>PILOT, self-disclaimed</td></tr>
+            <tr><td>Mastercard Agent Pay</td><td>Network and authorization</td><td>Consumer enabled/pilot; AP4M announced</td></tr>
+            <tr><td>ERC-8004</td><td>Identity and reputation (not payments)</td><td>DRAFT since 2025-08-13</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="as-of">A live settlement rail and a live authorization layer are different claims. No production deployment of AP2 is sourceable. Visa's only published transaction figure is "hundreds" (Dec 2025).</p>
+    </noscript>
+
+    <h3 style="margin-top:2.5rem" id="agentic-volume">What a headline number actually counts</h3>
+    <p class="as-of">Every published figure for the same activity, with its publisher and what it measures. These are not one quantity measured more or less precisely. They are different quantities, and the spread runs from a few tens of thousands of dollars to billions.</p>
+    <div id="agentic-volume-wrap" class="agentic-volume-wrap"></div>
+    <noscript>
+      <div class="hub-table-wrap">
+        <table class="hub-table">
+          <thead><tr><th class="num">Published figure</th><th>Window</th><th>Publisher</th></tr></thead>
+          <tbody>
+            <tr><td class="num">$996,474 / 18.1M transactions</td><td>~30 days to 2026-09-26</td><td>x402scan</td></tr>
+            <tr><td class="num">$24.24M / 75.41M transactions</td><td>"last 30 days", undated</td><td>x402.org</td></tr>
+            <tr><td class="num">100M+ payments</td><td>cumulative, unbounded</td><td>Coinbase CDP docs</td></tr>
+            <tr><td class="num">$52.7M / 198.9M transactions</td><td>cumulative to 2026-09-09</td><td>TRM Labs</td></tr>
+            <tr><td class="num">$2.59bn / 18.3M payments</td><td>August 2026</td><td>Bitquery</td></tr>
+            <tr><td class="num">$38,000 / ~184,600 transactions</td><td>cumulative to 2026-04-21</td><td>Visa + Artemis</td></tr>
+            <tr><td class="num">$25,000 / ~115,000 transactions</td><td>cumulative to 2026-04-21, adjusted</td><td>Visa + Artemis</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="as-of">These are not one quantity measured more or less precisely. They are different quantities, counted over different windows with different inclusion rules, and the spread runs from tens of thousands of dollars to billions.</p>
+    </noscript>
+
+    <h3 style="margin-top:2.5rem" id="agentic-ticket">The median transaction is about one cent</h3>
+    <p class="as-of">This is the finding the totals hide. Agent payments today are overwhelmingly tiny machine-to-machine calls, not commerce. Any comparison against card network volume is comparing a plumbing layer against retail purchases.</p>
+    <div id="agentic-ticket-wrap" class="agentic-ticket-wrap"></div>
+    <noscript>
+      <div class="callout-row">
+        <div class="callout">
+          <div class="callout-label">x402 median ticket</div>
+          <p class="stat md">$0.006 Base / $0.001 Optimism / $0.01 Polygon</p>
+          <p>Bitquery, August 2026. Arbitrum at $25.61 and Ethereum at $72.16 are outliers from a few large calls.</p>
+        </div>
+        <div class="callout">
+          <div class="callout-label">x402 ticket distribution</div>
+          <p class="stat md">median $0.01 to $0.10; 76% under a $0.30 floor</p>
+          <p>Keyrock, in conversation with Coinbase and Tempo.</p>
+        </div>
+        <div class="callout">
+          <div class="callout-label">x402 mean settled value</div>
+          <p class="stat md">$0.265 raw / $0.129 screened</p>
+          <p>TRM Labs, independent measurement.</p>
+        </div>
+        <div class="callout">
+          <div class="callout-label">ERC-8004 agents on Base, value at stake</div>
+          <p class="stat md">per-agent median $0.70 / mean $16.74</p>
+          <p>Xiong et al., arXiv:2606.26028. Per agent, not per transaction.</p>
+        </div>
+      </div>
+    </noscript>
+
+    <p class="as-of">What this pass could not establish, and is therefore reported as unknown rather than estimated: any first-party all-time x402 transaction count; any reconciliation between the three x402 headline numbers, which differ by 4x to 24x and none of which publishes a methodology or an as-of date; any production deployment of AP2; any 2026 Visa TAP or Mastercard Agent Pay transaction count; and a named news publisher serving paid content over x402 in production. That last absence contradicts the "publishers are monetising over x402" framing common in secondary coverage, and should not be reported as fact.</p>
+  </div>
+</section>
+
+<!-- SECTION 11: REALITY CHECK -->
 <section class="section" id="reality-check">
   <div class="section-inner tight">
-    <div class="kicker">09 - Reality check</div>
+    <div class="kicker">11 - Reality check</div>
     <h2>A rounding error, with momentum</h2>
-    <p class="section-thesis">After eight sections of "this is a big deal," a deliberately humbling close. Today's tokenization is a rounding error against traditional finance. The growth rate is the story, not the current size.</p>
+    <p class="section-thesis">After ten sections of "this is a big deal," a deliberately humbling close. Today's tokenization is a rounding error against traditional finance. The growth rate is the story, not the current size.</p>
 
     <div class="chart-wrap reveal">
       <div class="chart-canvas-box" style="height:340px">
@@ -441,7 +575,7 @@
 <!-- FOOTER -->
 <footer class="hub-footer">
   <div class="hub-footer-inner">
-    <div class="badge" id="hub-freshness-badge">Last updated 2026-09-21 · Hub build 3.6.2</div>
+    <div class="badge" id="hub-freshness-badge">Last updated 2026-09-26 · Hub build 3.7.0</div>
 
     <p class="attribution">Research and maintained by <a href="https://www.withkeshav.com" target="_blank" rel="noopener noreferrer">Keshav Maheshwari</a>.</p>
 

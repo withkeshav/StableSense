@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import pkg from './package.json' assert { type: 'json' };
 
 // Separate build for the /research hub. The hub is a standalone static page
 // (not a Preact route) for SEO: every section renders as real HTML so crawlers
@@ -8,6 +9,11 @@ export default defineConfig({
   root: 'research',
   base: '/research/',
   publicDir: 'public',
+  // Derive the hub build marker from package.json rather than hand-editing it.
+  // It previously lived as a literal in data.js and silently drifted two
+  // releases behind the app version, so the footer badge lied about which
+  // build was deployed.
+  define: { __HUB_BUILD__: JSON.stringify('v' + pkg.version) },
   build: {
     outDir: '../dist/research',
     emptyOutDir: true,

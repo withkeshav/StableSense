@@ -904,6 +904,127 @@ function buildGeniusStatus() {
   if (sourceEl) sourceEl.innerHTML = `Source: <a href="${g.url}" target="_blank" rel="noopener noreferrer">${g.source}</a>. This is a dated snapshot, not a live tracker.`;
 }
 
+// Section 9: who earns the float. One table row per disclosed measure, each
+// carrying its own as-of date, because the two issuers' figures are not the
+// same measure and must not be read as a like-for-like comparison.
+function buildFloatEconomics() {
+  const wrap = document.getElementById('float-economics-wrap');
+  if (!wrap) return;
+  const rows = (data.floatEconomics || []).map((r) => `
+    <tr>
+      <td>${r.issuer}</td>
+      <td>${r.measure}</td>
+      <td class="num">${r.value}</td>
+      <td class="as-of">${r.asOf}</td>
+      <td class="as-of">${r.note}</td>
+    </tr>
+  `).join('');
+  wrap.innerHTML = `
+    <div class="hub-table-wrap">
+      <table class="hub-table" id="float-table">
+        <thead>
+          <tr>
+            <th>Issuer</th>
+            <th>Measure (as the issuer names it)</th>
+            <th class="num">Value</th>
+            <th class="as-of">As of</th>
+            <th class="as-of">What it measures, and what it does not</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+// Section 9: the yield ban, quoted from the statute rather than paraphrased.
+function buildYieldBan() {
+  const y = data.yieldBan;
+  if (!y) return;
+  const q = document.getElementById('yield-ban-quote');
+  const s = document.getElementById('yield-ban-scope');
+  const si = document.getElementById('yield-ban-silence');
+  const r = document.getElementById('yield-ban-reserve');
+  if (q) q.innerHTML = `<strong>${y.citation}:</strong> <em>${y.quote}</em>`;
+  if (s) s.innerHTML = `<strong>Who it binds:</strong> ${y.payor}`;
+  if (si) si.innerHTML = `<strong>What it does not say:</strong> ${y.silence}`;
+  if (r) r.innerHTML = `<strong>The reserve side:</strong> ${y.reserveIncome}`;
+}
+
+// Section 10: rail vs authorization status, kept deliberately separate.
+function buildAgenticRails() {
+  const wrap = document.getElementById('agentic-rails-wrap');
+  if (!wrap) return;
+  const rows = (data.agenticRails || []).map((r) => `
+    <tr>
+      <td><strong>${r.name}</strong><div class="as-of">${r.operator}</div></td>
+      <td>${r.layer}</td>
+      <td class="cat-cell">${r.status}</td>
+      <td class="as-of">${r.detail}</td>
+    </tr>
+  `).join('');
+  wrap.innerHTML = `
+    <div class="hub-table-wrap">
+      <table class="hub-table" id="agentic-rails-table">
+        <thead>
+          <tr>
+            <th>Protocol</th>
+            <th>What layer it actually is</th>
+            <th>Status</th>
+            <th class="as-of">Detail</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+// Section 10: every published volume figure side by side, with its publisher
+// and its label, so the spread is visible rather than averaged away.
+function buildAgenticVolume() {
+  const wrap = document.getElementById('agentic-volume-wrap');
+  if (!wrap) return;
+  const rows = (data.agenticVolume || []).map((r) => `
+    <tr>
+      <td class="num">${r.figure}</td>
+      <td class="as-of">${r.window}</td>
+      <td>${r.publisher}</td>
+      <td class="as-of">${r.label}</td>
+    </tr>
+  `).join('');
+  wrap.innerHTML = `
+    <div class="hub-table-wrap">
+      <table class="hub-table" id="agentic-volume-table">
+        <thead>
+          <tr>
+            <th class="num">Published figure</th>
+            <th class="as-of">Window</th>
+            <th>Publisher</th>
+            <th class="as-of">Sourcing status</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+// Section 10: per-transaction size, the measure that survives the headline
+// totals. Kept as callouts because the units are not comparable across rows.
+function buildAgenticTicket() {
+  const wrap = document.getElementById('agentic-ticket-wrap');
+  if (!wrap) return;
+  wrap.innerHTML = (data.agenticTicketSize || []).map((t) => `
+    <div class="callout">
+      <div class="callout-label">${t.measure}</div>
+      <p class="stat md">${t.value}</p>
+      <p>${t.publisher}. ${t.note}</p>
+    </div>
+  `).join('');
+  wrap.classList.add('callout-row');
+}
+
 // --- init -----------------------------------------------------------------
 async function init() {
   reveals();
@@ -918,6 +1039,11 @@ async function init() {
   buildMaturityBands();
   buildBpiCallout();
   buildGeniusStatus();
+  buildFloatEconomics();
+  buildYieldBan();
+  buildAgenticRails();
+  buildAgenticVolume();
+  buildAgenticTicket();
   remittanceCalc();
   raceBars();
   buildFreshnessBadge();

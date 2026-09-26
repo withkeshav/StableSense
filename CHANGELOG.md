@@ -4,6 +4,19 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.7.0] - 2026-09-26
+
+### Added
+- **Research hub, new section "Who earns the float".** Issuer economics from primary filings rather than press coverage. The load-bearing finding: Tether's Q2 2026 news release headlines a positive "$1.5B net operating profit" while its own attestation, for the same period, reports a change in net equity of minus $3,171 million for H1 and plus $1,040 million for Q1, which makes Q2 standalone about minus $4.21 billion. Both figures are Tether's; no Tether document reconciles them or defines "net operating profit". Circle's case is separately stated: $2.64B of FY2025 reserve income (96.0% of revenue) against a net loss of $69.5 million. Every row carries its own as-of date and states what it measures, because Tether publishes no line called "reserve income" and Circle does: the two are not a like-for-like pair.
+- **Research hub, new section "The agent economy".** The GENIUS Act yield prohibition quoted from the statute (Sec. 4(a)(11), 12 U.S.C. 5903(a)(11)), with the note that a whole-Act keyword sweep finds "yield" exactly once and zero hits for reward, incentive, loyalty or dividend, so rewards programmes are reported as UNKNOWN rather than inferred. Seven agentic rails (x402, MPP, ACP, AP2, Visa TAP, Mastercard Agent Pay, ERC-8004) tabulated by layer and status, keeping a live settlement rail distinct from a live authorization layer. Every published volume figure for the same activity is shown side by side with its publisher and window, because they range from $25,000 to $2.59bn and are different quantities, not one quantity measured differently. Per-transaction medians (about one cent) are shown as the measure the totals hide.
+
+### Fixed
+- **Hub build badge could drift from the app version.** `HUB_BUILD` was a hand-written literal in `research/data.js` and had fallen two releases behind (`3.6.2` while the app was `3.6.3`), so the footer badge named a build that was not deployed. It is now derived from `package.json` at build time via `__HUB_BUILD__` in `vite.config.research.mjs`, which folds to a constant in the built bundle, so it cannot drift again.
+- **Two hub token figures corrected against primary sources.** OUSG market cap was `~$700M` (mid-2026) and is `~$319-334M` as of 2026-09-17 per Ondo's own product page; BUIDL was `~$2-2.8B` and is `~$2.7-3.5B`. Both carried a `mid-2026` as-of that no longer held.
+
+### Tests
+- Test count 203, unchanged (no pure-logic module changed). Added `scripts/verify-hub-depth.mjs`, which runs the same data mapping the browser renderers use and asserts every new row is complete, that Tether's negative figure stays signed negative, that ERC-8004 is not presented as a payment layer, that the volume table names more than one publisher, and that no em or en dash entered the new content.
+
 ## [3.6.3] - 2026-09-26
 
 ### Fixed
