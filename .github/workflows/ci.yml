@@ -22,6 +22,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # vitest.config.js includes backend/**/*.test.js, but backend deps live in
+      # backend/package.json (better-sqlite3, fastify). Without this the backend
+      # suites fail to import rather than fail on their assertions, so root
+      # `npm test` was green only for tests that never touched a backend dep.
+      - name: Install backend dependencies
+        run: npm ci --prefix backend
+
       - name: Run unit tests
         run: npm test
 
