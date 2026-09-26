@@ -41,6 +41,7 @@
       <a href="#regulation">Regulation</a>
       <a href="#float">The float</a>
       <a href="#agentic">Agent economy</a>
+      <a href="#players">Who else</a>
       <a href="/" class="to-dashboard" target="_blank" rel="noopener noreferrer">Open the live dashboard &rsaquo;</a>
       <button id="hub-theme-toggle" class="hub-chip" style="cursor:pointer" title="Toggle theme">Theme</button>
     </nav>
@@ -553,12 +554,79 @@
   </div>
 </section>
 
+<!-- SECTION 12: WHO ELSE IS BUILDING IT -->
+<section class="section" id="players">
+  <div class="section-inner">
+    <div class="kicker">12 - Who else is building it</div>
+    <h2>The chains, the consortiums, and the funds beside them</h2>
+    <p class="section-thesis">Three things sit just outside the stablecoin market and get described as though they were inside it: Circle's own blockchain, a consortium token with more than a hundred named members, and the tokenized funds that hold the same Treasuries under a different legal wrapper. Each is reported here at the level it actually exists on, which for one of them is a press release and no supply.</p>
+
+    <div id="arc-status" class="arc-status"></div>
+    <div id="ousd-status" class="ousd-status" style="margin-top:1.5rem"></div>
+    <noscript>
+      <div class="callout">
+        <div class="callout-label">Arc - Circle Internet Group</div>
+        <p class="stat md">MAINNET LIVE</p>
+        <p>Launched 2026-09-16 in New York. Mainnet chain ID 5042 (0x13b2); testnet chain ID 5042002. Gas is paid in USDC, with no volatile native token. Read from Circle's own release and probed against the RPC endpoint, which answered with the mainnet chain ID and an advancing block height. A live testnet also exists, and Arc's own docs page serves the testnet tab by default, which is why some coverage says testnet only.</p>
+      </div>
+      <div class="callout" style="margin-top:1.5rem">
+        <div class="callout-label">Open USD (OUSD) - Open Standard consortium</div>
+        <p class="stat md">ANNOUNCED ONLY. No circulating supply.</p>
+        <p>Announced 2026-06-30 with "over 140 businesses" named on the consortium's own site, founding CEO Zach Abrams. CoinGecko returns circulating supply 0.0 and a null market cap; the token is absent from DefiLlama's 427 tracked pegged assets. Its own site states no mint or redeem fees and reserve yield paid to member firms, which is the model rather than a measurement. No launch chain is named by any primary source, and the launch date is still "later this year". Circle and Tether are absent from its member list.</p>
+      </div>
+    </noscript>
+
+    <h3 style="margin-top:2.5rem" id="rwa-funds">The funds beside the stablecoins</h3>
+    <p class="as-of">Tokenized funds holding the same short-dated Treasuries as the issuers, under a securities wrapper rather than a payments one. Sizes are the issuers' own published figures on the date shown, because the aggregators disagree with the issuers and with each other.</p>
+    <div id="rwa-funds-wrap" class="rwa-funds-wrap"></div>
+    <noscript>
+      <div class="hub-table-wrap">
+        <table class="hub-table">
+          <thead><tr><th>Product</th><th class="num">Size</th><th>As of</th></tr></thead>
+          <tbody>
+            <tr><td>Ondo USDY</td><td class="num">$2.29B</td><td>2026-09-26 (Ondo product page)</td></tr>
+            <tr><td>Ondo OUSG</td><td class="num">$319.8M</td><td>2026-09-26 (Ondo product page)</td></tr>
+            <tr><td>BlackRock BUIDL</td><td class="num">$2.70-3.52B (sources disagree)</td><td>2026-08-07 to 2026-09-26</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="as-of">Ondo USDY is roughly 96% US Treasuries and is not BUIDL-backed. OUSG's largest sleeve is State Street Galaxy SWEEP at roughly 45%, with BUIDL at roughly 30%, which corrects earlier reporting that said OUSG was mostly BUIDL-backed. BUIDL has no issuer-published current AUM; the only primary figure on file is a cumulative gross sales number on a Form D/A, which is not AUM.</p>
+    </noscript>
+
+    <h3 style="margin-top:2.5rem" id="growth-honest">How it is actually growing</h3>
+    <p class="as-of">The forecast chart in Section 2 points up. This is the same market measured backwards from one aggregator series, and it is the counterweight to that chart.</p>
+    <div id="growth-honest-wrap" class="growth-honest-wrap"></div>
+    <p class="as-of" id="growth-honest-note"></p>
+    <noscript>
+      <div class="callout-row">
+        <div class="callout">
+          <div class="callout-label">Issuance growth by year</div>
+          <p class="stat md">+58.4% (2024), +49.0% (2025), +1.5% (2026 to date)</p>
+          <p>DefiLlama series at year-end marks: $130.35B (2023-12-31), $206.47B (2024-12-31), $307.54B (2025-12-31), $311.30B (2026-09-26).</p>
+        </div>
+        <div class="callout">
+          <div class="callout-label">Distance below the 2026 peak</div>
+          <p class="stat md">-3.05%</p>
+          <p>Peak $321.09B on 2026-05-20 against $311.30B on 2026-09-26.</p>
+        </div>
+        <div class="callout">
+          <div class="callout-label">Real payments versus raw on-chain volume</div>
+          <p class="stat md">about 1.2%</p>
+          <p>Adjusted payment volume of roughly $390B against roughly $33T raw and $11T adjusted on-chain volume. Raw volume counts wallet-to-wallet transfers, which is not commerce.</p>
+        </div>
+      </div>
+      <p class="as-of">Issuance roughly tripled across 2024 and 2025 and then went flat. The multi-trillion forecasts to 2030 are unchanged by that. A 1.5% year does not disprove them, but it is evidence the current trajectory and the forecast trajectory are not the same line.</p>
+    </noscript>
+  </div>
+</section>
+
 <!-- SECTION 11: REALITY CHECK -->
 <section class="section" id="reality-check">
   <div class="section-inner tight">
-    <div class="kicker">11 - Reality check</div>
+    <div class="kicker">13 - Reality check</div>
     <h2>A rounding error, with momentum</h2>
-    <p class="section-thesis">After ten sections of "this is a big deal," a deliberately humbling close. Today's tokenization is a rounding error against traditional finance. The growth rate is the story, not the current size.</p>
+    <p class="section-thesis">After twelve sections of "this is a big deal," a deliberately humbling close. Today's tokenization is a rounding error against traditional finance. The growth rate is the story, not the current size.</p>
+
 
     <div class="chart-wrap reveal">
       <div class="chart-canvas-box" style="height:340px">
@@ -569,7 +637,6 @@
     <p class="as-of">Until on-chain real assets approach even 1% of their traditional counterparts, claims that they are "changing" commodity or credit markets should be read as trajectory statements, not current-fact statements. The growth rates, not the sizes, are the story worth monitoring on the live dashboard.</p>
   </div>
 </section>
-
 </main>
 
 <!-- FOOTER -->

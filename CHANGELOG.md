@@ -4,6 +4,21 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.7.1] - 2026-09-26
+
+### Added
+- **Research hub, new section "Who else is building it" (12).** Three things that sit beside the stablecoin market and are routinely described as though they were inside it, each reported at the level it actually exists on.
+  - **Arc: MAINNET LIVE, verified at chain level.** Circle's own release dates it 2026-09-16 in New York. Confirmed independently by probing the RPC endpoint, which answered `eth_chainId` with `0x13b2` (5042) and returned an advancing block height. A live testnet also exists (chain ID 5042002), and Arc's own "Connect to Arc" docs page serves the testnet tab by default, which is why some coverage calls Arc testnet-only. Both are live.
+  - **Open USD: announced, not issued.** Announced 2026-06-30 with "over 140 businesses" named on the consortium's own site. CoinGecko reports a circulating supply of 0.0 and a null market cap, and the token is absent from DefiLlama's 427 tracked pegged assets. Caught while verifying: DefiLlama does carry a ticker "OUSD", but it is Origin Dollar, an unrelated project, so the absence check must name the clash or it reads as a contradiction. No primary source names a launch chain, so the chain set is reported UNKNOWN rather than copied from secondary coverage that contradicts itself.
+  - **The funds beside the stablecoins.** Ondo USDY $2.29B and OUSG $319.8M, both read from Ondo's own product pages on 2026-09-26, and BUIDL reported as a range ($2.70-3.52B) because three sources disagree and no issuer-published current AUM exists. Corrects earlier reporting: OUSG's largest sleeve is State Street Galaxy SWEEP at roughly 45%, with BUIDL at roughly 30%.
+- **Research hub, honest-growth counterweight (in section 12).** The forecast chart in section 2 points up; this measures the same market backwards from one aggregator series. Issuance growth computed from DefiLlama at year-end marks: +58.4% (2024), +49.0% (2025), +1.5% (2026 to date), now 3.05% below the 2026-05-20 peak. Real payments are about 1.2% of raw on-chain volume. Computed in this session, not carried forward.
+
+### Notes
+- Every new figure was verified at the parent against the primary source before it was written in, including re-deriving the growth percentages from the aggregator series and probing the Arc RPC endpoint directly rather than trusting the research pass that surfaced them.
+- The new sources use deep URLs fetched and confirmed reachable (all HTTP 200), not landing pages written from memory.
+- `scripts/verify-hub-depth.mjs` extended to guard the new data: Arc must read mainnet-live with both chain IDs, Open USD must read announced-only with the ticker clash named, BUIDL's size must stay a disagreeing range, and the 2026 stall figure must be present.
+- noscript fallbacks added for both new blocks, per the hub's contract that every section renders as real HTML without JS.
+
 ## [3.7.0] - 2026-09-26
 
 ### Added

@@ -57,6 +57,27 @@ check('no em/en dashes in new content', dashes === 0, `${dashes} found`);
 // --- HUB_BUILD derive: with the define injected it must be v-prefixed ---
 check('HUB_BUILD falls back to dev only when define absent', data.HUB_BUILD === 'dev', `got ${data.HUB_BUILD}`);
 
+// --- section 12: big players + honest growth ---
+check('arcStatus is mainnet live', data.arcStatus.status.startsWith('MAINNET'), data.arcStatus.status);
+check('arcStatus carries both chain IDs', /0x13b2/.test(data.arcStatus.chainId) && /0x4cef52/.test(data.arcStatus.testnetChainId),
+  `${data.arcStatus.chainId} / ${data.arcStatus.testnetChainId}`);
+check('openUsdStatus is announced-only, not live', /ANNOUNCED ONLY/.test(data.openUsdStatus.status), data.openUsdStatus.status);
+check('openUsdStatus states zero supply evidence', /0\.0/.test(data.openUsdStatus.supplyEvidence));
+check('openUsdStatus flags the Origin Dollar ticker clash', /Origin Dollar/.test(data.openUsdStatus.supplyEvidence));
+check('openUsdStatus keeps launch chains UNKNOWN', /UNKNOWN/.test(data.openUsdStatus.chains));
+check('rwaFunds has 3 rows', data.rwaFunds.length === 3, `got ${data.rwaFunds.length}`);
+for (const r of data.rwaFunds) {
+  check(`fund "${r.product}" complete`, !!(r.product && r.issuer && r.size && r.asOf && r.backing && r.note));
+}
+check('BUIDL size shown as a disagreeing range', /disagree/.test(data.rwaFunds.find((r) => /BUIDL/.test(r.product)).size));
+check('growthHonest thesis present', !!data.growthHonest.thesis);
+check('growthHonest has 3 points', data.growthHonest.points.length === 3, `got ${data.growthHonest.points.length}`);
+check('growthHonest shows the 2026 stall', /\+1\.5% \(2026/.test(data.growthHonest.points[0].value), data.growthHonest.points[0].value);
+
+const blob2 = JSON.stringify({ g: data.growthHonest, a: data.arcStatus, o: data.openUsdStatus, r: data.rwaFunds });
+const dashes2 = (blob2.match(/[\u2013\u2014]/g) || []).length;
+check('no em/en dashes in section 12 content', dashes2 === 0, `${dashes2} found`);
+
 console.log(`\nAS_OF=${data.AS_OF} HUB_BUILD=${data.HUB_BUILD}`);
 console.log(fail === 0 ? '\nALL CHECKS PASSED' : `\n${fail} CHECK(S) FAILED`);
 process.exit(fail === 0 ? 0 : 1);

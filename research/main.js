@@ -1025,6 +1025,86 @@ function buildAgenticTicket() {
   wrap.classList.add('callout-row');
 }
 
+// Section 12: honest growth. The counterweight to the forecast chart, computed
+// from one aggregator series rather than recalled.
+function buildGrowthHonest() {
+  const wrap = document.getElementById('growth-honest-wrap');
+  if (!wrap) return;
+  const g = data.growthHonest;
+  if (!g) return;
+  wrap.innerHTML = (g.points || []).map((p) => `
+    <div class="callout">
+      <div class="callout-label">${p.label}</div>
+      <p class="stat md">${p.value}</p>
+      <p>${p.source}</p>
+    </div>
+  `).join('');
+  wrap.classList.add('callout-row');
+  const note = document.getElementById('growth-honest-note');
+  if (note) note.textContent = g.note;
+}
+
+// Section 12: Arc and OpenUSD status cards, plus the RWA fund table.
+function buildBigPlayers() {
+  const arc = data.arcStatus;
+  const arcEl = document.getElementById('arc-status');
+  if (arcEl && arc) {
+    arcEl.innerHTML = `
+      <div class="callout">
+        <div class="callout-label">${arc.name} - ${arc.operator}</div>
+        <p class="stat md">${arc.status}</p>
+        <p><strong>Launched:</strong> ${arc.launched}. Mainnet chain ID ${arc.chainId}; testnet chain ID ${arc.testnetChainId}. Gas paid in ${arc.gas.charAt(0).toLowerCase()}${arc.gas.slice(1)}.</p>
+        <p>${arc.verification}</p>
+        <p>${arc.caveat}</p>
+      </div>
+    `;
+  }
+  const ousd = data.openUsdStatus;
+  const ousdEl = document.getElementById('ousd-status');
+  if (ousdEl && ousd) {
+    ousdEl.innerHTML = `
+      <div class="callout">
+        <div class="callout-label">${ousd.name} - ${ousd.issuer}</div>
+        <p class="stat md">${ousd.status}</p>
+        <p><strong>Announced:</strong> ${ousd.announced}.</p>
+        <p><strong>Supply evidence:</strong> ${ousd.supplyEvidence}</p>
+        <p><strong>Stated terms:</strong> ${ousd.terms}</p>
+        <p><strong>Launch chains:</strong> ${ousd.chains}</p>
+        <p><strong>Launch date:</strong> ${ousd.launch}</p>
+        <p><strong>Market reaction:</strong> ${ousd.marketReaction}</p>
+        <p><strong>Members confirmed from its own list:</strong> ${ousd.members}</p>
+      </div>
+    `;
+  }
+  const wrap = document.getElementById('rwa-funds-wrap');
+  if (!wrap) return;
+  const rows = (data.rwaFunds || []).map((r) => `
+    <tr>
+      <td><strong>${r.product}</strong><div class="as-of">${r.issuer}</div></td>
+      <td class="num">${r.size}</td>
+      <td class="as-of">${r.asOf}</td>
+      <td class="as-of">${r.backing}</td>
+      <td class="as-of">${r.note}</td>
+    </tr>
+  `).join('');
+  wrap.innerHTML = `
+    <div class="hub-table-wrap">
+      <table class="hub-table" id="rwa-funds-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th class="num">Size</th>
+            <th class="as-of">As of</th>
+            <th class="as-of">What backs it</th>
+            <th class="as-of">Note</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
 // --- init -----------------------------------------------------------------
 async function init() {
   reveals();
@@ -1044,6 +1124,8 @@ async function init() {
   buildAgenticRails();
   buildAgenticVolume();
   buildAgenticTicket();
+  buildBigPlayers();
+  buildGrowthHonest();
   remittanceCalc();
   raceBars();
   buildFreshnessBadge();

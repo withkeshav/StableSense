@@ -529,6 +529,73 @@ export const agenticTicketSize = [
   { measure: 'ERC-8004 agents on Base, value at stake', value: 'per-agent median $0.70, mean $16.74', publisher: 'Xiong et al., arXiv:2606.26028', note: 'MEASURED, independent academic. This is per agent, not per transaction.' },
 ];
 
+export const growthHonest = {
+  thesis: 'Growth in 2026 has stalled while the forecasts have not.',
+  points: [
+    {
+      label: 'Issuance growth by year, from one aggregator series',
+      value: '+58.4% (2024), +49.0% (2025), +1.5% (2026 to date)',
+      source: 'DefiLlama stablecoin series, computed at year-end marks (2023-12-31 $130.35B, 2024-12-31 $206.47B, 2025-12-31 $307.54B, and $311.30B on 2026-09-26). Recompute, do not carry forward.',
+    },
+    {
+      label: 'Distance below the 2026 peak',
+      value: '-3.05%',
+      source: 'Peak $321.09B on 2026-05-20 against $311.30B on 2026-09-26.',
+    },
+    {
+      label: 'Real payments versus raw on-chain volume',
+      value: 'about 1.2%',
+      source: 'Adjusted payment volume of roughly $390B against roughly $33T raw and $11T adjusted on-chain volume. Raw volume counts transfers between wallets, which is not commerce.',
+    },
+  ],
+  note: 'The distinction that matters is between growth in issuance and growth in real payments. Issuance roughly tripled across 2024 and 2025 and then went flat; the multi-trillion forecasts to 2030 are unchanged by that. A 1.5% year is not evidence the forecasts are wrong, but it is evidence the current trajectory and the forecast trajectory are not the same line.',
+};
+
+/**
+ * Circle's own L1, stated at chain level rather than from coverage.
+ * A live testnet and a live mainnet both exist, and reports of "testnet only"
+ * come from a docs page that serves the testnet tab by default.
+ */
+export const arcStatus = {
+  name: 'Arc',
+  operator: 'Circle Internet Group (NYSE: CRCL)',
+  status: 'MAINNET LIVE',
+  launched: '2026-09-16 (New York)',
+  chainId: '5042 (0x13b2)',
+  testnetChainId: '5042002 (0x4cef52)',
+  gas: 'USDC, with no volatile native token required',
+  verification: 'Read from Circle\'s own release and probed directly against the RPC endpoint. The chain answered eth_chainId with 0x13b2 and returned an advancing block height, so the claim is chain-level, not a press claim.',
+  caveat: 'A live testnet also exists (chain ID 5042002). Arc\'s "Connect to Arc" docs page serves the testnet tab by default, which is why some coverage describes Arc as testnet only. Both are live.',
+};
+
+/**
+ * OpenUSD, the consortium token. Announced with force, not yet issued.
+ * The point of this entry is the gap between the announcement and any
+ * measurable supply, which is the thing coverage tends to skip.
+ */
+export const openUsdStatus = {
+  name: 'Open USD (OUSD)',
+  issuer: 'Open Standard, a consortium. Founding CEO Zach Abrams.',
+  announced: '2026-06-30, with "over 140 businesses" named on the consortium\'s own site',
+  status: 'ANNOUNCED ONLY. No circulating supply.',
+  supplyEvidence: 'CoinGecko returns circulating_supply 0.0 and a null market cap for open-usd. The token is absent from DefiLlama\'s 427 tracked pegged assets, checked directly. Note: DefiLlama does list a ticker "OUSD", but that is Origin Dollar, an unrelated project, and must not be read as this one.',
+  terms: 'Its own site states no fees to mint or redeem, and reserve yield paid to member firms. That is the model, not yet a measurement.',
+  chains: 'UNKNOWN. The consortium\'s own materials name no launch chain. "Solana" appears once, inside an alphabetical partner list, and never as a launch chain. Secondary sources name mutually exclusive sets, so none is repeated here.',
+  launch: 'Stated as "later this year", most recently on 2026-09-24. No date given.',
+  marketReaction: 'Circle (CRCL) closed down 17.55% on 2026-06-30 on roughly 4.2x normal volume. The date matches the announcement. The attribution is plausible, not proven, and is labelled as such.',
+  members: 'Confirmed from the consortium\'s own partner list: Visa, Mastercard, American Express, Discover, Stripe, BlackRock, BNY, Standard Chartered, DBS, Google, Samsung, IBM, Shopify, Coinbase, Ripple, MetaMask, Fireblocks. Circle and Tether are absent from the list.',
+};
+
+/**
+ * The two funds that sit beside stablecoins rather than in them.
+ * Figures are the issuers' own pages, fetched on the date shown.
+ */
+export const rwaFunds = [
+  { product: 'Ondo USDY', issuer: 'Ondo Finance', size: '$2.29B', asOf: '2026-09-26 (Ondo product page)', backing: 'About 96% US Treasuries held via a bankruptcy-remote structure. Not backed by BUIDL.', note: 'A yield-bearing tokenized note, so it is a security rather than a payment instrument.' },
+  { product: 'Ondo OUSG', issuer: 'Ondo Finance', size: '$319.8M', asOf: '2026-09-26 (Ondo product page)', backing: 'Tokenized fund shares; largest sleeve is State Street Galaxy SWEEP at roughly 45%, with BUIDL at roughly 30%.', note: 'Note the correction: earlier secondary reporting said OUSG was mostly BUIDL-backed. It is not.' },
+  { product: 'BlackRock BUIDL', issuer: 'BlackRock / Securitize', size: '$2.70-3.52B (three sources disagree)', asOf: '2026-08-07 to 2026-09-26', backing: 'Tokenized money-market fund shares. No issuer-published current AUM exists; the only primary figure is a cumulative gross sales figure on a Form D/A, which is not AUM.', note: 'Report the range and the disagreement. Also note BUIDL has no successor product; BRSRV is a separate GENIUS-Act reserve vehicle, not a replacement.' },
+];
+
 export const sources = [
   { id: 'tether-q2-2026', label: 'Tether - Q2 2026 attestation release ($1.5B net operating profit claim)', url: 'https://tether.io/news/tether-posts-strong-q2-performance-generates-1-5b-net-operating-profit-maintains-4-11b-reserve-buffer-and-expands-gold-holdings-to-more-than-146-tons/' },
   { id: 'genius-pl119-27', label: 'US Code - 12 U.S.C. 5903 (GENIUS Act Sec. 4), yield prohibition and 93-day reserve cap', url: 'https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title12-section5903&num=0&edition=prelim' },
@@ -548,6 +615,15 @@ export const sources = [
   { id: 'visa-tap-pr', label: 'Visa - press release: "hundreds" of agent-initiated transactions (Dec 2025)', url: 'https://usa.visa.com/about-visa/newsroom/press-releases.releaseId.21961.html' },
   { id: 'cdp-x402', label: 'Coinbase CDP - x402 (vendor self-report on payment count)', url: 'https://docs.cdp.coinbase.com/x402/welcome' },
   { id: 'erc8004', label: 'ERC-8004 - Trustless Agents (draft; payments explicitly out of scope)', url: 'https://eips.ethereum.org/EIPS/eip-8004' },
+  { id: 'circle-arc-mainnet', label: 'Circle - press release: Arc mainnet launch (2026-09-16)', url: 'https://www.circle.com/pressroom/circle-launches-arc-mainnet-an-economic-operating-system-for-the-internet' },
+  { id: 'arc-rpc', label: 'Arc mainnet JSON-RPC endpoint (chain ID probe)', url: 'https://rpc.mainnet.arc.io' },
+  { id: 'open-standard', label: 'Open Standard / Open USD - consortium site and partner list', url: 'https://joinopenstandard.com/' },
+  { id: 'open-standard-intro', label: 'Open Standard - "Introducing Open USD" announcement (2026-06-30)', url: 'https://joinopenstandard.com/blog/introducing-open-usd' },
+  { id: 'ondo-usdy', label: 'Ondo Finance - USDY product page (size and backing)', url: 'https://ondo.finance/usdy' },
+  { id: 'ondo-ousg', label: 'Ondo Finance - OUSG product page (size and sleeve composition)', url: 'https://ondo.finance/ousg' },
+  { id: 'buidl-formd', label: 'SEC EDGAR - BUIDL Form D/A (cumulative gross sales, not AUM)', url: 'https://www.sec.gov/Archives/edgar/data/2013810/000201381026000002/primary_doc.xml' },
+  { id: 'securitize-buidl', label: 'Securitize - BUIDL fund page (no issuer-published AUM)', url: 'https://securitize.io/blackrock/buidl' },
+  { id: 'defillama-stablecoincharts', label: 'DefiLlama - total stablecoin market cap series (growth computation)', url: 'https://stablecoins.llama.fi/stablecoincharts/all' },
   { id: 'tic', label: 'US Treasury TIC - Major Foreign Holders of Treasuries', url: 'https://ticdata.treasury.gov/Publish/mfh.txt' },
   { id: 'tether-transp', label: 'Tether transparency / reserves attestation', url: 'https://tether.to/en/transparency/' },
   { id: 'circle-transp', label: 'Circle reserve report', url: 'https://www.circle.com/en/transparency' },
