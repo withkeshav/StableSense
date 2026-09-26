@@ -35,20 +35,22 @@ export function transformMarketPayload(payload) {
     const chainBalances = {};
     for (const ch of chains) {
       if (!ch || typeof ch.chain !== 'string') continue;
-      // Two points when a 24h delta exists: derive.js chainObservation needs a
-      // previous point to compute flow direction, otherwise it stays null.
-      const tokens = [
-        {
-          date: ch.ts != null ? Math.floor(ch.ts / 1000) : null,
-          circulating: { peggedUSD: ch.supply ?? null },
-        },
-      ];
-      if (ch.delta24h != null && ch.supply != null) {
+      // Two points in ascending time order: derive.js chainObservation takes
+      // the last two entries as previous then current, so previous must come
+      // first. Previously this was inverted, which flipped flow direction.
+      const curTs = ch.ts != null ? Math.floor(ch.ts / 1000) : null;
+      const curSupply = ch.supply ?? null;
+      const tokens = [];
+      if (ch.delta24h != null && curSupply != null && curTs != null) {
         tokens.push({
-          date: ch.ts != null ? Math.floor(ch.ts / 1000) - 86400 : null,
-          circulating: { peggedUSD: ch.supply - ch.delta24h },
+          date: curTs - 86400,
+          circulating: { peggedUSD: curSupply - ch.delta24h },
         });
       }
+      tokens.push({
+        date: curTs,
+        circulating: { peggedUSD: curSupply },
+      });
       chainBalances[ch.chain] = { tokens };
     }
     data[`${symbol.toLowerCase()}Detail`] = { chainBalances };
@@ -112,6 +114,9 @@ export function transformMarketPayload(payload) {
   data.spotObservedAt = observed;
   data.supplyObservedAt = observed;
   data.marketObservedAt = observed;
+  // Backward-compatible alias: HomeTab and CoinTab read data.observedAt for
+  // share-card timestamps. Keep it in sync with the canonical market clock.
+  data.observedAt = observed;
 
   // Backend-computed daily supply history (deduped, casing-normalized, era-
   // consistent). Charts consume this directly instead of rebuilding series

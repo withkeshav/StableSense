@@ -65,14 +65,16 @@ app.get('/api/history', async (req) => {
 
   if (coin) {
     const symbol = String(coin).toUpperCase();
-    const rows = chain
+    // Chain filter is lowercase-normalized to match the fetch cron storage.
+    const chainNorm = chain ? String(chain).trim().toLowerCase() : null;
+    const rows = chainNorm
       ? db
           .prepare('SELECT ts, circulating_usd FROM snapshots WHERE coin = ? AND chain = ? AND ts >= ? ORDER BY ts ASC')
-          .all(symbol, String(chain), since)
+          .all(symbol, chainNorm, since)
       : db
           .prepare('SELECT ts, SUM(circulating_usd) AS value FROM snapshots WHERE coin = ? AND ts >= ? GROUP BY ts ORDER BY ts ASC')
           .all(symbol, since);
-    return { data: rows.map((r) => ({ ts: r.ts, value: chain ? r.circulating_usd : r.value })) };
+    return { data: rows.map((r) => ({ ts: r.ts, value: chainNorm ? r.circulating_usd : r.value })) };
   }
 
   const chains = db

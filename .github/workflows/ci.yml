@@ -27,3 +27,9 @@ jobs:
 
       - name: Production build
         run: npm run build
+
+      # The research hub is a SEPARATE Vite build (vite.config.research.mjs, base /research/,
+      # outDir ../dist/research). Without this step a broken hub ships while CI stays green,
+      # because `npm run build` alone does not touch it.
+      - name: Research hub build
+        run: npm run build:research

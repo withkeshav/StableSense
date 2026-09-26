@@ -289,8 +289,9 @@ function getTotalSupply(point) {
 /**
  * Build the aggregate market snapshot from per-coin trends points.
  * total = sum of newest total_supply across tracked coins.
- * delta = sum of (newest minus point closest to 24h ago) per coin,
- *   null if any coin lacks a 24h-ago point.
+ * delta = sum of available (newest minus point closest to 24h ago) per coin.
+ * A coin without a 24h-ago point contributes to total but not to delta, so
+ * one gappy coin never voids the whole market delta.
  * @param {Record<string, Array<object>>} trendsBySymbol Map symbol -> points array.
  * @returns {{ts: number, total: number, delta: number|null}|null}
  */
@@ -301,7 +302,7 @@ export function buildMarketSnapshot(trendsBySymbol) {
   let total = 0;
   let deltaSum = 0;
   let newestTs = -Infinity;
-  let hasDelta = true;
+  let hasAnyDelta = false;
   let validCoins = 0;
   for (const symbol of symbols) {
     const points = trendsBySymbol[symbol];
@@ -315,12 +316,11 @@ export function buildMarketSnapshot(trendsBySymbol) {
     if (tsMs > newestTs) newestTs = tsMs;
     const prev = findPointClosestTo24hAgo(points, tsMs);
     const prevSupply = prev ? getTotalSupply(prev) : null;
-    if (!prev || prevSupply == null) {
-      hasDelta = false;
-    } else {
+    if (prev && prevSupply != null) {
+      hasAnyDelta = true;
       deltaSum += supply - prevSupply;
     }
   }
   if (validCoins === 0) return null;
-  return { ts: newestTs, total, delta: hasDelta ? deltaSum : null };
+  return { ts: newestTs, total, delta: hasAnyDelta ? deltaSum : null };
 }

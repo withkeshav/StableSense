@@ -7,7 +7,9 @@ import ChartWrapper from '../ui/ChartWrapper.jsx';
 import { StabilityGauge } from '../Sections/SignalHero.jsx';
 
 function coinStabilityScore(price, warnBps, critBps) {
-  const drift = Math.abs(bps(price));
+  const raw = bps(price);
+  if (raw == null) return 50;
+  const drift = Math.abs(raw);
   if (!Number.isFinite(drift)) return 50;
   if (drift >= critBps) return Math.max(5, 40 - Math.min(35, drift - critBps));
   if (drift >= warnBps) return Math.max(55, 85 - Math.round((drift - warnBps) * 2));
@@ -23,10 +25,11 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
   const chartData = data?.[`cg${symbol}Chart`];
   const cgTickers = data?.[`cg${symbol}`];
   const asset = data?.allStables?.peggedAssets?.find((x) => x.symbol.toLowerCase() === symbol.toLowerCase());
-  const price = data?.cgSimple?.[cgKey]?.usd || 1;
-  const chg = data?.cgSimple?.[cgKey]?.usd_24h_change || 0;
-  const supply = asset?.circulating?.peggedUSD || 0;
-  const prev = asset?.circulatingPrevDay?.peggedUSD || supply;
+  // Null-safe: missing market data must render as hyphen, never as $1 or $0.
+  const price = data?.cgSimple?.[cgKey]?.usd ?? data?.prices?.[symbol]?.price ?? null;
+  const chg = data?.cgSimple?.[cgKey]?.usd_24h_change ?? 0;
+  const supply = asset?.circulating?.peggedUSD ?? null;
+  const prev = asset?.circulatingPrevDay?.peggedUSD ?? supply;
   const color = cfg?.color || '#468bf0';
   const warnBps = cfg?.thresholds?.pegWarnBps ?? 10;
   const critBps = cfg?.thresholds?.pegCriticalBps ?? 50;
@@ -179,6 +182,9 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
     if (chainShares[1] && chainShares[1].d1 > 1) {
       return `Supply is expanding on ${chainShares[1].chain}.`;
     }
+    if (pegBps == null) {
+      return 'Price data unavailable - waiting for next market sync.';
+    }
     if (Math.abs(pegBps) >= warnBps) {
       return `Peg is ${Math.abs(pegBps)} bps from $1.00 - observe, do not treat as advice.`;
     }
@@ -221,17 +227,17 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
         <article>
           <span>Current price</span>
           <strong>{fmtPrice(price)}</strong>
-          <small>{pegBps === 0 ? 'On peg' : `${pegBps > 0 ? '+' : ''}${pegBps} bp from peg`}</small>
+          <small>{pegBps == null ? 'Price unavailable' : pegBps === 0 ? 'On peg' : `${pegBps > 0 ? '+' : ''}${pegBps} bp from peg`}</small>
         </article>
         <article>
           <span>Peg stability</span>
           <strong>{score} <small>/100</small></strong>
-          <small>{Math.abs(pegBps) < warnBps ? 'Normal 24h conditions' : 'Elevated drift - observe'}</small>
+          <small>{pegBps == null ? 'Waiting for price data' : Math.abs(pegBps) < warnBps ? 'Normal 24h conditions' : 'Elevated drift - observe'}</small>
         </article>
         <article>
           <span>Circulating supply</span>
           <strong>{fmtB(supply)}</strong>
-          <small>{fmtPct(chg)} market · {fmtB(supply - prev)} 24h supply Δ</small>
+          <small>{fmtPct(chg)} market · {supply == null || prev == null ? '-' : fmtB(supply - prev)} 24h supply Δ</small>
         </article>
         <article>
           <span>Reserve design</span>
@@ -260,12 +266,12 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
               shareTitle={`${symbol} peg`}
               shareRange="~90D"
               shareInterpretation={`${symbol} market price relative to the $1.00 reference. This is a price picture, not a reserve-quality assessment.`}
-              shareDefinition={`Secondary-market ${symbol} price versus a $1.00 peg line.`}
-              shareHighlight={`${fmtPrice(price)} now · ${pegBps > 0 ? '+' : ''}${pegBps} bp from peg`}
+              shareDefinition={`Secondary-market ${symbol} price versus a $1.00 peg line for tracked coins on this dashboard.`}
+              shareHighlight={pegBps == null ? `${fmtPrice(price)} now · price unavailable` : `${fmtPrice(price)} now · ${pegBps > 0 ? '+' : ''}${pegBps} bp from peg`}
             />
           </div>
           <footer class="chart-footer">
-            <span><i class="legend-dot cobalt-dot" />{fmtPrice(price)} now · {pegBps > 0 ? '+' : ''}{pegBps} bp from peg</span>
+            <span><i class="legend-dot cobalt-dot" />{pegBps == null ? `${fmtPrice(price)} now · price unavailable` : `${fmtPrice(price)} now · ${pegBps > 0 ? '+' : ''}${pegBps} bp from peg`}</span>
             <button type="button" onClick={goLearn}>What moves the peg?</button>
           </footer>
         </article>
@@ -273,7 +279,7 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
         <article class="asset-score glass">
           <p class="panel-kicker">STABILITY INDEX</p>
           <StabilityGauge value={score} />
-          <h2>{Math.abs(pegBps) < warnBps ? 'Normal conditions' : 'Watch conditions'}</h2>
+          <h2>{pegBps == null ? 'Waiting for data' : Math.abs(pegBps) < warnBps ? 'Normal conditions' : 'Watch conditions'}</h2>
           <p>
             Score from current distance to $1.00 versus this asset&apos;s warn ({warnBps} bps) and critical ({critBps} bps) bands.
             It is not a solvency or reserve audit.
@@ -304,9 +310,9 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
               ariaLabel={`${symbol} circulating supply`}
               shareTitle={`${symbol} supply`}
               shareRange="History"
-              shareInterpretation={`${symbol} circulating supply from Helix-fed history, deduplicated per day.`}
-              shareDefinition={`Circulating ${symbol} supply over time for this dashboard.`}
-              shareAsOf={data?.observedAt ?? null}
+              shareInterpretation={`${symbol} circulating supply from backend history, deduplicated per day for tracked coins on this dashboard.`}
+              shareDefinition={`Circulating ${symbol} supply over time for tracked coins on this dashboard, not global market supply.`}
+              shareAsOf={data?.observedAt ?? data?.marketObservedAt ?? null}
             />
           </div>
         </article>
@@ -350,7 +356,7 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
         <div class="card mb-4 mt-4">
           <div class="card-header"><div class="card-title">{symbol} Dominance</div></div>
           <div class="card-body chart-card-body">
-            <ChartWrapper type="line" data={dominanceData} options={dominanceOpts} height={200} aspectRatio={16 / 10} shareTitle={`${symbol} dominance`} shareDefinition={`${symbol}'s share of combined tracked stablecoin supply.`} />
+            <ChartWrapper type="line" data={dominanceData} options={dominanceOpts} height={200} aspectRatio={16 / 10} shareTitle={`${symbol} dominance`} shareRange="Tracked supply" shareInterpretation={`${symbol} share of the combined 5 tracked stablecoins on this dashboard over time.`} shareDefinition={`${symbol}'s share of combined tracked stablecoin supply (USDT, USDC, DAI, USDE, PYUSD), not global market share.`} shareAsOf={data?.observedAt ?? data?.marketObservedAt ?? null} />
             <p class="text-muted small" style="margin-top:6px">{symbol}&apos;s share of the combined tracked stablecoin supply (USDT, USDC, DAI, USDE, PYUSD) over time.</p>
           </div>
         </div>
@@ -360,7 +366,7 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
         <div class="card mb-4">
           <div class="card-header"><div class="card-title">{symbol} Peg Deviation (bps)</div></div>
           <div class="card-body chart-card-body">
-            <ChartWrapper type="line" data={bpsData} options={bpsOpts} height={200} aspectRatio={16 / 10} shareTitle={`${symbol} deviation`} shareDefinition="Distance from the $1 peg in basis points." />
+            <ChartWrapper type="line" data={bpsData} options={bpsOpts} height={200} aspectRatio={16 / 10} shareTitle={`${symbol} deviation`} shareRange="~90D" shareInterpretation={`${symbol} distance from the $1 peg in basis points over time for tracked coins on this dashboard.`} shareDefinition="Secondary-market distance from the $1 peg in basis points for tracked coins on this dashboard." shareAsOf={data?.observedAt ?? data?.marketObservedAt ?? null} />
             <p class="text-muted small" style="margin-top:6px">Distance from the $1 peg in basis points. Fixed -50/+50 bounds so daily noise does not look like a depeg. 0 bps = exactly on peg.</p>
           </div>
         </div>
@@ -370,7 +376,7 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
         <div class="card">
           <div class="card-header"><div class="card-title">{symbol} Exchange Volume</div></div>
           <div class="card-body chart-card-body">
-            <ChartWrapper type="bar" data={exchBars} height={180} aspectRatio={16 / 10} options={chartOptions} shareTitle={`${symbol} volume`} />
+            <ChartWrapper type="bar" data={exchBars} height={180} aspectRatio={16 / 10} options={chartOptions} shareTitle={`${symbol} volume`} shareRange="Top venues" shareInterpretation={`${symbol} 24h volume across top CoinGecko venues, deduped by exchange. Venue sample, not full market volume.`} shareDefinition="Top venue volumes from CoinGecko tickers for tracked coins on this dashboard, deduplicated, not full market volume." shareAsOf={data?.observedAt ?? data?.marketObservedAt ?? null} />
           </div>
         </div>
         <div class="card">

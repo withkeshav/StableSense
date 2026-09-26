@@ -127,7 +127,13 @@ export function computePegStress({ pricesByCoin, alerts, topChainFlow }) {
   const critical = (alerts || []).filter((a) => a.severity === 'CRITICAL').length;
   const high = (alerts || []).filter((a) => a.severity === 'HIGH').length;
   const warning = (alerts || []).filter((a) => a.severity === 'WARNING').length;
-  const pegDriftBps = Math.max(0, ...Object.values(pricesByCoin || {}).map((p) => Math.abs(bps(p))));
+  // bps() returns null on invalid input so missing prices never read as on-peg.
+  // Filter them out here; no valid price means no measured drift, not zero stress.
+  const drifts = Object.values(pricesByCoin || {})
+    .map((p) => bps(p))
+    .filter((v) => typeof v === 'number' && Number.isFinite(v))
+    .map((v) => Math.abs(v));
+  const pegDriftBps = drifts.length ? Math.max(0, ...drifts) : 0;
   const score = Math.min(100, Math.round(pegDriftBps * 0.7 + critical * 25 + high * 10 + warning * 4 + Math.min(35, Math.round((Math.abs(topChainFlow) / 1e9) * 2))));
   const level = score >= 70 ? 'HIGH' : score >= 40 ? 'WATCH' : 'LOW';
   return { score, level, pegDriftBps, critical, high, warning };
@@ -146,6 +152,11 @@ function stddev(values, avg) {
 
 export function buildWhaleWatchRows(detailsByCoin, limit = 8) {
   const rows = [];
+  // Total absolute current delta across every eligible chain. Share is measured
+  // against whole tracked flow so a flagged row is never overstated as 50 pct
+  // of itself when the real tracked move is far larger.
+  let totalTrackedAbs = 0;
+  const seenDeltas = [];
   for (const [coin, detail] of Object.entries(detailsByCoin || {})) {
     for (const [chain, chainData] of Object.entries(detail?.chainBalances || {})) {
       const tokens = chainData?.tokens || [];
@@ -154,6 +165,11 @@ export function buildWhaleWatchRows(detailsByCoin, limit = 8) {
       const deltas = [];
       for (let i = 1; i < series.length; i += 1) deltas.push(series[i] - series[i - 1]);
       const currentDelta = deltas[deltas.length - 1] || 0;
+      totalTrackedAbs += Math.abs(currentDelta);
+      seenDeltas.push({ coin, chain, series, deltas, currentDelta });
+    }
+  }
+  for (const { coin, chain, deltas, currentDelta } of seenDeltas) {
       const baseline = deltas.slice(0, -1).map((d) => Math.abs(d));
       const avg = mean(baseline);
       const sd = stddev(baseline, avg);
@@ -167,12 +183,10 @@ export function buildWhaleWatchRows(detailsByCoin, limit = 8) {
           displayZ: Math.min(z, 10),
         });
       }
-    }
   }
   const ranked = rows.sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta)).slice(0, limit);
-  // Share of the total absolute delta across the surfaced rows, so a tiny-chain
-  // spike is contextualized against the whole tracked flow, not shown in isolation.
-  const totalAbs = ranked.reduce((sum, r) => sum + Math.abs(r.delta), 0) || 1;
+  // Share of whole tracked absolute flow, not just surfaced rows.
+  const totalAbs = totalTrackedAbs || 1;
   return ranked.map((r) => ({ ...r, shareOfTracked: (Math.abs(r.delta) / totalAbs) * 100 }));
 }
 
@@ -317,11 +331,14 @@ function fnv1a(str) {
 
 /**
  * Deterministic event id from coin, observation window, classification, and chains.
- * Does not include render time or a random nonce.
+ * Does not include render time or a random nonce. Direction matters: the
+ * sorted chain set keeps grouping stable while fromChain and toChain keep
+ * opposite migrations from colliding to the same id.
  */
-export function alertEventId({ rule, coin, chains = [], sourceTsCurrent = 0, sourceTsPrevious = 0 }) {
+export function alertEventId({ rule, coin, chains = [], sourceTsCurrent = 0, sourceTsPrevious = 0, fromChain = null, toChain = null }) {
   const chainKey = [...new Set([...chains].filter(Boolean).map(String))].sort().join(',');
-  const base = [rule, coin, chainKey, Number(sourceTsCurrent) || 0, Number(sourceTsPrevious) || 0].join('|');
+  const directed = fromChain && toChain ? `${String(fromChain)}>${String(toChain)}` : '';
+  const base = [rule, coin, chainKey, directed, Number(sourceTsCurrent) || 0, Number(sourceTsPrevious) || 0].join('|');
   return `${String(rule).toLowerCase()}-${String(coin).toLowerCase()}-${fnv1a(base)}`;
 }
 
@@ -458,6 +475,8 @@ function makeAlert({
       chains: orderedChains,
       sourceTsCurrent,
       sourceTsPrevious,
+      fromChain,
+      toChain,
     }),
     rule,
     classification: rule,
@@ -518,8 +537,9 @@ export function generateAlerts(data, opts = {}) {
     const detail = data?.[`${cfg.symbol.toLowerCase()}Detail`];
     const provenance = { source: 'deflama+coingecko', coin: cfg.symbol };
 
-    if (typeof price === 'number') {
+    if (typeof price === 'number' && Number.isFinite(price)) {
       const devBps = bps(price);
+      if (devBps == null) continue;
       const absDev = Math.abs(devBps);
       let severity = null;
       if (absDev >= cfg.thresholds.pegCriticalBps) severity = 'CRITICAL';

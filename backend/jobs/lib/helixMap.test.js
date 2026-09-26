@@ -155,14 +155,16 @@ describe('buildMarketSnapshot', () => {
     expect(m.delta).toBe((1300 - 1100) + (2200 - 2100));
   });
 
-  it('sets delta null when any coin lacks a 24h-ago point', () => {
+  it('sums available deltas when a coin lacks a 24h-ago point', () => {
     const bySymbol = {
       USDT: [trendPoint(0, 1000), trendPoint(30 * 3600000, 1300)],
       USDC: [trendPoint(29 * 3600000, 2100), trendPoint(30 * 3600000, 2200)],
     };
     const m = buildMarketSnapshot(bySymbol);
     expect(m.total).toBe(1300 + 2200);
-    expect(m.delta).toBe(null);
+    // Only USDT has a 24h-ago point (1100 implied? no, window too short for USDC),
+    // so delta uses the available coin only instead of voiding the market delta.
+    expect(m.delta).toBe(300);
   });
 });
 

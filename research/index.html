@@ -69,9 +69,9 @@
 
     <div class="chart-wrap reveal">
       <div class="chart-canvas-box" style="height:220px">
-        <canvas id="taxonomy-chart" height="220" role="img" aria-label="Stacked horizontal bar chart showing relative scale of the six stablecoin taxonomy categories. Fiat-USD dominates at around 84% of total supply."></canvas>
+        <canvas id="taxonomy-chart" height="220" role="img" aria-label="Stacked horizontal bar chart showing relative scale of the six stablecoin taxonomy categories. Fiat-USD is roughly 86% of the total shown, computed from range midpoints; the other five categories combined are roughly 14%."></canvas>
       </div>
-      <p class="chart-caption">Relative scale of the six value-referenced-token categories, mid-2026. Figures are ranges where aggregators disagree (see methodology). The other five categories combined are roughly 15-16% of the total shown here; RWA/tokenized funds is the largest of the five.</p>
+      <p class="chart-caption">Relative scale of the six value-referenced-token categories, mid-2026. Figures are ranges where aggregators disagree (see methodology). Using midpoints, the other five categories combined are roughly 14% of the total shown here and up to about 17% using high ends; RWA/tokenized funds is the largest of the five.</p>
     </div>
 
     <h3 style="margin-top:2.5rem">The six categories</h3>
@@ -80,7 +80,7 @@
     </div>
     <noscript>
       <div class="hub-accordion">
-        <div class="hub-accordion-item open"><div class="hub-accordion-panel"><p>Fiat-USD: ~$299-316B. USDT, USDC. Full reserve in cash + short-term Treasuries.</p></div></div>
+        <div class="hub-accordion-item open"><div class="hub-accordion-panel"><p>Fiat-USD: ~$303B (Sep 2026). USDT, USDC. Full reserve in cash + short-term Treasuries.</p></div></div>
         <div class="hub-accordion-item open"><div class="hub-accordion-panel"><p>Fiat non-USD: ~$2B. EURC, JPYC, XSGD. Under 0.5% of supply.</p></div></div>
         <div class="hub-accordion-item open"><div class="hub-accordion-panel"><p>Commodity-backed: ~$4.6-6B. PAXG, XAUT, KAG. ~96% gold.</p></div></div>
         <div class="hub-accordion-item open"><div class="hub-accordion-panel"><p>Crypto-collateralized / synthetic: ~$13B. DAI/USDS, USDe, LUSD.</p></div></div>
@@ -126,7 +126,7 @@
   <div class="section-inner">
     <div class="kicker">02 - Scale and trajectory</div>
     <h2>From crypto plumbing to financial infrastructure</h2>
-    <p class="section-thesis">Total stablecoin market cap is approximately $300-320B as of mid-2026 (aggregators disagree: CoinMarketCap ~$300B, CoinGecko ~$291B, DefiLlama ~$289B - the range is the honest answer, not a number to pick). USDT and USDC alone control over 80% of supply. Every credible forecaster expects multi-trillion scale by 2030; the disagreement is how fast, not whether.</p>
+    <p class="section-thesis">Total stablecoin market cap is approximately $289-300B as of mid-2026 across aggregators (CoinMarketCap ~$300B, CoinGecko ~$291B, DefiLlama ~$289B - the range is the honest answer, not a number to pick). USDT and USDC alone control over 80% of supply. Every credible forecaster expects multi-trillion scale by 2030; the disagreement is how fast, not whether.</p>
 
     <div class="chart-wrap reveal">
       <div class="chart-canvas-box" style="height:320px">
@@ -140,7 +140,7 @@
       <div class="chart-canvas-box" style="height:280px">
         <canvas id="forecast-chart" height="280" role="img" aria-label="Fan/band chart of stablecoin market cap projections from 2026 to 2030, showing IMF, Citi, Bain, Standard Chartered, and JPMorgan forecasts as separate labeled ranges."></canvas>
       </div>
-      <p class="chart-caption">Named projections to 2030. Toggle forecasters with the chips below the chart. Everyone credible expects multi-trillion scale; the disagreement is how fast, not whether.</p>
+      <p class="chart-caption">Named projections to 2030. Toggle forecasters with the chips below the chart. Everyone credible expects multi-trillion scale; the disagreement is how fast, not whether. Single-point forecasts are shown with small visual padding so the bar is visible; see tooltip for the exact stated figure.</p>
     </div>
     <div class="chip-row" id="forecast-chips" role="group" aria-label="Isolate a forecaster">
       <button class="hub-chip active" data-forecaster="all">All</button>
@@ -164,21 +164,21 @@
       <div class="chart-canvas-box" style="height:420px">
         <canvas id="treasury-chart" height="420" role="img" aria-label="Horizontal bar chart ranking sovereign nations and stablecoin issuers as holders of US Treasury debt. Issuer bars highlighted in gold. Tether (~$141B) ranks between Luxembourg and Norway; combined issuers (~$182B) exceed Norway."></canvas>
       </div>
-      <p class="chart-caption">Largest holders of US Treasury securities, USD billions. Sovereign nations per US Treasury TIC (Jan 2023, latest published); stablecoin issuers per their own reserve attestations (Tether Q1 2026, combined 4 issuers ~$182B). The comparison is duration-mismatched - issuers hold short-dated T-bills, TIC ranks total (long+short) holdings.</p>
+      <p class="chart-caption">Largest holders of US Treasury securities, USD billions. Sovereign top 3 per US Treasury TIC Jun 2026; remaining sovereign rows per TIC Jan 2023 pending refresh; stablecoin issuers per their own reserve attestations (Tether Q1 2026, combined 4 issuers ~$182B). The comparison is duration-mismatched - issuers hold short-dated T-bills, TIC ranks total (long+short) holdings.</p>
     </div>
 
     <div class="hub-accordion" style="margin-top:2rem">
       <div class="hub-accordion-item open">
         <button class="hub-accordion-trigger" aria-expanded="true">How the GENIUS Act locks this in<span class="hub-accordion-mark">&rsaquo;</span></button>
         <div class="hub-accordion-panel">
-          <p>The GENIUS Act (signed July 17-18, 2025) requires payment-stablecoin reserves to be 1:1 in cash, T-bills, or overnight repo, with maturities at 90 days or less. This legally binds issuer demand to the very short end of the yield curve, making issuers permanent, rule-bound T-bill buyers. The effective date is the earlier of 18 months after enactment or 120 days after final rules - estimated November 2026. Rulemaking status changes monthly; re-verify before citing.</p>
+          <p>The GENIUS Act (signed July 18, 2025; the House passed it July 17, so "July 17-18" appears in coverage) requires payment-stablecoin reserves to be 1:1, held in a permitted list that includes cash, T-bills and overnight repo, with Treasury maturities of 93 days or less (the statute says 93, not 90). This legally binds issuer demand to the very short end of the yield curve, making issuers permanent, rule-bound T-bill buyers. The effective date is January 18, 2027 under the 18-month fallback now locked (no final rule was issued before the September 20, 2026 threshold). Rulemaking status changes monthly; re-verify before citing.</p>
           <p>See the full regulatory comparison in <a href="#regulation">Section 8</a>.</p>
         </div>
       </div>
     </div>
 
     <h3 style="margin-top:2.5rem" id="maturity-bands">T-bill maturity bands: why issuers stay short</h3>
-    <p class="as-of">Reserve composition by maturity, from issuer attestations. Short-term bills (under 90 days) dominate because redemptions can arrive any day; long-dated holdings would force a fire sale.</p>
+    <p class="as-of">Reserve composition by maturity, from issuer attestations. Short-term bills (93 days or less, the statutory cap) dominate because redemptions can arrive any day; long-dated holdings would force a fire sale.</p>
     <div id="maturity-bands-wrap" class="maturity-bands-wrap"></div>
     <p class="as-of">Sources: Tether Q1 2026 attestation; Circle Q1 2026 reserve report. Yadav and Malone (JIEL 2025) flag the interdependence: mass redemptions of stablecoins could strain short-term Treasury liquidity.</p>
   </div>
@@ -240,14 +240,14 @@
 
     <div class="reveal">
       <div class="race-row">
-        <div class="race-label"><span>Traditional wire - $200 World Bank RPW average, ~6% all-in, 1-5 days</span><span class="num">~6.2%</span></div>
-        <div class="race-bar-track"><div class="race-bar trad" data-fill="62"></div></div>
+        <div class="race-label"><span>Traditional wire - $200 World Bank RPW average, ~6.5% all-in, 1-5 days</span><span class="num">~6.49%</span></div>
+        <div class="race-bar-track"><div class="race-bar trad" data-fill="65"></div></div>
       </div>
       <div class="race-row">
         <div class="race-label"><span>Stablecoin gas only - $200, ~$0.10, seconds (the middle hop, not the whole journey)</span><span class="num">~$0.10</span></div>
         <div class="race-bar-track"><div class="race-bar" data-fill="1"></div></div>
       </div>
-      <p class="chart-caption">Cost of moving $200 across borders, the World Bank Remittance Prices Worldwide measurement point. Traditional: global average ~6.2% all-in (fee + FX margin, 1-5 days). Stablecoin gas-only: ~$0.10 network fee (seconds). The gas-only figure is the middle hop; a full fiat-to-token-to-fiat journey adds on-ramp and off-ramp FX (see the BPI 0.3-9% range in the scenario table). Race bar width is proportional to all-in cost at $200.</p>
+      <p class="chart-caption">Cost of moving $200 across borders, the World Bank Remittance Prices Worldwide measurement point. Traditional: global average ~6.49% all-in Q1 2025 Issue 53 (fee + FX margin, 1-5 days). Stablecoin gas-only: ~$0.10 network fee (seconds). The gas-only figure is the middle hop; a full fiat-to-token-to-fiat journey adds on-ramp and off-ramp FX (see the BPI 0.3-9% range in the scenario table). Race bar width is proportional to all-in cost at $200.</p>
     </div>
 
     <h3 style="margin-top:2.5rem">Cross-border cost calculator</h3>
@@ -430,7 +430,7 @@
       <div class="chart-canvas-box" style="height:340px">
         <canvas id="reality-chart" height="340" role="img" aria-label="Log-scale bar chart putting stablecoins next to money-market funds, gold ETFs, tokenized gold, and RWA ex-stablecoins. Money-market funds at $7.9T dwarf everything else."></canvas>
       </div>
-      <p class="chart-caption">Log scale, USD billions. US money-market funds ~$7.9T (ICI); US gold ETFs ~$530B (World Gold Council); fiat stablecoins ~$316B; RWA ex-stablecoins ~$20-40B (rwa.xyz); tokenized gold ~$5-8B. The ratios are structurally stable for now; the absolute sizes are fast-stale.</p>
+      <p class="chart-caption">Log scale, USD billions. US money-market funds ~$7.9T (ICI); US gold ETFs ~$530B (World Gold Council); fiat stablecoins ~$303B mid-2026 snapshot; RWA ex-stablecoins ~$20-40B (rwa.xyz); tokenized gold ~$5-8B. The ratios are structurally stable for now; the absolute sizes are fast-stale.</p>
     </div>
     <p class="as-of">Until on-chain real assets approach even 1% of their traditional counterparts, claims that they are "changing" commodity or credit markets should be read as trajectory statements, not current-fact statements. The growth rates, not the sizes, are the story worth monitoring on the live dashboard.</p>
   </div>
@@ -441,9 +441,11 @@
 <!-- FOOTER -->
 <footer class="hub-footer">
   <div class="hub-footer-inner">
-    <div class="badge">Last updated 2026-08-12 · Hub build 3.6.1</div>
+    <div class="badge" id="hub-freshness-badge">Last updated 2026-09-21 · Hub build 3.6.2</div>
 
     <p class="attribution">Research and maintained by <a href="https://www.withkeshav.com" target="_blank" rel="noopener noreferrer">Keshav Maheshwari</a>.</p>
+
+    <p class="contributing">Found an error, or have a source, correction or suggestion for this research? Open an issue on <a href="https://github.com/withkeshav/StableSense/issues" target="_blank" rel="noopener noreferrer">GitHub</a>. Corrections to cited figures are especially welcome, and each one is checked against the primary source before it is applied.</p>
 
     <p class="disclaimer">This report is provided for informational and educational purposes only. It is not financial, investment, legal, or tax advice, and nothing here should be read as a recommendation to buy, sell, or hold any asset. Headline figures such as market capitalization represent one measure among several relevant ones, they do not by themselves capture trading volume, tokenized real-world-asset value, or every issuer's reserves, and different sources measure and report them differently. Where that is the case, this report states what a figure specifically measures rather than leaving it ambiguous. Figures are sourced and dated as noted throughout; markets and regulation move quickly, verify any figure against the cited primary source before relying on it for a decision.</p>
 
@@ -455,7 +457,7 @@
     <noscript>
       <ol>
         <li><strong>Treasury-holder ranking:</strong> Tether ~$141B exceeds Germany ($91.3B) and Norway ($104.4B); combined issuers ~$182B exceeds Norway. Duration-mismatched comparison. Sources: US Treasury TIC, Tether/Circle attestations.</li>
-        <li><strong>GENIUS effective date:</strong> earlier of 18 months after enactment or 120 days after final rules; estimated Nov 2026. Sources: Congress.gov S.1582, Morgan Lewis.</li>
+        <li><strong>GENIUS effective date:</strong> earlier of 18 months after enactment or 120 days after final rules, which locks it at Jan 18 2027 (no final rule issued before Sep 20 2026). Sources: govinfo Public Law 119-27, Morgan Lewis.</li>
         <li><strong>SVB/USDC low:</strong> $0.8789 on Mar 11 2023 (CoinGecko Research); $3.3B at SVB. Sources: CoinGecko Research, CNBC.</li>
         <li><strong>UST collapse:</strong> ~$18B UST supply peak; ~$60B combined UST+LUNA loss. Sources: ScienceDirect, Reuters, CoinMarketCap via Binance.</li>
       </ol>

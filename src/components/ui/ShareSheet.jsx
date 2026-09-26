@@ -66,23 +66,16 @@ export default function ShareSheet({
 
   const current = FORMAT_LIST.find((item) => item.id === format) || FORMAT_LIST[1];
   // Prefer the chart's data timestamp ("as of" the data); fall back to now.
-  const stamp = asOf
-    ? new Date(asOf).toLocaleString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        timeZoneName: 'short',
-      })
-    : new Date().toLocaleString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        timeZoneName: 'short',
-      });
+  // Always render in UTC so exports match formatUtc provenance elsewhere.
+  const stamp = new Date(asOf ?? Date.now()).toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'UTC',
+    timeZoneName: 'short',
+  });
   const read = interpretation || 'Live market observation. This is a price and market picture, not a reserve-quality or investment conclusion.';
 
   const download = () => {

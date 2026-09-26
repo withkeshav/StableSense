@@ -3,11 +3,11 @@ import { ACTIVE_STABLECOINS, STABLECOIN_REGISTRY } from '../../utils/coin-config
 const COVERAGE_BLURBS = {
   USDT: {
     role: 'The market giant',
-    why: '$180B+ supply, deepest liquidity on nearly every chain, and the dominant payments stablecoin (led by Tron). Sets the floor for the whole market.',
+    why: 'Largest by supply with the deepest liquidity on nearly every chain, and the dominant payments stablecoin (led by Tron). Sets the floor for the whole market.',
   },
   USDC: {
     role: 'The regulated institutional leader',
-    why: '~$72B supply, the top stablecoin by adjusted transaction volume, and the DeFi default. Mastercard 24/7 settlement and heavy institutional adoption.',
+    why: 'Among the largest by supply, the top stablecoin by adjusted transaction volume, and the DeFi default. Mastercard 24/7 settlement and heavy institutional adoption.',
   },
   DAI: {
     role: 'The decentralized benchmark',
@@ -71,8 +71,7 @@ export default function AboutTab() {
             <li><strong>AI narrative</strong> - a plain-language read of the signals, refreshed on a slow cadence.</li>
           </ul>
           <p class="text-muted small mb-0">
-            Data sources: DefiLlama stablecoins API (on-chain circulating supply per chain and history) and
-            CoinGecko (price, 24h volume, and market charts). Both are fetched directly from your browser.
+            Data sources: StableSense backend market snapshots (Helix trends via cron, served same-origin) for supply and prices, with CoinGecko 90-day charts and tickers loaded in coin tabs.
           </p>
         </div>
       </section>

@@ -54,7 +54,9 @@ const insertSnapshot = db.prepare(`
   VALUES (@coin, @chain, @ts, @circulating, @delta)
 `);
 const insertSnapshots = db.transaction((rows) => {
-  for (const row of rows) insertSnapshot.run(row);
+  // Normalize chain to lowercase so casing variants ("Tron" vs "tron")
+  // never double-count the same rail. Market view groups by lowercase too.
+  for (const row of rows) insertSnapshot.run({ ...row, chain: String(row.chain || '').trim().toLowerCase() });
 });
 
 // 1) Per-coin chain history. DefiLlama returns full daily token history, so the
@@ -128,7 +130,9 @@ const insertSnapshot = db.prepare(`
   VALUES (@coin, @chain, @ts, @circulating, @delta)
 `);
 const insertSnapshots = db.transaction((rows) => {
-  for (const row of rows) insertSnapshot.run(row);
+  // Normalize chain to lowercase so casing variants ("Tron" vs "tron")
+  // never double-count the same rail. Market view groups by lowercase too.
+  for (const row of rows) insertSnapshot.run({ ...row, chain: String(row.chain || '').trim().toLowerCase() });
 });
 const insertPrice = db.prepare(
   'INSERT INTO prices (coin, ts, price, change_24h, volume_24h_usd) VALUES (@coin, @ts, @price, @change, @volume)'

@@ -17,7 +17,9 @@ export default function HomeTab({ data, alerts, setActiveTab, refreshIntervalSec
   const priceByCoin = useMemo(() => {
     const m = {};
     coins.forEach((c) => {
-      m[c.symbol] = cg?.[c.coingeckoId]?.usd || data?.prices?.[c.symbol]?.price || 1;
+      // Null-safe: missing market data stays null and renders as hyphen.
+      // Never fall back to 1, which would hide an outage as on-peg.
+      m[c.symbol] = cg?.[c.coingeckoId]?.usd ?? data?.prices?.[c.symbol]?.price ?? null;
     });
     return m;
   }, [coins, cg, data]);

@@ -24,14 +24,16 @@ function rows() {
 }
 
 describe('buildSupplyHistory', () => {
+  // Fixed clock so the day-window test never becomes time-bombed as wall time moves.
+  const NOW = SEP8 + 86_400_000;
   it('keeps era rows only when a day mixes daily and intraday layers', () => {
-    const out = buildSupplyHistory(rows(), 30);
+    const out = buildSupplyHistory(rows(), 30, NOW);
     const sep8 = out.USDT.find((p) => p.ts === SEP8);
     expect(sep8.value).toBe(183e9);
   });
 
   it('normalizes chain casing and keeps the newest row per chain-day', () => {
-    const out = buildSupplyHistory(rows(), 30);
+    const out = buildSupplyHistory(rows(), 30, NOW);
     const sep7 = out.USDT.find((p) => p.ts === SEP7);
     // 'Tron' 33e9 has the NEWEST ts for the tron-day key, so casing dedupe
     // keeps 33e9 (not the older 33.4e9); total = 50e9 + 33e9.
@@ -39,17 +41,17 @@ describe('buildSupplyHistory', () => {
   });
 
   it('emits one point per UTC day, sorted ascending', () => {
-    const out = buildSupplyHistory(rows(), 30);
+    const out = buildSupplyHistory(rows(), 30, NOW);
     const days = out.USDT.map((p) => p.ts);
     expect(days).toEqual([...days].sort((a, b) => a - b));
     expect(new Set(days).size).toBe(days.length);
   });
 
   it('drops days with no numeric values and honors the day window', () => {
-    const out = buildSupplyHistory(rows(), 30);
+    const out = buildSupplyHistory(rows(), 30, NOW);
     expect(out.USDT.find((p) => p.ts === SEP6)).toBeUndefined();
     const old = [{ coin: 'USDT', chain: 'ethereum', ts: SEP8 - 40 * DAY, circulatingUsd: 1e9 }];
-    expect(buildSupplyHistory(old, 30).USDT).toBeUndefined();
-    expect(buildSupplyHistory(old, 45).USDT).toHaveLength(1);
+    expect(buildSupplyHistory(old, 30, NOW).USDT).toBeUndefined();
+    expect(buildSupplyHistory(old, 45, NOW).USDT).toHaveLength(1);
   });
 });

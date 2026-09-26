@@ -72,12 +72,12 @@ export function chgClass(n) {
 /**
  * Convert a peg price to basis points off $1.00.
  * @param {number|string|null|undefined} p Peg price.
- * @returns {number} Basis points difference; returns 0 on invalid input.
+ * @returns {number|null} Basis points difference; returns null on invalid input so missing data is never shown as on-peg.
  */
 export function bps(p) {
-  if (p === null || p === undefined) return 0;
+  if (p === null || p === undefined) return null;
   const price = Number(p);
-  if (!Number.isFinite(price)) return 0;
+  if (!Number.isFinite(price)) return null;
   return Math.round((price - 1) * 10000);
 }
 

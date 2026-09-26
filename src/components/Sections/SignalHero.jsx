@@ -79,12 +79,15 @@ export default function SignalHero({ coins, priceByCoin, stress, intelligence, o
         </div>
       </div>
       <div class="signal-prices inline-prices" aria-label="Tracked coin peg prices">
-        {(coins || []).map((c) => (
-          <span key={c.symbol}>
-            {c.symbol} <strong>{fmtPrice(priceByCoin[c.symbol])}</strong>
-            <small>({bps(priceByCoin[c.symbol])} bps)</small>
-          </span>
-        ))}
+        {(coins || []).map((c) => {
+          const drift = bps(priceByCoin[c.symbol]);
+          return (
+            <span key={c.symbol}>
+              {c.symbol} <strong>{fmtPrice(priceByCoin[c.symbol])}</strong>
+              <small>({drift == null ? '-' : `${drift} bps`})</small>
+            </span>
+          );
+        })}
       </div>
     </section>
   );

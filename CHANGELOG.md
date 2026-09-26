@@ -4,6 +4,32 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.6.2] - 2026-09-26
+
+### Fixed
+- **Backend market-flow direction:** `marketBackend.js` built chain observations as `[current, previous]` while `chainObservation` reads the last two entries as previous-then-current, so every mint/burn flow was inverted. Tokens are now emitted in ascending time order.
+- **Chart re-creation on every render:** `ChartWrapper`'s `areOptionsEqual` returned `false` even when the options were equal, so every parent render destroyed and rebuilt its Chart.js instance.
+- **Missing data no longer reads as healthy:** `bps()` returns `null` on invalid input instead of `0`, so an absent price can never render as on-peg drift. `computePegStress` filters nulls rather than counting them as zero stress; `generateAlerts` skips them; the Home and Coin price maps use nullish coalescing instead of `|| 1`, so an outage shows a hyphen rather than a false `$1`.
+- **Alert id collision:** `alertEventId` now hashes the directed `from>to` pair as well as the sorted chain set, so opposite migrations in the same window no longer share one id. Stored ids churn once on the next stress run.
+- **Aggregate zeroing:** `buildMarketSnapshot` sums the deltas it has instead of voiding the whole market delta when one coin lacks a 24h-ago point.
+- **Chain casing:** chains are lowercased at write (fetch), at group time (market view, stress), and at read (the `/api/history` chain filter), so `Tron` and `tron` can no longer double-count the same rail.
+- **Whale Watch share:** share is measured against total tracked absolute flow rather than only the surfaced rows, so a small flagged move can no longer display as a large share of itself.
+- **Hub captions recomputed from the chart's own data:** the taxonomy caption now states 14% using midpoints (up to about 17% using high ends), and the chart itself parses range midpoints so the bars and the caption agree. The taxonomy canvas `aria-label` was corrected from a stale "around 84%" to 86% on the same midpoint basis.
+- **Hub freshness badge:** the footer date was hand-written (2026-08-12) and had drifted from the dataset's real as-of date. It is now rendered from `data.AS_OF` and `data.HUB_BUILD`, with a static fallback in the HTML.
+- **Taxonomy no-JS fallback:** the `noscript` block still carried a `$299-316B` figure contradicting the taxonomy data; it now matches.
+- **Share-card scope:** every coin-tab share card now states its range, interpretation, as-of, and that figures cover tracked coins only, not global market supply. Share timestamps render in UTC so exports match `formatUtc` provenance.
+
+### Changed
+- **About copy:** removed drift-prone hard supply numbers and corrected the data-sources description, which still claimed both feeds were fetched directly from the browser.
+- **Sidebar freshness wording:** "Data current" changed to "Last sync", so the label no longer overstates freshness when the backend snapshot is old.
+- **`buildSupplyHistory`** takes an injectable `nowMs` so the day-window test is not time-bombed.
+
+### Tests
+- Test count 150 to 198 across both the dashboard and backend suites.
+
+### Docs
+- Version bumped across `package.json`, `backend/package.json`, both lockfiles (which had been left at 3.4.0), the `APP_VERSION` fallback, the README badge, and the hub build marker.
+
 ## [3.6.1] - 2026-08-18
 
 ### Fixed
@@ -265,6 +291,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 Initial packaged release of the intelligence dashboard (prior to source-available packaging). No public changelog kept.
 
+[3.6.2]: https://github.com/withkeshav/StableSense/releases/tag/v3.6.2
+[3.6.1]: https://github.com/withkeshav/StableSense/releases/tag/v3.6.1
 [3.6.0]: https://github.com/withkeshav/StableSense/releases/tag/v3.6.0
 [3.5.1]: https://github.com/withkeshav/StableSense/releases/tag/v3.5.1
 [3.4.0]: https://github.com/withkeshav/StableSense/releases/tag/v3.4.0

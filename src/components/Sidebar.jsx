@@ -100,7 +100,7 @@ export default function Sidebar({
           <div class="data-status">
             <span class="live-dot" aria-hidden="true" />
             <div>
-              <strong>Data current</strong>
+              <strong>Last sync</strong>
               <small>{ago}</small>
             </div>
           </div>

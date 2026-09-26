@@ -226,7 +226,7 @@ export function shareChart(chartInstance, title, dateStr, formatKey) {
     title,
     rangeLabel: 'Chart',
     interpretation: title,
-    definition: 'Market observation from live StableSense data.',
+    definition: 'Tracked coins on this dashboard only, not total global stablecoin market cap.',
     timestamp: dateStr,
   }, formatKey);
 }
@@ -258,7 +258,7 @@ export function createSharePopover(chartInstance, title, dateStr, anchorEl) {
         title,
         rangeLabel: 'Chart',
         interpretation: title,
-        definition: 'Market observation from live StableSense data.',
+        definition: 'Tracked coins on this dashboard only, not total global stablecoin market cap.',
         timestamp: dateStr,
       }, btn.dataset.fmt);
       pop.remove();

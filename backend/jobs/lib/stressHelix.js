@@ -138,15 +138,16 @@ export function isMappableEvent(ev) {
 }
 
 /**
- * Keep events for tracked symbols only, newest first.
+ * Keep events for tracked symbols only, newest first. Symbol match is
+ * case-insensitive so Helix casing variants never silently drop a coin.
  * @param {Array<object>} events
  * @param {Array<string>} symbols
  * @returns {Array<object>}
  */
 export function filterTrackedEvents(events, symbols) {
-  const keep = new Set(symbols);
+  const keep = new Set((symbols || []).map((s) => String(s).toUpperCase()));
   return (Array.isArray(events) ? events : [])
-    .filter((e) => e && typeof e === 'object' && keep.has(e.asset_symbol))
+    .filter((e) => e && typeof e === 'object' && keep.has(String(e.asset_symbol || '').toUpperCase()))
     .sort((a, b) => (eventObservedMs(b) ?? 0) - (eventObservedMs(a) ?? 0));
 }
 

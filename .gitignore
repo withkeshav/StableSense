@@ -37,12 +37,18 @@ docs/tmp/
 # Backend local database
 backend/data/
 
-# Local agent instructions (internal, not published)
-AGENTS.md
+# Local agent instructions (internal, not published).
+# AGENTS.md is deliberately NOT ignored: it is the canonical, durable agent spec for this repo and is
+# tracked in git, so it survives a clean checkout and is not lost when the scratch folder is cleared.
+# A root-level `agent.md` is ignored because it invites the exact confusion AGENTS.md exists to avoid.
 CLAUDE.md
+agent.md
 .claude/
 .cursor/
 .opencode/
+
+# Local ops change log (internal, not published)
+oc.md
 
 # Local review/planning notes (internal, not published)
 .progress/

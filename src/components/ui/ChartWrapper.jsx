@@ -78,7 +78,7 @@ function areOptionsEqual(a, b) {
       return false;
     }
   }
-  return false;
+  return true;
 }
 
 const EMPTY_OPTIONS = {};

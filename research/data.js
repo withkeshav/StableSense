@@ -3,10 +3,17 @@
 // rather than a single silently-chosen number. The five highest-stakes claims (Treasury-holder
 // ranking, GENIUS Act effective-date mechanics, SVB/USDC low, UST collapse
 // figure, Aug 2026 supply contraction) were verified against primary sources
-// on 2026-09-08; see the `verifiedClaims` export and the methodology note in
-// the footer.
+// on 2026-09-08 and re-verified on 2026-09-21; see the `verifiedClaims` export
+// and the methodology note in the footer. AS_OF below is the last date the
+// whole dataset was re-checked, so it moves whenever a pass changes any figure.
 
-export const AS_OF = '2026-09-08';
+export const AS_OF = '2026-09-21';
+
+// Hub build marker rendered in the footer freshness badge. Kept as an
+// explicit constant so a version bump touches one data file plus the badge
+// fallback, rather than a hand-edited string that can drift from the value
+// the build actually injects.
+export const HUB_BUILD = '3.6.2';
 
 // --- the four manually-verified claims (see the methodology note in the footer) -
 export const verifiedClaims = [
@@ -205,7 +212,7 @@ export const remittanceCost = {
   // repurposed as a SWIFT ticket; it is deleted as a fee and only appears as a
   // worked $10,000 example in the scenario table, attributed to that reading.
   traditionalSchedules: [
-    { id: 'rpw', label: 'RPW-like retail % ($200/$500 only)', feePct: 6.2, fixedUsd: 0, warnAbove: 500, warn: 'RPW only mystery-shops $200 and $500. Do not extrapolate this percentage to commercial sizes.' },
+    { id: 'rpw', label: 'RPW-like retail % ($200/$500 only)', feePct: 6.49, fixedUsd: 0, warnAbove: 500, warn: 'RPW only mystery-shops $200 and $500. Do not extrapolate this percentage to commercial sizes.' },
     { id: 'sme', label: 'SME wire: 2% FX + $40', feePct: 2, fixedUsd: 40, warnAbove: null },
     { id: 'commercial', label: 'Commercial: 25 bp FX + $25', feePct: 0.25, fixedUsd: 25, warnAbove: null },
   ],
@@ -235,10 +242,10 @@ export const remittanceCost = {
 export const remittanceScenarios = [
   {
     id: 'A', scenario: 'Worker sends $200', allowed: 'World Bank Remittance Prices Worldwide (named quarter)',
-    traditional: 'Global average ~6.2% all-in; banks higher; Sub-Saharan Africa higher',
+    traditional: 'Global average ~6.49% all-in Q1 2025; banks higher; Sub-Saharan Africa higher',
     stablecoin: 'BPI 2026 full journey 0.3-9%; gas is not the whole story',
     why: 'The actual remittance fact. This is the size World Bank RPW measures.',
-    source: 'World Bank RPW Q1 2025; BPI Jul 2026',
+    source: 'World Bank RPW Q1 2025 Issue 53; BPI Jul 2026',
   },
   {
     id: 'B', scenario: '$500', allowed: 'World Bank RPW $500 average',
@@ -399,8 +406,8 @@ export const regulation = [
 
 // --- Section 8b: recent regulatory movement (dated, re-verify before citing) ---
 export const regulationNews = [
-  { date: 'Sep 2026', label: 'US: CLARITY Act Senate vote due Sep 15', detail: 'Market-structure bill that would narrow the SEC/CFTC gap for stablecoin-adjacent activity.', source: 'https://stablecoininsider.org/stablecoin-depeg-insurance/' },
-  { date: 'Aug 26, 2026', label: 'Korea: Shinhan-Visa stablecoin pilot', detail: 'Strategic agreement to test stablecoin issuance, remittance, and redemption for the Korean market.', source: 'https://stablecoininsider.org/stablecoin-depeg-insurance/' },
+  { date: 'Sep 2026', label: 'US: CLARITY Act Senate vote due Sep 15', detail: 'Market-structure bill that would narrow the SEC/CFTC gap for stablecoin-adjacent activity; a separate bill from the GENIUS Act (S.1582).', source: 'https://www.congress.gov/bill/119th-congress/house-bill/3633' },
+  { date: 'Aug 26, 2026', label: 'Korea: Shinhan-Visa stablecoin pilot', detail: 'Strategic agreement to test stablecoin issuance, remittance, and redemption for the Korean market.', source: 'https://reports.tiger-research.com/p/2026-asia-stablecoin-market-overview-eng' },
   { date: 'Jul 14, 2026', label: 'Japan: JCB-Circle MOU', detail: 'Card network exploring USDC payments and cross-border settlement in Japan; travel-rule data requirements live from Aug 3, 2026.', source: 'https://cointelegraph.com/news/japans-jcb-signs-mou-with-circle-to-explore-usdc-payments-and-cross-border-settlements' },
 ];
 
@@ -428,22 +435,22 @@ export const sources = [
   { id: 'ecb-mpb', label: 'ECB Macroprudential Bulletin - euro stablecoins and sovereign bonds', url: 'https://www.ecb.europa.eu/press/financial-stability-publications/macroprudential-bulletin/html/ecb.mpbu202604_05.en.html' },
   { id: 'fed-feds', label: 'Federal Reserve FEDS Note - Banks in the Age of Stablecoins', url: 'https://www.federalreserve.gov/econres/notes/feds-notes/banks-in-the-age-of-stablecoins-implications-for-deposits-credit-and-financial-intermediation-20251217.html' },
   { id: 'bis-wp1370', label: 'BIS Working Paper 1370 - Dollarisation and monetary control', url: 'https://bis.org/publ/work1370.pdf' },
-  { id: 'bis-aer', label: 'BIS Annual Economic Report - Anchoring trust in money', url: 'https://www.bis.org/review/r251216i.pdf' },
+  { id: 'bis-aer', label: 'BIS Annual Economic Report - Anchoring trust in money', url: 'https://www.bis.org/publications/iii-anchoring-trust-money-innovation-beyond-stablecoins_2.pdf' },
   { id: 'imf-par-to-pressure', label: 'IMF WP 2026/005 - From Par to Pressure', url: 'https://www.imf.org/en/publications/wp/issues/2026/01/16/from-par-to-pressure-liquidity-redemptions-and-fire-sales-with-a-systemic-stablecoin-573271' },
   { id: 'coingecko-rwa', label: 'CoinGecko Research - RWA Report 2026', url: 'https://www.coingecko.com/research/publications/rwa-report-2026' },
   { id: 'rwa-xyz', label: 'rwa.xyz - RWA tokenization market data', url: 'https://rwa.xyz' },
   { id: 'defillama-stables', label: 'DefiLlama - Stablecoins dashboard', url: 'https://defillama.com/stablecoins' },
-  { id: 'coindesk-tether-q2', label: 'CoinDesk - Tether Q2 2026 results', url: 'https://www.coindesk.com/markets/2026/03/13/circle-overtakes-blackrock-in-tokenized-treasuries-as-market-hits-record-usd11-billion' },
-  { id: 'worldbank-remittance', label: 'World Bank Remittance Prices Worldwide', url: 'https://www.remittanceprices.worldbank.org' },
-  { id: 'chainalysis-geo', label: 'Chainalysis Geography of Cryptocurrency 2025', url: 'https://www.chainalysis.com/reports/2025-crypto-crimes-report' },
-  { id: 'visa-stablecoins', label: 'Visa - Stablecoin fosters USD dominance in emerging markets', url: 'https://coinmarketcap.com/academy/article/visa-stablecoin-fosters-us-dollar-dominance-in-emerging-markets' },
+  { id: 'coindesk-tether-q1', label: 'CoinDesk - Tether Q1 2026 attestation results', url: 'https://www.coindesk.com/business/2026/05/01/tether-posts-usd1-04-billion-q1-profit-reaches-usd8-23-billion-reserve-buffer' },
+  { id: 'worldbank-remittance', label: 'World Bank Remittance Prices Worldwide Issue 53 Q1 2025', url: 'https://remittanceprices.worldbank.org/sites/default/files/rpw_main_report_and_annex_q125_1_0.pdf' },
+  { id: 'chainalysis-geo', label: 'Chainalysis Geography of Cryptocurrency 2025', url: 'https://www.chainalysis.com/reports/2025-geography-of-cryptocurrency-report/' },
+  { id: 'visa-stablecoins', label: 'Visa - Stablecoin settlement live in the US', url: 'https://usa.visa.com/about-visa/newsroom/press-releases.releaseId.21951.html' },
   { id: 'reuters-uk', label: 'Reuters - UK dilutes stablecoin capital requirement', url: 'https://www.reuters.com/business/finance/uk-dilutes-stablecoin-capital-requirement-final-crypto-rulebook-2026-06-29/' },
-  { id: 'hkma-ord', label: 'Hong Kong Stablecoins Ordinance', url: 'https://www.mondaq.com/hongkong/fin-tech/1652738/hong-kongs-stablecoins-ordinance-to-take-effect-on-1-august-2025-welcoming-a-new-era-for-virtual-asset-regulation' },
-  { id: 'cbuae-reg', label: 'CBUAE Payment Token Services Regulation', url: 'https://uaefintechvibes.com/uae-stablecoin-regulations-2026-cbuae/' },
+  { id: 'hkma-ord', label: 'HKMA - Stablecoin issuers regulatory regime (Hong Kong)', url: 'https://www.hkma.gov.hk/eng/key-functions/international-financial-centre/stablecoin-issuers/' },
+  { id: 'cbuae-reg', label: 'CBUAE Payment Token Services Regulation', url: 'https://rulebook.centralbank.ae/en/rulebook/payment-token-services-regulation' },
   { id: 'tiger-research-asia', label: 'Tiger Research - 2026 Asia Stablecoin Market Outlook', url: 'https://reports.tiger-research.com/p/2026-asia-stablecoin-market-overview-eng' },
   { id: 'scorechain-mica', label: 'Scorechain - EU Stablecoin Regulation under MiCA', url: 'https://www.scorechain.com/blog/eu-stablecoin-regulation-mica' },
   { id: 'nyfed-sr1185', label: 'NY Fed Staff Report 1185 - Stablecoin Disintermediation', url: 'https://www.newyorkfed.org/research/staff_reports/sr1185' },
-  { id: 'whitehouse-cea', label: 'White House CEA - GENIUS Act fact sheet / analysis', url: 'https://www.whitehouse.gov/' },
+  { id: 'whitehouse-cea', label: 'White House CEA - Effects of stablecoin yield prohibition on bank lending', url: 'https://www.whitehouse.gov/research/2026/04/effects-of-stablecoin-yield-prohibition-on-bank-lending/' },
   { id: 'occ-nprm', label: 'OCC Bulletin 2026-3 - GENIUS Act NPRM', url: 'https://www.occ.gov/news-issuances/bulletins/2026/bulletin-2026-3.html' },
   { id: 'fdic-nprm', label: 'FDIC - GENIUS Act proposed rulemaking (FIL 2026)', url: 'https://www.fdic.gov/news/financial-institution-letters/2026/notice-proposed-rulemaking-establish-genius-act' },
   { id: 'stablecoinbeat-mc', label: 'Stablecoin Beat - Total market capitalization series (Sep 2026)', url: 'https://stablecoinbeat.com/charts/market-cap' },
@@ -452,7 +459,8 @@ export const sources = [
   { id: 'messari-usde', label: 'Messari - Ethena USDe (Oct 2025 Binance $0.65 print)', url: 'https://messari.io/project/ethena-usde' },
   { id: 'coinbase-usd1', label: 'Coinbase - USD1 (World Liberty Financial) market data', url: 'https://www.coinbase.com/price/usd1-wlfi' },
   { id: 'stablecoinbeat-reg', label: 'Stablecoin Beat - Global stablecoin regulation tracker (Sep 2026)', url: 'https://stablecoinbeat.com/regulation/' },
-  { id: 'stablecoin-insider', label: 'Stablecoin Insider - depeg insurance and CLARITY Act notes', url: 'https://stablecoininsider.org/stablecoin-depeg-insurance/' },
+  { id: 'stablecoin-insider', label: 'Stablecoin Insider - depeg insurance', url: 'https://stablecoininsider.org/stablecoin-depeg-insurance/' },
+  { id: 'stablecoin-insider-clarity', label: 'Stablecoin Insider - CLARITY Act Treasury stablecoin circuit breaker', url: 'https://stablecoininsider.org/clarity-act-treasury-stablecoin-circuit-breaker/' },
   { id: 'cointelegraph-jcb', label: 'Cointelegraph - JCB signs Circle MOU for Japan stablecoin payments', url: 'https://cointelegraph.com/news/japans-jcb-signs-mou-with-circle-to-explore-usdc-payments-and-cross-border-settlements' },
   { id: 'cointelegraph-uk', label: 'Cointelegraph - Bank of England innovation mandate covers stablecoins', url: 'https://cointelegraph.com/news/uk-boe-innovation-mandate-stablecoins' },
 ];

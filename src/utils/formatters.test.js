@@ -211,16 +211,16 @@ describe('bps', () => {
     expect(bps('1.005')).toBe(50);
   });
 
-  it('returns 0 for invalid inputs', () => {
-    expect(bps(undefined)).toBe(0);
-    expect(bps(NaN)).toBe(0);
-    expect(bps('abc')).toBe(0);
-    expect(bps(Infinity)).toBe(0);
+  it('returns null for invalid inputs so missing data is never shown as on-peg', () => {
+    expect(bps(undefined)).toBe(null);
+    expect(bps(NaN)).toBe(null);
+    expect(bps('abc')).toBe(null);
+    expect(bps(Infinity)).toBe(null);
   });
 
-  it('returns 0 for null and undefined inputs', () => {
-    expect(bps(null)).toBe(0);
-    expect(bps(undefined)).toBe(0);
+  it('returns null for null and undefined inputs', () => {
+    expect(bps(null)).toBe(null);
+    expect(bps(undefined)).toBe(null);
   });
 });
 

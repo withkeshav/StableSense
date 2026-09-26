@@ -578,7 +578,7 @@ describe('generateAlerts', () => {
     expect(alerts[0].severity).toBe('CRITICAL');
   });
 
-  it('uses a stable fingerprint that ignores detection time', () => {
+  it('uses a stable fingerprint that ignores detection time and keeps direction', () => {
     const data = {
       daiDetail: {
         chainBalances: {
@@ -590,13 +590,27 @@ describe('generateAlerts', () => {
     const a = generateAlerts(data, { detectedAt: 1 })[0];
     const b = generateAlerts(data, { detectedAt: 999 })[0];
     expect(a.id).toBe(b.id);
+    expect(a.fromChain).toBe('Polygon');
+    expect(a.toChain).toBe('Ethereum');
     expect(a.id).toBe(alertEventId({
       rule: 'MIGRATION',
       coin: 'DAI',
       chains: ['Ethereum', 'Polygon'],
+      fromChain: 'Polygon',
+      toChain: 'Ethereum',
       sourceTsCurrent: T1 * 1000,
       sourceTsPrevious: T0 * 1000,
     }));
+    const reverseId = alertEventId({
+      rule: 'MIGRATION',
+      coin: 'DAI',
+      chains: ['Ethereum', 'Polygon'],
+      fromChain: 'Ethereum',
+      toChain: 'Polygon',
+      sourceTsCurrent: T1 * 1000,
+      sourceTsPrevious: T0 * 1000,
+    });
+    expect(reverseId).not.toBe(a.id);
   });
 });
 

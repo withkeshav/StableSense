@@ -42,6 +42,7 @@ if (process.env.LEGACY_UPSTREAMS === '1') {
 
 // Materialize the latest snapshot rows into the {coin}Detail shape that
 // derive.js expects (chainBalances -> tokens[] -> circulating.peggedUSD).
+// Chain keys are lowercase-normalized so casing variants never double-count.
 function buildDetailsByCoin(coins) {
   const detailsByCoin = {};
   for (const coin of coins) {
@@ -54,8 +55,9 @@ function buildDetailsByCoin(coins) {
       .all(coin.symbol);
     const chainBalances = {};
     for (const r of rows) {
-      if (!chainBalances[r.chain]) chainBalances[r.chain] = { tokens: [] };
-      chainBalances[r.chain].tokens.push({
+      const chainKey = String(r.chain || '').trim().toLowerCase();
+      if (!chainBalances[chainKey]) chainBalances[chainKey] = { tokens: [] };
+      chainBalances[chainKey].tokens.push({
         date: Math.floor(r.ts / 1000),
         circulating: { peggedUSD: r.circulating_usd },
       });

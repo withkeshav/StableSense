@@ -84,7 +84,9 @@ async function heroCounter() {
   if (!fetched) {
     // static fallback: cite the broader research-file range as the figure,
     // labeled honestly as the global snapshot, not the live-tracked sum
-    total = 308; // midpoint of the $299-316B research-file range
+    // Q1 2025 RPW-verified global band is 289 to 300B across aggregators.
+    // Midpoint 295 keeps the fallback inside the sourced range in Section 2.
+    total = 295; // midpoint of the $289-300B research-file range
     label.textContent = 'Total global stablecoin market cap across all issuers, mid-2026 snapshot (live fetch unavailable; see Section 2 for the sourced range)';
   } else if (missing.length > 0) {
     label.textContent = `Combined market cap of the 5 stablecoins tracked here, updated live - partial, waiting on ${missing.length} coin${missing.length > 1 ? 's' : ''} (${missing.join(', ')})`;
@@ -154,14 +156,19 @@ function buildTaxonomy() {
 
   const tbody = document.querySelector('#token-table tbody');
   if (!tbody) return;
+  // Parse market-cap midpoint so ranges sort correctly. "2.3-6" parses as
+  // 4.15, not 2.36. Non-numeric like "early growth" sorts as 0.
+  const mcapMid = (s) => {
+    const nums = String(s || '').match(/[\d.]+/g);
+    if (!nums || !nums.length) return 0;
+    const vals = nums.map(Number).filter(Number.isFinite);
+    if (!vals.length) return 0;
+    return vals.reduce((a, b) => a + b, 0) / vals.length;
+  };
   const renderRows = (filter) => {
     const rows = data.tokens
       .filter((t) => filter === 'all' || t.category === filter)
-      .sort((a, b) => {
-        const pa = parseFloat((a.mcap || '').replace(/[^0-9.]/g, '')) || 0;
-        const pb = parseFloat((b.mcap || '').replace(/[^0-9.]/g, '')) || 0;
-        return pb - pa;
-      });
+      .sort((a, b) => mcapMid(b.mcap) - mcapMid(a.mcap));
     tbody.innerHTML = rows.map((t) => {
       const color = catColor(t.category);
       return `<tr>
@@ -228,9 +235,15 @@ async function taxonomyChart() {
   const labels = data.taxonomy.map((t) => t.label);
   const colors = data.taxonomy.map((t) => catColor(t.id));
   // represent each as a single stacked bar (one segment per category)
+  // Use the midpoint of ranges so the chart matches the caption math, not the high end only.
   const vals = data.taxonomy.map((t) => {
-    const m = t.scale.match(/\$?([\d.]+)\s*-*\s*\$?([\d.]+)?/);
-    return m ? parseFloat(m[2] || m[1]) : 0;
+    const m = String(t.scale || '').match(/\$?([\d.]+)\s*(?:-\s*\$?([\d.]+))?/);
+    if (!m) return 0;
+    const lo = parseFloat(m[1]);
+    const hi = m[2] != null ? parseFloat(m[2]) : lo;
+    if (!Number.isFinite(lo)) return 0;
+    if (!Number.isFinite(hi)) return lo;
+    return (lo + hi) / 2;
   });
   new Chart(canvas, {
     type: 'bar',
@@ -747,7 +760,15 @@ function buildCorridors() {
   });
 }
 
-// --- footer: verified claims + sources list -------------------------------
+// --- footer: freshness badge + verified claims + sources list -------------
+// The freshness date is derived from data.AS_OF rather than hand-written in
+// index.html, so editing the data's as-of date cannot leave the badge stale.
+// index.html carries the same text as a static no-JS fallback.
+function buildFreshnessBadge() {
+  const badge = document.getElementById('hub-freshness-badge');
+  if (badge) badge.textContent = `Last updated ${data.AS_OF} · Hub build ${data.HUB_BUILD}`;
+}
+
 function buildFooterLists() {
   const vc = document.getElementById('verified-claims-list');
   if (vc) {
@@ -899,6 +920,7 @@ async function init() {
   buildGeniusStatus();
   remittanceCalc();
   raceBars();
+  buildFreshnessBadge();
   buildFooterLists();
   // CSV export buttons
   const csvBtn = document.getElementById('export-tokens-csv');

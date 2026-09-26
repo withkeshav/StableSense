@@ -144,9 +144,10 @@ export function buildMarketView({ priceRows = [], snapshotRows = [], marketRow =
  * total; days with only 10-min-era rows sum normally.
  * @param {Array<{coin:string, chain:string, ts:number, circulatingUsd:number|null}>} historyRows
  * @param {number} days
+ * @param {number} [nowMs] Reference clock for the day window (defaults to Date.now, injectable for tests).
  */
-export function buildSupplyHistory(historyRows, days = 30) {
-  const cutoff = Date.now() - days * 86_400_000;
+export function buildSupplyHistory(historyRows, days = 30, nowMs = Date.now()) {
+  const cutoff = nowMs - days * 86_400_000;
   const byKey = new Map();
   for (const r of historyRows || []) {
     if (!r || typeof r.coin !== 'string' || typeof r.chain !== 'string') continue;

@@ -1,8 +1,8 @@
 # StableSense
 
-![Version](https://img.shields.io/badge/version-3.6.1-2A6FDB)
+![Version](https://img.shields.io/badge/version-3.6.2-2A6FDB)
 ![License: Source-Available](https://img.shields.io/badge/license-source--available-blue)
-![Tests](https://img.shields.io/badge/tests-150%20passing-green)
+![Tests](https://img.shields.io/badge/tests-198%20passing-green)
 ![Node](https://img.shields.io/badge/node-%3E%3D18-339933)
 
 Stablecoin intelligence platform covering **USDT, USDC, DAI, USDe and PYUSD**: peg stress monitoring, cross-chain mint/burn flows, whale-watch anomaly detection, AI-generated market narratives, an in-app Research entry, and a built-in learning tab that explains how stablecoins and pegs actually work.
@@ -10,6 +10,13 @@ Stablecoin intelligence platform covering **USDT, USDC, DAI, USDe and PYUSD**: p
 Created by [Keshav Maheshwari](https://www.withkeshav.com)
 
 > **Source-available.** Free for personal / non-commercial use. Modification is **not** permitted. See [LICENSE](./LICENSE).
+>
+> The software is source-available. The **research aims to be open**. The long-term goal for the
+> [State of Stablecoins research hub](https://stablesense.withkeshav.com/research/) is for it to become a
+> shared, fully-cited reference on stablecoins that anyone can check, correct and build on: ideally, open
+> research for stablecoins. That part is a direction, not a claim about today, and it does not change the
+> license on the code. Corrections, sources and suggestions are welcome via
+> [GitHub Issues](https://github.com/withkeshav/StableSense/issues).
 
 ## Features
 
@@ -195,6 +202,18 @@ The frontend is static files with an optional AI base URL: deploy `dist/` anywhe
 - [CHANGELOG.md](./CHANGELOG.md): version history.
 - [SECURITY.md](./SECURITY.md): how to report vulnerabilities.
 
+## Contributing
+
+The code is source-available rather than open-source, so code changes and forks are not being accepted. What is genuinely wanted is corrections:
+
+- **A wrong figure in the research hub.** Open an [issue](https://github.com/withkeshav/StableSense/issues) with the figure, the section, and the source that contradicts it. Corrections are welcome and are checked against the primary source before being applied.
+- **A better or missing source.** Especially a primary source replacing a secondary one.
+- **A bug report.** Use the issue templates, they ask for the details needed to reproduce it.
+
+The research method behind the hub (independent research passes, every claim sourced and dated, cross-checking, and a manual verification gate on the highest-stakes numbers against primary sources) is the reason the hub's figures are cited rather than asserted, and it is described in the hub itself under Methodology.
+
 ## License
 
 **StableSense - Source-Available License.** Free to use, run, and install for personal, non-commercial purposes. This is **not** an open-source (OSI) license: modification and redistribution of modified versions are not permitted; verbatim redistribution with attribution is allowed. Commercial use or modification requires a separate license from the author. See [LICENSE](./LICENSE).
+
+Note the split between the two halves of this project. The **software** is source-available as described above. The **research** is intended to move toward being openly reusable and correctable. If that distinction is ever formalized with a separate license for the research content, it will be stated here explicitly rather than implied.

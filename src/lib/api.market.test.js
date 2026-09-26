@@ -50,29 +50,29 @@ describe('transformMarketPayload cgSimple mapping', () => {
 });
 
 describe('transformMarketPayload Detail shim', () => {
-  it('builds two-token chainBalances from the chains array when delta exists', () => {
+  it('builds two-token chainBalances in ascending time order when delta exists', () => {
     const data = transformMarketPayload(marketPayload());
     const floor = Math.floor(T0 / 1000);
     expect(data.usdtDetail).toEqual({
       chainBalances: {
         ethereum: {
           tokens: [
-            { date: floor, circulating: { peggedUSD: 60_000 } },
             { date: floor - 86400, circulating: { peggedUSD: 60_000 - 100 } },
+            { date: floor, circulating: { peggedUSD: 60_000 } },
           ],
         },
         tron: {
           tokens: [
-            { date: floor, circulating: { peggedUSD: 40_000 } },
             { date: floor - 86400, circulating: { peggedUSD: 40_000 + 50 } },
+            { date: floor, circulating: { peggedUSD: 40_000 } },
           ],
         },
       },
     });
-    // USDC's ethereum chain also carries a delta -> two tokens.
+    // USDC's ethereum chain also carries a delta -> two tokens, oldest first.
     expect(data.usdcDetail.chainBalances.ethereum.tokens).toEqual([
-      { date: floor, circulating: { peggedUSD: 30_000 } },
       { date: floor - 86400, circulating: { peggedUSD: 30_000 - 10 } },
+      { date: floor, circulating: { peggedUSD: 30_000 } },
     ]);
   });
 });
@@ -106,7 +106,8 @@ describe('transformMarketPayload single-symbol mode', () => {
     const full = marketPayload();
     const data = transformMarketPayload({ ...full, coins: full.coins.slice(0, 1) });
     expect(Object.keys(data.cgSimple)).toEqual(['tether']);
-    expect(data.usdtDetail.chainBalances.ethereum.tokens[0].circulating.peggedUSD).toBe(60_000);
+    const ethTokens = data.usdtDetail.chainBalances.ethereum.tokens;
+    expect(ethTokens[ethTokens.length - 1].circulating.peggedUSD).toBe(60_000);
     expect(data.usdcDetail).toBeUndefined();
   });
 });
@@ -152,7 +153,8 @@ describe('fetchDashboardData via mocked backend', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(String(fetchMock.mock.calls[0][0]).endsWith('/api/market')).toBe(true);
     expect(data.cgSimple.tether.usd).toBe(1.0001);
-    expect(data.usdtDetail.chainBalances.tron.tokens[0].circulating.peggedUSD).toBe(40_000);
+    const tronTokens = data.usdtDetail.chainBalances.tron.tokens;
+    expect(tronTokens[tronTokens.length - 1].circulating.peggedUSD).toBe(40_000);
     expect(data.marketTotals.peggedUSD).toBe(130_000);
   });
 
