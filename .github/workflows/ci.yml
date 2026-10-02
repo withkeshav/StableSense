@@ -38,6 +38,9 @@ jobs:
       - name: Run unit tests
         run: npm test
 
+      - name: Verify contributor badge generation
+        run: node --test scripts/research-contributors-plugin.test.mjs
+
       # Guards the hub's data model: every new depth-pass row must be complete,
       # Tether's negative figure must stay negative, ERC-8004 must not read as a
       # payment layer, and no em/en dash may enter the content.

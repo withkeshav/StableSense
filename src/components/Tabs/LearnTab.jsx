@@ -85,7 +85,16 @@ const MODULES = [
       {
         id: 'volume-uses',
         title: 'Where stablecoin volume actually goes',
-        body: 'Most stablecoin volume is trading. Pairs against BTC, ETH, and altcoins are denominated in stablecoins because they do not move with the market, so they are the default quote asset on exchanges. A smaller but growing slice goes to cross-border payments and remittances, which beat bank wires on cost and speed. DeFi uses them as collateral and liquidity. Treasury and payroll use is still early. The 24h Volume stat on Home is mostly that trading side.',
+        lastUpdated: '2026-10-02',
+        body: 'Do not read the 24h Volume stat on Home as payment volume. Pairs against BTC, ETH and altcoins are denominated in stablecoins because they do not move with the market, so they are the default quote asset on exchanges, and most measured transfer volume is that trading and protocol activity. The published estimates that size the non-trading part disagree about how narrowly to define it. A BCG and Allium study of on-chain transfers in 2026 found more than $62 trillion of annual stablecoin transfers but only about $4.2 trillion of real economic activity, roughly 7% of the gross total, and separately estimated approximately $350-550 billion of observable bilateral payments for goods and services in 2025, which the authors call a directionally robust lower bound because it excludes internal exchange settlements and card-based payments. Under that narrow definition it is well under 1% of gross transfers. The honest summary: gross transfer value dwarfs payment value, and the payment share depends entirely on the definition used. Treasury and payroll use remains early.',
+        sources: [
+          {
+            label: 'BCG and Allium, stablecoin payments white paper (as of 2026-09-30)',
+            href: 'https://www.bcg.com/assets/2026/white-paper-stablecoin-payments-truth-behind-numbers.pdf',
+          },
+        ],
+        unknown:
+          'No source in the approved record produces one reconciled, cross-source payment share. The two figures above come from a single study using two definitions, and the lower-bound figure excludes categories the authors name. Treat the payment share as definition-dependent rather than settled.',
       },
     ],
   },
@@ -123,7 +132,14 @@ const MODULES = [
       {
         id: 'regulation-state',
         title: 'Stablecoin regulation, as of August 2026',
-        body: 'As of August 2026: the EU\'s MiCA licensing for stablecoin issuers is the operational baseline across Europe. The US is still converging on a federal framework with reserve, audit, and redemption requirements, with state and federal paths overlapping. Japan and Singapore run their own bank-backed models. This field moves fast. Treat this card as a dated snapshot, not a forecast, and verify the current state before relying on it.',
+        lastUpdated: '2026-10-02',
+        body: 'As of August 2026: the EU\'s MiCA licensing for stablecoin issuers is the operational baseline across Europe. The US has enacted a federal framework, the GENIUS Act signed 2025-07-18, which sets reserve, disclosure and yield rules with commencement still tied to final implementing regulations; state and federal paths overlap in the meantime. Japan and Singapore run their own bank-backed models. This field moves fast. Treat this card as a dated snapshot, not a forecast, and verify the current state before relying on it.',
+        sources: [
+          {
+            label: 'GENIUS Act enrolled text, Sec. 20 commencement (as of 2025-07-18)',
+            href: 'https://www.congress.gov/bill/119th-congress/senate-bill/1582/text',
+          },
+        ],
       },
       {
         id: 'regulated-offshore',
@@ -160,7 +176,24 @@ const MODULES = [
       {
         id: 'tokenized-funds',
         title: 'Tokenized funds vs. payment stablecoins',
-        body: 'A tokenized fund like BlackRock\'s BUIDL or Franklin Templeton\'s BENJI holds short-term Treasuries, just like a dollar stablecoin\'s reserves, but it is legally a security, not a payment instrument. Under the US GENIUS Act, a payment stablecoin must stay flat at $1, move freely between wallets, and cannot pay yield to holders. A tokenized fund pays yield to holders but requires KYC, restricts transfers to whitelisted wallets, and redeems on a T+1 cycle. Institutions use them as a pair: stablecoin for instant settlement, tokenized fund as the yield-bearing sweep account for idle balances.',
+        lastUpdated: '2026-10-02',
+        body: 'A tokenized fund like BlackRock\'s BUIDL or Franklin Templeton\'s BENJI holds short-term Treasuries, much like a dollar stablecoin\'s reserves, but it is legally a security, not a payment instrument. Holding a fund share is not the same as owning the underlying securities: the fund owns them, and your token is a fund interest. Under the US GENIUS Act, a permitted payment stablecoin must stay flat at $1 and cannot pay yield to holders. A tokenized fund does pay yield, and it comes with transfer restrictions that differ fund by fund: KYC-gated transfers, allowlisted counterparties and redemption timing set by each fund\'s documents. Treat "T+1" and "whitelist" as fund-specific terms, not a uniform rule for the category. Institutions use the two as a pair: stablecoin for instant settlement, tokenized fund as the yield-bearing wrapper for balances held longer.',
+        sources: [
+          {
+            label: 'GENIUS Act text, enrolled (as of 2025-07-18)',
+            href: 'https://www.congress.gov/bill/119th-congress/senate-bill/1582/text',
+          },
+          {
+            label: 'BUIDL secondary figures, $2.5-2.9bn (early Jul 2026)',
+            href: 'https://cryptorank.io/news/feed/d6bff-rwa-tokenization-news-today',
+          },
+          {
+            label: 'BUIDL about $2.7bn vs USYC about $3.0bn (as of 2026-08-13)',
+            href: 'https://reap.global/blog/stablecoin-statistics-2026',
+          },
+        ],
+        unknown:
+          'No current, primary, BUIDL-specific assets-under-management figure is available in the approved record, so none is asserted here. The dated secondary figures above (about $2.4bn as of May 2026, $2.5-2.9bn in early July, about $2.7bn in August 2026) are differently dated reports for one fund and are not a range. Securitize\'s $4.3bn as of 2026-06-30 is platform-wide AUM, not BUIDL AUM, and is not substituted for it.',
       },
     ],
   },
@@ -172,8 +205,24 @@ const MODULES = [
       {
         id: 'treasury-buyer',
         title: 'A quiet buyer of government debt',
-        lastUpdated: '2026-08-12',
-        body: 'Stablecoin issuers now hold well over $150 billion in US Treasuries, mostly short-dated T-bills. Tether alone reports Treasury exposure comparable to the holdings of major sovereign nations, and combined issuers rank among the top-20 external holders of US debt. The GENIUS Act, signed July 2025 and taking effect in 2026, legally requires payment-stablecoin reserves to be cash, T-bills, or overnight repo, which locks this demand into the very short end of the curve. As stablecoins grow, their issuers become structural buyers of US government debt, tying crypto\'s health to Treasury market liquidity.',
+        lastUpdated: '2026-10-02',
+        body: 'Stablecoin issuers hold large gross positions in US Treasuries, mostly short-dated T-bills. Tether\'s Q1 2026 attestation, prepared by BDO, reported about $183 billion of token liabilities and about $141 billion of direct and indirect US Treasury bill exposure as of 2026-03-31. Read that as gross exposure, not net new demand: it is direct and indirect, so it includes collateral and repo rather than only outright bills, and an attestation is not an audit opinion. The GENIUS Act, signed 2025-07-18, requires payment-stablecoin reserves at least 1:1 from a permitted list of eight classes - coins and currency, insured deposits, Treasuries of 93 days or less, overnight repo and reverse repo against them, registered government money market fund shares, regulator-approved liquid government assets, and tokenized forms of those classes. Treasury bills are one permitted category, not the only one. This report does not establish which duties are currently operative: general commencement is the earlier of 18 months after enactment or 120 days after primary federal regulators issue a final implementing rule, and whether that earlier trigger has fired is unresolved. So the framing is conditional: as stablecoins grow, issuers become large rule-bound buyers of short-dated government debt. That is not the same as proving net incremental Treasury demand.',
+        sources: [
+          {
+            label: 'GENIUS Act enrolled text, Sec. 3 and 4 (as of 2025-07-18)',
+            href: 'https://www.congress.gov/bill/119th-congress/senate-bill/1582/text',
+          },
+          {
+            label: 'Tether Q1 2026 attestation via BDO (as of 2026-03-31)',
+            href: 'https://tether.io/news/tether-posts-1-04b-q1-2026-profit-despite-highly-volatile-global-markets-reaches-all-time-highs-8-23b-reserve-buffer-and-maintains-u-s-treasury-heavy-backing/',
+          },
+          {
+            label: 'Kansas City Fed on gross holdings vs net demand (revised 2026-09-22)',
+            href: 'https://www.kansascityfed.org/research/economic-bulletin/stablecoins-could-increase-treasury-demand-but-only-by-reducing-demand-for-other-assets/',
+          },
+        ],
+        unknown:
+          'How much net new Treasury demand stablecoins create is unresolved. The direction depends on where the funding comes from: if the sellers of stablecoins are themselves selling Treasuries, a larger stablecoin market can add no net Treasury demand at all, and some funding sources would reduce it. The Kansas City Fed\'s own conditional coefficients also fail to reconcile (its components sum to $0.42 where it states $0.30), so no coefficient is quoted here. No market-wide net-demand, debt-relief or lending-contraction figure is asserted.',
       },
       {
         id: 'bank-disintermediation',
@@ -196,8 +245,74 @@ const MODULES = [
       {
         id: 'rulebook',
         title: 'One rulebook, many flavors',
-        lastUpdated: '2026-08-12',
-        body: 'By August 2026, every major financial hub has a live stablecoin framework, and they converge on full reserve backing, licensed issuers, and the effective death of algorithmic designs. The US GENIUS Act requires 1:1 T-bill or cash backing and bans paying yield to holders. The EU\'s MiCA, fully effective July 2026, splits stablecoins into single-currency and basket-pegged classes and caps non-euro usage. The UK, Japan, Singapore, Hong Kong, and the UAE each run their own models. The real battleground is whether foreign dollar stablecoins are welcomed or contained to protect local currencies.',
+        lastUpdated: '2026-10-02',
+        body: 'Stablecoin frameworks differ by jurisdiction, including issuer eligibility, reserve backing and limits on paying yield to holders. The US GENIUS Act was signed 2025-07-18. It requires permitted issuers to hold reserves at least 1:1 in a permitted list that includes cash, insured deposits, Treasuries of 93 days or less, overnight repo and reverse repo, and registered government money market fund shares - not T-bills alone - and it requires monthly published reserve composition including average tenor and custody location by category. General commencement is the earlier of 18 months after enactment or 120 days after final implementing rules, and whether the earlier trigger has fired is unresolved in this report. The EU\'s MiCA splits stablecoins into single-currency and basket-pegged classes. The UK, Japan, Singapore, Hong Kong, and the UAE each have their own regulatory paths. Compare their dated status in the research hub rather than assuming every framework is already operative.',
+        sources: [
+          {
+            label: 'GENIUS Act enrolled text, Sec. 4(a)(1)(C) and Sec. 20 (as of 2025-07-18)',
+            href: 'https://www.congress.gov/bill/119th-congress/senate-bill/1582/text',
+          },
+        ],
+        unknown:
+          'Whether a qualifying final federal implementing rule has triggered earlier commencement is unresolved in the approved record, and no final rule is stored there. Treat commencement timing as a dated snapshot and re-verify before relying on it.',
+      },
+      {
+        id: 'x402-commerce',
+        title: 'Machine payments: what the counts do not prove',
+        lastUpdated: '2026-10-02',
+        body: 'x402 is a payment rail that lets an agent pay per API call in stablecoin. Published value measurements for it span roughly $974 thousand to $2.6 billion and do not reconcile, because they count different chains, windows and adjustment rules. Bitquery counted payments of the x402 shape and found August 2026 came to 18.3 million payments worth about $2.6 billion across five comparable EVM chains, with almost nine tenths of the value in one bridging contract on Arbitrum. Excluding that single contract, the same source puts the five-chain August total at $317 million rather than $2.59 billion; that residual is not a commerce-only total. Two automated loops account for 83% of the agent payments Bitquery found, and Chainalysis attributes growth substantially to meme-coin farming. Visa and Artemis separately report about $15.0 million across 109.6 million transactions for one implementation from its May 2025 launch through April 2026, with adjusted volume excluding identified wash and test activity. Those figures describe a different scope and window, so they cannot be averaged with the August counts. The mechanism is real and being used. Broad goods-and-services commerce on it is not demonstrated by these counts.',
+        sources: [
+          {
+            label: 'Bitquery x402 audit (as of 2026-09-06)',
+            href: 'https://bitquery.io/investigations/x402-ai-agent-payments-audit',
+          },
+          {
+            label: 'Chainalysis on agentic payment growth (as of 2026-06-03)',
+            href: 'https://www.chainalysis.com/blog/x402-agentic-payments-adoption/',
+          },
+          {
+            label: 'Visa and Artemis wash-adjusted figures (as of 2026-04-21)',
+            href: 'https://www.visa.com/en-us/thought-leadership/innovation/agentic-payments-from-the-ground-up',
+          },
+          {
+            label: 'x402scan cumulative totals (as fetched 2026-10-01)',
+            href: 'https://www.x402scan.com/',
+          },
+        ],
+        unknown:
+          'The true commerce share of x402 activity is unresolved. No source in the approved record estimates a common commerce-only total, and removing bridges, bots and tests would still not prove the remainder is commerce; that needs merchant and service attribution. The lowest headline figure is the x402scan dashboard cumulative total of about $974,215 across 12,293,450 transactions, whose window and inclusion rules are not stated in the capture, so it cannot be placed on the same axis as the August-only counts. Present the range with its scopes rather than averaging it.',
+        hubLink: { href: '/research/#agentic', label: 'Agentic payments in the research hub' },
+      },
+      {
+        id: 'open-usd',
+        title: 'Reading a new issuer\'s launch claims',
+        lastUpdated: '2026-10-02',
+        body: 'Open USD (OUSD) illustrates how to read an issuer\'s launch claims. Bridge reported on 2026-09-30 that OUSD, issued by Bridge Building Inc., a Stripe company, went live on Base, Ethereum, Solana and Tempo. Open Standard named BlackRock, Lead Bank and BNY as reserve institutions. Bridge\'s reserve page reported total supply of $468,445,399 at 11:30 UTC on 2026-10-01 against $257,214,691 cash and $211,230,708 Treasuries, which sums exactly to total supply and is 54.91% cash against 45.09% Treasuries. Its Treasury category includes money-market funds with T-bill ladders of less than three-month duration. This is an issuer-reported snapshot, not an independent audit or evidence of payment adoption. Open Standard states that founding and participating partners, not token holders, can earn equity based on supply and activity they drive; that opportunity does not establish realized payouts. Balance-linked distribution economics already exist: Circle\'s Q2 2026 Form 10-Q ties distributor costs such as those paid to Coinbase and Binance directly to balances held, with Coinbase distribution costs of $324.6 million in the quarter.',
+        sources: [
+          {
+            label: 'Bridge: OUSD is live, issued by Bridge (as of 2026-09-30)',
+            href: 'https://www.bridge.xyz/blog/ousd-is-live-issued-by-bridge',
+          },
+          {
+            label: 'Open Standard: reserves at BlackRock, Lead Bank, BNY (as of 2026-09-30)',
+            href: 'https://joinopenstandard.com/blog/open-usd-is-live',
+          },
+          {
+            label: 'Bridge OUSD reserve page (as of 2026-10-01)',
+            href: 'https://reserves.bridge.xyz/ousd',
+          },
+          {
+            label: 'Open Standard: partner, not holder, equity (as of 2026-09-24)',
+            href: 'https://joinopenstandard.com/blog/company-structure-and-leadership',
+          },
+          {
+            label: 'Circle Q2 2026 Form 10-Q (as of 2026-06-30)',
+            href: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001876042',
+          },
+        ],
+        unknown:
+          'Two things are explicitly unresolved and are not asserted anywhere. First, whether partner incentives actually increase balances or qualifying payment use: a supply snapshot is not an adoption series, a partner list is not routed volume, and no partner has publicly quantified what it receives. Second, whether either arrangement is better for partners: Circle\'s disclosed terms are partial and no like-for-like OUSD contract, issuer retention amount or realized payout is on record. Bridge\'s OCC trust-charter approval is issuer-reported and conditional; no primary order is stored, and conditional approval is not a final charter.',
+        hubLink: { href: '/research/#float', label: 'Yield and distribution in the research hub' },
       },
       {
         id: 'case-studies',
@@ -274,6 +389,31 @@ export default function LearnTab({ data, alerts, alertHistory = [], alertSource 
                     {lesson.lastUpdated ? <span class="learn-lesson-date">Updated {lesson.lastUpdated}</span> : null}
                   </div>
                   <p class="text-muted small mb-0">{lesson.body}</p>
+                  {lesson.sources && lesson.sources.length ? (
+                    <p class="learn-observation-note mb-0">
+                      Sources:{' '}
+                      {lesson.sources.map((s, i) => (
+                        <span key={s.href}>
+                          {i > 0 ? ' | ' : null}
+                          <a href={s.href} target="_blank" rel="noopener noreferrer" style="text-decoration:underline">
+                            {s.label}
+                          </a>
+                        </span>
+                      ))}
+                    </p>
+                  ) : null}
+                  {lesson.hubLink ? (
+                    <p class="mb-0" style="margin-top:6px">
+                      <a class="learn-link-btn" href={lesson.hubLink.href} target="_blank" rel="noopener noreferrer">
+                        {lesson.hubLink.label} &rsaquo;
+                      </a>
+                    </p>
+                  ) : null}
+                  {lesson.unknown ? (
+                    <p class="text-muted small mb-0" style="margin-top:6px">
+                      <strong>Open question:</strong> {lesson.unknown}
+                    </p>
+                  ) : null}
                   {observation ? (
                     <div class="learn-observation">
                       <div class="learn-observation-label">Live observation</div>

@@ -13,8 +13,10 @@ privately, not included in the current public repository.
   support, numerical scope and a clearly identified publication revision.
 
 The report source, citations, chart data and site assets are in the root
-`research/` directory. Updating this method does not update that report's findings
-or establish that its market and legal observations are current.
+`research/` directory. The [2026-10-02 published report](../../research/public/state-of-stablecoins-2026-10-02.md)
+states source dates, calculations and unresolved findings. It is also served at
+`/research/state-of-stablecoins-2026-10-02.md`. Updating the method alone does not
+update the findings or establish that historical observations are current.
 
 ## What is not published here
 

@@ -6,10 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [3.8.0] - 2026-10-02
+
+### Added
+- Published a dated full State of Stablecoins report covering reserves, funding-source dependence, partner economics, payments, x402 measurement scopes and tokenized-asset activity. Source observation dates remain distinct from the publication date.
+- Added the research contributor section, permanent contribution links and generated SVG badges with HTML and Markdown embeds. Approval, incorporation and public-credit consent are required; the real registry starts empty. Withdrawn records remain visible without issuing badges.
+
 ### Changed
+- Reconciled the research hub and related teaching content with the latest reviewed findings. Unknown net Treasury demand, commerce attribution, current primary BUIDL AUM and regulatory finality are not presented as settled results.
+- Corrected Open USD's launch status and distinguished issuer-reported reserves and partner incentives from holder yield or proved adoption.
+- Missing or partial prices now leave the peg-stress and stability scores unknown. Unavailable market cap and volume no longer display as zero, and an empty alert feed no longer claims that market conditions were measured as normal.
+- Kept the research licence unchanged. Contributor recognition does not transfer copyright, grant project control or endorse a contributor.
 - Narrowed the public repository to the website, supporting code and documentation, and research methodology. Working research is retained outside the current public tree. Older public commits remain accessible; history is not rewritten.
 - Expanded the research method with claim revisions, formulas and their limits, independent review dispositions, acceptance and publication decisions, update triggers, and a proposed benchmark protocol. Benchmark performance and automatic updating have not been established.
-- Added a public research index, claim template and publication checklist. The application and published research hub are unchanged; no deployment is included.
+- Added a public research index, claim template and publication checklist, separating evidence review from approval and publication.
 - Added a tested publication-path check in CI. It rejects agent instructions, internal directories and unreviewed documentation; it is not a content or secret scanner.
 
 ## [3.7.1] - 2026-09-26

@@ -82,13 +82,17 @@ async function heroCounter() {
   } catch { /* keep static fallback */ }
 
   if (!fetched) {
-    // static fallback: cite the broader research-file range as the figure,
-    // labeled honestly as the global snapshot, not the live-tracked sum
-    // Q1 2025 RPW-verified global band is 289 to 300B across aggregators.
-    // Midpoint 295 keeps the fallback inside the sourced range in Section 2.
-    total = 295; // midpoint of the $289-300B research-file range
-    label.textContent = 'Total global stablecoin market cap across all issuers, mid-2026 snapshot (live fetch unavailable; see Section 2 for the sourced range)';
-  } else if (missing.length > 0) {
+    // No live data: show the single hyphen placeholder, never a number.
+    // The previous fallback printed a midpoint of a research-file range and
+    // labelled it "total global stablecoin market cap", which is a different
+    // measure from the tracked-coin sum and a fabricated point estimate
+    // dressed as an observation. UNKNOWN is the honest state.
+    el.textContent = '-';
+    if (label) label.textContent = 'Combined market cap of the 5 stablecoins tracked here: unavailable (live fetch failed). No estimate is substituted; the dated measurement used elsewhere in this report is stated there with its own source.';
+    return;
+  }
+
+  if (missing.length > 0) {
     label.textContent = `Combined market cap of the 5 stablecoins tracked here, updated live - partial, waiting on ${missing.length} coin${missing.length > 1 ? 's' : ''} (${missing.join(', ')})`;
   } else {
     label.textContent = 'Combined market cap of the 5 stablecoins tracked here, updated live';
@@ -761,12 +765,13 @@ function buildCorridors() {
 }
 
 // --- footer: freshness badge + verified claims + sources list -------------
-// The freshness date is derived from data.AS_OF rather than hand-written in
-// index.html, so editing the data's as-of date cannot leave the badge stale.
-// index.html carries the same text as a static no-JS fallback.
+// The badge states the research review date and the build marker. It does NOT
+// state a dataset-wide measurement date, because there is no such date: every
+// measure in data.js carries its own as-of. Presenting one date for the whole
+// dataset would imply the figures were all observed then.
 function buildFreshnessBadge() {
   const badge = document.getElementById('hub-freshness-badge');
-  if (badge) badge.textContent = `Last updated ${data.AS_OF} · Hub build ${data.HUB_BUILD}`;
+  if (badge) badge.textContent = `Research reviewed ${data.RESEARCH_REVIEWED} · Hub build ${data.HUB_BUILD} · source observation dates vary`;
 }
 
 function buildFooterLists() {
@@ -892,16 +897,81 @@ function buildBpiCallout() {
 }
 
 // GENIUS Act rulemaking status (dated paragraph, not a live tracker).
+// Commencement is UNRESOLVED, so this never renders a "locked" or "in force"
+// date. The reserve list is rendered separately because "1:1 reserves" is
+// routinely read as "1:1 Treasury bills", which the statute does not say.
 function buildGeniusStatus() {
   const block = document.getElementById('genius-status-block');
   const sourceEl = document.getElementById('genius-source');
   const g = data.geniusStatus;
   if (!g || !block) return;
   block.innerHTML = `
-    <p>Enacted <strong>${g.enacted}</strong>. Full implementation takes effect <strong>${g.fullImplementation}</strong>. As of ${g.asOf}: <strong>${g.totalRulemakings}</strong> total rulemakings across <strong>${g.agencies}</strong> agencies; <strong>${g.nprmsIssued}</strong> Notices of Proposed Rulemaking issued; <strong>${g.finalRules}</strong> final rules completed.</p>
+    <p>Enacted <strong>${g.enacted}</strong>. Historical tracker snapshot (${g.asOf}): <strong>${g.totalRulemakings}</strong> total rulemakings across <strong>${g.agencies}</strong> agencies; <strong>${g.nprmsIssued}</strong> Notices of Proposed Rulemaking issued. Final rules completed: <strong>${g.finalRules == null ? 'UNKNOWN' : g.finalRules}</strong>.</p>
+    <p><strong>Commencement mechanics:</strong> ${g.commencementMechanics}</p>
+    <p><strong>Commencement status:</strong> ${g.commencementStatus}</p>
+    <p><strong>Reserves:</strong> ${g.reserveClasses}</p>
     <p>${g.note}</p>
   `;
-  if (sourceEl) sourceEl.innerHTML = `Source: <a href="${g.url}" target="_blank" rel="noopener noreferrer">${g.source}</a>. This is a dated snapshot, not a live tracker.`;
+  if (sourceEl) sourceEl.innerHTML = `Source: <a href="${g.url}" target="_blank" rel="noopener noreferrer">${g.source}</a>. This is a dated snapshot, not a live tracker, and no statement above asserts that any GENIUS duty is currently operative.`;
+}
+
+// Section 3: the statutory reserve list, stated as a list. Reading "1:1
+// reserves" as "1:1 Treasury bills" is the specific error this corrects.
+function buildGeniusReserves() {
+  const wrap = document.getElementById('genius-reserves-wrap');
+  const r = data.geniusReserves;
+  if (!wrap || !r) return;
+  wrap.innerHTML = `
+    <div class="callout">
+      <div class="callout-label">${r.citation}</div>
+      <p class="stat md">${r.headline}</p>
+      <ol class="hub-class-list">${r.classes.map((c) => `<li>${c}</li>`).join('')}</ol>
+      <p><strong>Disclosure duty:</strong> ${r.disclosure}</p>
+      <p><strong>Encumbrance:</strong> ${r.pledgeBan}</p>
+      <p><strong>Accounting treatment:</strong> ${r.accounting}</p>
+      <p class="as-of">${r.scope} Source: <a href="${r.url}" target="_blank" rel="noopener noreferrer">GENIUS Act enrolled text</a>.</p>
+    </div>
+  `;
+}
+
+// Section 3: gross holdings versus net new Treasury demand, with the
+// Kansas City Fed source discrepancy exposed rather than resolved. No
+// corrected coefficient is published here.
+function buildTreasuryDemand() {
+  const wrap = document.getElementById('treasury-demand-wrap');
+  const t = data.treasuryDemandMechanism;
+  if (!wrap || !t) return;
+  wrap.innerHTML = `
+    <div class="callout">
+      <div class="callout-label">${t.title}</div>
+      <p><strong>The measurement:</strong> ${t.lead}</p>
+      <p><strong>The conditional example:</strong> ${t.kcFed}</p>
+      <p><strong>Why no number is published:</strong> ${t.discrepancy}</p>
+      <p class="as-of"><strong>Status:</strong> ${t.status}</p>
+      <p><strong>What survives both versions:</strong> ${t.hedge}</p>
+      <p>${t.implication}</p>
+      <p class="as-of">Source: <a href="${t.url}" target="_blank" rel="noopener noreferrer">Kansas City Fed Economic Bulletin</a> and the Fed's December 2025 FEDS Note. Both are cited with their own dates and their own limitations.</p>
+    </div>
+  `;
+}
+
+// Section 2: the total market-cap measurement with its scope and the reason
+// no cross-source range is quoted.
+function buildMarketCapMeasure() {
+  const wrap = document.getElementById('market-cap-measure-wrap');
+  const m = data.marketCapMeasure;
+  if (!wrap || !m) return;
+  wrap.innerHTML = `
+    <div class="callout">
+      <div class="callout-label">Total stablecoin market cap, one dated measurement</div>
+      <p class="stat md">${m.headline}</p>
+      <p class="as-of">As of ${m.asOf}</p>
+      <p><strong>What it measures:</strong> ${m.measures}</p>
+      <p><strong>Movement:</strong> ${m.changeYoy}, ${m.dollarShare}, and ${m.distanceFromPeak}.</p>
+      <p><strong>Why no range:</strong> ${m.crossSourceRange}</p>
+      <p class="as-of">Source: <a href="${m.url}" target="_blank" rel="noopener noreferrer">${m.source}</a>. This is a different measure from the hero counter above, which sums only the 5 coins tracked by the live dashboard.</p>
+    </div>
+  `;
 }
 
 // Section 9: who earns the float. One table row per disclosed measure, each
@@ -1062,17 +1132,24 @@ function buildBigPlayers() {
   const ousd = data.openUsdStatus;
   const ousdEl = document.getElementById('ousd-status');
   if (ousdEl && ousd) {
+    // Status is issuer-reported live, not announced-only. The guard-rail
+    // paragraphs are required fields: if any is missing, render the claim
+    // rather than silently dropping the constraint.
     ousdEl.innerHTML = `
       <div class="callout">
-        <div class="callout-label">${ousd.name} - ${ousd.issuer}</div>
+        <div class="callout-label">${ousd.name} - issuer and consortium</div>
         <p class="stat md">${ousd.status}</p>
-        <p><strong>Announced:</strong> ${ousd.announced}.</p>
-        <p><strong>Supply evidence:</strong> ${ousd.supplyEvidence}</p>
-        <p><strong>Stated terms:</strong> ${ousd.terms}</p>
+        <p>${ousd.issuer}</p>
+        <p><strong>Originally announced:</strong> ${ousd.announced}.</p>
         <p><strong>Launch chains:</strong> ${ousd.chains}</p>
-        <p><strong>Launch date:</strong> ${ousd.launch}</p>
-        <p><strong>Market reaction:</strong> ${ousd.marketReaction}</p>
-        <p><strong>Members confirmed from its own list:</strong> ${ousd.members}</p>
+        <p><strong>Reserve and supply snapshot:</strong> ${ousd.supplySnapshot}</p>
+        <p class="as-of">${ousd.supplyScope}</p>
+        <p><strong>Partner economics, not holder yield:</strong> ${ousd.reserveEarnings}</p>
+        <p><strong>What a holder actually has:</strong> ${ousd.holderRights}</p>
+        <p><strong>Charter status:</strong> ${ousd.charter}</p>
+        <p class="as-of">${ousd.preGuardClaim}</p>
+        <p class="as-of"><strong>Market reaction:</strong> ${ousd.marketReaction}</p>
+        <p class="as-of"><strong>Members confirmed from its own list:</strong> ${ousd.members}</p>
       </div>
     `;
   }
@@ -1105,6 +1182,87 @@ function buildBigPlayers() {
   `;
 }
 
+// Section 12: BUIDL dated secondary reports kept separate, tokenized-value
+// depth with distinct denominators, and reserve-income distribution.
+function buildRwaDepth() {
+  const buidl = document.getElementById('buidl-reports-wrap');
+  const b = data.buidlSecondaryReports;
+  if (buidl && b) {
+    const rows = b.reports.map((r) => `
+      <tr>
+        <td class="num">${r.figure}</td>
+        <td class="as-of">${r.asOf}</td>
+        <td class="as-of">${r.source}</td>
+      </tr>
+    `).join('');
+    buidl.innerHTML = `
+      <p class="as-of">${b.status}</p>
+      <div class="hub-table-wrap">
+        <table class="hub-table" id="buidl-reports-table">
+          <thead><tr><th class="num">Reported size</th><th class="as-of">Report date</th><th class="as-of">What it is</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      <p class="as-of">${b.attributionCorrection}</p>
+      <p class="as-of">${b.issuerSide}</p>
+      <p><strong>What would close it:</strong> ${b.whatWouldCloseIt}</p>
+    `;
+  }
+  const wrap = document.getElementById('rwa-depth-wrap');
+  const d = data.rwaDepth;
+  if (wrap && d) {
+    wrap.innerHTML = `
+      <div class="callout">
+        <div class="callout-label">${d.headline}</div>
+        <p><strong>Reported value:</strong> ${d.reportedValue}</p>
+        <p><strong>Weekly transfer activity:</strong> ${d.transferActivity}</p>
+        <p class="as-of"><strong>Why the two percentages differ:</strong> ${d.denominatorNote}</p>
+        <p class="as-of"><strong>Data dates:</strong> ${d.dataDate}</p>
+        <p><strong>What this does and does not show:</strong> ${d.interpretation}</p>
+        <p><strong>DeFi deployment share:</strong> ${d.defiShare}</p>
+        <p class="as-of">${d.notEstablished} Source: <a href="${d.url}" target="_blank" rel="noopener noreferrer">BeInCrypto (2026-07-02)</a>, with the publisher's report landing page dated 2026-05-31.</p>
+      </div>
+    `;
+  }
+}
+
+function buildDistributionEconomics() {
+  const wrap = document.getElementById('distribution-economics-wrap');
+  const d = data.distributionEconomics;
+  if (!wrap || !d) return;
+  wrap.innerHTML = `
+    <div class="callout">
+      <div class="callout-label">${d.headline}</div>
+      <p><strong>The incumbent already does this:</strong> ${d.incumbent}</p>
+      <p><strong>What is actually disclosed:</strong> ${d.namedTerms}</p>
+      <p class="as-of">${d.caveat}</p>
+      <p><strong>The challenger:</strong> ${d.challenger}</p>
+      <p><strong>Conclusion:</strong> ${d.conclusion}</p>
+      <p class="as-of"><strong>Still UNRESOLVED:</strong> ${d.unresolved}</p>
+      <p class="as-of">Source: <a href="${d.circleUrl}" target="_blank" rel="noopener noreferrer">Circle's Form 10-Q for the quarter ended 2026-06-30</a>, and Open Standard's stated company structure.</p>
+    </div>
+  `;
+}
+
+// Section 13: the dated edition note. Each correction names both the
+// corrected state and the earlier text, so a reader who saw an earlier
+// version can tell which is which.
+function buildLatestResearch() {
+  const corr = document.getElementById('latest-research-accordion');
+  if (corr) {
+    buildAccordion('latest-research-accordion', data.latestResearchCorrections || [], (c) => `
+      <p><strong>${c.title}.</strong> ${c.body}</p>
+      <p class="as-of">${c.asOf}</p>
+    `);
+  }
+  const open = document.getElementById('latest-research-open');
+  if (open) {
+    buildAccordion('latest-research-open', data.latestResearchOpen || [], (o) => `
+      <p><strong>${o.label} - UNRESOLVED.</strong> ${o.need}</p>
+    `);
+  }
+}
+
 // --- init -----------------------------------------------------------------
 async function init() {
   reveals();
@@ -1119,6 +1277,9 @@ async function init() {
   buildMaturityBands();
   buildBpiCallout();
   buildGeniusStatus();
+  buildGeniusReserves();
+  buildTreasuryDemand();
+  buildMarketCapMeasure();
   buildFloatEconomics();
   buildYieldBan();
   buildAgenticRails();
@@ -1126,6 +1287,9 @@ async function init() {
   buildAgenticTicket();
   buildBigPlayers();
   buildGrowthHonest();
+  buildRwaDepth();
+  buildDistributionEconomics();
+  buildLatestResearch();
   remittanceCalc();
   raceBars();
   buildFreshnessBadge();

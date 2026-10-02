@@ -1,5 +1,5 @@
 import DepegCaseStudy from '../Sections/DepegCaseStudy.jsx';
-import { RESEARCH_SHELF, AS_OF } from '../../utils/depeg-cases.js';
+import { RESEARCH_SHELF, DEPEG_CASE_ORDER, AS_OF, REVIEW_AS_OF } from '../../utils/depeg-cases.js';
 
 export default function ResearchTab() {
   const feature = RESEARCH_SHELF.find((t) => t.kind === 'feature');
@@ -20,19 +20,24 @@ export default function ResearchTab() {
         </div>
         <div class="research-library-stats">
           <div>
-            <b>09</b>
-            <span>hub sections</span>
+            <b>Full</b>
+            <span>research hub</span>
           </div>
           <div>
-            <b>03</b>
+            <b>{String(DEPEG_CASE_ORDER.length).padStart(2, '0')}</b>
             <span>case studies</span>
           </div>
           <div>
-            <b>{AS_OF}</b>
-            <span>figures as of</span>
+            <b>{REVIEW_AS_OF}</b>
+            <span>research reviewed as of</span>
           </div>
         </div>
       </section>
+
+      <p class="research-hub-line">
+        Read the full sourced report, reviewed as of {REVIEW_AS_OF}, in{' '}
+        <a href="/research/" target="_blank" rel="noopener noreferrer">Research Hub →</a>
+      </p>
 
       <section class="research-shelf">
         {feature ? (
@@ -54,12 +59,18 @@ export default function ResearchTab() {
         ))}
       </section>
 
-      <p class="research-hub-line">
-        Read the full sourced report in{' '}
-        <a href="/research/" target="_blank" rel="noopener noreferrer">Research Hub →</a>
-      </p>
-
       <DepegCaseStudy />
+
+      <p class="text-muted small mt-4 mb-0">
+        The {DEPEG_CASE_ORDER.length} case studies above are historical events, fixed at the dates they
+        happened. Their figures are as of {AS_OF}. That date is the as-of of the historical price and event
+        data only, and it is not the freshness of the research interpreting them: the latest reconciled
+        research review is as of {REVIEW_AS_OF}, and several questions it covers remain open, including how much
+        net new Treasury demand stablecoins create, the current primary AUM of tokenized funds such as BUIDL, the
+        commerce share of agent payment rails, and whether partner incentives change real stablecoin use. The
+        hub states those as unresolved rather than filling them with an estimate. Verify any claim against its
+        primary source before acting on it.
+      </p>
     </div>
   );
 }

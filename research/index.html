@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>The State of Stablecoins - StableSense Research</title>
-  <meta name="description" content="The State of Stablecoins - a sourced, dated research report on stablecoins beyond the dollar peg: taxonomy, Treasury-market effects, bank disintermediation, cross-border payments, dollarization, depeg history, and the global regulatory landscape. Every figure sourced and dated; ranges shown where sources disagree.">
+  <meta name="description" content="The State of Stablecoins - a sourced, dated research report on stablecoins beyond the dollar peg: taxonomy, Treasury-market effects, bank disintermediation, cross-border payments, dollarization, depeg history, and the global regulatory landscape. Every figure carries its own source and as-of date; where sources disagree the disagreement is shown, and where evidence is missing the item is marked unresolved rather than estimated.">
   <link rel="canonical" href="https://stablesense.withkeshav.com/research/">
   <meta property="og:title" content="The State of Stablecoins - StableSense Research">
-  <meta property="og:description" content="A sourced, dated research report on stablecoins beyond the dollar peg. Every figure sourced and dated; ranges shown where sources disagree.">
+  <meta property="og:description" content="A sourced, dated research report on stablecoins beyond the dollar peg. Every figure carries its own source and as-of date; source disagreements are shown and missing evidence is marked unresolved.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://stablesense.withkeshav.com/research/">
   <meta property="og:image" content="https://stablesense.withkeshav.com/research/og.png">
@@ -18,7 +18,7 @@
   <meta property="og:site_name" content="StableSense Research">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="The State of Stablecoins - StableSense Research">
-  <meta name="twitter:description" content="A sourced, dated research report on stablecoins beyond the dollar peg. Every figure sourced and dated; ranges shown where sources disagree.">
+  <meta name="twitter:description" content="A sourced, dated research report on stablecoins beyond the dollar peg. Every figure carries its own source and as-of date; source disagreements are shown and missing evidence is marked unresolved.">
   <meta name="twitter:image" content="https://stablesense.withkeshav.com/research/og.png">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="stylesheet" href="./styles.css">
@@ -42,6 +42,8 @@
       <a href="#float">The float</a>
       <a href="#agentic">Agent economy</a>
       <a href="#players">Who else</a>
+      <a href="#latest-research">Latest</a>
+      <a href="#contributors">Contributors</a>
       <a href="/" class="to-dashboard" target="_blank" rel="noopener noreferrer">Open the live dashboard &rsaquo;</a>
       <button id="hub-theme-toggle" class="hub-chip" style="cursor:pointer" title="Toggle theme">Theme</button>
     </nav>
@@ -55,10 +57,10 @@
   <div class="hero-inner">
     <div class="kicker">StableSense Research - State of Stablecoins</div>
     <h1>The State of Stablecoins</h1>
-    <p class="thesis">Stablecoins are not just dollar tokens. They are becoming a layer of the financial system - a structural buyer of US debt, a payments rail, and a dollarization force. This report tracks the wider landscape and the macro impact, sourced and dated.</p>
-    <div class="hero-counter num" id="hero-counter" aria-live="polite">$0</div>
-    <div class="hero-counter-label" id="hero-counter-label">Combined market cap of the 5 stablecoins tracked here, updated live</div>
-    <p class="short-disclaimer">Informational research, not financial advice. Figures are one measure among several, always sourced and dated.</p>
+    <p class="thesis">Stablecoins are not just dollar tokens. They are becoming a layer of the financial system - a buyer of short-term US debt, a payments rail, and a dollarization force. This report tracks the wider landscape and the macro impact, sourced and dated. Where the evidence disagrees with itself or does not reach, that is shown too: a source that disagrees with itself is a finding, not a gap to be smoothed over.</p>
+    <div class="hero-counter num" id="hero-counter" aria-live="polite">-</div>
+    <div class="hero-counter-label" id="hero-counter-label">Combined market cap of the 5 stablecoins tracked by the live dashboard, updated live. This is not the total global market cap: it excludes every coin the dashboard does not track.</div>
+    <p class="short-disclaimer">Informational research, not financial advice. Every figure carries its own source and as-of date; this page's review date is not a measurement date. See <a href="#latest-research">Latest research</a> for the full dated report.</p>
     <div class="scroll-cue">Scroll to read &darr;</div>
   </div>
 </section>
@@ -72,9 +74,9 @@
 
     <div class="chart-wrap reveal">
       <div class="chart-canvas-box" style="height:220px">
-        <canvas id="taxonomy-chart" height="220" role="img" aria-label="Stacked horizontal bar chart showing relative scale of the six stablecoin taxonomy categories. Fiat-USD is roughly 86% of the total shown, computed from range midpoints; the other five categories combined are roughly 14%."></canvas>
+        <canvas id="taxonomy-chart" height="220" role="img" aria-label="Illustrative sizing comparison of six value-referenced-token categories, using dated reported values and midpoints of ranges. Different dates and definitions mean these bars are not non-overlapping global market shares."></canvas>
       </div>
-      <p class="chart-caption">Relative scale of the six value-referenced-token categories, mid-2026. Figures are ranges where aggregators disagree (see methodology). Using midpoints, the other five categories combined are roughly 14% of the total shown here and up to about 17% using high ends; RWA/tokenized funds is the largest of the five.</p>
+      <p class="chart-caption">Illustrative sizing comparison, not non-overlapping global market shares. These categories use different historical dates and definitions, and some can overlap. Multi-value estimates use their midpoint. RWA value is a dated secondary report excluding stablecoins, not current primary fund AUM. Any percentages in the chart describe its own bars, not the stablecoin market as a whole.</p>
     </div>
 
     <h3 style="margin-top:2.5rem">The six categories</h3>
@@ -83,12 +85,12 @@
     </div>
     <noscript>
       <div class="hub-accordion">
-        <div class="hub-accordion-item open"><div class="hub-accordion-panel"><p>Fiat-USD: ~$303B (Sep 2026). USDT, USDC. Full reserve in cash + short-term Treasuries.</p></div></div>
-        <div class="hub-accordion-item open"><div class="hub-accordion-panel"><p>Fiat non-USD: ~$2B. EURC, JPYC, XSGD. Under 0.5% of supply.</p></div></div>
-        <div class="hub-accordion-item open"><div class="hub-accordion-panel"><p>Commodity-backed: ~$4.6-6B. PAXG, XAUT, KAG. ~96% gold.</p></div></div>
-        <div class="hub-accordion-item open"><div class="hub-accordion-panel"><p>Crypto-collateralized / synthetic: ~$13B. DAI/USDS, USDe, LUSD.</p></div></div>
-        <div class="hub-accordion-item open"><div class="hub-accordion-panel"><p>Algorithmic: near zero. UST dead, Frax re-collateralized.</p></div></div>
-        <div class="hub-accordion-item open"><div class="hub-accordion-panel"><p>RWA / tokenized funds: ~$20-40B. BUIDL, BENJI, OUSG.</p></div></div>
+        <div class="hub-accordion-item open"><div class="hub-accordion-panel"><p>Fiat-USD: ~$303B (Sep 2026 snapshot). USDT, USDC. Full reserve in cash plus short-term Treasuries.</p></div></div>
+        <div class="hub-accordion-item open"><div class="hub-accordion-panel"><p>Fiat non-USD: ~$2B (Aug 2026). EURC, JPYC, XSGD. Currency and liquidity differ from dollar-pegged tokens.</p></div></div>
+        <div class="hub-accordion-item open"><div class="hub-accordion-panel"><p>Commodity-backed: ~$4.6-6B (early-mid 2026). PAXG, XAUT, KAG. ~96% gold.</p></div></div>
+        <div class="hub-accordion-item open"><div class="hub-accordion-panel"><p>Crypto-collateralized / synthetic: ~$13B (Aug 2026). DAI/USDS, USDe, LUSD.</p></div></div>
+        <div class="hub-accordion-item open"><div class="hub-accordion-panel"><p>Algorithmic: near zero as a pure category (May 2026). UST dead, Frax re-collateralized.</p></div></div>
+        <div class="hub-accordion-item open"><div class="hub-accordion-panel"><p>RWA / tokenized funds: about $33.5B reported value excluding stablecoins in early July 2026, per CryptoRank citing RWA.xyz. This secondary report is a different measure from the ~$345B represented or pipeline figure and does not establish current primary fund AUM. Fund-specific terms govern transfers and redemption; no universal T+1 cycle is assumed.</p></div></div>
       </div>
     </noscript>
 
@@ -129,13 +131,26 @@
   <div class="section-inner">
     <div class="kicker">02 - Scale and trajectory</div>
     <h2>From crypto plumbing to financial infrastructure</h2>
-    <p class="section-thesis">Total stablecoin market cap is approximately $289-300B as of mid-2026 across aggregators (CoinMarketCap ~$300B, CoinGecko ~$291B, DefiLlama ~$289B - the range is the honest answer, not a number to pick). USDT and USDC alone control over 80% of supply. Every credible forecaster expects multi-trillion scale by 2030; the disagreement is how fast, not whether.</p>
+    <p class="section-thesis">One dated measurement puts total stablecoin market cap at $308.0B as of 13 August 2026, up 14.3% year over year, about 99.5% dollar-denominated and 4.5% below its May 2026 peak. That is one aggregator's number for one date. No second independent measurement of the same date and universe is verified in this report's research record, so no cross-source range is quoted and the absence is stated rather than filled. The projections below are scenarios from different forecasters, not a consensus or a guarantee of multi-trillion scale.</p>
+
+    <div id="market-cap-measure-wrap"></div>
+    <noscript>
+      <div class="callout">
+        <div class="callout-label">Total stablecoin market cap, one dated measurement</div>
+        <p class="stat md">$308.0B</p>
+        <p class="as-of">As of 2026-08-13</p>
+        <p><strong>What it measures:</strong> total stablecoin market capitalisation across all issuers and all tracked chains, one aggregator measurement.</p>
+        <p><strong>Movement:</strong> +14.3% year over year, about 99.5% dollar-denominated, and 4.5% below its May 2026 peak.</p>
+        <p><strong>Why no range:</strong> no second independent measurement for the same date and universe is verified in this report's research record, so none is quoted.</p>
+        <p class="as-of">This is a different measure from the hero counter, which sums only the 5 coins tracked by the live dashboard.</p>
+      </div>
+    </noscript>
 
     <div class="chart-wrap reveal">
       <div class="chart-canvas-box" style="height:320px">
         <canvas id="scale-chart" height="320" role="img" aria-label="Line chart of total stablecoin market cap from 2017 to 2026, with markers at UST collapse (May 2022), SVB/USDC (March 2023), and GENIUS Act signing (July 2025)."></canvas>
       </div>
-      <p class="chart-caption">Total stablecoin market cap, year-end USD billions. Markers: UST collapse (May 2022), USDC/SVB (March 2023), GENIUS Act signed (July 2025). Source: DefiLlama stablecoins dashboard.</p>
+      <p class="chart-caption">Total stablecoin market cap, USD billions. The 2017-2025 points are year-end observations; the 2026 point is a dated observation, not a year-end total. Markers: UST collapse (May 2022), USDC/SVB (March 2023), GENIUS Act signed (July 2025). Source: DefiLlama stablecoins dashboard.</p>
     </div>
 
     <h3 style="margin-top:2.5rem">Forward projections to 2030</h3>
@@ -143,7 +158,7 @@
       <div class="chart-canvas-box" style="height:280px">
         <canvas id="forecast-chart" height="280" role="img" aria-label="Fan/band chart of stablecoin market cap projections from 2026 to 2030, showing IMF, Citi, Bain, Standard Chartered, and JPMorgan forecasts as separate labeled ranges."></canvas>
       </div>
-      <p class="chart-caption">Named projections to 2030. Toggle forecasters with the chips below the chart. Everyone credible expects multi-trillion scale; the disagreement is how fast, not whether. Single-point forecasts are shown with small visual padding so the bar is visible; see tooltip for the exact stated figure.</p>
+      <p class="chart-caption">Named projections to 2030, not a consensus forecast. Toggle forecasters with the chips below the chart. Single-point forecasts are shown with small visual padding so the bar is visible; see tooltip for the exact stated figure.</p>
     </div>
     <div class="chip-row" id="forecast-chips" role="group" aria-label="Isolate a forecaster">
       <button class="hub-chip active" data-forecaster="all">All</button>
@@ -161,7 +176,7 @@
   <div class="section-inner">
     <div class="kicker">03 - Who holds the world's dollars</div>
     <h2>A quiet buyer of government debt</h2>
-    <p class="section-thesis">Stablecoin issuers now hold well over $150B in US Treasuries, mostly short-dated T-bills. Tether's reported ~$141B (Q1 2026 attestation) exceeds the holdings of Germany ($91.3B) and Norway ($104.4B) per the US Treasury TIC Jan 2023 table; combined issuers' ~$182B exceeds Norway. The comparison is duration-mismatched: issuers hold short-dated bills, while TIC ranks total foreign holdings.</p>
+    <p class="section-thesis">Stablecoin issuers hold well over $150B in US Treasuries, mostly short-dated T-bills. Tether's reported ~$141B (Q1 2026 attestation, exposure as of 2026-03-31) exceeds the holdings of Germany ($91.3B) and Norway ($104.4B) per the US Treasury TIC Jan 2023 table; combined issuers' ~$182B exceeds Norway. The comparison is duration-mismatched: issuers hold short-dated bills, while TIC ranks total foreign holdings. And the figure above is gross exposure, not incremental demand: an issuer buying bills only adds to Treasury demand if nobody else sold them to fund the purchase. The section below separates the two.</p>
 
     <div class="chart-wrap reveal">
       <div class="chart-canvas-box" style="height:420px">
@@ -172,13 +187,54 @@
 
     <div class="hub-accordion" style="margin-top:2rem">
       <div class="hub-accordion-item open">
-        <button class="hub-accordion-trigger" aria-expanded="true">How the GENIUS Act locks this in<span class="hub-accordion-mark">&rsaquo;</span></button>
+        <button class="hub-accordion-trigger" aria-expanded="true">What the GENIUS Act actually requires, and when<span class="hub-accordion-mark">&rsaquo;</span></button>
         <div class="hub-accordion-panel">
-          <p>The GENIUS Act (signed July 18, 2025; the House passed it July 17, so "July 17-18" appears in coverage) requires payment-stablecoin reserves to be 1:1, held in a permitted list that includes cash, T-bills and overnight repo, with Treasury maturities of 93 days or less (the statute says 93, not 90). This legally binds issuer demand to the very short end of the yield curve, making issuers permanent, rule-bound T-bill buyers. The effective date is January 18, 2027 under the 18-month fallback now locked (no final rule was issued before the September 20, 2026 threshold). Rulemaking status changes monthly; re-verify before citing.</p>
+          <p>The GENIUS Act was enacted July 18, 2025 (the House passed it July 17, so "July 17-18" appears in coverage). Section 4 requires payment-stablecoin reserves to be at least 1:1, and the permitted assets are a <em>list of eight classes</em>, not Treasury bills alone: coins and currency; insured deposits; Treasury bills, notes or bonds of 93 days or less (the statute says 93, not 90); overnight repo backed by such securities; overnight reverse repo against Treasuries; shares of a registered Government money market fund invested solely in the preceding classes; other similarly liquid Federal Government-issued assets approved by the regulator; and tokenized forms of those classes. Section 4 also requires monthly published reserve composition including average tenor and custody location per category, and bars pledging or rehypothecating reserves outside its exceptions. The full list is reproduced in <a href="#regulation">Section 8</a>.</p>
+          <p><strong>Commencement is not settled.</strong> Section 20 sets general commencement at the earlier of 18 months after enactment or 120 days after the primary federal payment stablecoin regulators issue any final implementing regulations. January 18, 2027 is therefore an outer limit, not a fixed date, and whether a final rule has already triggered the earlier date is <strong>UNRESOLVED</strong> in this report's research record. Section 3(b)(1) separately places the offer-and-sale prohibition three years after enactment. This report therefore does not describe any GENIUS duty as locked, operative or currently in force. Re-verify commencement before relying on these statutory duties.</p>
           <p>See the full regulatory comparison in <a href="#regulation">Section 8</a>.</p>
         </div>
       </div>
     </div>
+
+    <h3 style="margin-top:2.5rem" id="genius-reserves-heading">The eight eligible reserve classes</h3>
+    <p class="as-of">Stated as the statute states it. Reading "1:1 reserves" as "1:1 Treasury bills" is the specific error this list is here to prevent.</p>
+    <div id="genius-reserves-wrap"></div>
+    <noscript>
+      <div class="callout">
+        <div class="callout-label">GENIUS Act Sec. 4(a)(1)(A), 12 U.S.C. 5903(a)(1)(A)</div>
+        <p class="stat md">Reserves must be at least 1:1 and comprise a list of eight eligible classes. Treasury bills are one of them, not the whole of it.</p>
+        <ol class="hub-class-list">
+          <li>Coins and currency.</li>
+          <li>Insured deposits.</li>
+          <li>Treasury bills, notes or bonds of 93 days or less, measured by remaining or original maturity.</li>
+          <li>Overnight repo backed by such Treasury securities.</li>
+          <li>Overnight reverse repo against Treasury notes, bills or bonds: tri-party, centrally cleared, or bilateral with a creditworthy counterparty.</li>
+          <li>Shares of a registered Government money market fund invested solely in the preceding classes.</li>
+          <li>Other similarly liquid Federal Government-issued assets approved by the regulator.</li>
+          <li>Tokenized forms of the eligible classes.</li>
+        </ol>
+        <p><strong>Disclosure duty:</strong> Sec. 4 requires monthly publication of reserve composition, including average tenor and the geographic location of custody per category.</p>
+        <p><strong>Encumbrance:</strong> Sec. 4 prohibits pledging or rehypothecating reserves outside the statute's stated exceptions.</p>
+        <p><strong>Accounting treatment:</strong> Sec. 3(g) denies non-permitted stablecoins the treatment of cash or cash equivalent for accounting purposes, cash-equivalent margin and collateral eligibility, and acceptable wholesale settlement asset status.</p>
+        <p class="as-of">Statutory requirement. It binds once the Act commences, and commencement is UNRESOLVED.</p>
+      </div>
+    </noscript>
+
+    <h3 style="margin-top:2.5rem" id="treasury-demand-heading">Gross holdings are not net new demand</h3>
+    <p class="as-of">The clearest available illustration of why, and the place where the cited source disagrees with itself.</p>
+    <div id="treasury-demand-wrap"></div>
+    <noscript>
+      <div class="callout">
+        <div class="callout-label">Gross holdings are not net new demand</div>
+        <p><strong>The measurement:</strong> Tether reports about $141B of direct and indirect US Treasury bill exposure against about $183B of token liabilities as of 2026-03-31. That is gross exposure, not incremental demand. Where the money came from decides whether issuer purchases add to, replace or reduce Treasury demand.</p>
+        <p><strong>The conditional example:</strong> under an explicitly strong assumption that bank and issuer asset mixes hold, the Kansas City Fed Bulletin models an extra $1 of stablecoins raising Treasury holdings by $0.50 and $1 less in bank deposits lowering them by $0.08, and states a $0.30 net effect.</p>
+        <p><strong>Why no number is published:</strong> its own components give $0.42, not $0.30; the $0.12 gap is unreconciled. Two versions of the note also disagree: the later publisher-corrected HTML (2026-09-22) uses an 8 percent bank Treasury share, a $0.08 reduction and 2.5 percent loan contraction, while the linked PDF gives 20 percent, $0.20 and 1 percent. Both retain the $0.30 net, and the PDF reader's cache freshness is unknown.</p>
+        <p class="as-of"><strong>Status:</strong> UNRESOLVED. The intended net-demand coefficient is not established, and this report does not publish a corrected one.</p>
+        <p><strong>What survives both versions:</strong> if the sellers of the shifted funds sell Treasuries at the same rate issuers buy them, a larger stablecoin market has no net effect on Treasury demand at all. Where households forgo or sell Treasury purchases the effect reverses sign, because $1 less household buying creates only $0.50 of issuer buying.</p>
+        <p>Stablecoin growth can redirect short-term safe-asset demand. It cannot be used to measure net new Treasury demand, debt relief or lending contraction market-wide.</p>
+        <p class="as-of">Sources: Kansas City Fed Economic Bulletin (HTML corrected 2026-09-22; linked PDF freshness unknown) and the Fed's FEDS Note of 2025-12-17.</p>
+      </div>
+    </noscript>
 
     <h3 style="margin-top:2.5rem" id="maturity-bands">T-bill maturity bands: why issuers stay short</h3>
     <p class="as-of">Reserve composition by maturity, from issuer attestations. Short-term bills (93 days or less, the statutory cap) dominate because redemptions can arrive any day; long-dated holdings would force a fire sale.</p>
@@ -419,6 +475,16 @@
     <h3 style="margin-top:2rem" id="genius-status">GENIUS Act rulemaking status (as of Sep 2026)</h3>
     <div class="genius-status-block" id="genius-status-block"></div>
     <p class="as-of" id="genius-source"></p>
+    <noscript>
+      <div class="genius-status-block">
+        <p>Enacted <strong>July 18, 2025</strong>. Historical tracker snapshot (Sep 2026): <strong>26</strong> total rulemakings across <strong>6</strong> agencies; <strong>10</strong> Notices of Proposed Rulemaking issued. Final rules completed: <strong>UNKNOWN</strong>.</p>
+        <p><strong>Commencement mechanics:</strong> Section 20 sets general commencement at the earlier of 18 months after enactment (an outer limit of January 18, 2027) or 120 days after the primary federal payment stablecoin regulators issue any final implementing regulations. Section 3(b)(1) separately places its offer-and-sale prohibition three years after enactment.</p>
+        <p><strong>Commencement status:</strong> UNRESOLVED. This report does not establish whether a qualifying final implementing rule has been issued. January 18, 2027 is an outer limit rather than a settled commencement date.</p>
+        <p><strong>Reserves:</strong> eight eligible reserve classes under Sec. 4(a)(1)(A), not Treasury bills alone. See <a href="#genius-reserves-heading">Section 3</a> for the full list.</p>
+        <p>NPRMs from OCC (bulletin 2026-3), FDIC, NCUA and Treasury were in comment periods at the last check. Because commencement is unconfirmed, this report does not describe any GENIUS duty as currently in force; it describes what the statute requires once commenced.</p>
+      </div>
+      <p class="as-of">Source: GENIUS Act enacted text (Sec. 4 and Sec. 20); Paradigm GENIUS Act Rulemaking Tracker; OCC bulletin 2026-3; FDIC proposal. A dated snapshot, not a live tracker, and no statement above asserts that any GENIUS duty is currently operative.</p>
+    </noscript>
   </div>
 </section>
 
@@ -447,6 +513,21 @@
       <p class="as-of">Tether publishes no line called "reserve income"; its only net measure is "Financial result" in its change-in-net-equity table, and it publishes no reconciliation between that and the release headline above. Circle publishes an explicit reserve income figure. The two are not the same measure. Sources: Tether Q2 2026 attestation and release; Circle 10-Q and FY2025 results.</p>
     </noscript>
 
+    <h3 style="margin-top:2.5rem" id="distribution-economics-heading">Who gets paid, and whether that is new</h3>
+    <p class="as-of">Paying distributors for balances is not a new category of stablecoin economics. The interesting question is not whether it happens but whether anyone has compared the terms, and on that the evidence does not reach.</p>
+    <div id="distribution-economics-wrap"></div>
+    <noscript>
+      <div class="callout">
+        <div class="callout-label">Paying distributors is not new, and the comparison is not available</div>
+        <p><strong>The incumbent already does this:</strong> Circle's Q2 2026 Form 10-Q states that distribution costs payable to key distributors such as Coinbase and Binance are directly impacted by the amount of USDC held on their respective platforms. Circle reported reserve income of $667,733 thousand against distribution and transaction costs of $410,414 thousand for the three months to 2026-06-30, a ratio of 0.6146, and $1,320,241 thousand against $815,816 thousand for the six months, a ratio of 0.6179. Accrued distribution costs stood at $105,799 thousand at 2026-06-30, down from $119,038 thousand at 2025-12-31.</p>
+        <p><strong>What is actually disclosed:</strong> the same filing discloses Coinbase distribution costs of $324.6 million for the quarter and $655.3 million for the half year, and states that Coinbase receives allocations based on USDC held on its platform after issuer retention, plus half the remaining amount tied to broader ecosystem growth after approved third-party participants are paid. The issuer-retention amount is not disclosed.</p>
+        <p class="as-of">The headline cost line combines distribution and transaction costs, so the distribution-only portion cannot be isolated from it. The named Coinbase figures come from a separate disclosure and are a named arrangement, not a universal distributor rate.</p>
+        <p><strong>The challenger:</strong> Open Standard states that reserve earnings go to partners, and that founders and participating partners can earn equity based on the supply and activity they drive. Bridge reports over $1 billion issued across stablecoins including OUSD; none of that is a partner payout figure.</p>
+        <p><strong>Conclusion:</strong> routing reserve earnings to partners is a redistribution of an existing industry practice, not its introduction. The novelty claim is not established by this evidence. Whether Open Standard is more or less generous is UNRESOLVED: partial Circle terms are now evidenced, but a comparable Open Standard contract and realized payments are still missing, and one disclosed rate does not settle a comparison.</p>
+        <p class="as-of">Still UNRESOLVED: like-for-like net-of-fee contracts, issuer retention amounts and realized payouts on both sides. Source: Circle's Form 10-Q for the quarter ended 2026-06-30, and Open Standard's stated company structure.</p>
+      </div>
+    </noscript>
+
     <div class="hub-accordion" style="margin-top:2rem">
       <div class="hub-accordion-item open">
         <button class="hub-accordion-trigger" aria-expanded="true">Why the two issuers' numbers are not comparable<span class="hub-accordion-mark">&rsaquo;</span></button>
@@ -467,7 +548,8 @@
             <p><strong>GENIUS Act Sec. 4(a)(11), 12 U.S.C. 5903(a)(11):</strong> No permitted payment stablecoin issuer or foreign payment stablecoin issuer shall pay the holder of any payment stablecoin any form of interest or yield (whether in cash, tokens, or other consideration) solely in connection with the holding, use, or retention of such payment stablecoin.</p>
             <p><strong>Who it binds:</strong> the issuers only. No de minimis, no safe harbour, no exception; the only qualifier is the word "solely".</p>
             <p><strong>What it does not say:</strong> the Act contains no "economically equivalent to interest" test. The statute is silent on rewards and loyalty programmes, and the silence is total.</p>
-            <p><strong>The reserve side:</strong> reserve assets must be interest-bearing by construction. The Act nowhere requires or forbids passing that income on, so retaining it is unregulated rather than permitted.</p>
+            <p><strong>The reserve side:</strong> reserve assets must be interest-bearing by construction. The Act nowhere requires or forbids passing that income on, so retaining it is unregulated rather than permitted. Note that eligible reserves are a list of eight classes under Sec. 4(a)(1)(A), not Treasury bills alone.</p>
+            <p><strong>Commencement:</strong> the ban binds once the Act commences. Commencement is the earlier of 18 months after enactment (an outer limit of January 18, 2027) or 120 days after final implementing regulations, and whether an earlier trigger has occurred is UNRESOLVED in this report's research record.</p>
           </noscript>
         </div>
       </div>
@@ -502,24 +584,25 @@
     </noscript>
 
     <h3 style="margin-top:2.5rem" id="agentic-volume">What a headline number actually counts</h3>
-    <p class="as-of">Every published figure for the same activity, with its publisher and what it measures. These are not one quantity measured more or less precisely. They are different quantities, and the spread runs from a few tens of thousands of dollars to billions.</p>
+    <p class="as-of">Every published figure for the same activity, with its publisher and what it measures. These are not one quantity measured more or less precisely. They are different quantities, counted over different windows with different inclusion rules and different chain sets, and the spread runs from thousands of dollars to billions. Do not average them and do not subtract one from another.</p>
     <div id="agentic-volume-wrap" class="agentic-volume-wrap"></div>
     <noscript>
       <div class="hub-table-wrap">
         <table class="hub-table">
-          <thead><tr><th class="num">Published figure</th><th>Window</th><th>Publisher</th></tr></thead>
+          <thead><tr><th class="num">Published figure</th><th>Window</th><th>Publisher</th><th>Scope note</th></tr></thead>
           <tbody>
-            <tr><td class="num">$996,474 / 18.1M transactions</td><td>~30 days to 2026-09-26</td><td>x402scan</td></tr>
-            <tr><td class="num">$24.24M / 75.41M transactions</td><td>"last 30 days", undated</td><td>x402.org</td></tr>
-            <tr><td class="num">100M+ payments</td><td>cumulative, unbounded</td><td>Coinbase CDP docs</td></tr>
-            <tr><td class="num">$52.7M / 198.9M transactions</td><td>cumulative to 2026-09-09</td><td>TRM Labs</td></tr>
-            <tr><td class="num">$2.59bn / 18.3M payments</td><td>August 2026</td><td>Bitquery</td></tr>
-            <tr><td class="num">$38,000 / ~184,600 transactions</td><td>cumulative to 2026-04-21</td><td>Visa + Artemis</td></tr>
-            <tr><td class="num">$25,000 / ~115,000 transactions</td><td>cumulative to 2026-04-21, adjusted</td><td>Visa + Artemis</td></tr>
+            <tr><td class="num">12,293,450 transactions and $974,215.14 at six decimals</td><td>dashboard cumulative total, window not stated on the page</td><td>x402scan, fetched 2026-10-01</td><td>Window and inclusion rules unpublished, so not comparable with an August-only count</td></tr>
+            <tr><td class="num">$24.24M / 75.41M transactions</td><td>"last 30 days", undated</td><td>x402.org (the Foundation)</td><td>Self-report, no methodology or timestamp</td></tr>
+            <tr><td class="num">100M+ payments</td><td>cumulative, unbounded</td><td>Coinbase CDP docs</td><td>Vendor counting its own facilitator</td></tr>
+            <tr><td class="num">$52.7M / 198.9M transactions</td><td>cumulative to 2026-09-09</td><td>TRM Labs</td><td>Independent third-party measurement</td></tr>
+            <tr><td class="num">$2.59bn / 18.3M payments</td><td>August 2026</td><td>Bitquery</td><td>Five countably comparable EVM chains; about 88% of the value is one bridging contract on Arbitrum</td></tr>
+            <tr><td class="num">$317M residual</td><td>August 2026</td><td>Bitquery</td><td>Five-chain total less that one Arbitrum contract (rounded inputs give $318.25M). Includes the other four chains; not Arbitrum-only, not commerce-only</td></tr>
+            <tr><td class="num">about $15.0M / 109.6M transactions</td><td>cumulative to 2026-04-21</td><td>Visa + Artemis, wash and test excluded</td><td>Wash-adjusted, single ecosystem, earlier data date</td></tr>
+            <tr><td class="num">$38,000 / ~184,600 transactions</td><td>cumulative to 2026-04-21</td><td>Visa + Artemis, unadjusted</td><td>Companion to the row above</td></tr>
           </tbody>
         </table>
       </div>
-      <p class="as-of">These are not one quantity measured more or less precisely. They are different quantities, counted over different windows with different inclusion rules, and the spread runs from tens of thousands of dollars to billions.</p>
+      <p class="as-of">These are different quantities, counted over different windows with different inclusion rules. An earlier version of this report quoted a $996,474 figure across 18.1 million transactions from this dashboard; that figure matches neither the volume nor the transaction count of the dashboard's own totals and is withdrawn.</p>
     </noscript>
 
     <h3 style="margin-top:2.5rem" id="agentic-ticket">The median transaction is about one cent</h3>
@@ -550,7 +633,7 @@
       </div>
     </noscript>
 
-    <p class="as-of">What this pass could not establish, and is therefore reported as unknown rather than estimated: any first-party all-time x402 transaction count; any reconciliation between the three x402 headline numbers, which differ by 4x to 24x and none of which publishes a methodology or an as-of date; any production deployment of AP2; any 2026 Visa TAP or Mastercard Agent Pay transaction count; and a named news publisher serving paid content over x402 in production. That last absence contradicts the "publishers are monetising over x402" framing common in secondary coverage, and should not be reported as fact.</p>
+    <p class="as-of">What this pass could not establish, and is therefore reported as unknown rather than estimated: any first-party all-time x402 transaction count; any reconciliation between these headline numbers, whose scopes, chain sets, windows and adjustment rules differ and whose spread runs from thousands of dollars to billions; the true commerce-only share of x402 volume, which no source estimates on a common denominator; any production deployment of AP2; any 2026 Visa TAP or Mastercard Agent Pay transaction count; and a named news publisher serving paid content over x402 in production. That last absence contradicts the "publishers are monetising over x402" framing common in secondary coverage, and should not be reported as fact. What the measured samples do establish is that bridge traffic and automated loops dominate: one bridging contract holds about 88% of Bitquery's August value, two loops account for 83% of the payments it found, and Chainalysis attributes growth substantially to meme-coin farming.</p>
   </div>
 </section>
 
@@ -570,14 +653,18 @@
         <p>Launched 2026-09-16 in New York. Mainnet chain ID 5042 (0x13b2); testnet chain ID 5042002. Gas is paid in USDC, with no volatile native token. Read from Circle's own release and probed against the RPC endpoint, which answered with the mainnet chain ID and an advancing block height. A live testnet also exists, and Arc's own docs page serves the testnet tab by default, which is why some coverage says testnet only.</p>
       </div>
       <div class="callout" style="margin-top:1.5rem">
-        <div class="callout-label">Open USD (OUSD) - Open Standard consortium</div>
-        <p class="stat md">ANNOUNCED ONLY. No circulating supply.</p>
-        <p>Announced 2026-06-30 with "over 140 businesses" named on the consortium's own site, founding CEO Zach Abrams. CoinGecko returns circulating supply 0.0 and a null market cap; the token is absent from DefiLlama's 427 tracked pegged assets. Its own site states no mint or redeem fees and reserve yield paid to member firms, which is the model rather than a measurement. No launch chain is named by any primary source, and the launch date is still "later this year". Circle and Tether are absent from its member list.</p>
+        <div class="callout-label">Open USD (OUSD) - issuer-reported live</div>
+        <p class="stat md">LIVE, issuer-reported. Launched 2026-09-30.</p>
+        <p>Issued by Bridge Building Inc., a Stripe company. Open Standard, a consortium founded by Coinbase, Mastercard, Shopify, Stripe and Visa, describes itself as independent; that claim is about the company, not the issuer. Launch chains named by the issuer at launch: Base, Ethereum, Solana and Tempo, with free 1:1 mint and burn reported on Solana the same day.</p>
+        <p><strong>Reserve snapshot:</strong> the issuer's own reserve page reported total supply in circulation of $468,445,399 at 11:30 UTC on 2026-10-01, described as fully collateralised: $257,214,691 cash (54.91%) and $211,230,708 Treasuries (45.09%), which sum exactly to total supply. That is one issuer self-report at one timestamp, and it is not adoption, velocity or payment volume. A single snapshot is not a series.</p>
+        <p><strong>Partner economics are not holder yield:</strong> Open Standard states that partners earn rewards proportional to supply and activity driven, with an opportunity to earn equity. These are company statements, not evidence of realized payouts or the allocation of all reserve income. Nothing verified here gives holders direct title to reserve assets or a right to instruct reserve managers.</p>
+        <p><strong>Charter:</strong> Bridge states it received conditional OCC approval to establish Bridge National Trust Bank. Conditional approval is not a final charter, and no primary OCC order is verified in this report's research record, so current charter status is UNRESOLVED.</p>
+        <p class="as-of">An earlier version of this report described OUSD as announced-only with no circulating supply, and carried an unsourced single-day price-move attribution for another issuer. Both are corrected here. DefiLlama lists a ticker "OUSD" that is Origin Dollar, an unrelated project, and it must not be read as this one.</p>
       </div>
     </noscript>
 
     <h3 style="margin-top:2.5rem" id="rwa-funds">The funds beside the stablecoins</h3>
-    <p class="as-of">Tokenized funds holding the same short-dated Treasuries as the issuers, under a securities wrapper rather than a payments one. Sizes are the issuers' own published figures on the date shown, because the aggregators disagree with the issuers and with each other.</p>
+    <p class="as-of">Tokenized funds holding the same short-dated Treasuries as the issuers, under a securities wrapper rather than a payments one. A tokenized fund share is a fund interest: the underlying securities are owned by the fund, not by the holder. Sizes are the issuers' own published figures on the date shown, because the aggregators disagree with the issuers and with each other.</p>
     <div id="rwa-funds-wrap" class="rwa-funds-wrap"></div>
     <noscript>
       <div class="hub-table-wrap">
@@ -586,11 +673,44 @@
           <tbody>
             <tr><td>Ondo USDY</td><td class="num">$2.29B</td><td>2026-09-26 (Ondo product page)</td></tr>
             <tr><td>Ondo OUSG</td><td class="num">$319.8M</td><td>2026-09-26 (Ondo product page)</td></tr>
-            <tr><td>BlackRock BUIDL</td><td class="num">$2.70-3.52B (sources disagree)</td><td>2026-08-07 to 2026-09-26</td></tr>
+            <tr><td>BlackRock BUIDL</td><td class="num">no verified current AUM (UNRESOLVED)</td><td>dated secondary reports only; see below</td></tr>
           </tbody>
         </table>
       </div>
-      <p class="as-of">Ondo USDY is roughly 96% US Treasuries and is not BUIDL-backed. OUSG's largest sleeve is State Street Galaxy SWEEP at roughly 45%, with BUIDL at roughly 30%, which corrects earlier reporting that said OUSG was mostly BUIDL-backed. BUIDL has no issuer-published current AUM; the only primary figure on file is a cumulative gross sales number on a Form D/A, which is not AUM.</p>
+      <p class="as-of">Ondo USDY is roughly 96% US Treasuries and is not BUIDL-backed. OUSG's largest sleeve is State Street Galaxy SWEEP at roughly 45%, with BUIDL at roughly 30%, which corrects earlier reporting that said OUSG was mostly BUIDL-backed. BUIDL has no issuer-published current AUM; the only primary figure on file is a cumulative gross sales number on a Form D/A, which is not AUM. Securitize's $4.3B is platform-wide tokenized AUM as of 2026-06-30, not BUIDL fund AUM, and is not substituted for it.</p>
+    </noscript>
+
+    <h3 style="margin-top:2.5rem" id="buidl-reports">BUIDL: three dated reports, no current figure</h3>
+    <p class="as-of">An earlier version of this report presented a $2.70-3.52B "sources disagree" range for BUIDL. A range implies a currency and a single valuation basis that none of these figures has, so they are listed separately and no current AUM is asserted.</p>
+    <div id="buidl-reports-wrap"></div>
+    <noscript>
+      <div class="hub-table-wrap">
+        <table class="hub-table">
+          <thead><tr><th class="num">Reported size</th><th>Report date</th><th>What it is</th></tr></thead>
+          <tbody>
+            <tr><td class="num">about $2.5B to $2.9B</td><td>early July 2026</td><td>Secondary aggregator reporting; the same source notes BUIDL became tradeable on Uniswap via UniswapX in February 2026</td></tr>
+            <tr><td class="num">about $2.7B (Circle USYC about $3.0B)</td><td>August 2026</td><td>A separate compilation citing DefiLlama, which elsewhere brackets both funds as each about $2.4B to $3.0B</td></tr>
+            <tr><td class="num">approximately $2.4B</td><td>May 2026</td><td>Secondary research-house reporting, with an eight-chain deployment list</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="as-of">An earlier version cited the aggregator capture for the $2.7B figure. That capture contains no such figure: its only 2.7 is a $2.7 trillion 2030 DeFi-deployment projection, a different quantity in a different unit. What would close this gap: a dated BUIDL-specific issuer or administrator disclosure with chain aggregation and a stated valuation basis.</p>
+    </noscript>
+
+    <h3 style="margin-top:2.5rem" id="rwa-depth-heading">Reported value is not market depth</h3>
+    <p class="as-of">Headline tokenized value counts committed and represented assets. Weekly public movement counts something else. Both are stated here, with their separate denominators, and neither is merged into the other.</p>
+    <div id="rwa-depth-wrap"></div>
+    <noscript>
+      <div class="callout">
+        <div class="callout-label">Reported value and actual weekly movement are different measurements</div>
+        <p><strong>Reported value:</strong> about $33.5B of tokenized real-world-asset value excluding stablecoins in early July 2026 (rwa.xyz), against a separate "represented" or pipeline figure near $345B that counts assets committed to tokenization but not yet freely tradable. Conflating those two is the single largest available error on this topic.</p>
+        <p><strong>Weekly transfer activity:</strong> of 1,289 tested tokenized assets above $100,000, 910 recorded zero weekly transfers and 379 recorded movement. That is 70.60% by count. By value, the publisher reports $32.9B without transfers against $26.2B active, stated as 56% of the value measured for transfer activity.</p>
+        <p class="as-of">The two percentages have different denominators and must not be swapped. From the article's rounded components, $32.9B is 55.67% of the $59.1B transfer-measured subset; against the publisher's separate $60B market base it is 54.83%. The bases are not interchangeable.</p>
+        <p class="as-of">Data dates: article published 2026-07-02; the publisher's report landing page separately dates its data to 2026-05-31 and gives a $60B market size. The precise transfer week, exclusions and full methodology are UNRESOLVED.</p>
+        <p><strong>What this does and does not show:</strong> it establishes low reported weekly transfer activity, not economically idle capital. About $27B of the reported dormant value came from "represented" assets, which the publisher says were not necessarily designed for public secondary-market movement. A ledger-style holding can still perform useful economic functions off-chain.</p>
+        <p><strong>DeFi deployment share:</strong> about 10% of tokenized RWA value flows into DeFi protocols, per the same secondary source; the definition of deployment is not given, so it is a single uncorroborated figure.</p>
+        <p class="as-of">This evidence does not establish economic substitution between tokenized assets and stablecoins, and a tokenized fund share does not equal ownership of the underlying asset. Source: BeInCrypto (2026-07-02), with the report landing page dated 2026-05-31.</p>
+      </div>
     </noscript>
 
     <h3 style="margin-top:2.5rem" id="growth-honest">How it is actually growing</h3>
@@ -610,12 +730,12 @@
           <p>Peak $321.09B on 2026-05-20 against $311.30B on 2026-09-26.</p>
         </div>
         <div class="callout">
-          <div class="callout-label">Real payments versus raw on-chain volume</div>
-          <p class="stat md">about 1.2%</p>
-          <p>Adjusted payment volume of roughly $390B against roughly $33T raw and $11T adjusted on-chain volume. Raw volume counts wallet-to-wallet transfers, which is not commerce.</p>
+          <div class="callout-label">Real economic activity versus gross stablecoin transfers</div>
+          <p class="stat md">about 7% broad, under 1% narrow</p>
+          <p>BCG and Allium Labs (2026-09-30) report more than $62T of annual stablecoin transfers, with real economic activity of $4.2T, about 7% of the total. Separately, roughly $350B to $550B of observable bilateral goods-and-services payments in 2025, which is 0.565% to 0.887% of the gross figure and which the authors label a directionally robust lower bound. The two definitions are not interchangeable, and no single commerce share is established.</p>
         </div>
       </div>
-      <p class="as-of">Issuance roughly tripled across 2024 and 2025 and then went flat. The multi-trillion forecasts to 2030 are unchanged by that. A 1.5% year does not disprove them, but it is evidence the current trajectory and the forecast trajectory are not the same line.</p>
+      <p class="as-of">Issuance roughly tripled across 2024 and 2025 and then went flat. The multi-trillion forecasts to 2030 are unchanged by that. A 1.5% year does not disprove them, but it is evidence the current trajectory and the forecast trajectory are not the same line. An earlier version of this report claimed 95% to 99% of stablecoin volume was non-payment; no source contains that figure and it is withdrawn.</p>
     </noscript>
   </div>
 </section>
@@ -637,12 +757,99 @@
     <p class="as-of">Until on-chain real assets approach even 1% of their traditional counterparts, claims that they are "changing" commodity or credit markets should be read as trajectory statements, not current-fact statements. The growth rates, not the sizes, are the story worth monitoring on the live dashboard.</p>
   </div>
 </section>
+<section class="section" id="latest-research" aria-labelledby="latest-research-heading">
+  <div class="section-inner">
+    <div class="kicker">Latest research - reviewed 2026-10-02</div>
+    <h2 id="latest-research-heading">This edition, and what changed in it</h2>
+    <p class="section-thesis">The research record behind this page was reconciled on <strong>2026-10-02</strong>. That is a review date, not a measurement date: every figure in this report keeps its own as-of date, and the historical sections above (depeg cases, year-end market-cap marks, per-jurisdiction rulebook rows) keep the dates of the events they describe. Re-reading the stored primary sources changed several conclusions, including two that earlier review passes had already accepted. Those changes are listed here rather than silently absorbed.</p>
+
+    <div class="callout">
+      <div class="callout-label">The full dated report</div>
+      <p class="stat md">State of Stablecoins: reserves, payments and economic use</p>
+      <p><a href="./state-of-stablecoins-2026-10-02.md"><strong>Read the complete 2026-10-02 report &rarr;</strong></a></p>
+      <p class="as-of">Nine sections with per-claim source dates and a 31-entry source list. The interactive hub above is the teaching layer; the report is the dated, citable layer. They carry the same findings and the same UNRESOLVED markers.</p>
+    </div>
+
+    <h3 style="margin-top:2rem">Corrections applied to this page</h3>
+    <div class="hub-accordion" id="latest-research-accordion" style="margin-top:1rem">
+      <!-- items injected by main.js from latestResearchCorrections -->
+    </div>
+    <noscript>
+      <div class="hub-accordion">
+        <div class="hub-accordion-item open"><div class="hub-accordion-panel">
+          <p><strong>Open USD is live, not announced-only.</strong> Earlier text said OUSD had no circulating supply. It was issued by Bridge Building Inc., a Stripe company, and went live on Base, Ethereum, Solana and Tempo on 2026-09-30, with an issuer-reported supply snapshot of $468,445,399 at 11:30 UTC on 2026-10-01. A single dated supply snapshot is not an adoption series, and the reserve earnings accrue to partners rather than to token holders. An unsourced single-day price-move attribution for another issuer was also removed.</p>
+        </div></div>
+        <div class="hub-accordion-item open"><div class="hub-accordion-panel">
+          <p><strong>GENIUS reserves are a list, not Treasury bills.</strong> Section 4(a)(1)(A) requires at least 1:1 reserves drawn from eight eligible classes, of which 93-day Treasuries are one. Earlier text implied reserves are bound to bills.</p>
+        </div></div>
+        <div class="hub-accordion-item open"><div class="hub-accordion-panel">
+          <p><strong>GENIUS commencement is unresolved.</strong> Section 20 sets it at the earlier of 18 months after enactment or 120 days after final implementing regulations. Earlier text called the 18-month fallback "locked". No final rule is verified, so no GENIUS duty is described here as currently operative.</p>
+        </div></div>
+        <div class="hub-accordion-item open"><div class="hub-accordion-panel">
+          <p><strong>Gross Treasury holdings are not net demand.</strong> The Kansas City Fed example states a $0.30 net effect whose own components give $0.42, and its HTML and PDF versions disagree on the inputs. The intended coefficient is UNRESOLVED and no corrected coefficient is published. The source's own hedge, that the effect can be zero or negative depending on where the money came from, is the part that survives.</p>
+        </div></div>
+        <div class="hub-accordion-item open"><div class="hub-accordion-panel">
+          <p><strong>Paying distributors is not new.</strong> Earlier framing treated partner-oriented reserve economics as a departure. Circle's Q2 2026 10-Q states distribution costs to key distributors are directly impacted by balances held, and discloses named Coinbase terms. Whether Open Standard is more or less generous remains UNRESOLVED.</p>
+        </div></div>
+        <div class="hub-accordion-item open"><div class="hub-accordion-panel">
+          <p><strong>The 95-to-99 percent non-payment claim was withdrawn.</strong> No source contains it. The verified framing is about 7% real economic activity under the broad definition and under 1% for observable bilateral goods-and-services payments, which the source itself calls a lower bound.</p>
+        </div></div>
+        <div class="hub-accordion-item open"><div class="hub-accordion-panel">
+          <p><strong>x402 figures now carry their scopes.</strong> An unsourced $996,474 floor was withdrawn; the dashboard's own cumulative totals are quoted instead. The $317M figure is identified as a five-chain residual after removing one bridging contract, not an Arbitrum-only or commerce-only figure, and the commerce share is UNRESOLVED.</p>
+        </div></div>
+        <div class="hub-accordion-item open"><div class="hub-accordion-panel">
+          <p><strong>BUIDL has no verified current AUM.</strong> The earlier "$2.70-3.52B, sources disagree" range implied a currency and a single valuation basis that none of the three reports has. They are now listed separately with their dates, and no current AUM is asserted.</p>
+        </div></div>
+        <div class="hub-accordion-item open"><div class="hub-accordion-panel">
+          <p><strong>RWA count and value shares are separated.</strong> 910 of 1,289 assets with zero weekly transfers is 70.60% by count; the reported 56% is value-weighted against a different base. Neither establishes economically idle capital.</p>
+        </div></div>
+        <div class="hub-accordion-item open"><div class="hub-accordion-panel">
+          <p><strong>No fabricated fallback on the hero counter.</strong> When the live fetch fails, the counter shows a hyphen. It previously displayed a midpoint of a research-file range labelled as the total global market cap, which was a different measure and a fabricated point estimate.</p>
+        </div></div>
+        <div class="hub-accordion-item open"><div class="hub-accordion-panel">
+          <p><strong>No single dataset-wide as-of date.</strong> The footer distinguishes the review date from measurement dates. Sources have different observation dates, stated with the reconciled findings. Older historical observations are not newly verified by this publication.</p>
+        </div></div>
+      </div>
+    </noscript>
+
+    <h3 style="margin-top:2rem">What is still unresolved</h3>
+    <p class="as-of">These are open questions, not soft findings. Each would need a specific kind of evidence to close, and none of them is filled with an estimate on this page.</p>
+    <div id="latest-research-open" class="hub-accordion" style="margin-top:1rem"></div>
+    <noscript>
+      <ul>
+        <li><strong>Net Treasury demand:</strong> needs holder origin assets, issuance flows, reserve allocations and displaced assets under a stated counterfactual. Gross issuer holdings do not supply it.</li>
+        <li><strong>The Kansas City Fed coefficient:</strong> needs a publisher reconciliation of the 0.30 against its own 0.42 components and its two disagreeing versions.</li>
+        <li><strong>GENIUS commencement:</strong> needs an authoritative final implementing rule and its issuance date.</li>
+        <li><strong>Current trust-bank authorizations:</strong> needs the primary final OCC orders for Circle and Bridge, and reconciliation of the entity names.</li>
+        <li><strong>Comparable distribution terms:</strong> needs like-for-like net-of-fee contracts and realized payouts on both sides.</li>
+        <li><strong>Commerce-only x402 volume:</strong> needs merchant or service attribution with bridge, bot, test and self-payment exclusions on one consistent basis.</li>
+        <li><strong>BUIDL AUM:</strong> needs a dated fund-specific issuer or administrator disclosure with chain aggregation.</li>
+        <li><strong>Open USD adoption:</strong> needs a partner-level series of balances and qualifying payment volume, not a supply snapshot or an integration count.</li>
+        <li><strong>A second market-cap measurement:</strong> needs an independent same-date, same-universe figure. Forming a range from different dates or different stablecoin definitions would not be a range.</li>
+      </ul>
+    </noscript>
+  </div>
+</section>
+
+<section class="section" id="contributors" aria-labelledby="contributors-heading">
+  <div class="section-inner">
+    <div class="kicker">Research contributions</div>
+    <h2 id="contributors-heading">Credit for the work that made it in</h2>
+    <p class="section-thesis">A research-contributor badge recognizes a specific contribution approved by StableSense and incorporated into published research. Each entry describes the work and links to the publication and approval record.</p>
+    <p>Have evidence, a correction or a better method? <a href="https://github.com/withkeshav/StableSense/issues/new" rel="noopener noreferrer">Submit it on GitHub</a>. After review and incorporation, contributors who agree to public credit receive an entry here, a permanent link and an embeddable badge.</p>
+    <div class="contributor-records"><!-- contributor-records --></div>
+    <p class="contributor-terms">Contributors may cite and promote their specific contribution accurately. A badge does not confer project ownership, repository control, editorial authority, authorship of the whole report or endorsement. It is recognition, not a certification or a copyright transfer. Current research reuse terms remain in <a href="https://github.com/withkeshav/StableSense/blob/main/RESEARCH-LICENSE">RESEARCH-LICENSE</a>.</p>
+    <p class="as-of">The linked contribution entry is the official record. Images can be copied or cached; check that entry for the current status.</p>
+  </div>
+</section>
 </main>
 
 <!-- FOOTER -->
 <footer class="hub-footer">
   <div class="hub-footer-inner">
-    <div class="badge" id="hub-freshness-badge">Last updated 2026-09-26 · Hub build 3.7.0</div>
+    <div class="badge" id="hub-freshness-badge">Research reviewed 2026-10-02 &middot; Hub build v3.8.0 &middot; source observation dates vary</div>
+
+    <p class="as-of" style="margin-top:0.75rem">The review date is not a measurement date for the whole dataset. The reconciled findings state their source observation dates, including the 2026-08-13 market-cap observation and 2026-10-01 Open USD snapshot. Older teaching material and historical series retain their original dates and were not all newly verified for this edition.</p>
 
     <p class="attribution">Research and maintained by <a href="https://www.withkeshav.com" target="_blank" rel="noopener noreferrer">Keshav Maheshwari</a>.</p>
 
@@ -651,17 +858,18 @@
     <p class="disclaimer">This report is provided for informational and educational purposes only. It is not financial, investment, legal, or tax advice, and nothing here should be read as a recommendation to buy, sell, or hold any asset. Headline figures such as market capitalization represent one measure among several relevant ones, they do not by themselves capture trading volume, tokenized real-world-asset value, or every issuer's reserves, and different sources measure and report them differently. Where that is the case, this report states what a figure specifically measures rather than leaving it ambiguous. Figures are sourced and dated as noted throughout; markets and regulation move quickly, verify any figure against the cited primary source before relying on it for a decision.</p>
 
     <h3 style="font-size:1.1rem;margin-top:2rem">Methodology</h3>
-    <p class="methodology">Every figure in this report was checked against multiple sources and cross-referenced against primary data. Where sources disagree on a figure, the range is given rather than a single silently-chosen number. The four highest-stakes claims (Treasury-holder ranking, GENIUS Act effective-date mechanics, SVB/USDC low, UST collapse figure) were separately verified against primary sources on 2026-08-12: Treasury TIC data (Jan 2023), Morgan Lewis on the GENIUS Act, CoinGecko Research on the USDC low ($0.8789), and CoinMarketCap/Reuters/ScienceDirect on UST (~$18B supply, ~$60B combined loss). Where a primary source was unreachable or ambiguous during verification, that is noted in the resolved-claim detail below rather than silently defaulting to an unverified figure.</p>
+    <p class="methodology">Every figure in this report was checked against multiple sources and cross-referenced against primary data. Where sources disagree on a figure, the disagreement is shown with each source and its date rather than a single silently-chosen number, and where no source establishes a figure the item is marked unresolved instead of being given a range or an estimate. A range is only shown when the disagreeing figures share a date and a measurement definition; otherwise presenting them as a range would imply a currency and a basis that neither has. Four claims were separately verified against primary sources on 2026-08-12 and are unchanged by the 2026-10-02 review: Treasury TIC data (Jan 2023), the GENIUS Act commencement mechanics (now stated with an unresolved trigger), CoinGecko Research on the USDC low ($0.8789), and CoinMarketCap/Reuters/ScienceDirect on UST (about $18B supply, about $60B combined loss). The rest of this page was re-derived from the stored primary sources on 2026-10-02, which changed several conclusions listed above. Where a primary source was unreachable or ambiguous, that is recorded as unresolved rather than silently defaulting to an unverified figure.</p>
 
     <h3 style="font-size:1.1rem">Verified claims (resolved 2026-08-12)</h3>
     <div id="verified-claims-list"></div>
     <noscript>
       <ol>
         <li><strong>Treasury-holder ranking:</strong> Tether ~$141B exceeds Germany ($91.3B) and Norway ($104.4B); combined issuers ~$182B exceeds Norway. Duration-mismatched comparison. Sources: US Treasury TIC, Tether/Circle attestations.</li>
-        <li><strong>GENIUS effective date:</strong> earlier of 18 months after enactment or 120 days after final rules, which locks it at Jan 18 2027 (no final rule issued before Sep 20 2026). Sources: govinfo Public Law 119-27, Morgan Lewis.</li>
-        <li><strong>SVB/USDC low:</strong> $0.8789 on Mar 11 2023 (CoinGecko Research); $3.3B at SVB. Sources: CoinGecko Research, CNBC.</li>
-        <li><strong>UST collapse:</strong> ~$18B UST supply peak; ~$60B combined UST+LUNA loss. Sources: ScienceDirect, Reuters, CoinMarketCap via Binance.</li>
+        <li><strong>GENIUS commencement mechanics:</strong> the earlier of 18 months after enactment or 120 days after final implementing regulations. 2027-01-18 is an outer limit, not a fixed date, and no final rule is verified, so commencement is UNRESOLVED. Sources: govinfo Public Law 119-27 (Section 20), Morgan Lewis.</li>
+        <li><strong>SVB/USDC low (historical):</strong> $0.8789 on 2023-03-11 (CoinGecko Research); $3.3B at SVB. A dated past event, not re-measured. Sources: CoinGecko Research, CNBC.</li>
+        <li><strong>UST collapse (historical):</strong> about $18B UST supply peak; about $60B combined UST+LUNA loss. A dated past event, not re-measured. Sources: ScienceDirect, Reuters, CoinMarketCap via Binance.</li>
       </ol>
+      <p class="as-of">These historical corrections retain their original review dates. The 2026-10-02 edition revises the GENIUS commencement claim to show its unresolved trigger and reconciles the findings named in "This edition, and what changed in it" above. It does not re-date or newly verify every historical observation on this page.</p>
     </noscript>
 
     <h3 style="font-size:1.1rem">Sources</h3>
@@ -677,5 +885,6 @@
 </footer>
 
 <script type="module" src="./main.js"></script>
+<script type="module" src="./contributor-embeds.js"></script>
 </body>
 </html>

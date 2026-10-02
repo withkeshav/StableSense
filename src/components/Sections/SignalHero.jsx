@@ -1,25 +1,27 @@
 ﻿import { fmtPrice, bps } from '../../utils/formatters.js';
 import AiTicker from '../ui/AiTicker.jsx';
 
-function StabilityGauge({ value = 0 }) {
-  const score = Math.max(0, Math.min(100, Number(value) || 0));
-  const offset = 358 - (358 * score / 100);
+function StabilityGauge({ value = null }) {
+  const measured = typeof value === 'number' && Number.isFinite(value);
+  const score = measured ? Math.max(0, Math.min(100, value)) : null;
+  const offset = measured ? 358 - (358 * score / 100) : 358;
   return (
     <div class="gauge-wrap">
-      <svg viewBox="0 0 150 150" class="gauge" aria-label={`Peg Stability Index: ${score} out of 100`}>
+      <svg viewBox="0 0 150 150" class="gauge" aria-label={measured ? `Peg Stability Index: ${score} out of 100` : 'Peg Stability Index: UNKNOWN'}>
         <circle cx="75" cy="75" r="57" class="gauge-track" />
         <circle cx="75" cy="75" r="57" class="gauge-value" stroke-dasharray="358" stroke-dashoffset={offset} />
         <circle cx="75" cy="75" r="43" class="gauge-inner" />
       </svg>
       <div class="gauge-copy">
-        <strong>{score}</strong>
-        <span>of 100</span>
+        <strong>{measured ? score : '-'}</strong>
+        <span>{measured ? 'of 100' : 'UNKNOWN'}</span>
       </div>
     </div>
   );
 }
 
 function levelNote(level) {
+  if (level === 'UNKNOWN') return 'Insufficient market observations';
   const l = String(level || '').toLowerCase();
   if (l.includes('crit') || l.includes('high') || l.includes('stress')) return 'Elevated stress conditions';
   if (l.includes('warn') || l.includes('watch')) return 'Watch conditions - observe, do not panic';
@@ -31,11 +33,12 @@ export default function SignalHero({ coins, priceByCoin, stress, intelligence, o
   const cadence = freshness
     ? `${String(state).toUpperCase()} MARKET CLOCK`
     : (refreshIntervalSec ? `${Math.round(refreshIntervalSec / 60)} MINUTE CHECK CADENCE` : 'MARKET CHECK');
-  const live = state === 'Current' || state === 'Delayed';
-  const stressScore = Number(stress?.score) || 0;
-  const stability = Math.max(0, Math.min(100, 100 - stressScore));
+  const measured = typeof stress?.score === 'number' && Number.isFinite(stress.score);
+  const live = measured && (state === 'Current' || state === 'Delayed');
+  const stressScore = measured ? stress.score : null;
+  const stability = measured ? Math.max(0, Math.min(100, 100 - stressScore)) : null;
   const steadyWord = stressScore >= 70 ? 'stressed' : stressScore >= 40 ? 'watchful' : 'steady';
-  const headline = intelligence?.headline
+  const headline = !measured ? 'Peg stress and stability cannot be measured from missing or partial price observations.' : intelligence?.headline
     || (stress?.level
       ? `Peg stress is ${String(stress.level).toLowerCase()} (${stressScore}/100 stress · ${stability}/100 stability).`
       : 'Reading live peg and supply signals.');
@@ -51,13 +54,12 @@ export default function SignalHero({ coins, priceByCoin, stress, intelligence, o
           {cadence}
         </div>
         <h1>
-          The stablecoin market is <em>{steadyWord}.</em>
+          {measured ? <>The stablecoin market is <em>{steadyWord}.</em></> : <>Market conditions are <em>unknown.</em></>}
         </h1>
         <p>
-          {headline} Driven by peg drift, active alerts, and cross-chain flow pressure.
-          This is an observation score, not advice.
+          {headline} {measured ? 'Driven by peg drift, active alerts, and cross-chain flow pressure. This is an observation score, not advice.' : 'Missing inputs are not evidence of a steady market.'}
         </p>
-        <AiTicker intelligence={intelligence} />
+        <AiTicker intelligence={measured ? intelligence : null} />
         {dataQuality && dataQuality.length ? (
           <p class="signal-subtitle warn-note">
             Note: {dataQuality.map((d) => d.coin).join(', ')} supply data temporarily unavailable.
@@ -75,7 +77,7 @@ export default function SignalHero({ coins, priceByCoin, stress, intelligence, o
         <StabilityGauge value={stability} />
         <div class="hero-gauge-copy">
           <p class="gauge-label">Peg stability index</p>
-          <p class="gauge-note">{levelNote(stress?.level)} (100 minus stress score)</p>
+          <p class="gauge-note">{measured ? `${levelNote(stress.level)} (100 minus stress score)` : 'UNKNOWN: insufficient market observations'}</p>
         </div>
       </div>
       <div class="signal-prices inline-prices" aria-label="Tracked coin peg prices">

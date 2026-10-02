@@ -1,8 +1,8 @@
 # StableSense
 
-![Version](https://img.shields.io/badge/version-3.7.1-2A6FDB)
+![Version](https://img.shields.io/badge/version-3.8.0-2A6FDB)
 ![Code license: Apache-2.0](https://img.shields.io/badge/code%20license-Apache--2.0-blue)
-![Tests](https://img.shields.io/badge/tests-203%20passing-green)
+![CI](https://github.com/withkeshav/StableSense/actions/workflows/ci.yml/badge.svg)
 ![Node](https://img.shields.io/badge/node-%3E%3D18-339933)
 
 Stablecoin intelligence platform covering **USDT, USDC, DAI, USDe and PYUSD**: peg stress monitoring, cross-chain mint/burn flows, whale-watch anomaly detection, AI-generated market narratives, an in-app Research entry, and a built-in learning tab that explains how stablecoins and pegs actually work.
@@ -50,7 +50,7 @@ Created by [Keshav Maheshwari](https://www.withkeshav.com)
 ```bash
 npm install
 npm run dev       # dev server (frontend only; AI layer disabled by default)
-npm run build     # production build -> dist/
+npm run build:all # production dashboard + research hub -> dist/
 npm run preview   # preview the production build
 npm test          # run unit tests
 ```
@@ -58,18 +58,18 @@ npm test          # run unit tests
 ## How it works
 
 ```
-Visitor's browser (no backend required)
-  +- DefiLlama /stablecoins, /stablecoin/{id}   live supply + history (browser-direct, CORS-open)
-  +- CoinGecko  /simple/price, market_chart, tickers   prices + charts (browser-direct, CORS-open)
+Visitor's browser
+  +- /api/market   supply and prices from the same-origin backend
+  +- CoinGecko market_chart, tickers   coin-tab charts and exchange tickers
   +- derive.js computes stress index, flows, migration pairs, whale-watch rows, alerts
   +- freshness.js labels three clocks: browser check, upstream observation, optional snapshot
 
-Optional lite VPS backend (same origin via nginx)
-  +- /api/healthz, /api/ai, /api/history, /api/alerts (canonical event log)
+Lite VPS backend (same origin via nginx)
+  +- /api/market, /api/healthz, /api/ai, /api/history, /api/alerts (canonical event log)
   +- cron jobs: fetch.js (10 min), stress.js (after fetch), ai.js (gated by AI_CADENCE_MIN)
 ```
 
-The frontend fetches live market data directly in the browser (no API keys needed) and computes display stats in `src/lib/derive.js`. Alert event time is the upstream observation, not the moment the page loaded. The backend is optional: it stores history, persists alert events, and serves AI narratives. Without it, the dashboard still runs and says the historical snapshot is not connected. See [docs/architecture.md](./docs/architecture.md) and [docs/api-protocol.md](./docs/api-protocol.md).
+The dashboard gets supply and prices from `/api/market` and computes display stats in `src/lib/derive.js`. Coin-tab charts and exchange tickers still use CoinGecko in the browser. Alert event time is the upstream observation, not the moment the page loaded. The backend stores history, persists alert events and serves AI narratives. Without it or a retained cache, live market data is unavailable; learning and the static research hub remain readable. See [docs/architecture.md](./docs/architecture.md) and [docs/api-protocol.md](./docs/api-protocol.md).
 
 ## Backend setup (optional)
 
@@ -83,7 +83,7 @@ npm run ai             # generate one AI narrative immediately
 npm start              # serve /api/healthz, /api/ai, /api/history, /api/alerts on :8787
 ```
 
-Deployment artifacts live in `backend/deploy/` (systemd unit, nginx config, crontab). The backend is not required for the core dashboard.
+Deployment artifacts live in `backend/deploy/` (systemd unit, nginx config, crontab). The backend supplies the dashboard market snapshot; research and teaching content are static.
 
 ## Configuration
 
@@ -149,14 +149,14 @@ AI runs on the **backend** (`backend/jobs/ai.js`); keys never reach the browser.
 
 ### VPS (recommended, nginx)
 
-1. `npm run build` and serve `dist/` from nginx.
+1. `npm run build:all` and serve `dist/` from nginx. Building the dashboard alone clears the separately built research hub.
 2. Run the backend service (`backend/deploy/stablesense-backend.service`) on the same host, proxied under `/api` (`backend/deploy/nginx.conf`).
 3. Add crontab entries for the fetch, stress, and AI jobs (`backend/deploy/crontab.txt`).
 4. nginx must 301 `/research` to `/research/` before the SPA fallback (see `backend/deploy/nginx.conf`). The SPA HTML also redirects slashless `/research` if that 301 is missing.
 
-### Static anywhere (core dashboard only)
+### Static hosting
 
-The frontend is static files with an optional AI base URL: deploy `dist/` anywhere and set `aiApiBase` if you run a backend. Without a backend, the dashboard still works fully (minus AI narratives and history accumulation).
+The frontend is static files: deploy the complete `dist/` anywhere and set `aiApiBase` for a backend served elsewhere. Without a backend, live market snapshots are unavailable, not a fabricated zero or on-peg result. The static research hub and teaching material remain available.
 
 ## Repository layout
 
@@ -200,6 +200,7 @@ The frontend is static files with an optional AI base URL: deploy `dist/` anywhe
 - [Research methodology](./docs/research-methodology.md): claim lifecycle, formulas, review, finality and updating.
 - [Research publication boundary](./docs/research/README.md): public artifacts and the private working archive.
 - [State of Stablecoins research hub](https://stablesense.withkeshav.com/research/): long-form, fully-cited report on the stablecoin landscape and economic impact.
+- [State of Stablecoins, published 2026-10-02](./research/public/state-of-stablecoins-2026-10-02.md): the full dated findings, source scopes, calculations and unresolved questions. Also served at `/research/state-of-stablecoins-2026-10-02.md`.
 - [CHANGELOG.md](./CHANGELOG.md): version history.
 - [SECURITY.md](./SECURITY.md): how to report vulnerabilities.
 
@@ -212,6 +213,35 @@ The software is licensed under Apache-2.0, which permits code changes and forks.
 - **A bug report.** Use the issue templates, they ask for the details needed to reproduce it.
 
 The [research method](./docs/research-methodology.md) uses independent passes, sourced and dated claims, cross-checking and primary-source verification for consequential conclusions. Proposed corrections must name the claim, source date, relevant passage and competing interpretation. We retain the review and evidence privately; the public repository holds the method, templates and publication material. Benchmark status has not been established. See the [publication boundary](./docs/research/README.md), including the limitation that earlier working records remain in public Git history.
+
+## Research-contributor badges
+
+The research hub includes a [contributor section](https://stablesense.withkeshav.com/research/#contributors). Each contribution entry describes the incorporated work, links to its publication and approval record, and offers a linked SVG badge with website HTML and Markdown embeds. Entries and badges are generated together during `npm run build:research`; the credit and embed code remain readable without JavaScript.
+
+Approval is manual. Submit a source, correction or method through GitHub. After maintainer approval and actual incorporation into published research, confirm the preferred public name and consent to credit. The maintainer then adds one record to `research/contributors.json`. A merged pull request alone does not issue a badge. The registry starts empty; no sample contributor is credited.
+
+Record shape below, with placeholders to replace only after approval and incorporation:
+
+```json
+{
+  "id": "permanent-contribution-id",
+  "name": "Preferred public name",
+  "contribution": "The specific work incorporated into the publication",
+  "publicationTitle": "Publication title and version",
+  "publicationUrl": "https://stablesense.withkeshav.com/research/#relevant-section",
+  "approvalUrl": "https://github.com/withkeshav/StableSense/issues/ISSUE_NUMBER",
+  "approvedOn": "YYYY-MM-DD",
+  "incorporatedOn": "YYYY-MM-DD",
+  "approved": true,
+  "creditConsent": true
+}
+```
+
+Use a unique lowercase, hyphenated ID per contribution and keep it unchanged. Dates must be real calendar dates. An optional `websiteUrl` links to the contributor's site; an optional `permissionUrl` links to an already public, applicable permission record. URLs must use HTTPS without embedded credentials. Do not put private correspondence or internal notes in this public list. Invalid records stop the build rather than issuing a badge.
+
+To correct credit, update the record while preserving its ID. To withdraw recognition, add `withdrawnOn` and a public `withdrawalReason`. The entry remains at its permanent link, marked withdrawn, but the build no longer emits a badge or embed for it. The published site must be rebuilt and released for changes to take effect. Copied or cached badge images can outlive a change; the linked entry is the official record.
+
+Recognition permits accurate citation and promotion of the contributor's specific work. It is not certification, copyright transfer, project ownership, repository control, editorial authority, whole-report authorship or endorsement. It does not change the research licence or grant additional reuse rights. No signature, account, wallet or payment is needed to receive credit. Test the generator with `node --test scripts/research-contributors-plugin.test.mjs`.
 
 ## License
 

@@ -246,9 +246,23 @@ describe('computePegStress', () => {
     expect(stress.level).toBe('WATCH');
   });
 
-  it('handles missing prices gracefully', () => {
+  it('reports missing prices as unknown rather than measured zero stress', () => {
     const stress = computePegStress({ pricesByCoin: {}, alerts: [], topChainFlow: 0 });
-    expect(stress.pegDriftBps).toBe(0);
+    expect(stress.pegDriftBps).toBeNull();
+    expect(stress.score).toBeNull();
+    expect(stress.level).toBe('UNKNOWN');
+  });
+
+  it('does not claim a complete score from partially missing prices', () => {
+    const stress = computePegStress({ pricesByCoin: { USDT: 1, USDC: null }, alerts: [], topChainFlow: 0 });
+    expect(stress.score).toBeNull();
+    expect(stress.level).toBe('UNKNOWN');
+  });
+
+  it('preserves observed alert counts when the price score is unmeasurable', () => {
+    const stress = computePegStress({ pricesByCoin: { USDT: null }, alerts: [{ severity: 'CRITICAL' }], topChainFlow: 0 });
+    expect(stress.score).toBeNull();
+    expect(stress.critical).toBe(1);
   });
 });
 

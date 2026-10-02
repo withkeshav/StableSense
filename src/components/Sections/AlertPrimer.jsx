@@ -9,14 +9,14 @@ export default function AlertPrimer({ compact = false, onLearn }) {
 
   return (
     <div class="alert-primer">
-      <div class="alert-primer-title">No material stress detected in this refresh.</div>
+      <div class="alert-primer-title">No alerts are displayed.</div>
       <p class="alert-primer-body">
-        StableSense checked peg drift, chain supply moves, matched migrations, net mint/burn, and dominance shifts across the tracked coins. Nothing cleared a threshold on the latest observation window.
+        An empty feed is not proof of normal market conditions. Missing or partial observations can prevent alert generation. Check data freshness before interpreting this view.
         {compact ? null : ' When the backend event log is empty, this feed is live derivation only and is not stored history.'}
       </p>
       {compact ? (
         <p class="alert-primer-body">
-          <strong>PEG_BREAK</strong>, <strong>CHAIN_FLOW</strong>, <strong>MIGRATION</strong>, <strong>NET_MINT</strong>/<strong>NET_BURN</strong>, and <strong>DOM_SHIFT</strong> stay armed for the next observation.
+          <strong>PEG_BREAK</strong>, <strong>CHAIN_FLOW</strong>, <strong>MIGRATION</strong>, <strong>NET_MINT</strong>/<strong>NET_BURN</strong>, and <strong>DOM_SHIFT</strong> describe the monitored rules, not evidence that each rule had usable inputs in this refresh.
         </p>
       ) : (
       <div class="alert-rule-cards" aria-label="Alert rules checked">

@@ -145,8 +145,12 @@ export default function HomeTab({ data, alerts, setActiveTab, refreshIntervalSec
     return pegChartOptions(allPrices);
   }, [pegChartData]);
 
-  const totalMC = data?.allStables?.totalMarketCap?.peggedUSD || 0;
-  const vol = useMemo(() => coins.reduce((sum, c) => sum + (cg?.[c.coingeckoId]?.usd_24h_vol || 0), 0), [coins, cg]);
+  const totalMC = data?.allStables?.totalMarketCap?.peggedUSD ?? null;
+  const vol = useMemo(() => {
+    const values = coins.map((c) => cg?.[c.coingeckoId]?.usd_24h_vol);
+    return values.every((v) => typeof v === 'number' && Number.isFinite(v))
+      ? values.reduce((sum, v) => sum + v, 0) : null;
+  }, [coins, cg]);
 
   return (
     <div class="tab-content active">
@@ -183,7 +187,7 @@ export default function HomeTab({ data, alerts, setActiveTab, refreshIntervalSec
           <div class="metric-icon amber" aria-hidden="true" />
           <div>
             <p>Learning signals</p>
-            <strong>{String((alerts || []).length).padStart(2, '0')}</strong>
+            <strong>{stress.score == null ? '-' : String((alerts || []).length).padStart(2, '0')}</strong>
             <span>worth understanding</span>
           </div>
           <div class="signal-pips" aria-hidden="true"><i /><i /><i /></div>

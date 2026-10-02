@@ -2,7 +2,7 @@
  * Learner-facing depeg case views.
  * Canonical figures live on research/data.js `depegs` (+ nested `learner` fields).
  */
-import { depegs, depegTakeaways, AS_OF } from '../../research/data.js';
+import { depegs, depegTakeaways, AS_OF, RESEARCH_REVIEWED } from '../../research/data.js';
 
 export const DEPEG_CASE_ORDER = ['ust', 'usdc', 'usde'];
 
@@ -44,6 +44,17 @@ export const DEPEG_CASES = Object.fromEntries(
 );
 
 export const DEPEG_TAKEAWAYS = depegTakeaways;
+
+/**
+ * Two different dates, deliberately not collapsed into one.
+ *
+ * AS_OF (re-exported from research/data.js) is the as-of of the historical depeg figures
+ * above: event dates and lows. It is not the freshness of the research that interprets them.
+ *
+ * REVIEW_AS_OF is the as-of of the latest reconciled research review behind the hub's
+ * corrected figures and its open questions. Keep the two apart in every surface.
+ */
+export const REVIEW_AS_OF = RESEARCH_REVIEWED;
 
 export { AS_OF };
 

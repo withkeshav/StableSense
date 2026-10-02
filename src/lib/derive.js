@@ -133,7 +133,10 @@ export function computePegStress({ pricesByCoin, alerts, topChainFlow }) {
     .map((p) => bps(p))
     .filter((v) => typeof v === 'number' && Number.isFinite(v))
     .map((v) => Math.abs(v));
-  const pegDriftBps = drifts.length ? Math.max(0, ...drifts) : 0;
+  if (!drifts.length || drifts.length !== Object.keys(pricesByCoin || {}).length) {
+    return { score: null, level: 'UNKNOWN', pegDriftBps: null, critical, high, warning };
+  }
+  const pegDriftBps = Math.max(0, ...drifts);
   const score = Math.min(100, Math.round(pegDriftBps * 0.7 + critical * 25 + high * 10 + warning * 4 + Math.min(35, Math.round((Math.abs(topChainFlow) / 1e9) * 2))));
   const level = score >= 70 ? 'HIGH' : score >= 40 ? 'WATCH' : 'LOW';
   return { score, level, pegDriftBps, critical, high, warning };
