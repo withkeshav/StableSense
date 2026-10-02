@@ -7,9 +7,8 @@ Checks, programmatically and with no hand-entered results:
   3. every exact_passage is found verbatim in the referenced capture body,
      after a declared normalisation (HTML tags stripped, entities decoded,
      typographic quotes/dashes folded, whitespace collapsed)
-  4. the capture is a genuine stored capture, not a researcher-authored
-     digest (checked by shape)
-  5. declared counts in the manifest match the ledger
+  4. known authored-digest headers are rejected; this is not proof of provenance
+Manifest coverage and hashes are checked separately by verify_continuation.py.
 
 Run:  python3 final/evidence/verify_captures.py
 Exit: 0 all checks pass, 2 a check could not be measured, 1 a check failed.
@@ -21,6 +20,7 @@ import json
 import os
 import re
 import sys
+from pathlib import Path
 
 FINAL = "/mnt/ai-archive/other-tools/stablesense/docs/research/2026-10-01-state-of-stablecoins/final"
 D = os.path.dirname(FINAL)
@@ -50,11 +50,11 @@ def body_of(path):
         # verify the derived text extraction, and fall back to it
         txt = path + ".txt"
         if os.path.exists(txt):
-            return open(txt, errors="replace").read()
+            return Path(txt).read_text(errors="replace")
         return None
     if path.endswith(".json"):
         try:
-            d = json.load(open(path, encoding="utf-8"))
+            d = json.loads(Path(path).read_text(encoding="utf-8"))
         except Exception:
             return None
         if isinstance(d, dict):
@@ -67,7 +67,7 @@ def body_of(path):
             return None
         return None
     try:
-        return open(path, encoding="utf-8", errors="replace").read()
+        return Path(path).read_text(encoding="utf-8", errors="replace")
     except Exception:
         return None
 
@@ -101,7 +101,7 @@ def main():
     if not os.path.exists(claims_path):
         print("FAIL: final/claims.json missing")
         return 1
-    claims = json.load(open(claims_path, encoding="utf-8"))
+    claims = json.loads(Path(claims_path).read_text(encoding="utf-8"))
     if isinstance(claims, dict):
         claims = claims.get("claims", [])
 
@@ -120,8 +120,8 @@ def main():
         if body is None:
             unverifiable.append(c["id"])
             continue
-        # shape check: a digest has curated key_passages and no page text
-        if full.endswith(".json") and len(body) < 200:
+        # Explicit extraction headers identify a derived digest, not origin prose.
+        if full.endswith((".txt", ".md")) and body.startswith("Source: http") and "\nExtraction:" in body:
             digests.append((c["id"], sp))
             unverifiable.append(c["id"])
             continue
@@ -149,7 +149,7 @@ def main():
         sp = c.get("source_path", "")
         full = os.path.normpath(os.path.join(D, sp)) if sp else ""
         if sp and os.path.exists(full) and sp not in report["capture_sha256"]:
-            report["capture_sha256"][sp] = hashlib.sha256(open(full, "rb").read()).hexdigest()
+            report["capture_sha256"][sp] = hashlib.sha256(Path(full).read_bytes()).hexdigest()
 
     ok = (
         not dupes
@@ -157,18 +157,20 @@ def main():
         and not absent
         and not unverifiable
     )
-    if not unresolved_path and not unverifiable and not absent:
+    if ok:
         report["overall"] = "PASS"
+    elif dupes or absent or digests:
+        report["overall"] = "FAIL"
     elif unresolved_path or unverifiable:
         report["overall"] = "INCOMPLETE_MEASUREMENT"
     else:
         report["overall"] = "FAIL"
 
     out = os.path.join(FINAL, "verification.json")
-    json.dump(report, open(out, "w", encoding="utf-8"), indent=1)
+    Path(out).write_text(json.dumps(report, indent=1), encoding="utf-8")
     print(json.dumps({k: v for k, v in report.items() if k != "capture_sha256"}, indent=1))
     print("wrote", out)
-    return 0 if ok else 1
+    return 0 if ok else (1 if dupes or absent or digests else 2)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,41 @@
+{
+  "stage": "Funding-source check complete; independent review pending",
+  "scope": "Mechanical checks, not independent semantic verification",
+  "commands": [
+    {
+      "command": "python3 docs/research/2026-10-01-state-of-stablecoins/final/evidence/verify_continuation.py",
+      "exit_code": 0,
+      "output": "MANIFEST PASS: 37 capture entries; 14 continuation companions; 0 mismatches\nDETERMINISTIC BUILD PASS: two rebuilds; claims, manifest, arithmetic byte-identical\nPROSE/ARITHMETIC PASS: references resolve, no authored em/en dashes, new calculations match"
+    },
+    {
+      "command": "python3 docs/research/2026-10-01-state-of-stablecoins/final/evidence/verify_captures.py",
+      "exit_code": 0,
+      "output": "{\n \"measured_by\": \"final/evidence/verify_captures.py\",\n \"record_root\": \"/mnt/ai-archive/other-tools/stablesense/docs/research/2026-10-01-state-of-stablecoins\",\n \"total_claims\": 49,\n \"unique_ids\": 49,\n \"duplicate_ids\": [],\n \"claims_with_resolved_capture\": 49,\n \"unresolved_source_path\": [],\n \"passage_verbatim_verified\": 49,\n \"passage_absent_or_partial\": [],\n \"unmeasurable_capture\": [],\n \"capture_is_authored_digest_not_page_text\": [],\n \"overall\": \"PASS\"\n}\nwrote /mnt/ai-archive/other-tools/stablesense/docs/research/2026-10-01-state-of-stablecoins/final/verification.json"
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "output": "> stablesense@3.7.1 test\n> vitest run\n\n\n RUN  v4.1.10 /mnt/ai-archive/other-tools/stablesense\n\n\n Test Files  12 passed (12)\n      Tests  203 passed (203)\n   Start at  18:34:58\n   Duration  139ms (transform 349ms, setup 0ms, import 489ms, tests 83ms, environment 1ms)"
+    },
+    {
+      "command": "npm run build",
+      "exit_code": 0,
+      "output": "> stablesense@3.7.1 build\n> vite build\n\nvite v8.2.1 building client environment for production...\n\rtransforming...\u2713 59 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                   3.41 kB \u2502 gzip:  1.28 kB\ndist/assets/index-Bzm3dLww.css   67.81 kB \u2502 gzip: 13.63 kB\ndist/assets/index-CBNRaZpy.js   168.91 kB \u2502 gzip: 55.06 kB\ndist/assets/chart-BpxKVdk1.js   171.33 kB \u2502 gzip: 59.66 kB\n\n\u2713 built in 80ms"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": "git rev-list --left-right --count origin/main...HEAD",
+      "exit_code": 0,
+      "output": "0\t4"
+    },
+    {
+      "command": "git diff -- src/config.js package.json",
+      "exit_code": 0,
+      "output": ""
+    }
+  ]
+}

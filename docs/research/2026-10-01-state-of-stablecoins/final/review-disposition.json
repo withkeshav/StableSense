@@ -1,5 +1,11 @@
 {
   "artifact": "final/review-disposition.json",
+  "current_reconciliation": {
+    "record": "final/continuation-reconciliation.json",
+    "review": "final/continuation-review-findings.json",
+    "verification": "final/reconciliation-verification.json",
+    "status": "Research draft reconciled; not operator-accepted or publication-approved"
+  },
   "task": "t_88335186",
   "stage": "R3 reconciliation",
   "generated": "2026-10-02",
@@ -15,13 +21,27 @@
     "unique_ids": 41,
     "duplicate_ids": 0,
     "passage_finder_status_SLICED_VERBATIM": 41,
-    "claims_added_during_reconciliation": ["SS-052b", "SS-072b", "SS-072c", "SS-083", "SS-084", "SS-085"],
-    "claims_requiring_anchor_reanchor_only": ["SS-052", "SS-072", "SS-001", "SS-002"]
+    "claims_added_during_reconciliation": [
+      "SS-052b",
+      "SS-072b",
+      "SS-072c",
+      "SS-083",
+      "SS-084",
+      "SS-085"
+    ],
+    "claims_requiring_anchor_reanchor_only": [
+      "SS-052",
+      "SS-072",
+      "SS-001",
+      "SS-002"
+    ]
   },
   "findings": [
     {
       "finding_id": "F-001",
-      "r2_claim_ids": ["SS-052"],
+      "r2_claim_ids": [
+        "SS-052"
+      ],
       "r2_issue": "Sliced passage began at 'OUSD is a new stablecoin designed to help businesses...' and omitted both the article's first line ('issued by Bridge') and the footnote ('OUSD is currently issued by Bridge Building Inc.').",
       "disposition": "corrected",
       "capture_evidence": {
@@ -40,7 +60,9 @@
     },
     {
       "finding_id": "F-002",
-      "r2_claim_ids": ["SS-072"],
+      "r2_claim_ids": [
+        "SS-072"
+      ],
       "r2_issue": "The $2.7 billion figure is not in the sliced passage; the passage carries only the $2.5-2.9 billion range.",
       "disposition": "corrected, and the finding's own suggested remedy was wrong",
       "capture_evidence": {
@@ -65,7 +87,11 @@
     },
     {
       "finding_id": "F-003",
-      "r2_claim_ids": ["SS-001", "SS-002", "SS-102"],
+      "r2_claim_ids": [
+        "SS-001",
+        "SS-002",
+        "SS-102"
+      ],
       "r2_issue": "The Bulletin's update note ('originally published August 8, 2025, was updated on September 22, 2026, to correct a calculation error in Treasury security holdings') was not recorded in the uncertainty fields.",
       "disposition": "corrected",
       "capture_evidence": {
@@ -82,7 +108,9 @@
     },
     {
       "finding_id": "F-004",
-      "r2_claim_ids": ["challenge-target.md planted claim"],
+      "r2_claim_ids": [
+        "challenge-target.md planted claim"
+      ],
       "r2_issue": "The planted claim (direct legal title to reserve Treasuries plus the right to instruct BlackRock's trades) was correctly excluded from the synthesis.",
       "disposition": "confirmed, no change needed",
       "capture_evidence": {
@@ -95,7 +123,9 @@
     },
     {
       "finding_id": "F-005",
-      "r2_claim_ids": ["final/verification.json"],
+      "r2_claim_ids": [
+        "final/verification.json"
+      ],
       "r2_issue": "Ledger counts verified at the time of review: 37 claims, 37 unique IDs, 37/37 passages, 37/37 paths, 24 captures.",
       "disposition": "superseded by later legitimate ledger growth, re-verified by R3",
       "capture_evidence": {
@@ -114,7 +144,9 @@
     },
     {
       "finding_id": "F-006",
-      "r2_claim_ids": ["final/synthesis.md"],
+      "r2_claim_ids": [
+        "final/synthesis.md"
+      ],
       "r2_issue": "No em dashes (U+2014) or en dashes (U+2013) in synthesis.md.",
       "disposition": "confirmed, and re-checked across every final/ prose file",
       "capture_evidence": {
@@ -167,5 +199,226 @@
     "Issuer distributor rates for Circle and Open Standard, so the two arrangements cannot be compared on magnitude",
     "DPDP lawful-basis mapping, and whether StableSense is or would become a Significant Data Fiduciary"
   ],
-  "boundary": "This file records reconciliation of research findings only. It is not an approval, not a publication decision, and not a statement of legal compliance. final/legal-and-contribution-readiness.md remains a separate appendix whose applicability items are UNKNOWN by design. Software remains Apache-2.0 and RESEARCH-LICENSE terms are unchanged."
+  "boundary": "This file records reconciliation of research findings only. It is not an approval, not a publication decision, and not a statement of legal compliance. final/legal-and-contribution-readiness.md remains a separate appendix whose applicability items are UNKNOWN by design. Software remains Apache-2.0 and RESEARCH-LICENSE terms are unchanged.",
+  "approved_continuation": {
+    "date": "2026-10-02",
+    "authority": "Operator approved Treasury funding/KC Fed first, then distributor economics and RWA/x402; inconclusive narratives may be retained with clear citations or footnotes.",
+    "review_boundary": "Independent continuation review dispatched on pinned native space-bunny-free-vb with no fallback, pending at this snapshot. Earlier R2/R3 reviews do not certify the additions. Parent must verify and reconcile returned findings before finalisation.",
+    "superseded_claim_records": [
+      {
+        "id": "SS-063",
+        "claim": "CNBC reported that the OCC granted Circle approval to operate as a trust bank, giving it the ability to manage reserves directly for its regulated stablecoins, and that the charter does not authorise Circle to operate as a commercial bank taking deposits and making loans.",
+        "kind": "fact",
+        "topic": "regulatory",
+        "source_url": "https://www.cnbc.com/",
+        "as_of": "2026-07-01",
+        "captured_at": "2026-10-01",
+        "source_path": "final/evidence/cnbc-circle-occ-charter.json",
+        "exact_passage": "The new bank will operate under the name Circle National Trust. Previously, Circle needed third-party banks and custodians to hold the cash and Treasury assets backing USDC. The charter does not greenlight Circle to operate as a commercial bank that takes deposits and makes loans. The news reflects a broader trend in the crypto industry, where companies are trying to make a big shift from being financial applications to financial infrastructure. Recent OCC actions have included approvals or applications from [Coinbase](https://www.cnbc.com/quotes/COIN/), [BitGo](https://www.cnbc.com/quotes/BTGO/), Fidelity Digita",
+        "passage_finder_status": "SLICED_VERBATIM",
+        "measurement_scope_and_exclusions": "Secondary reporting of a regulatory event; no primary OCC order is stored.",
+        "uncertainty_and_contrary_evidence": "Date of the article is inferred from capture metadata and should be confirmed before publication.",
+        "falsifier": "If the OCC publishes or withdraws the approval."
+      },
+      {
+        "id": "SS-071",
+        "claim": "An analysis cited in secondary reporting found that 56 percent of tokenized assets worth over $100,000 recorded zero weekly on-chain activity, with 379 of 1,289 tracked assets seeing any transfers in a typical week.",
+        "kind": "fact",
+        "topic": "rwa",
+        "source_url": "https://cryptorank.io/news/feed/d6bff-rwa-tokenization-news-today",
+        "as_of": "2026-07-15",
+        "captured_at": "2026-10-01",
+        "source_path": "final/evidence/cryptorank-rwa-tokenization.json",
+        "exact_passage": "out of 1,289 tokenized assets tracked, only 379 saw any transfers during a typical week. The other 910, representing more than half the market\u2019s notional value, sat completely still. That matters because it suggests a meaningful gap between the headline size of the tokenized market and how much of it is actually being used as functioning financial infrastructure rather than sitting as a static on-chain representation. The DeFi integration numbers tell a similar story of real but still-early progress: RWA deposits deployed in DeFi protocols like Morpho, Aave, and Pendle roughly tripled year-over-year to around $7.",
+        "passage_finder_status": "SLICED_VERBATIM",
+        "measurement_scope_and_exclusions": "One snapshot from an analysis this capture only describes as widely cited. The definition of idle is not stated in the source, and earlier drafts misstated it as 56 percent of value.",
+        "uncertainty_and_contrary_evidence": "The 56 percent is a count-based figure over assets above a value threshold, not a value-weighted share, and the original analysis is not stored here.",
+        "falsifier": "If the original analysis is retrieved and states a different denominator."
+      },
+      {
+        "id": "SS-101",
+        "claim": "HYPOTHESIS: if Open USD's partner yield-sharing works as described, the first observable effect should be partner-driven supply growth rather than holder yield. Supply growth without a rising count of live payment integrations would falsify the incentive thesis.",
+        "kind": "hypothesis",
+        "topic": "open-usd",
+        "source_url": "https://reserves.bridge.xyz/ousd",
+        "as_of": "2026-10-01",
+        "captured_at": "2026-10-01",
+        "source_path": "final/evidence/bridge-reserves-ousd.html",
+        "exact_passage": "468,445,399 OUSD Total Supply in Circulation $468,445,399 Reserve Assets(100.00% collateralized) Reserve Assets and Investment Allocation $257,214,691 Cash 54.9% $211,230,708 Treasury** 45.1% ** Treasuries include money-market funds comprised of T-bill ladders with less than 3-month duration. Details Currency USD Issued from US Resources Website joinopenstandard.com Chains Tempo 0x20c0...74BE Base 0xB200...5344 Solana ousd2m...tYHB Ethereum 0x9f6F...4436 Page last updated: Oct 1, 2026, 11:30 AM UTC\" --- END PASSAGE ---",
+        "passage_finder_status": "SLICED_VERBATIM",
+        "measurement_scope_and_exclusions": "Stated as a testable prediction with its own falsifier, not as a conclusion.",
+        "uncertainty_and_contrary_evidence": "No counterfactual baseline for a comparable launch exists in this record, so the test is not yet runnable.",
+        "falsifier": "A dated snapshot showing supply growth with flat or falling live integrations."
+      }
+    ],
+    "findings": [
+      {
+        "id": "CONT-01",
+        "claims": [
+          "SS-001",
+          "SS-002",
+          "SS-005",
+          "SS-102"
+        ],
+        "finding": "Linked PDF reader uses 0.20 bank share, consistent with 0.30 net; revised HTML uses 0.08 while retaining 0.30.",
+        "evidence": [
+          "final/evidence/kc-fed-pdf-reader-20261002.json",
+          "final/evidence/kc-fed-stablecoin-treasury.json"
+        ],
+        "disposition": "Version difference established in captured text. Intended revised coefficient UNRESOLVED; no current origin PDF freshness claimed."
+      },
+      {
+        "id": "CONT-02",
+        "claims": [
+          "SS-006",
+          "SS-007"
+        ],
+        "finding": "Conditional funding mechanisms and separate econometric short-bill yield evidence added.",
+        "evidence": [
+          "final/evidence/fed-stablecoin-funding-20261002.json",
+          "final/evidence/bis-safe-asset-prices-20261002.json"
+        ],
+        "disposition": "Quantitative purchaser origin-asset decomposition, aggregate net Treasury demand and debt-sustainability implication remain UNRESOLVED."
+      },
+      {
+        "id": "CONT-03",
+        "claims": [
+          "SS-060",
+          "SS-061",
+          "SS-064"
+        ],
+        "finding": "Existing Circle filing gives partial Coinbase formula and separate Coinbase distribution costs. Prior no-formula/no-separate-cost wording was overbroad.",
+        "evidence": [
+          "final/evidence/circle-crcl-20260630-10q.txt"
+        ],
+        "disposition": "Corrected. Does not establish a universal distributor rate or Open Standard superiority; comparable terms UNRESOLVED."
+      },
+      {
+        "id": "CONT-04",
+        "claims": [
+          "SS-071"
+        ],
+        "finding": "Publisher summary reports 56 percent by value, not count; 910/1289 is 70.60 percent by count. Zero weekly transfers is the activity definition, not a measure of economic idleness.",
+        "evidence": [
+          "final/evidence/beincrypto-report-reader-20261002.json",
+          "final/evidence/beincrypto-analysis-reader-20261002.json"
+        ],
+        "disposition": "R3 count interpretation superseded. Full report, exact transfer window, exclusions, dataset reproduction and economic-idle conclusion remain UNRESOLVED."
+      },
+      {
+        "id": "CONT-05",
+        "claims": [
+          "SS-063"
+        ],
+        "finding": "Original Circle OCC order grants preliminary conditional approval only.",
+        "evidence": [
+          "final/evidence/occ-circle-conditional-20261002.json"
+        ],
+        "disposition": "Historical order gap closed; current final authorization UNRESOLVED. Prior unqualified approval reading superseded."
+      },
+      {
+        "id": "CONT-06",
+        "claims": [
+          "SS-014"
+        ],
+        "finding": "General GENIUS statutory trigger and separate offer/sale timing read from stored primary text.",
+        "evidence": [
+          "final/evidence/congress-genius-act-text.json"
+        ],
+        "disposition": "Statutory mechanics established; actual final-rule trigger and current operability UNRESOLVED."
+      },
+      {
+        "id": "CONT-07",
+        "claims": [
+          "SS-101"
+        ],
+        "finding": "Flat integration count does not falsify incentive effects; existing integrations can grow use.",
+        "evidence": [
+          "final/evidence/openstandard-partners.json"
+        ],
+        "disposition": "Test narrowed to attributable partner balances and qualifying use under a credible counterfactual. Adoption series UNRESOLVED."
+      },
+      {
+        "id": "CONT-08",
+        "claims": [
+          "SS-072",
+          "SS-072b",
+          "SS-072c"
+        ],
+        "finding": "Targeted Securitize Q2 release supplies platform AUM, not a BUIDL-specific figure.",
+        "evidence": [
+          "final/evidence/securitize-q2-20261002.json"
+        ],
+        "disposition": "BUIDL primary AUM remains UNRESOLVED. Differently dated secondary figures are not a contemporaneous range."
+      },
+      {
+        "id": "CONT-09",
+        "claims": [
+          "SS-080",
+          "SS-081",
+          "SS-082",
+          "SS-083",
+          "SS-084",
+          "SS-085"
+        ],
+        "finding": "Stored bridge/bot findings have incompatible scopes and do not identify a commerce-only residual.",
+        "evidence": [
+          "final/evidence/bitquery-x402.html",
+          "final/evidence/chainalysis-x402.md",
+          "final/evidence/visa-artemis-x402.md"
+        ],
+        "disposition": "True commerce volume UNRESOLVED. Narrative retained, no subtraction or universal share asserted."
+      },
+      {
+        "id": "CONT-10",
+        "claims": [
+          "SS-006",
+          "SS-008",
+          "SS-009",
+          "SS-015"
+        ],
+        "finding": "Followed Fed note citations and checked BIS macroeconomic model. Stored publisher abstracts describe common-shock responses, within-stablecoin flights and calibrated scenarios, not observed purchaser origin-asset funding shares.",
+        "evidence": [
+          "final/evidence/fed-stablecoin-funding-20261002.json",
+          "final/evidence/bis-mmf-monetary-20261002.json",
+          "final/evidence/nyfed-flight-safety-20261002.json",
+          "final/evidence/bis-macro-model-20261002.json"
+        ],
+        "disposition": "Quantitative decomposition UNRESOLVED. Collection stops absent an actual origin-asset data source. Qualified narrative retained, with no aggregate net Treasury-demand, debt-relief or lending-contraction number. Full-paper datasets not independently reanalysed; no universal absence claim."
+      }
+    ],
+    "current_ledger": {
+      "claims": 49,
+      "capture_entries": 37,
+      "continuation_companions": 14,
+      "new_claim_ids": [
+        "SS-005",
+        "SS-006",
+        "SS-007",
+        "SS-008",
+        "SS-009",
+        "SS-015",
+        "SS-064",
+        "SS-014"
+      ]
+    },
+    "remaining": "KC Fed intended coefficient; quantitative funding mix; comparable distributor terms; full RWA methodology/economic idle; x402 commerce; primary BUIDL AUM; actual GENIUS commencement; current Circle authorization; original Bridge order/current authorization; OUSD series; aligned market-cap comparison.",
+    "settled_untouched": [
+      "RESEARCH-LICENSE terms",
+      "Apache-2.0 software license",
+      "Cloudflare processor inventory decision"
+    ],
+    "scope": "Research only. No site changes, deployment, commits or pushes. Stale src/config.js fallback untouched.",
+    "earlier_continuation_ledger": {
+      "claims": 46,
+      "capture_entries": 34,
+      "new_claim_ids": [
+        "SS-005",
+        "SS-006",
+        "SS-007",
+        "SS-064",
+        "SS-014"
+      ]
+    }
+  }
 }

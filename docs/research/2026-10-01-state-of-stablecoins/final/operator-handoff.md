@@ -1,5 +1,78 @@
 # Operator handoff
 
+## Current continuation, 2026-10-02
+
+This section supersedes the current-state assertions in the historical R3 handoff below.
+The operator approved the gap order and allowing inconclusive narratives with clear
+citations or footnotes. That is not acceptance of the findings or publication approval.
+
+Current package: 53 claims, 37 capture entries, 15 hashed companions.
+The build now applies `evidence/weak_section_updates.py` after the preserved R3
+baseline. `review-disposition.json` preserves earlier findings and superseded claim
+records under `approved_continuation`.
+
+Material changes:
+
+- Later publisher-corrected KC Fed HTML and PDF reader differ on bank Treasury share,
+  per-dollar reduction and loan contraction. HTML is the documented later revision,
+  but still does not reconcile its net-demand arithmetic. Intended coefficient
+  UNRESOLVED. PDF cache freshness unknown; no corrected forecast is asserted.
+- Fed funding mechanisms and BIS short-bill yield evidence added. Actual funding mix,
+  net new Treasury demand and fiscal-debt implication remain UNRESOLVED.
+- Circle's stored filing discloses partial Coinbase allocation terms and separate
+  Coinbase distribution costs. The earlier no-formula assertion was too broad.
+  Comparable Open Standard terms and superiority remain UNRESOLVED.
+- RWA 56 percent is value-weighted, not count. Publisher summary defines zero weekly
+  transfers; 910/1,289 is 70.60 percent by count. Full methodology and economic idle
+  conclusion remain UNRESOLVED. Represented assets may deliberately be ledger-like.
+- Original Circle OCC order captured: preliminary conditional approval only. Current
+  final authorization remains UNRESOLVED. GENIUS statutory commencement mechanics
+  established; actual final-rule trigger remains UNRESOLVED.
+- Invalid flat-integration-count falsifier removed. OUSD attribution requires partner
+  balances, qualifying use and a credible comparison, not supply or integration count alone.
+
+Funding-source follow-up checked the Fed note's cited research: aggregate MMF/monetary
+responses and within-stablecoin flight-to-safety do not identify purchaser funding shares.
+The separate macroeconomic source models fiscal-space trade-offs, not an observed fiscal
+dividend. Quantitative decomposition remains UNRESOLVED. Collection stops here unless
+actual origin-asset data emerges. Independent continuation review is now reconciled.
+
+BUIDL-specific primary AUM, x402 commerce residual, original Bridge order/current
+status, OUSD adoption series and aligned market-cap comparison remain UNRESOLVED.
+Securitize's captured platform AUM is not substituted for BUIDL fund AUM.
+
+Verification commands, from this record root:
+
+    python3 final/evidence/verify_continuation.py
+    python3 final/evidence/verify_captures.py
+
+Measured: manifest 37 entries and 15 companions, zero mismatches;
+two rebuilds byte-identical for claims, manifest and arithmetic; passage verifier
+PASS 53/53. Software checks: `npm test`, 203 tests passed in 12 files, exit 0;
+`npm run build`, exit 0; `git diff --check`, exit 0. Current actual command output is
+retained in `final/reconciliation-verification.json`; `final/continuation-verification.json`
+preserves the earlier pre-reconciliation run. Independent review findings
+and their parent dispositions are in `continuation-review-findings.json` and
+`continuation-reconciliation.json`. The revised draft has parent verification,
+not a second independent review. Research draft complete, not operator-accepted.
+
+Reconciliation corrects SS-085 origin provenance, x402 subset-removal arithmetic,
+KC Fed version weighting, missing Circle secondary reporting and citation paths.
+It also separates RWA date/denominator sources and adds platform-AUM and OCC claims.
+The reviewer was not accepted wholesale: removing an Arbitrum contract from the
+containing five-chain total is valid, and the KC Fed 0.42 parenthetical is other
+bank assets, not an explicitly corrected net-demand result.
+
+Scope observed: research only, no deployment, site edits, commits or pushes.
+License and Cloudflare processor decisions remain settled. The known dev fallback
+in `src/config.js` is untouched. All continuation changes are uncommitted.
+
+## Historical R3 handoff, preserved below
+
+The counts, routing state, old interpretations and pending operator decisions below
+are historical, not a description of the current package. Current findings and open
+gaps are in the section above and `limitations-and-next-update.md`.
+
 Task: t_88335186 (R3, reconciliation and checked handoff, of the approved native-only recovery plan)
 Supersedes: the R1 handoff that was written into this same file.
 Completed: 2026-10-02

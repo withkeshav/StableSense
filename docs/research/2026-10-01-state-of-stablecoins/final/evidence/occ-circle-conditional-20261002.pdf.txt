@@ -1,0 +1,563 @@
+                                                                  Chartering, Organization and Structure
+
+
+
+
+December 12, 2025
+
+Mr. Kevin Murphy
+Assistant General Counsel
+Circle Internet Financial, LLC
+1 Lincoln Street, Suite 31-113
+Boston, MA 02111
+
+Re:      Application to Charter First National Digital Currency Bank, National
+         Association, New York, New York (Proposed) and Request to Waive Residency
+         Requirements (collectively, Application)
+         OCC Control Number 2025-Charter-342299
+         OCC Control Number 2025-Waiver-342964
+         Proposed Charter Number: 25361
+
+Dear Mr. Murphy:
+
+The Office of the Comptroller of the Currency (OCC) has reviewed your Application to
+establish a new national trust bank, which will engage in operations of a trust company
+and activities related thereto, including fiduciary activities, with the title of First National
+Digital Currency Bank, National Association, New York, New York (Bank). The OCC
+hereby grants preliminary conditional approval of your charter application upon
+determining that your proposal meets certain regulatory and policy requirements.1
+
+This preliminary conditional approval is granted based on a thorough evaluation of all
+information available to the OCC, including the representations and commitments made
+in the Application and by the Bank’s representatives. The OCC also made its decision to
+grant preliminary conditional approval with the understanding that the proposed Bank
+will apply for stock in a Federal Reserve Bank in accordance with 12 USC 222.2
+
+The OCC has granted preliminary conditional approval only. Final approval and
+authorization pursuant to 12 USC 27(a) for the Bank to commence business will not be
+granted until all preopening requirements are met. Until final approval is granted, the
+OCC has the right to modify, suspend, or rescind this preliminary conditional approval
+should the OCC deem any interim development to warrant such action.
+
+
+
+
+1
+ The OCC also grants the request to waive the director residency requirement for three
+out of five directors.
+2
+    See also 12 CFR 209.2.
+Mr. Kevin Murphy
+2025-Charter-342299
+2025-Waiver-342964
+
+Proposed Bank
+
+Circle Internet Holdings, Inc., New York, New York (Circle Holdings) is the direct
+holding company of the Bank. Founded in 2013, Circle Holdings, a corporation
+incorporated in the State of Delaware, is a wholly owned subsidiary of Circle Internet
+Group, Inc. (Circle Group), a corporation incorporated in the State of Delaware and the
+top-tier holding company of the Circle entities. Circle Group, a publicly-traded company,
+issues USDC, a U.S. dollar (USD) denominated stablecoin that enables the storage and
+transfer of value. USDC is one of the largest USD-denominated stablecoins worldwide.
+Today, USDC is issued by Circle Internet Financial, LLC, under money transmitter
+licenses and similar authorizations.
+
+Circle Group has applied to the New York State Department of Financial Services for a
+New York limited purpose trust company. Once the limited purpose trust company is
+established, Circle Group plans to transition the responsibility for issuing USDC to the
+New York limited purpose trust company.
+
+The Bank plans to provide services to the New York limited purpose trust company once
+established, including managing the reserves of liquid assets backing USDC issued by the
+New York limited purpose trust company (Reserve) on a directed basis and performing
+collateral trustee services for the benefit of USDC holders on a fiduciary basis. In
+addition, Bank plans to provide digital asset3 custody services for its affiliates on a
+fiduciary basis.
+
+The OCC is authorized to charter national banks pursuant to the National Bank Act, 12
+USC 21–27. In 1978, Congress specifically confirmed the OCC’s general authority to
+charter banks that limit their operations to those of a trust company.4 The operations of a
+trust company (i.e., the operations of a trust department of a bank or a limited purpose
+trust company) typically include performing fiduciary activities, as well as other activities
+that may be non-fiduciary in nature, such as non-fiduciary custody and safekeeping
+activities.5 Custody and safekeeping activities are fully within the activities of both trust
+
+
+
+
+3
+    This letter uses digital assets and crypto-assets or cryptocurrency interchangeably.
+4
+ Congress amended the National Bank Act, 12 USC 27, to add this language in 1978.
+Financial Institutions Regulatory and Interest Rate Control Act of 1978, Pub. L. 95-630,
+§ 1504, 92 Stat. 3641, 3713 (1978) (adding this sentence to what is now 12 USC 27(a)).
+5
+ See OCC Interpretive Letter No. 1170 (July 22, 2020); OCC Interpretive Letter No.
+1078 (Apr. 19, 2007); OCC Interpretive Letter No. 1176 (Jan. 11, 2021). In addition, as
+of September 30, 2025, OCC-supervised uninsured national trust banks reported a total of
+$6.8 trillion in assets under administration. Of that total, $1.6 trillion consisted of custody
+and safekeeping accounts, while total fiduciary accounts totaled $5.2 trillion.
+
+                                               2
+Mr. Kevin Murphy
+2025-Charter-342299
+2025-Waiver-342964
+
+departments6 and limited purpose trust companies in 1978 and today.7 All of the Bank’s
+proposed activities are trust company operations or activities related thereto and are
+permissible for a national bank under 12 USC 92a or 24(Seventh). The Bank proposes to
+perform collateral trustee and digital asset custody services, both in a fiduciary capacity,
+and provide separate reserve management services related to its trust or fiduciary
+activities that are permissible for a national bank. Accordingly, the formation of the Bank
+is authorized.8
+
+Public Comments and Analysis
+
+The OCC received seven comment letters: four comment letters from trade groups
+representing banks, one comment letter from a bank, one comment from a technology
+industry coalition, and one comment letter from a community group. Several of the
+comment letters discussed the OCC’s authority to charter the Bank, asserting, among
+other things, that the proposed activities do not align with OCC precedent with respect to
+fiduciary activities conducted by national trust banks. The OCC is authorized to charter
+national banks pursuant to the National Bank Act, 12 USC 21-27. As explained herein,
+the proposed activities are permissible for a national trust bank.
+
+Several of the commenters assert that the OCC and the Bank did not provide an
+appropriate amount of information or give a sufficient amount of time for the public to
+have an opportunity to meaningfully comment on the Application. The Bank filed all
+required publicly available information on a timely basis. In considering the Bank’s
+
+6
+  Id. See Letter from James. J. Saxon, Comptroller of the Currency, (June 25, 1963)
+(“safekeeping of the securities in the customer’s portfolio and other custodian services,
+all of which will be performed by the bank’s Trust Department in the usual case.”). See
+also Hearings before the House of Representatives Committee on Banking and Currency
+on H.R. 6778, 91st Congress, Part 3 at 1056 (May 7, 8, and 9, 1969) (including proxy
+statement of Chase Manhattan Bank, N.A., from 1969 stating that it provided custody
+services in its trust department).
+7
+ See, e.g., 1976 S.D. Sess. Laws. ch. 304 § 1(1), (2) 492 (creating South Dakota “trust
+company” charter for a “corporation” that sole purpose is the conduct of “trust business”
+and among the items defined as part of the trust business is acting as a custodian and
+holding property for safekeeping).
+8
+  In 2003, the OCC amended 12 CFR 5.20(e)(1)(i) to address a subset of national bank,
+namely special purpose banks that conduct at least one of the “core banking functions.”
+As evidenced by the 2003 rulemaking to amend 12 CFR 5.20(e)(1)(i) and the OCC’s
+chartering and supervision of national trust banks, this amendment did not interpret or
+otherwise affect the OCC’s longstanding authority to charter a national bank limited to
+operations of a trust company and activities related thereto under 12 USC 27(a). See 68
+Fed. Reg. 71026 (Dec. 17, 2003).
+
+
+                                             3
+Mr. Kevin Murphy
+2025-Charter-342299
+2025-Waiver-342964
+
+identification of public information and request for confidential treatment of specific
+information pursuant to 12 CFR 5.9(c), the OCC followed its established policies and
+procedures. Although several commenters raised insufficiency of public information,
+they were nonetheless able to provide voluminous comments on the Application. The
+OCC has received sufficient information to make an informed decision regarding the
+Bank’s Application, consistent with established agency policy and procedures, applying
+relevant statutory requirements and regulatory factors. Although the OCC did not
+formally extend its comment period, the OCC received some of the comments past the
+official comment period deadline, and the OCC has used its discretion to consider all
+comments received.
+
+Several commenters discuss potential issues and arguments related to stablecoin issuance.
+However, the Bank will not issue stablecoins, so the issues and argument are irrelevant to
+the Application.
+
+One commenter discusses whether the Bank may engage in brokerage activity for digital
+assets that are securities for purposes of Federal securities laws that would subject the
+Bank to registration requirements under the Securities Exchange Act of 19349 or require
+exemption from registration under Regulation R.10 The Bank’s proposed activities will
+generally not implicate the Securities Exchange Act of 1934 or require exemption from
+registration under Regulation R. The OCC will monitor for compliance, as applicable.
+
+One commenter discusses potential affiliate transaction issues. The OCC has reviewed
+the Application for compliance with relevant law and regulation, including sections 23A
+and 23B of the Federal Reserve Act and Regulation W11 and found the Application met
+the relevant factors for approval.
+
+One commenter discusses the history of enforcement actions for the Bank’s affiliates. To
+the extent that deficiencies underlying enforcement actions discussed by the commenter
+relate to the planned activities of the Bank, the relationship is attenuated and would be
+best evaluated as part of the supervisory process. Many of the actions discussed are no
+longer being actively pursued.
+
+Several commenters discuss that the Community Reinvestment Act or Community
+Reinvestment Act-like requirements should apply to stablecoin issuers;12 however, (1) the
+Bank will not be a stablecoin issuer and (2) the Community Reinvestment Act is not
+applicable to this Application as a matter of law. The Community Reinvestment Act
+applies to regulated financial institutions, and regulated financial institutions is defined in
+
+9
+    15 USC 78a et seq.
+10
+     17 CFR 247.
+11
+     12 USC 371c, c-1, and 12 CFR 223.
+12
+     12 USC 2901 et seq.
+
+                                              4
+Mr. Kevin Murphy
+2025-Charter-342299
+2025-Waiver-342964
+
+12 USC 2902(2) to mean an insured depository institution as defined in 12 USC 1813.
+Insured depository institution means any bank or savings association the deposits of
+which are insured by the Federal Deposit Insurance Corporation (FDIC).13 The Bank will
+not be an insured depository institution. Whether Community Reinvestment Act-like
+requirements should apply to stablecoin issuers, or to the Bank, is not relevant to the
+factors the OCC may consider for approval.
+
+Commenters raise other issues pertaining to the OCC’s ability to appropriately supervise
+the Bank or broader policy concerns. Specific arguments relate to (1) “unsavory actors”
+gaining access to the banking system and providing payments services, (2) the OCC’s
+ability to resolve certain applicants in instances of failure, (3) criticisms of the current
+cryptocurrency and stablecoin framework and insufficiencies related to potential fraud
+and financial losses, and the absence of liquidity standards, reserve requirements, or
+consumer protection, and (4) the importance of the separation of banking from commerce
+to maintaining safety and soundness of the financial system. The OCC is experienced in
+supervising and regulating national banks. In the course of reviewing the Application, the
+OCC considered all of the items above to the extent they were relevant to factors or
+considerations in 12 CFR 5.14 The OCC regulates and supervises all entities in its
+jurisdiction in accordance and consistent with applicable law. The OCC has over 160
+years of experience supervising and regulating a variety of financial institutions and
+financial activities. The OCC has supervised national trust bank activities for decades and
+ensured that fiduciary and non-fiduciary activities alike, representing trillions of dollars
+of assets under administration, have been conducted in a safe and sound manner in
+accordance with applicable law. The OCC has had years of experience successfully
+supervising a crypto-native national trust bank. Moreover, aspects of the comments are
+premised on unfounded assumptions or inaccurate conclusions (e.g., that the Bank would
+be a stablecoin issuer). Many of these criticisms reflect the framework that Congress has
+established for supervision of the banking system, such as affiliates of uninsured national
+banks generally not being subject to the activity restrictions of the Bank Holding
+Company Act.15
+
+With respect to concerns related to the OCC’s ability to resolve uninsured entities, the
+OCC regulation pertaining to the resolution of uninsured national banks outlines the
+receivership process for uninsured entities.16 The OCC, through its application review,
+also considers, as appropriate, potential considerations related to receivership or
+resolution. The OCC has the capability to resolve an uninsured national bank.
+
+13
+     See also 12 CFR 25.11(c)(3).
+14
+     See 12 CFR 5.20(f)-(h).
+15
+  See, e.g., 12 USC 1841(c) (definition of bank excluding uninsured banks that do not
+both accept demand deposits and make commercial loans).
+16
+     12 CFR 51.
+
+                                             5
+Mr. Kevin Murphy
+2025-Charter-342299
+2025-Waiver-342964
+
+
+One commenter expresses support for the OCC continuing to evaluate all national trust
+bank charter applications, including those with a digital asset focus, on the merits of each
+individual application. Specifically, the commenter argues that granting these charters
+will strengthen federal oversight, bolster consumer protection, and foster a more
+innovative and competitive U.S. financial system.
+
+Fiduciary Activities
+
+The OCC approves the Bank’s plan upon commencing business to exercise fiduciary
+powers pursuant to 12 USC 92a and 12 CFR 5.26. This approval constitutes a permit to
+exercise the fiduciary powers requested in your application under 12 USC 92a and 12
+CFR 5.26(e)(4).
+
+Specifically, the Bank will provide collateral trustee services for the benefit of USDC
+holders in a fiduciary capacity and provide digital asset custody services for its affiliates
+in a fiduciary capacity. The Bank’s collateral trustee activity is permitted under 12 USC
+92a and 12 CFR 9’s explicit authorization for trustee activities. The Bank’s proposed
+fiduciary custody activity is permitted under the bootstrap provision of 12 USC 92a and
+the New York state law, and its provision of custody services will be subject to fiduciary
+duties and standards of behavior.
+
+Conditions
+
+This preliminary conditional approval is subject to the following conditions:
+
+   1. The Bank must limit its operations to those of a trust company and activities
+      related thereto, as specifically stated in the business plan. The Bank must not meet
+      the definition of “bank” under section 2(c)(1)-(2) of the Bank Holding Company
+      Act.
+
+   2. If and to the extent necessary, the Bank must conform, cease, or divest its
+      proposed collateral trustee structure and any other activities to comply with the
+      GENIUS Act (12 USC 5901 et seq.), any implementing regulations, and any other
+      applicable laws and regulations that take effect in the future, such compliance to
+      be determined in the sole discretion of the OCC.
+
+   3. The Bank: (i) must give the Novel Bank Supervisory Office at least sixty (60)
+      days prior written notice of the Bank’s intent to significantly deviate or change
+      from its business plan or operations (if such deviation is the subject of an
+      application filed with the OCC, no separate notice to the supervisory office is
+      required); and (ii) must obtain the OCC’s written determination of no objection
+      before the Bank engages in any significant deviation or change from its business
+      plan or operations. For the avoidance of doubt, a significant deviation includes
+      changes to the Bank’s risk and operating limits, as detailed in its business plan.
+
+                                              6
+Mr. Kevin Murphy
+2025-Charter-342299
+2025-Waiver-342964
+
+        The OCC may impose additional conditions it deems appropriate in a written
+        determination of no objection to the Bank’s notice. This condition will remain in
+        effect throughout the Bank’s in organization period and during the Bank’s first
+        three years of operation.
+
+     4. The Bank must maintain a minimum $6.05 million in tier 1 capital of which the
+        greater of at least 50 percent of its tier 1 capital or $3.025 million must be held in
+        Eligible Liquid Assets.17 The Bank must assess the appropriateness of its level of
+        capital and liquidity on a quarterly basis and hold such higher amounts of capital
+        and liquidity as it determines necessary to support the bank’s risk profile, business
+        strategies, and future growth prospects, and to provide a cushion against
+        unexpected losses. This condition will remain in effect during the Bank’s first
+        three years of operation.
+
+     5. The Bank must maintain 180 days of operating expenses18 in Eligible Liquid
+        Assets. This amount must not be double counted with the Eligible Liquid Assets
+        held to comply with the foregoing condition. This condition will remain in effect
+        during the Bank’s first three years of operation.
+
+     6. Prior to the appointment of any individual to the position of “senior executive
+        officer,” as defined in 12 CFR 5.51(c)(4), or the appointment of any individual to
+        the board of directors, the proposed Bank must submit to the OCC the information
+        described in the “Changes in Directors and Senior Executive Officers” booklet of
+        the Comptroller’s Licensing Manual, and receive a letter of no objection from the
+        OCC. For purposes of this condition, “senior executive officer” includes the Chief
+        Compliance Officer, the Bank Secrecy Act Officer, the Chief Technology Officer,
+        the Chief Information Security Officer, the Chief Trust Officer, and any fiduciary
+        officers or employees designated for that purpose. This information is required
+
+17
+   The term “Eligible Liquid Assets” means only Liquid Assets that exceed the aggregate
+amount of all deposits, borrowed funds, and other liabilities on the Bank’s balance sheet
+that reflect an obligation to repay funds to any party. The term Eligible Liquid Assets
+shall not include any assets that are pledged in any manner, nor any assets that are not
+free and kept free from any lien, encumbrance, charge, right of set off, credit or
+preference in connection with any claim against the Bank. The term “Liquid Assets”
+means: (i) unencumbered cash; (ii) deposits at insured depository institutions with a
+maturity of 90 days or less; (iii) United States government obligations maturing within 90
+days or less; and (iv) such other assets as to which the Bank has obtained a written
+nonobjection from the OCC. The term Eligible Liquid Assets shall not include any
+obligation of any affiliate.
+18
+   The minimum 180 days of operating expenses must include all fixed and variable
+operating expenses that would apply in a distressed, wind-down scenario and need not
+include expenses that would apply only in a normal operating scenario, such as expenses
+related to research and development.
+
+                                              7
+Mr. Kevin Murphy
+2025-Charter-342299
+2025-Waiver-342964
+
+       by the authority of 12 USC 1818(b) and 12 CFR 5.20(g) and does not require the
+       OCC to review or act on any such information within ninety (90) days. This
+       condition will remain in effect throughout the Bank’s in organization period and
+       during the Bank’s first three years of operation.
+
+The conditions of this approval are conditions “imposed in writing by a Federal banking
+agency in connection with any action on any application, notice, or other request” within
+the meaning of 12 USC 1818. As such, the conditions are enforceable under 12 USC
+1818.
+
+As a de novo national bank, the Bank must also meet the following requirements prior to
+requesting its preopening examination and before the OCC will grant final charter
+approval pursuant to 12 USC 27(a):
+
+   1. The Bank must engage an independent, external auditor to perform an audit
+      according to generally accepted auditing standards of sufficient scope to enable
+      the auditor to render an opinion on the financial statements of the Bank taken as a
+      whole. The audit period shall commence on the date that the organizing group
+      forms a body corporate and may end on any calendar quarter-end no later than 12
+      months after the Bank opens. The OCC expects that such audits will be performed
+      annually for at least three years following commencement of operations.
+      Engagement of an auditor will be verified during the preopening examination (see
+      the “Charters” booklet, Internal and External Audits discussion).
+
+   2. The Bank’s financial statements must be prepared on an accrual basis according
+      to generally accepted accounting principles.
+
+   3. The President, or the person serving in the function of President, of the Bank must
+      serve as a member of the board of directors.
+
+   4. Each person who, together with his or her related interests, subscribes to 10
+      percent or more of the initial stock offering must submit a biographical and
+      financial report for review to the Chartering, Organization & Structure staff prior
+      to acquisition of the shares and staff must have no objection to each person before
+      purchasing the shares. After opening the Bank, the Bank will comply with the
+      requirements of 12 CFR 5.50. Changes in the composition of members or trustees
+      of a voting trust or voting agreement also may be subject to the requirements of
+      12 CFR 5.50.
+
+   5. Management and the Board must maintain policies and procedures that address all
+      OCC regulations and will guide the Bank’s operations in a safe and sound
+      manner. These policies and procedures must establish and guide the operation of a
+      robust BSA/AML/OFAC program. All policies must be completed no later than
+      the date of the applicant’s request for a preopening examination. In addition, the
+      board of directors must review and adopt the policies and procedures at its first
+
+                                            8
+Mr. Kevin Murphy
+2025-Charter-342299
+2025-Waiver-342964
+
+       meeting. The board of directors is responsible for regular review and modification
+       of policies and procedures and for assuring continuous compliance with them.
+
+   6. The Bank must have a security program in place that complies with the
+      “Interagency Guidelines Establishing Standards for Safeguarding Customer
+      Information” specified at 12 CFR 30, Appendix B (Appendix B).
+
+   7. The Bank must submit to the Novel Bank Supervision Office for review, and prior
+      written determination of no supervisory objection, a complete description of the
+      Bank’s final information systems and operations architecture as well as the
+      information systems risk assessment and management plan. This should include a
+      schematic drawing; and
+
+   8. A letter must be submitted to the Chartering, Organization and Structure staff at
+      least 60 days before the Bank is scheduled to open, notifying the OCC that all
+      conditions and requirements necessary to receive a national bank charter have
+      been met, requesting a preopening examination, and providing the anticipated
+      opening date.
+
+The manner in which capital is raised must not deviate from that described in the
+application without prior written OCC notification. If the capital for the Bank is not
+raised within 12 months or if the Bank is not opened for business within 18 months from
+the preliminary conditional approval date, this approval expires. The OCC is opposed to
+granting extensions, except under the most extenuating circumstances and when the OCC
+determines that the delay is beyond the applicant’s control. The organizers are expected
+to proceed diligently, consistent with their application, for the Bank to open for business
+as soon as possible.
+
+In addition, the Bank must meet the following requirements:
+
+   1. The Bank must purchase adequate fidelity bond coverage in accordance with 12
+      CFR 7.2013, which lists four factors the directors should consider to determine
+      adequacy.
+
+   2. The board of directors and management of the Bank must adopt policies,
+      practices, and procedures to ensure the safe and sound operation of the bank. In
+      addition, the board of directors must review and adopt the policies, practices, and
+      procedures continually and ensure the bank’s compliance with them.
+
+   3. The institution must ensure that all other required regulatory approvals have been
+      obtained.
+
+   4. The Bank must ensure that all other required regulatory approvals have been
+      obtained.
+
+
+                                             9
+Mr. Kevin Murphy
+2025-Charter-342299
+2025-Waiver-342964
+
+   5. The directors of the Bank must own qualifying shares in conformance with 12
+      USC 72 and 12 CFR 7.2005.
+
+Organizers, Directors and Officers
+
+The OCC poses no objection to the following persons serving as executive officers,
+directors, and/or organizers as proposed in the Application:
+
+Name                               Title
+Daniel Fishman                     Organizer, Director, President and Treasurer
+Tamara Schulz                      Organizer/Director
+Heath Tarbert                      Organizer/Director
+Brett Schroeder                    Organizer, Chief Legal Officer & Secretary
+Rawan Abdelrazek                   Organizer, Chief Operating and Trust Officer and
+Vice President
+Amy Friend                         Director
+Alan Cohen                         Director
+Mandeep Walia                      Chief Compliance & Risk Officer
+Marlys Rodgers                     Chief Information Security Officer
+
+Prior to the Bank’s opening, the Bank must obtain the OCC’s prior written determination
+of no objection for any additional organizers or executive officers, or directors appointed
+or elected before the person assumes the position.
+
+Waiver of Residency Requirements
+
+The OCC also granted your request to waive the residency requirements of 12 USC 72
+for Directors Heath Tarbert, Amy Friend, and Tamara Schulz to serve as members of the
+board of directors of the Bank. This waiver is granted based upon a review of all
+available information, including the filing and any subsequent correspondence and
+telephone conversations, and the Bank’s representation that this waiver will not affect the
+board’s responsibility to direct the Bank’s operations in a safe, sound, and legal manner.
+The OCC reserves the right to withdraw or modify this waiver and, at its discretion, to
+request additional information at any time in the future.
+
+Organizing Steps and Pre-Opening Requirements
+
+The “Charters” booklet in the Comptroller’s Licensing Manual provides guidance for
+organizing your bank. The booklet is located at the OCC's web site:
+https://www.occ.gov/publications/publications-by-type/licensing-manuals/charters.pdf.
+The booklet contains all of the steps you must take to receive final approval.
+
+As detailed in the booklet, you may establish the corporate existence of and begin
+organizing the Bank as soon as you adopt and forward Articles of Association and the
+Organization Certificate to the Chartering, Organization and Structure office for review
+
+                                            10
+Mr. Kevin Murphy
+2025-Charter-342299
+2025-Waiver-342964
+
+and acceptance. The Bank may not begin the business of banking until it fulfills all
+requirements for a bank in organization and the OCC grants final approval.
+
+As a “body corporate” or legal entity, you may begin taking those steps necessary for
+obtaining final approval. “In Organization” should follow the bank’s name in all
+official documents, stationery, advertisements, and other references to the bank until it
+opens for business. The Bank may not begin the business of banking until it fulfills all
+requirements for a bank in organization and the OCC grants final approval.
+
+Enclosed are a minimum policies and procedures checklist and a pre-opening checklist
+for new national banks. The Bank must meet the conditions and requirements above
+before it is allowed to commence business, and the Board of Directors must ensure that
+the applicable policies and procedures are established and adopted before the Bank
+begins operation.
+
+Conclusion
+
+This preliminary conditional approval and the activities and communications by OCC
+employees in connection with the filing do not constitute a contract, express or implied,
+or any other obligation binding upon the OCC, the United States, any agency or entity of
+the United States, or any officer or employee of the United States, and do not affect the
+ability of the OCC to exercise its supervisory, regulatory, and examination authorities
+under applicable law and regulations. The foregoing may not be waived or modified by
+any employee or agent of the OCC or the United States.
+
+The OCC’s approval is based on the bank’s representations, submissions, and
+information available to the OCC as of this date. The OCC may modify, suspend, or
+rescind this approval if a material change in the information on which the OCC relied
+occurs prior to the date of the transaction to which this decision pertains.
+
+Sincerely,
+
+//signed//
+
+Stephen A. Lybarger
+Senior Deputy Comptroller
+Chartering, Organization
+ and Structure
+
+
+
+
+                                            11
+

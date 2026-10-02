@@ -1,0 +1,436 @@
+{
+  "review": "Independent continuation review, StableSense state-of-stablecoins record",
+  "artifact": "final/continuation-review-findings.json",
+  "reviewer_scope": "Read-only challenge of the operator-approved weak-section continuation against stored captures. No existing file was edited. No commit, push, deployment or site change. No external retrieval was used; every finding below is measured from files inside the record.",
+  "record_root": "docs/research/2026-10-01-state-of-stablecoins",
+  "date": "2026-10-02",
+  "claims_reviewed": [
+    "SS-001", "SS-002", "SS-005", "SS-006", "SS-007", "SS-008", "SS-009",
+    "SS-014", "SS-015", "SS-063", "SS-064", "SS-071", "SS-101", "SS-102"
+  ],
+  "prose_reviewed": [
+    "final/synthesis.md",
+    "final/limitations-and-next-update.md",
+    "final/claims.json",
+    "final/evidence/arithmetic.json",
+    "final/evidence-manifest.json"
+  ],
+  "independent_of_prior_review": "This review formed its own findings from the captures. It does not assert or re-derive any prior R3 disposition and does not treat any prior review verdict as evidence.",
+  "verifiers_run": [
+    {
+      "command": "python3 final/evidence/verify_captures.py",
+      "exit_code": 0,
+      "actual_output_summary": {
+        "total_claims": 49,
+        "unique_ids": 49,
+        "passage_verbatim_verified": 49,
+        "passage_absent_or_partial": [],
+        "unmeasurable_capture": [],
+        "capture_is_authored_digest_not_page_text": [],
+        "overall": "PASS"
+      },
+      "limitation": "Quote-match only. It confirms each exact_passage string occurs in the file named by source_path. It does not check that the passage supports the claim sentence, that scope is preserved, that the cited file is an origin capture rather than a researcher-authored digest, or that source_path is registered in the manifest. The docstring's check 4 ('the capture is a genuine stored capture, not a researcher-authored digest (checked by shape)') only fires for JSON captures whose extracted body is under 200 characters, so a prose .txt digest of any length passes unflagged. Finding F-01 is exactly that case."
+    },
+    {
+      "command": "python3 final/evidence/verify_continuation.py",
+      "exit_code": 0,
+      "actual_output": "MANIFEST PASS: 37 capture entries; 14 continuation companions; 0 mismatches\nDETERMINISTIC BUILD PASS: two rebuilds; claims, manifest, arithmetic byte-identical\nPROSE/ARITHMETIC PASS: references resolve, no authored em/en dashes, new calculations match",
+      "limitation": "Three measured checks: manifest hashes, build determinism, and that prose claim-id references resolve to ledger ids with no em or en dashes. It never asserts that every claim source_path appears in the manifest (only the reverse direction), so F-01's unregistered source_path is invisible to it. Its three arithmetic assertions compare arithmetic.json against literals in its own source, which is self-consistency, not agreement with the captures. No semantic verification of any kind; its own module docstring says so."
+    }
+  ],
+  "finding_counts": {
+    "measured_error": 5,
+    "uncertainty": 4,
+    "reviewer_suggestion": 5,
+    "total": 14
+  },
+  "findings": [
+    {
+      "id": "F-01",
+      "class": "measured_error",
+      "severity": "high",
+      "title": "SS-085 is sourced to a researcher-authored digest, not a capture, and its cited file is absent from the manifest",
+      "claim_location": "final/claims.json, claim SS-085",
+      "prose_location": "final/synthesis.md section 1.6, 'The low end is now evidenced rather than asserted'; also section 7 'Ruled out'",
+      "source_path": "final/evidence/x402scan.html.txt",
+      "measured": {
+        "cited_source_path_in_manifest": false,
+        "origin_capture_present": "final/evidence/x402scan.html (2,008,630 bytes) exists and is a manifest entry, but is cited by no claim",
+        "digest_file_contains": "A 15-line authored header beginning 'Source: https://www.x402scan.com/ Retrieved: 2026-10-01 Extraction: final/evidence/build_claims.py extract_x402scan(), one regex on the embedded RSC payload.'",
+        "origin_capture_contains_the_figures": false,
+        "origin_search": "grep for '12,293,450', '27,467', '38,519', '974,215,144,043', '974,215.14', '0.079247' returns 0 occurrences each",
+        "figures_are_present_unformatted_in_origin": "Yes. final/evidence/x402scan.html contains, inside an escaped Next.js RSC payload, the keys total_transactions:12293450, total_amount:974215144043, unique_buyers:27467, unique_sellers:38519, latest_block_timestamp:2026-10-01T10:45:33.000Z"
+      },
+      "why_it_matters": "SS-085's exact_passage is a verbatim match against a file the reviewer wrote, not against retrieved page bytes. verify_captures.py reports PASS because it only asks whether the quoted string occurs in the named file. The verifier's own docstring claims it checks 'the capture is a genuine stored capture, not a researcher-authored digest', and limitations-and-next-update.md line 78 states 'No current claim is intentionally sourced to such a digest'. Both statements are false for SS-085. The numbers themselves are corroborated by the origin capture, so this is a sourcing and provenance defect rather than a fabrication, but it is exactly the defect class the record says it has eliminated.",
+      "correction": "Repoint SS-085's source_path to final/evidence/x402scan.html and reset exact_passage to a string that occurs in that file, for example the unformatted payload key total_transactions:12293450 or the full escaped json object. Add the current x402scan.html.txt to the manifest as a companion so the derived-extraction lineage is hashed. Then strengthen verify_captures.py check 4 to reject any cited .txt or .md source whose first line matches a header pattern such as '^Source: https?://' followed by an 'Extraction:' line, and add a manifest-coverage assertion that every claim source_path is registered.",
+      "status": "measured, reproducible"
+    },
+    {
+      "id": "F-02",
+      "class": "measured_error",
+      "severity": "high",
+      "title": "The record's own x402 residual is reconciled by a cross-scope computation that the prose itself calls the scope error",
+      "claim_location": "final/claims.json, claim SS-081; final/evidence/arithmetic.json keys x402_arbitrum_bridge_excluded and x402_residual_if_subtracted",
+      "prose_location": "final/synthesis.md section 1.6, first bullet, 'The Bitquery $317 million residual is the source's own number, verbatim'",
+      "source_path": "final/evidence/bitquery-x402.html",
+      "measured": {
+        "source_residual_statement": "Take that one contract out and the rail moved $317 million in August rather than $2.59 billion.",
+        "source_arbitrum_total": "Verbatim from the capture: \"Arbitrum's $2.33bn is 97.5% one contract; Polygon's largest payee is 64% of that chain's value.\"",
+        "source_chain_shares": "Arbitrum 1.9% of all payments and 90.0% of all dollars, out of $2.59BN, alongside Base 53.1%/1.4% and Polygon 44.5%/5.3%",
+        "derivation_that_reproduces_317": "97.5% x $2.33bn = $2.27175bn for the one contract; $2.59bn five-chain total minus $2.27175bn = $0.31825bn = $318.2M, matching the source's stated $317M to rounding",
+        "naive_computation_the_record_calls_mistaken": "2.59bn x (1 - 0.975) = $64.75M, the figure the earlier review produced",
+        "arbitrum_only_residual": "$58.3M",
+        "record_note": "arithmetic.json records x402_arbitrum_bridge_excluded = 2525250000.0, i.e. it subtracts the bridge contract from the five-chain total, which is the same mixed-scope operation"
+      },
+      "why_it_matters": "The synthesis declares the earlier review mistaken for computing a residual across scopes, and says substituting a computed residual for the source's stated one is the scope error being warned about. But the source's own $317M is reproducible only by a mixed-scope subtraction: a five-chain total minus a share of the Arbitrum-only total. That is the operation the record calls wrong. The source is self-consistent under a cross-scope residual, so the prose rule and the cited capture are in direct tension, and the record's own arithmetic.json performs the very subtraction the prose disowns. The $2.33bn Arbitrum figure, the input that makes the residual reconcilable, is never cited anywhere in the ledger.",
+      "correction": "Rewrite the bullet to state the measured position: the $317M is quoted verbatim, and it is also reproducible as (five-chain $2.59bn) minus (97.5% of Arbitrum's $2.33bn) = $318M, so the source uses a deliberately mixed-scope residual. State that the earlier review's $64.75M applied one scope to both terms and is therefore not the source's method, which is the accurate reason it was wrong. Add the $2.33bn Arbitrum figure and its Arbitrum-only scope to SS-081's exact_passage and measurement_scope_and_exclusions. Restate the scope caution as 'do not read $317M as an Arbitrum-only or a five-chain-only residual', rather than 'do not compute a residual'.",
+      "status": "measured, reproducible"
+    },
+    {
+      "id": "F-03",
+      "class": "measured_error",
+      "severity": "medium",
+      "title": "The KC Fed version conflict is under-scoped: the two captures also differ on the bank Treasury share and the loan-contraction percentage",
+      "claim_location": "final/claims.json, claims SS-001, SS-002, SS-005 and SS-102, each carrying an identical Continuation note that describes only the $0.08 versus $0.20 coefficient",
+      "prose_location": "final/synthesis.md section 1.1, 'The approved continuation found a version conflict'; limitations-and-next-update.md gap table row 'KC Fed conditional Treasury example'",
+      "source_path": "final/evidence/kc-fed-pdf-reader-20261002.json versus final/evidence/kc-fed-stablecoin-treasury.json",
+      "measured": {
+        "derivation_of_the_reduction_figure": "In both versions the per-$1 reduction equals the article's own stated bank Treasury share of assets, to the cent: 20 percent yields $0.20 in the PDF, 8 percent yields $0.08 in the revised HTML.",
+        "pdf_bank_assets_line": "Today, U.S. banks hold around $26 trillion in total assets, 20 percent of which are Treasuries (about $5 trillion total).",
+        "html_bank_assets_line": "Today, banks in the United States hold around $26 trillion in total assets, 8 percent of which are Treasuries (about $2 trillion total) (Board of Governors of the Federal Reserve System 2026a, 2026b).",
+        "pdf_loan_contraction_line": "This shift would represent a 1 percent decrease in both bank assets and bank lending",
+        "html_loan_contraction_line": "This shift would represent a 2.5 percent decrease in both bank assets and bank lending",
+        "reference_base": "The HTML cites Board of Governors 2026a and 2026b and an H.8 release dated 20260918; the PDF endnotes carry a single footnote about Circle's repos. Neither version's percentage matches a $325bn reduction over $26tn, which is 1.25 percent.",
+        "html_update_note": "_Note: This Bulletin, originally published August 8, 2025, was updated on September 22, 2026, to correct a calculation error in Treasury security holdings._",
+        "internal_consistency": "HTML 0.50 - 0.08 = 0.42 and the article's own parenthetical reads '(the remaining $0.42 is held in other assets)', so the revised HTML is internally consistent on its components. PDF 0.50 - 0.20 = 0.30, matching its stated net and its stated residual of 0.30."
+      },
+      "why_it_matters": "Every continuation note frames the conflict as a single coefficient discrepancy, which makes it look like a typographical slip resolvable by choosing one number. It is broader than that. The revised HTML also cut the measured bank Treasury share from 20 percent to 8 percent, re-sourced it to 2026 Federal Reserve data, and changed the loan-contraction figure from 1 percent to 2.5 percent. The revised HTML is also the version the publisher says was corrected and the one that is internally consistent on both its 0.42 residual and its 8 percent share, so the PDF reader text is the superseded version, not an equally live alternative. The record currently implies the opposite, and it presents the conflict in a section it calls central.",
+      "correction": "Extend the Continuation note on SS-001, SS-002, SS-005 and SS-102, and the section 1.1 paragraph, to state that the divergence spans the bank Treasury share (20 versus 8 percent), the loan-contraction percentage (1 versus 2.5 percent) and the reference base (undated versus 2026 H.8/Z.1 data), not only the coefficient. Record that the revised HTML is the later, publisher-corrected, internally consistent document and the PDF reader text is the older possibly cached version. Keep the intended-coefficient research_status UNRESOLVED and keep no headline on either version.",
+      "status": "measured, reproducible"
+    },
+    {
+      "id": "F-04",
+      "class": "measured_error",
+      "severity": "medium",
+      "title": "An in-record capture reports a Circle OCC approval on 2026-07-10 that the record's current-status discussion never accounts for",
+      "claim_location": "final/claims.json, claim SS-063, research_status 'PARTIAL: original order captured; current authorization UNRESOLVED'",
+      "prose_location": "final/synthesis.md section 2 ('The primary OCC December 12, 2025 Circle decision is now stored'), section 6 'Regulatory state', and limitations-and-next-update.md gap table row 'Circle OCC authorization'",
+      "source_path": "final/evidence/cnbc-circle-occ-charter.json, a manifest capture entry cited by no claim",
+      "measured": {
+        "capture_url": "https://www.cnbc.com/2026/07/10/circle-gets-an-occ-bank-charter-as-stablecoin-competition-heats-up-shares-surge-14percent.html",
+        "captured_at": "2026-10-01T13:34:05.588Z",
+        "stored_passage": "Stablecoin issuer Circle surged after the U.S. Office of the Comptroller of the Currency, or OCC, granted it approval Friday to operate as a trust bank, the company said. Shares of the company were off their earlier highs but ended the day up nearly 5%. The approval gives the company the ability to manage reserves directly for its regulated stablecoins, primarily the USDC stablecoin, which has more than $73 billion in circulation. The new bank will operate under the name Circle National Trust. Previously, Circle needed third-party banks and custodians to hold the cash and Treasury assets backing USDC. The charter does not greenlight Circle to operate as a commercial bank that takes deposits and makes loans.",
+        "prose_grep_result": "grep -i for 'Circle National Trust', 'cnbc', 'surge', 'July 10', 'nearly 5', '14 percent', '14%' across synthesis.md, limitations-and-next-update.md, operator-handoff.md and claims.json returns no matches",
+        "also_in_capture": "The same article reports Swift launching a blockchain consortium with 17 banks and a 140-company consortium including BlackRock, Coinbase, Mastercard, Stripe and Visa joining OUSD, 'where reserve yields are distributed to participating partners rather than a single issuer'."
+      },
+      "why_it_matters": "The record correctly narrowed SS-063 to a December 2025 preliminary conditional order and marks current authorization UNRESOLVED, but it does so without disclosing that dated, on-point evidence already sits in its own evidence directory reporting a July 2026 approval event under a different bank name with reserve-management scope. A stored capture that contradicts or complicates a claim's UNRESOLVED status should be cited or explicitly rejected; silence here is the same failure pattern the record criticises elsewhere, treating an unexamined source as absent.",
+      "correction": "Either add a claim citing final/evidence/cnbc-circle-occ-charter.json reporting the 2026-07-10 approval announcement, the Circle National Trust name, direct reserve management, the explicit non-greenlight for deposit-taking and lending, and the 'ended the day up nearly 5%' share move; or state in SS-063's uncertainty field and in the gap table why this capture is not relied on. Separately, synthesis.md section 7 lists 'Circle's stock fell about 15 percent' among excluded claims; this capture supports a rise of nearly 5 percent, so recording the direction error would close that exclusion on evidence rather than on silence.",
+      "status": "measured; the evidential weight to place on this capture is an operator judgement"
+    },
+    {
+      "id": "F-05",
+      "class": "measured_error",
+      "severity": "low",
+      "title": "Synthesis prose cites capture paths that resolve outside the manifest, or not at all",
+      "claim_location": "not claim-scoped, prose only",
+      "prose_location": "final/synthesis.md section 1.2 ('stored at firecrawl-recovery/captures/congress-genius-act.json'), section 1.5 ('stored under final-bunny-routed/evidence/'), section 8 ('final/final-review/challenge.md and final/final-review/findings.json')",
+      "source_path": "docs/research/2026-10-01-state-of-stablecoins/ record root",
+      "measured": {
+        "firecrawl_path": "firecrawl-recovery/captures/congress-genius-act.json exists and is byte-identical to the manifest capture final/evidence/congress-genius-act-text.json, both sha256 4055851e2c3dc0be3012d0c6fd301cd3a00040022076c5821448323e01d05df4. The cited path resolves only relative to the record root, not the repo root.",
+        "final_bunny_routed_path": "final-bunny-routed/evidence/circle-crcl-20260630-10q.txt exists and is byte-identical to the manifest capture final/evidence/circle-crcl-20260630-10q.txt, both sha256 c38d05170618cc38e287fb8267c9a77d316bfadda57b957b4bd506bd582d9369.",
+        "final_review_path": "final/final-review does not exist. final-review/challenge.md and final-review/findings.json exist at the record root."
+      },
+      "why_it_matters": "All three citations point outside the final/evidence/ root the synthesis names as its evidence base. Two resolve only under an unstated relative base; one does not resolve as written, so a reader following the R2 citation cannot reach it.",
+      "correction": "Repoint to manifest-registered paths: final/evidence/congress-genius-act-text.json and final/evidence/circle-crcl-20260630-10q.txt. For the R2 reference use final-review/challenge.md and final-review/findings.json at the record root, or cite final/review-disposition.json instead.",
+      "status": "measured, reproducible"
+    },
+    {
+      "id": "F-06",
+      "class": "uncertainty",
+      "severity": "medium",
+      "title": "SS-071's as_of date is not in the capture the claim cites; the May 31, 2026 date comes from a different, uncited capture",
+      "claim_location": "final/claims.json, claim SS-071, as_of '2026-05-31 (report landing page data date; precise transfer observation window not disclosed in captured article)'",
+      "prose_location": "final/synthesis.md section 1.8 ('The landing page dates its data to May 31, 2026'); limitations-and-next-update.md gap table row 'RWA idle value'",
+      "source_path": "final/evidence/beincrypto-analysis-reader-20261002.json, cited by SS-071; final/evidence/beincrypto-report-reader-20261002.json, a manifest entry cited by no claim",
+      "measured": {
+        "cited_capture_date_strings": "beincrypto-analysis-reader-20261002.json contains 0 occurrences of 'May 31' and 0 of '2026-05-31'. Its only date is '02 July 2026, 13:57 UTC' for the article itself.",
+        "uncited_capture_contains_it": "beincrypto-report-reader-20261002.json contains 'Source: rwa.xyz data as of May 31, 2026' three times, plus 'MARKET SIZE $60B' and '56% of tokenized asset value showed no weekly transfer activity'",
+        "denominator_conflict": "The article computes 56 percent against the transfer-measured subset: $32.9bn dormant over $32.9bn plus $26.2bn active = 55.67 percent of $59.1bn. The report landing page states the market size as $60B, against which $32.9bn is 54.83 percent.",
+        "article_denominator_wording": "Those dormant assets represented $32.9 billion in value, or 56% of the market measured for transfer activity."
+      },
+      "why_it_matters": "The as_of field credits a data date that its own cited capture does not contain; it comes from a second BeInCrypto capture that no claim cites. The parenthetical hedge is honest but the attribution is not: a reader auditing SS-071 against its source_path will not find the date. Separately, the record computes 55.67 percent against the $59.1bn subset and calls it 'consistent with reported 56 percent', while a stored capture states the market as $60B, which would give 54.83 percent. Both are defensible, but the record should state which denominator is being reproduced and note that the publisher's landing page uses a different market base.",
+      "correction": "Add a companion claim, or a secondary source_path entry, citing final/evidence/beincrypto-report-reader-20261002.json for the May 31, 2026 data date and the $60B market size, so the as_of has a resolvable source. In SS-071's uncertainty field, state explicitly that 56 percent is reproduced against the transfer-measured subset ($32.9bn of $59.1bn = 55.67 percent) and that the publisher's landing page separately frames the market as $60B, against which the dormant share would be 54.83 percent. Keep the count and value denominators separated as the claim already does.",
+      "status": "measured; whether 55.67 or 54.83 is the publisher's intent is UNRESOLVED here"
+    },
+    {
+      "id": "F-07",
+      "class": "uncertainty",
+      "severity": "medium",
+      "title": "SS-005 and SS-071 rest on reader-excerpt captures that no verifier inspects for truncation or staleness",
+      "claim_location": "final/claims.json, claims SS-005 and SS-071, both with source_path pointing at a reader-response capture",
+      "prose_location": "final/synthesis.md section 1.1 (PDF reader freshness) and section 1.8; limitations-and-next-update.md lines 15-16 and 116",
+      "source_path": "final/evidence/kc-fed-pdf-reader-20261002.json and final/evidence/beincrypto-analysis-reader-20261002.json",
+      "measured": {
+        "claims_citing_reader_excerpt_captures": 2,
+        "capture_declared_limit": "Both carry 'Reader excerpt may be token-compressed or truncated; no origin bytes obtained; cache freshness not established.'",
+        "reader_response_companion_hashed_but_uninspected": "Each has a -reader-response.json companion registered in the manifest and hashed by verify_continuation.py, but no script compares the companion's content to the derived excerpt or asserts the excerpt is complete.",
+        "pdf_excerpt_ends_at": "The KC Fed reader excerpt ends mid-document at a footnote 3 chart header, so the passage is not shown to be the article's final wording.",
+        "verifier_behaviour": "verify_captures.py returns VERBATIM for these passages because the quoted strings occur in the excerpt. It has no truncation, completeness or staleness check of any kind."
+      },
+      "why_it_matters": "F-03 shows the version conflict turned on a reader excerpt whose freshness is unestablished. The record's answer is to keep the coefficient UNRESOLVED, which is appropriate, but the structural point is that two claims in the ledger rest on captures that are, by their own declaration, possibly truncated and of unknown age, and the mechanical verifiers cannot detect it. Both limitations-and-next-update.md statements about reader responses being 'evidence of retrieved text, not full origin captures' are correct in principle but are not enforced anywhere in code.",
+      "correction": "Add a check to verify_continuation.py that every claim whose source capture declares a capture_limit is flagged in the verification output as an excerpt-sourced claim with its declared limit quoted, so the PASS line cannot be read as covering them. For SS-005 specifically, note that the discrepancy's direction depends on which document version the excerpt represents, and state the excerpt endpoint explicitly in the claim so a reader knows the passage is not the last text in the document.",
+      "status": "measured; the true document version remains UNRESOLVED without a fresh origin fetch"
+    },
+    {
+      "id": "F-08",
+      "class": "uncertainty",
+      "severity": "low",
+      "title": "SS-101's hypothesis is correctly labelled, but the record's own scale figure understates how far the hypothesis is from testable",
+      "claim_location": "final/claims.json, claim SS-101, research_status 'UNRESOLVED: causal adoption effect'",
+      "prose_location": "final/synthesis.md section 3, 'Contrary cases that survive the evidence', item 1: 'Supply is not adoption. 468 million dollars (SS-053) sits against issuers an order of magnitude larger.'",
+      "source_path": "final/evidence/bridge-reserves-ousd.html (supply) and final/evidence/reap-global-stablecoin-stats.json (market cap)",
+      "measured": {
+        "ousd_supply": "$468,445,399 as of 2026-10-01 (SS-053)",
+        "total_stablecoin_market_cap": "$308.0 billion as of 2026-08-13 (SS-090)",
+        "computed_ratio": "308.0bn / 468,445,399 = 657.5x, which is about 2.82 orders of magnitude",
+        "prose_wording": "'an order of magnitude larger'",
+        "tether_comparison": "SS-040's $141bn T-bill exposure alone is about 301x OUSD total supply"
+      },
+      "why_it_matters": "The prose understates the gap by roughly a factor of three in orders of magnitude, in a section whose stated purpose is to show how far the adoption thesis is from settled. 'An order of magnitude larger' reads as roughly 10x and invites a reader to treat OUSD as a comparable-scale participant, when the stored figures put it near 0.15 percent of the market. The direction of the argument is right; the magnitude language works against it.",
+      "correction": "Replace 'sits against issuers an order of magnitude larger' with the measured comparison: '468 million dollars of supply sits against a 308 billion dollar total stablecoin market, about 0.15 percent, and against Tether's 141 billion dollars of Treasury exposure alone, roughly 300 times larger.' Keep the point that this is a supply snapshot and not an adoption series.",
+      "status": "measured"
+    },
+    {
+      "id": "F-09",
+      "class": "uncertainty",
+      "severity": "low",
+      "title": "Eight continuation claims carry identical text in measurement_scope_and_exclusions and uncertainty_and_contrary_evidence",
+      "claim_location": "final/claims.json, claims SS-005, SS-006, SS-007, SS-008, SS-009, SS-014, SS-015 and SS-064",
+      "prose_location": "not prose; ledger field structure",
+      "source_path": "final/claims.json",
+      "measured": {
+        "claims_with_identical_two_fields": 8,
+        "ids": ["SS-005", "SS-006", "SS-007", "SS-008", "SS-009", "SS-014", "SS-015", "SS-064"],
+        "all_eight_are_new_or_modified_continuation_claims": true,
+        "example": "SS-015: both fields read 'Quantitative macroeconomic model described in publisher abstract, not measured funding-source shares, an observed fiscal dividend or a forecast adopted by BIS. Full paper assumptions and calibration not independently audited here.'"
+      },
+      "why_it_matters": "Two ledger fields that are defined to carry different information, one about what the measurement covers and one about contrary evidence and uncertainty, hold identical strings for every claim added in this continuation. The effect is that contrary-evidence review for these eight claims is not separately recorded, even though several of them (SS-008, SS-009, SS-015) are the substantive new funding-source leads. The record's own schema promises a distinction the data does not deliver.",
+      "correction": "Split the fields for these eight claims so measurement_scope_and_exclusions states only what the measurement does and does not cover, and uncertainty_and_contrary_evidence states the contrary evidence, replication status and residual doubt. For SS-008 and SS-009 in particular, record explicitly that the opposite-sign aggregate responses are not purchaser-level funding flows, which is currently present but not distinguished from scope.",
+      "status": "measured"
+    },
+    {
+      "id": "F-10",
+      "class": "reviewer_suggestion",
+      "severity": "medium",
+      "title": "Add a manifest-coverage assertion to verify_continuation.py",
+      "claim_location": "final/evidence/verify_continuation.py",
+      "prose_location": "limitations-and-next-update.md lines 108-111, which instruct re-running the verifiers after every edit",
+      "source_path": "final/evidence/verify_continuation.py and final/evidence-manifest.json",
+      "measured": {
+        "manifest_entries": 37,
+        "continuation_companions": 14,
+        "claims_total": 49,
+        "cited_source_paths_not_in_manifest": ["final/evidence/x402scan.html.txt"],
+        "manifest_entries_cited_by_no_claim": 11,
+        "unused_entries": ["final/evidence/imf-wp2652-page.json", "final/evidence/openstandard-partners.json", "final/evidence/bitcoinmagazine-ousd-launch.json", "final/evidence/cnbc-circle-occ-charter.json", "final/evidence/metamask-what-is-x402.json", "final/evidence/openstandard-introducing-open-usd.html", "final/evidence/x402scan.html", "final/evidence/tbac-digital-money-20261002.json", "final/evidence/beincrypto-report-reader-20261002.json", "final/evidence/occ-five-charters-20261002.json", "final/evidence/securitize-q2-20261002.json"],
+        "verifier_direction_of_check": "verify_continuation.py iterates over manifest entries and hashes them. It never iterates over claims to confirm each source_path is a registered manifest entry."
+      },
+      "why_it_matters": "An unregistered source_path is the exact shape F-01 took, and the current verifier is structurally blind to it. Eleven manifest entries carrying no claim are also unreviewed by this loop: four of them (cnbc-circle-occ-charter, occ-five-charters, securitize-q2, beincrypto-report-reader) are cited in prose or carry on-point regulatory and RWA evidence, and F-04 and F-06 both turn on them.",
+      "correction": "Add two assertions. First, every claim source_path must appear in the manifest copy or companion lists; fail loudly otherwise. Second, print the list of manifest entries cited by no claim so unreferenced evidence is visible on every run rather than only on inspection.",
+      "status": "measured"
+    },
+    {
+      "id": "F-11",
+      "class": "reviewer_suggestion",
+      "severity": "low",
+      "title": "SS-081 and SS-080 leave the Arbitrum-only figures uncited, which is why F-02's reconciliation is invisible",
+      "claim_location": "final/claims.json, claims SS-080 and SS-081",
+      "prose_location": "final/synthesis.md section 1.6",
+      "source_path": "final/evidence/bitquery-x402.html",
+      "measured": {
+        "arbitrum_total_in_capture": "$2.33bn, stated in the capture as Arbitrum's $2.33bn is 97.5% one contract",
+        "arbitrum_payment_and_dollar_shares_in_capture": "Arbitrum 1.9% of all payments, 90.0% of all dollars",
+        "cited_in_claims": false,
+        "ss_081_exact_passage_covers": "The $317M residual sentence and the 34,577-payer 97.5 percent sentence, but not the $2.33bn Arbitrum total or the chain share table",
+        "ss_080_exact_passage_covers": "The five-chain $2.59bn, the 88 percent bridge share, the $57,000 agent figure and the $59,295 processor fee, but not the per-chain dollar split"
+      },
+      "why_it_matters": "The chain share table is the piece that makes every x402 scope statement in the section checkable, and it is the input that reconciles the $317M residual. Its omission from both exact passages is why the record could cite a five-chain total and an Arbitrum-only share in adjacent claims without noticing that the residual spans scopes.",
+      "correction": "Extend SS-081's exact_passage to include the Arbitrum $2.33bn sentence and the chain share row, and record in its measurement_scope_and_exclusions that the 97.5 percent is Arbitrum-only while the $2.59bn is five-chain. This is a ledger change only; no new retrieval needed.",
+      "status": "measured"
+    },
+    {
+      "id": "F-12",
+      "class": "reviewer_suggestion",
+      "severity": "low",
+      "title": "The Securitize platform AUM statement is prose-only, with no ledger claim",
+      "claim_location": "no claim exists for the Securitize platform AUM figure",
+      "prose_location": "final/synthesis.md section 1.8 final paragraph",
+      "source_path": "final/evidence/securitize-q2-20261002.json",
+      "measured": {
+        "release_date_in_capture": "August 12, 2026",
+        "figure_in_capture": "Record average tokenized AUM in 2Q26 of $4.3 billion, up 16%, with total AUM of $4.3 billion as of June 30, 2026, up 9%",
+        "scope_marker_in_capture": "Footnote: AUM refers to Tokenized Assets Under Management",
+        "buidl_mentions_in_capture": 1,
+        "buidl_sentence_in_capture": "BlackRock's BUIDL became available as yield-bearing collateral through a framework involving OKX and Standard Chartered",
+        "claims_citing_this_capture": 0,
+        "prose_characterisation": "platform-wide, not BUIDL AUM, and is not substituted for the fund",
+        "separate_figure_in_same_capture": "approximately $5.0 billion in assets now managed onchain, from the CEO quotation, against $4.3 billion total AUM, a 700 million dollar difference within one release"
+      },
+      "why_it_matters": "This is a well-handled exclusion and the prose gets it right, but it rests on a capture that no claim cites, so verify_captures.py never checks the $4.3 billion string and the statement could drift without detection. The release also contains two different platform-scale figures, $4.3 billion total AUM and about $5.0 billion onchain assets, which the prose does not distinguish.",
+      "correction": "Add a claim citing final/evidence/securitize-q2-20261002.json for the $4.3 billion total AUM as of June 30, 2026, the August 12, 2026 release date and the AUM scope footnote, with measurement_scope_and_exclusions stating it is platform-wide and is not a BUIDL figure. Note the separate about $5.0 billion onchain figure in the same release so the two are not conflated.",
+      "status": "measured"
+    },
+    {
+      "id": "F-13",
+      "class": "reviewer_suggestion",
+      "severity": "low",
+      "title": "The OCC five-charter release is stored and unused, and it names neither Bridge nor Circle National Trust",
+      "claim_location": "no claim exists",
+      "prose_location": "limitations-and-next-update.md gap table row 'Bridge OCC order'",
+      "source_path": "final/evidence/occ-five-charters-20261002.json",
+      "measured": {
+        "release": "OCC News Release 2025-125, December 12, 2025, OCC Announces Conditional Approvals for Five National Trust Bank Charter Applications",
+        "named_entities": "First National Digital Currency Bank (Circle) and Ripple National Trust Bank as de novo national trust charters; BitGo Bank & Trust, Fidelity Digital Assets and Paxos Trust Company as state-to-national conversions",
+        "bridge_mentions": 0,
+        "circle_national_trust_mentions": 0,
+        "claims_citing_this_capture": 0,
+        "supporting_line": "The release states: Subject to meeting the OCC's conditions, these institutions will join approximately 60 other national trust banks currently supervised by the OCC."
+      },
+      "why_it_matters": "This is the OCC's own press release for the same December 12, 2025 decision as SS-063 and it is unused. It corroborates that the five approvals were conditional and subject to unmet conditions, which is exactly SS-063's point. Its silence on Bridge is also useful negative evidence for the Bridge-OCC gap: the Bridge conditional approval reported by the issuer in SS-054 is not among the five announced here, so SS-054's issuer-reported status is not corroborated by this release.",
+      "correction": "Add a claim citing final/evidence/occ-five-charters-20261002.json for the conditional nature of the five approvals and the named entities, as a second primary source for SS-063's conditionality. Record in SS-054's uncertainty field that the OCC's own 2025-125 release does not list Bridge among the five conditionally approved applications, which strengthens the existing issuer-reported caveat.",
+      "status": "measured"
+    },
+    {
+      "id": "F-14",
+      "class": "reviewer_suggestion",
+      "severity": "low",
+      "title": "SS-015 is a calibrated model prediction labelled kind=fact",
+      "claim_location": "final/claims.json, claim SS-015, kind fact",
+      "prose_location": "final/synthesis.md section 5.2",
+      "source_path": "final/evidence/bis-macro-model-20261002.json",
+      "measured": {
+        "ledger_kind": "fact",
+        "source_wording": "Calibrated to the U.S., the model predicts that widespread stablecoin adoption modestly reduces long-run output",
+        "prose_treatment": "Correctly described in the prose as a calibrated model, not an observation",
+        "other_model_claims_in_ledger": "SS-007 and SS-008 are also empirical estimates from publisher abstracts and are labelled fact",
+        "ledger_kinds_present": ["fact", "inference", "hypothesis", "scenario"]
+      },
+      "why_it_matters": "The record's own label scheme defines fact as a verbatim passage in a stored capture supporting it, so a model prediction can be a fact about what the paper predicts. But SS-015's claim sentence is phrased in the model's own predictive voice, which reads as a statement about the world rather than about the model, and SS-007 has the same shape. The prose handles both correctly; the ledger labels do not carry that distinction on their own.",
+      "correction": "Either relabel SS-015, SS-007 and SS-008 with an explicit model_result or estimate sub-kind, or amend the fact definition in synthesis.md's label legend to say that a fact may be a source's own stated model prediction or econometric estimate, which is not thereby an observed outcome. The second is cheaper and keeps the ledger stable.",
+      "status": "measured"
+    }
+  ],
+  "checked_claim_ids": [
+    {
+      "id": "SS-001",
+      "verdict": "supported, scope correction needed",
+      "note": "Passage verbatim in kc-fed-stablecoin-treasury.json. The explicitly conditional framing is correct and well scoped. The Continuation note attached to this claim is under-scoped; see F-03."
+    },
+    {
+      "id": "SS-002",
+      "verdict": "supported",
+      "note": "The internal 0.50 minus 0.08 equals 0.42 versus stated 0.30 gap is real and recomputed here from the capture's own figures. Correctly labelled a consistency check on the source rather than a measured outcome."
+    },
+    {
+      "id": "SS-005",
+      "verdict": "supported but materially under-scoped",
+      "note": "The 0.20 figure is verbatim in the reader excerpt and 0.08 does not appear there. The claim's own continuation note omits that the same divergence includes the bank Treasury share and the loan-contraction percentage, and the record's framing of which version is better supported is inverted; see F-03 and F-07."
+    },
+    {
+      "id": "SS-006",
+      "verdict": "supported",
+      "note": "Fed FEDS Note passage verbatim. Correctly framed as conditional mechanisms rather than observed funding shares, and the synthesis uses it that way."
+    },
+    {
+      "id": "SS-007",
+      "verdict": "supported",
+      "note": "BIS WP 1270 abstract verbatim. Model estimate labelled as such; see F-14 on the kind label."
+    },
+    {
+      "id": "SS-008",
+      "verdict": "supported",
+      "note": "BIS WP 1219 abstract verbatim. The opposite-sign response claim matches the abstract's own wording. The synthesis correctly refuses to read it as purchaser-level funding data."
+    },
+    {
+      "id": "SS-009",
+      "verdict": "supported",
+      "note": "NY Fed SR 1073 abstract verbatim, including that stablecoin flows tend to happen within blockchains. Correctly scoped to within-stablecoin flows."
+    },
+    {
+      "id": "SS-014",
+      "verdict": "supported",
+      "note": "SEC. 20 effective-date text verbatim in the enrolled capture. I also confirmed section 3(b)(1)'s separate three-year offer/sale prohibition in the same capture, which the claim and prose rely on and which is present."
+    },
+    {
+      "id": "SS-015",
+      "verdict": "supported with label caveat",
+      "note": "BIS WP 1363 abstract verbatim. The prose treats it as a calibrated model; the ledger labels it fact; see F-14."
+    },
+    {
+      "id": "SS-063",
+      "verdict": "supported but incomplete against in-record evidence",
+      "note": "The OCC order PDF text is genuine and the preliminary-conditional wording is verbatim and correctly narrowed. However final/evidence/cnbc-circle-occ-charter.json reports a July 10, 2026 Circle approval under a different bank name and is cited nowhere; see F-04."
+    },
+    {
+      "id": "SS-064",
+      "verdict": "supported",
+      "note": "Circle 10-Q text verbatim; I confirmed the Coinbase allocation formula and both the $324.6 million quarterly and $655.3 million half-year distribution costs in the capture. The claim correctly declines to call it a universal rate or to settle the Open Standard comparison."
+    },
+    {
+      "id": "SS-071",
+      "verdict": "supported with attribution defect",
+      "note": "The count-versus-value denominator correction is correct and is the strongest single improvement in the continuation. However the as_of date is not in the cited capture, and a second BeInCrypto capture supplies it plus a competing $60B denominator; see F-06."
+    },
+    {
+      "id": "SS-101",
+      "verdict": "supported and correctly labelled",
+      "note": "Hypothesis with an explicit, valid falsifier and an explicit rejection of supply growth or flat integration count as a falsifier. The prose scale comparison around it understates the gap; see F-08."
+    },
+    {
+      "id": "SS-102",
+      "verdict": "supported",
+      "note": "Scenario arithmetic checks: 650bn times 0.42 is 273bn and 650bn times 0.30 is 195bn, both recomputed. Correctly labelled scenario arithmetic on a contested source figure, with no forecast asserted."
+    },
+    {
+      "id": "SS-085",
+      "verdict": "figures correct, sourcing defective",
+      "note": "Reviewed because it is the claim carrying the x402 low end that section 1.6 promotes as evidenced. See F-01."
+    }
+  ],
+  "whole_synthesis_scan_for_unsupported_strong_conclusions": {
+    "method": "Read all 499 lines of synthesis.md and checked each strong verb or conclusive construction against a cited capture.",
+    "strong_conclusions_found_and_their_status": [
+      "Both verifiers passing is correctly described in limitations-and-next-update.md as not establishing semantic support; the synthesis header also says the continuation has mechanical verification, not substantive review. No overclaim here.",
+      "The IMF 18 percent versus the tool's minus 18.57 percent is correctly characterised as ordinary rounding, not corrected. Supported.",
+      "The 95-to-99 percent non-payment figure is excluded outright on evidence. Supported.",
+      "The x402 range framing as a scope problem rather than an arithmetic problem is the strongest editorial call in the synthesis and is mostly correct, but the specific residual reasoning is defective; see F-02.",
+      "The Circle-versus-Open-Standard conclusion is held at inference and superiority is left UNRESOLVED. This is the best-handled section in the document and I found no overclaim in it.",
+      "The OUSD reserve-page arithmetic foots exactly and the composition percentages check out against the capture.",
+      "The RWA section correctly refuses to convert low transfers into economic idleness and keeps count and value denominators separate. Sound, subject to the attribution defect in F-06.",
+      "The regulatory section correctly refuses to call every GENIUS duty operative and keeps historical and current authorisation apart. Sound, subject to F-04."
+    ],
+    "conclusion": "I found no unsupported strong conclusion in the synthesis that rests on a source misreading. The defects found are in sourcing provenance (F-01), one internal inconsistency in the record's own arithmetic reasoning (F-02), under-scoped version conflict (F-03), undisclosed contradicting in-record evidence (F-04), citation paths (F-05) and magnitude language (F-08). The operator's permission for inconclusive narratives with citations is being honoured: every inconclusive narrative I checked names its evidence, competing explanation and missing test."
+  },
+  "commands_run": [
+    "read_file final/claims.json",
+    "read_file final/synthesis.md",
+    "read_file final/limitations-and-next-update.md",
+    "python3 final/evidence/verify_captures.py (exit 0, PASS, 49 of 49 verbatim)",
+    "python3 final/evidence/verify_continuation.py (exit 0, all three checks PASS)",
+    "python3 sentence-level diff of kc-fed-pdf-reader-20261002.json against kc-fed-stablecoin-treasury.json",
+    "grep of final/evidence/x402scan.html for the SS-085 figures, both formatted and unformatted",
+    "grep of synthesis.md, limitations-and-next-update.md, operator-handoff.md and claims.json for Circle National Trust and related CNBC strings",
+    "python3 manifest coverage check of claim source_paths against manifest copy and companion lists",
+    "python3 recomputation of the x402 residual under three scope combinations",
+    "python3 recomputation of Circle ratios, the SS-102 scenario, SS-071 denominators and the KC Fed bank-share derivation",
+    "sha256sum comparison of firecrawl-recovery and final-bunny-routed copies against the manifest captures"
+  ],
+  "external_retrieval_used": false,
+  "files_created": [
+    "final/continuation-review.md",
+    "final/continuation-review-findings.json"
+  ],
+  "files_modified": [],
+  "edits_to_existing_record_files": "none",
+  "commit_or_push": "none"
+}

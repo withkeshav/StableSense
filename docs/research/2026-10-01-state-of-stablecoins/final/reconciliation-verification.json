@@ -1,0 +1,29 @@
+{
+  "checks": [
+    {
+      "command": "python3 docs/research/2026-10-01-state-of-stablecoins/final/evidence/verify_continuation.py && python3 docs/research/2026-10-01-state-of-stablecoins/final/evidence/verify_captures.py && python3 docs/research/2026-10-01-state-of-stablecoins/final/evidence/test_reconciliation.py",
+      "output": "MANIFEST PASS: 37 capture entries; 15 continuation companions; 0 mismatches\nDETERMINISTIC BUILD PASS: two rebuilds; claims, manifest, arithmetic byte-identical\nCOVERAGE PASS: 53 claims cite registered origin/reader captures\nUNUSED CAPTURES: [\"final/evidence/bitcoinmagazine-ousd-launch.json\", \"final/evidence/imf-wp2652-page.json\", \"final/evidence/metamask-what-is-x402.json\", \"final/evidence/openstandard-introducing-open-usd.html\", \"final/evidence/openstandard-partners.json\", \"final/evidence/tbac-digital-money-20261002.json\"]\nEXCERPT LIMIT: SS-071 Reader excerpt may be token-compressed or truncated; no origin bytes obtained; cache freshness not established.\nEXCERPT LIMIT: SS-005 Reader excerpt may be token-compressed or truncated; no origin bytes obtained; cache freshness not established.\nEXCERPT LIMIT: SS-103 Reader excerpt may be token-compressed or truncated; no origin bytes obtained; cache freshness not established.\nPROSE/ARITHMETIC PASS: references resolve, no authored em/en dashes, new calculations match\n{\n \"measured_by\": \"final/evidence/verify_captures.py\",\n \"record_root\": \"/mnt/ai-archive/other-tools/stablesense/docs/research/2026-10-01-state-of-stablecoins\",\n \"total_claims\": 53,\n \"unique_ids\": 53,\n \"duplicate_ids\": [],\n \"claims_with_resolved_capture\": 53,\n \"unresolved_source_path\": [],\n \"passage_verbatim_verified\": 53,\n \"passage_absent_or_partial\": [],\n \"unmeasurable_capture\": [],\n \"capture_is_authored_digest_not_page_text\": [],\n \"overall\": \"PASS\"\n}\nwrote /mnt/ai-archive/other-tools/stablesense/docs/research/2026-10-01-state-of-stablecoins/final/verification.json\n......\n----------------------------------------------------------------------\nRan 6 tests in 0.103s\n\nOK",
+      "exit_code": 0,
+      "error": null
+    },
+    {
+      "command": "npm test",
+      "output": "> stablesense@3.7.1 test\n> vitest run\n\n\n RUN  v4.1.10 /mnt/ai-archive/other-tools/stablesense\n\n\n Test Files  12 passed (12)\n      Tests  203 passed (203)\n   Start at  19:12:31\n   Duration  145ms (transform 251ms, setup 0ms, import 417ms, tests 73ms, environment 1ms)",
+      "exit_code": 0,
+      "error": null
+    },
+    {
+      "command": "npm run build",
+      "output": "> stablesense@3.7.1 build\n> vite build\n\nvite v8.2.1 building client environment for production...\n\rtransforming...\u2713 59 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                   3.41 kB \u2502 gzip:  1.28 kB\ndist/assets/index-Bzm3dLww.css   67.81 kB \u2502 gzip: 13.63 kB\ndist/assets/index-CBNRaZpy.js   168.91 kB \u2502 gzip: 55.06 kB\ndist/assets/chart-BpxKVdk1.js   171.33 kB \u2502 gzip: 59.66 kB\n\n\u2713 built in 78ms",
+      "exit_code": 0,
+      "error": null
+    },
+    {
+      "command": "git diff --check; git diff --exit-code -- src package.json package-lock.json index.html; git branch --show-current; git rev-list --left-right --count origin/main...HEAD",
+      "output": "main\n0\t4",
+      "exit_code": 0,
+      "error": null
+    }
+  ],
+  "limitation": "Mechanical integrity and regression checks, not semantic verification or current legal authorization. Origin/main comparison uses the locally recorded ref; no fetch."
+}

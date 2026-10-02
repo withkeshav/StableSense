@@ -532,7 +532,10 @@ def main():
             )
             manifest[-1] = rec
 
-    json.dump({"declared_count": len(COPIES), "copied": manifest},
+    from weak_section_updates import extend_manifest, update_arithmetic
+    manifest = extend_manifest(manifest, EVDIR)
+    update_arithmetic(ARITH)
+    json.dump({"declared_count": len(manifest), "copied": manifest},
               open(os.path.join(FINAL, "evidence-manifest.json"), "w"), indent=1)
     json.dump({"tool": "final/evidence/build_claims.py", "computed": ARITH},
               open(os.path.join(EVDIR, "arithmetic.json"), "w"), indent=1)
@@ -543,7 +546,8 @@ def main():
 
 if __name__ == "__main__":
     texts = main()
-    ledger = build_ledger(texts)
+    from weak_section_updates import apply_updates
+    ledger = apply_updates(build_ledger(texts), EVDIR)
     json.dump(ledger, open(os.path.join(FINAL, "claims.json"), "w"), indent=1)
     ok = sum(1 for c in ledger if c["passage_finder_status"] == "SLICED_VERBATIM")
     print("claims:", len(ledger), "| verbatim sliced:", ok)

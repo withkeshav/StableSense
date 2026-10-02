@@ -6,8 +6,6 @@
   "kc_internal_gap": 0.12,
   "ousd_pool_4_5pct": 21080042.95,
   "ousd_pool_per_200": 105400.21,
-  "x402_arbitrum_bridge_excluded": 2525250000.0,
-  "x402_residual_if_subtracted": 64750000.0,
   "imf_scaled_pct": -18.57,
   "circle_distribution_to_reserve_income_q2": 0.6146,
   "circle_distribution_to_reserve_income_6m": 0.6179,
@@ -18,6 +16,14 @@
   "x402scan_total_usd": 974215.14,
   "x402scan_avg_usd_per_txn": 0.079247,
   "x402scan_buyers": 27467,
-  "x402scan_sellers": 38519
+  "x402scan_sellers": 38519,
+  "rwa_zero_transfer_count_share_pct": 70.6,
+  "rwa_zero_transfer_value_share_pct_rounded_inputs": 55.67,
+  "kc_pdf_component_net": 0.3,
+  "x402_arbitrum_contract_rounded_inputs": 2271750000.0,
+  "x402_five_chain_residual_rounded_inputs": 318250000.0,
+  "x402_arbitrum_only_residual_rounded_inputs": 58250000.0,
+  "x402_incorrect_five_chain_share_residual": 64750000.0,
+  "rwa_zero_transfer_share_of_landing_market_pct": 54.83
  }
 }
