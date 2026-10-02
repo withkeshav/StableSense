@@ -21,7 +21,7 @@
     "vite": "^8.0.10",
     "vitest": "^4.1.10"
   },
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "Apache-2.0",
   "author": "Keshav Maheshwari (https://www.withkeshav.com)",
   "engines": {
     "node": ">=18"

@@ -1,7 +1,7 @@
 # StableSense
 
 ![Version](https://img.shields.io/badge/version-3.7.1-2A6FDB)
-![License: Source-Available](https://img.shields.io/badge/license-source--available-blue)
+![Code license: Apache-2.0](https://img.shields.io/badge/code%20license-Apache--2.0-blue)
 ![Tests](https://img.shields.io/badge/tests-203%20passing-green)
 ![Node](https://img.shields.io/badge/node-%3E%3D18-339933)
 
@@ -9,13 +9,12 @@ Stablecoin intelligence platform covering **USDT, USDC, DAI, USDe and PYUSD**: p
 
 Created by [Keshav Maheshwari](https://www.withkeshav.com)
 
-> **Source-available.** Free for personal / non-commercial use. Modification is **not** permitted. See [LICENSE](./LICENSE).
+> **Open-source software under Apache-2.0.** Use, modification and redistribution, including commercial use, are permitted under [LICENSE](./LICENSE). Preserve required notices and identify changes to modified files.
 >
-> The software is source-available. The **research aims to be open**. The long-term goal for the
-> [State of Stablecoins research hub](https://stablesense.withkeshav.com/research/) is for it to become a
-> shared, fully-cited reference on stablecoins that anyone can check, correct and build on: ideally, open
-> research for stablecoins. That part is a direction, not a claim about today, and it does not change the
-> license on the code. Corrections, sources and suggestions are welcome via
+> The [State of Stablecoins research hub](https://stablesense.withkeshav.com/research/) is public.
+> Its original prose, figures and datasets have separate terms in [RESEARCH-LICENSE](./RESEARCH-LICENSE);
+> the code license does not grant open reuse rights to that content or to third-party source material.
+> Corrections, sources and suggestions are welcome via
 > [GitHub Issues](https://github.com/withkeshav/StableSense/issues).
 
 ## Features
@@ -204,7 +203,7 @@ The frontend is static files with an optional AI base URL: deploy `dist/` anywhe
 
 ## Contributing
 
-The code is source-available rather than open-source, so code changes and forks are not being accepted. What is genuinely wanted is corrections:
+The software is licensed under Apache-2.0, which permits code changes and forks. A permitted fork does not imply endorsement or guarantee that a proposed change will be incorporated. Research corrections and suggestions are also welcome:
 
 - **A wrong figure in the research hub.** Open an [issue](https://github.com/withkeshav/StableSense/issues) with the figure, the section, and the source that contradicts it. Corrections are welcome and are checked against the primary source before being applied.
 - **A better or missing source.** Especially a primary source replacing a secondary one.
@@ -214,6 +213,6 @@ The research method behind the hub (independent research passes, every claim sou
 
 ## License
 
-**StableSense - Source-Available License.** Free to use, run, and install for personal, non-commercial purposes. This is **not** an open-source (OSI) license: modification and redistribution of modified versions are not permitted; verbatim redistribution with attribution is allowed. Commercial use or modification requires a separate license from the author. See [LICENSE](./LICENSE).
+**Software: Apache License 2.0.** Commercial use, modification and redistribution are permitted subject to its terms, including preservation of required notices and identification of changed files. See [LICENSE](./LICENSE) and [NOTICE](./NOTICE). No permission is granted to imply endorsement through StableSense branding. The software is provided without warranties as stated in the license.
 
-Note the split between the two halves of this project. The **software** is source-available as described above. The **research** is intended to move toward being openly reusable and correctable. If that distinction is ever formalized with a separate license for the research content, it will be stated here explicitly rather than implied.
+**Research content:** original prose, figures and datasets under `research/` and `docs/research/` remain under the existing terms in [RESEARCH-LICENSE](./RESEARCH-LICENSE). Software source files in those directories use Apache-2.0. Third-party software and source materials retain their own rights. No separate open research license has been adopted.
