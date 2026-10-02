@@ -37,7 +37,11 @@ test('fails the build for missing registry, malformed records or missing HTML ma
   writeFileSync(registry, '[]');
   const plugin = contributorsPlugin(registry);
   plugin.buildStart.call({ addWatchFile() {} });
-  assert.throws(() => plugin.transformIndexHtml('<main></main>'), /marker/);
+  // A research page that legitimately carries no contributor records (the
+  // changelog) passes through. The hub must still fail the build when its
+  // marker is gone, so the marker is required by FILENAME, not by absence.
+  assert.throws(() => plugin.transformIndexHtml('<main></main>', { filename: '/srv/app/research/index.html' }), /marker/);
+  assert.equal(plugin.transformIndexHtml('<main></main>', { filename: '/srv/app/research/changelog/index.html' }), '<main></main>');
 });
 
 test('preserves literal dollar replacement tokens in contribution text', () => {
