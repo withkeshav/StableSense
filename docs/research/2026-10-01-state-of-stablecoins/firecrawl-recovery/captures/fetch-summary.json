@@ -1,0 +1,207 @@
+{
+  "fetchedAt": "2026-10-01T13:32:58.006Z",
+  "totalUrls": 22,
+  "successful": 19,
+  "failed": 0,
+  "creditsBefore": 10764,
+  "creditsAfter": 10691,
+  "creditsUsed": 73,
+  "results": [
+    {
+      "key": "reap-global-stablecoin-stats",
+      "url": "https://reap.global/blog/stablecoin-statistics-2026",
+      "success": true,
+      "statusCode": 200,
+      "markdownLength": 40921,
+      "htmlLength": 105479,
+      "capturedAt": "2026-10-01T13:32:36.993Z"
+    },
+    {
+      "key": "bloomberg-usdc-volume",
+      "url": "https://www.bloomberg.com/news/articles/2026-01-08/stablecoin-transactions-rose-to-record-33-trillion-led-by-usdc",
+      "success": true,
+      "statusCode": 200,
+      "markdownLength": 4064,
+      "htmlLength": 58239,
+      "capturedAt": "2026-10-01T13:32:40.737Z"
+    },
+    {
+      "key": "bcg-stablecoin-payments",
+      "url": "https://www.bcg.com/assets/2026/white-paper-stablecoin-payments-truth-behind-numbers.pdf",
+      "success": true,
+      "statusCode": 200,
+      "markdownLength": 29345,
+      "htmlLength": 30617,
+      "capturedAt": "2026-10-01T13:32:36.385Z"
+    },
+    {
+      "key": "congress-genius-act",
+      "url": "https://www.congress.gov/bill/119th-congress/senate-bill/1582/text",
+      "success": true,
+      "statusCode": 200,
+      "markdownLength": 140823,
+      "htmlLength": 488996,
+      "capturedAt": "2026-10-01T13:32:38.829Z"
+    },
+    {
+      "key": "occ-genius-act-nprm",
+      "url": "https://www.occ.gov/news-issuances/bulletins/2026/bulletin-2026-3.html",
+      "success": true,
+      "statusCode": 200,
+      "markdownLength": 8677,
+      "htmlLength": 23231,
+      "capturedAt": "2026-10-01T13:32:36.360Z"
+    },
+    {
+      "key": "openstandard-company-structure",
+      "url": "https://joinopenstandard.com/blog/company-structure-and-leadership",
+      "success": true,
+      "statusCode": 200,
+      "markdownLength": 4237,
+      "htmlLength": 5904,
+      "capturedAt": "2026-10-01T13:32:44.697Z"
+    },
+    {
+      "key": "solanacompass-ousd-solana",
+      "url": "https://solanacompass.com/news/open-standards-ousd-stablecoin-goes-live-on-solana-with-free-11-minting-for-businesses",
+      "success": true,
+      "statusCode": 200,
+      "markdownLength": 39737,
+      "htmlLength": 93975,
+      "capturedAt": "2026-10-01T13:32:41.898Z"
+    },
+    {
+      "key": "spark-money-rwa-tokenization",
+      "url": "https://www.spark.money/research/rwa-tokenization-bitcoin-blockchain",
+      "success": true,
+      "statusCode": 200,
+      "markdownLength": 22206,
+      "htmlLength": 26532,
+      "capturedAt": "2026-10-01T13:32:44.662Z"
+    },
+    {
+      "key": "cryptorank-rwa-tokenization",
+      "url": "https://cryptorank.io/news/feed/d6bff-rwa-tokenization-news-today",
+      "success": true,
+      "statusCode": 200,
+      "markdownLength": 21615,
+      "htmlLength": 223716,
+      "capturedAt": "2026-10-01T13:32:45.344Z"
+    },
+    {
+      "key": "tether-q1-2026-attestation",
+      "url": "https://tether.io/news/tether-posts-1-04b-q1-2026-profit-despite-highly-volatile-global-markets-reaches-all-time-highs-8-23b-reserve-buffer-and-maintains-u-s-treasury-heavy-backing/",
+      "success": false,
+      "markdownLength": 0,
+      "htmlLength": 0,
+      "capturedAt": "2026-10-01T13:32:41.497Z"
+    },
+    {
+      "key": "spark-money-stablecoin-treasury",
+      "url": "https://www.spark.money/research/stablecoin-treasury-yield-impact",
+      "success": true,
+      "statusCode": 200,
+      "markdownLength": 19019,
+      "htmlLength": 22171,
+      "capturedAt": "2026-10-01T13:32:47.056Z"
+    },
+    {
+      "key": "kansascityfed-stablecoin-treasury",
+      "url": "https://www.kansascityfed.org/research/economic-bulletin/stablecoins-could-increase-treasury-demand-but-only-by-reducing-demand-for-other-assets/",
+      "success": true,
+      "statusCode": 200,
+      "markdownLength": 17437,
+      "htmlLength": 53805,
+      "capturedAt": "2026-10-01T13:32:48.253Z"
+    },
+    {
+      "key": "imf-stablecoin-shocks-wp2644",
+      "url": "https://www.imf.org/-/media/files/publications/wp/2026/english/wpiea2026044-source-pdf.pdf",
+      "success": true,
+      "statusCode": 200,
+      "markdownLength": 67507,
+      "htmlLength": 71033,
+      "capturedAt": "2026-10-01T13:32:48.252Z"
+    },
+    {
+      "key": "nodit-x402-protocol",
+      "url": "https://blog.nodit.io/ai-agents-that-pay-for-themselves-how-the-x402-protocol-works/",
+      "success": true,
+      "statusCode": 200,
+      "markdownLength": 27510,
+      "htmlLength": 36026,
+      "capturedAt": "2026-10-01T13:32:49.320Z"
+    },
+    {
+      "key": "metamask-what-is-x402",
+      "url": "https://metamask.io/news/what-is-x402",
+      "success": true,
+      "statusCode": 200,
+      "markdownLength": 17286,
+      "htmlLength": 56458,
+      "capturedAt": "2026-10-01T13:32:46.277Z"
+    },
+    {
+      "key": "bitcoinmagazine-ousd-launch",
+      "url": "https://bitcoinmagazine.com/news/visa-mastercard-and-over-140-open-usd",
+      "success": true,
+      "statusCode": 200,
+      "markdownLength": 18750,
+      "htmlLength": 82209,
+      "capturedAt": "2026-10-01T13:32:51.800Z"
+    },
+    {
+      "key": "openstandard-partners",
+      "url": "https://joinopenstandard.com/partners/",
+      "success": true,
+      "statusCode": 200,
+      "markdownLength": 3348,
+      "htmlLength": 23035,
+      "capturedAt": "2026-10-01T13:32:51.089Z"
+    },
+    {
+      "key": "mordor-stablecoin-market",
+      "url": "https://www.mordorintelligence.com/industry-reports/stablecoin-market",
+      "success": true,
+      "statusCode": 200,
+      "markdownLength": 44988,
+      "htmlLength": 111058,
+      "capturedAt": "2026-10-01T13:32:51.452Z"
+    },
+    {
+      "key": "forbes-stablecoins-ach",
+      "url": "https://www.forbes.com/sites/digital-assets/2026/04/20/rails-have-shifted-stablecoins-topped-ach-at-75-trillion-a-month/",
+      "success": true,
+      "statusCode": 200,
+      "markdownLength": 21121,
+      "htmlLength": 70934,
+      "capturedAt": "2026-10-01T13:32:57.000Z"
+    },
+    {
+      "key": "paulhastings-genius-act-guide",
+      "url": "https://www.paulhastings.com/insights/crypto-policy-tracker/the-genius-act-a-comprehensive-guide-to-us-stablecoin-regulation",
+      "success": true,
+      "statusCode": 200,
+      "markdownLength": 36181,
+      "htmlLength": 107953,
+      "capturedAt": "2026-10-01T13:32:52.421Z"
+    },
+    {
+      "key": "cnbc-circle-occ-charter",
+      "url": "https://www.cnbc.com/2026/07/10/circle-gets-an-occ-bank-charter-as-stablecoin-competition-heats-up-shares-surge-14percent.html",
+      "success": false,
+      "markdownLength": 0,
+      "htmlLength": 0,
+      "capturedAt": "2026-10-01T13:32:57.730Z"
+    },
+    {
+      "key": "imf-stablecoins-payments-2026",
+      "url": "https://www.imf.org/en/publications/wp/issues/2026/03/20/stablecoins-and-the-future-of-payments-evidence-from-financial-markets-574831",
+      "success": false,
+      "markdownLength": 0,
+      "htmlLength": 0,
+      "capturedAt": "2026-10-01T13:32:57.704Z"
+    }
+  ],
+  "errors": []
+}

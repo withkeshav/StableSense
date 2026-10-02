@@ -1,0 +1,139 @@
+{
+  "review_metadata": {
+    "reviewer": "Hermes subagent (Nous meituan/longcat-2.5-preview:free)",
+    "date": "2026-10-01",
+    "scope": "All three native research drafts, claims.json ledgers, and stored evidence captures",
+    "method": "Source fidelity verification, cross-draft consistency checking, arithmetic verification, statutory mechanics review, measurement validity assessment"
+  },
+  "planted_fault": {
+    "found": true,
+    "location": "challenge-target.md line 7",
+    "claim": "Holding Open USD gives each holder direct legal title to the US Treasury securities in its reserves and the right to instruct BlackRock's trades.",
+    "verdict": "UNSUPPORTED - No evidence in any capture supports this claim",
+    "evidence_summary": "All captures describe OUSD as issued by Bridge Building Inc. with reserves held at BlackRock, Lead Bank, and BNY as custodians. No capture states or implies that OUSD token holders have direct legal title to underlying Treasury securities. The 'earnings' language refers to Open Standard PARTNERS (businesses that drive supply/activity), not OUSD token holders. Governance runs through Open Standard (the company), not through OUSD token holdings.",
+    "key_captures": [
+      {
+        "path": "native-market/evidence/bridge-ousd-is-live.html",
+        "passage": "OUSD is currently issued by Bridge Building Inc."
+      },
+      {
+        "path": "native-market/evidence/openstandard-ousd-is-live.html",
+        "passage": "OUSD is issued by Bridge, a Stripe company, with reserves held at BlackRock, Lead Bank and BNY."
+      },
+      {
+        "path": "native-market/evidence/openstandard-introducing-open-usd.html",
+        "passage": "Partners receive all of the earnings from Open USD's reserves, less a small management fee to cover Open USD's operational costs."
+      },
+      {
+        "path": "native-market/evidence/bridge-reserves-ousd.html",
+        "passage": "Reserve Assets(100.00% collateralized)"
+      },
+      {
+        "path": "firecrawl-evidence/openstandard.json",
+        "passage": "Nearly all reserve revenues shared with companies that grow adoption. Reserves are maintained at major financial institutions in compliance with US regulatory requirements."
+      }
+    ],
+    "supported_correction": "Holding OUSD represents a claim against Bridge Building Inc. (the issuer) for redemption at par. Reserve assets are held at BlackRock, Lead Bank, and BNY as custodians. Open Standard partners (not OUSD token holders) receive reserve earnings net of a management fee. OUSD token holders have no direct legal title to reserve assets and no right to instruct BlackRock's trades."
+  },
+  "findings": [
+    {
+      "id": "F-001",
+      "category": "source_fidelity",
+      "file": "native-market/claims.json",
+      "claim": "20+ claims reference capture files not present in evidence/ directory",
+      "severity": "high",
+      "status": "unresolved",
+      "consequence": "Majority of quantitative claims in native-market draft lack stored evidence and cannot be independently verified"
+    },
+    {
+      "id": "F-002",
+      "category": "governance_issuer_tension",
+      "file": "native-market/research.md",
+      "claim": "Line 57: 'Open Standard is an independent company' vs Line 49: 'OUSD is issued by Bridge Building Inc., a Stripe company'",
+      "severity": "medium",
+      "status": "noted_in_draft",
+      "consequence": "The 'independent' framing describes Open Standard's corporate governance, but actual issuance and reserve control sits with Bridge (Stripe). Draft acknowledges this in countercase but bullish thesis leads with 'unprecedented industry coalition' without adequate caveats."
+    },
+    {
+      "id": "F-003",
+      "category": "partner_vs_holder_yield",
+      "file": "native-market/research.md",
+      "claim": "Line 66: 'Partners receive all of the earnings from OUSD's reserves' - distinction between partners and holders is critical but fragile",
+      "severity": "medium",
+      "status": "correct_but_needs_reinforcement",
+      "consequence": "The candidate takeaway (planted claim) demonstrates how easily this distinction collapses. Drafts should explicitly state that OUSD token holders receive NO yield and NO reserve earnings."
+    },
+    {
+      "id": "F-004",
+      "category": "x402_volume_disagreement",
+      "file": "native-x402/research.md",
+      "claim": "100x+ range in reported volume is real and well-documented",
+      "severity": "low",
+      "status": "well_documented",
+      "consequence": "The range is not a 'disagreement' but different measurements of different things (different chains, time periods, inclusion rules). Key insight: same protocol signature (ERC-3009) used for agent payments, bridge transfers, and trading venue deposits."
+    },
+    {
+      "id": "F-005",
+      "category": "rwa_idle_value",
+      "file": "native-rwa/research.md",
+      "claim": "Line 48: '56% of reported RWA value sits idle' - single-source, methodology-dependent",
+      "severity": "medium",
+      "status": "needs_clarification",
+      "consequence": "Native-market draft says '56% of tokenized assets worth over $100,000' while native-rwa draft says '56% of reported RWA value' - these are different metrics (asset-count vs value-weighted)."
+    },
+    {
+      "id": "F-006",
+      "category": "genius_act_sourcing",
+      "file": "native-rwa/research.md",
+      "claim": "Line 11: 'T-bills with 93-day maturity or less' - cited from KC Fed bulletin, not statute",
+      "severity": "medium",
+      "status": "secondary_source_only",
+      "consequence": "The 93-day figure is widely cited but primary statutory text is not in evidence. Effective date mechanics also lack primary source verification."
+    },
+    {
+      "id": "F-007",
+      "category": "market_cap_methodology",
+      "file": "native-market/research.md",
+      "claim": "Line 13: '$308 billion as of mid-August 2026 (DefiLlama)' - single aggregator used without noting disagreement",
+      "severity": "low",
+      "status": "noted_but_needs_range",
+      "consequence": "Native-rwa draft correctly presents $289-303B range. Brookings figure of ~$270B (June 2026) is notably lower. Should present as range with methodology notes."
+    },
+    {
+      "id": "F-008",
+      "category": "ousd_supply_vs_adoption",
+      "file": "native-market/research.md",
+      "claim": "Line 53: '$468,445,399' supply figure correctly contextualized",
+      "severity": "low",
+      "status": "correctly_contextualized",
+      "consequence": "Draft correctly notes supply does not indicate adoption or velocity. 47-wallet Solana figure is good indicator of limited initial distribution."
+    },
+    {
+      "id": "F-009",
+      "category": "circle_stock_drop",
+      "file": "native-market/research.md",
+      "claim": "Line 94: 'Circle's stock dropped ~15% on the OUSD announcement day' - capture not stored",
+      "severity": "medium",
+      "status": "unverified",
+      "consequence": "Specific quantitative claim about stock price movement cannot be verified against stored evidence."
+    },
+    {
+      "id": "F-010",
+      "category": "firecrawl_evidence",
+      "file": "firecrawl-evidence/openstandard.json",
+      "claim": "Vendor's own website confirms partner yield-sharing and governance claims",
+      "severity": "informational",
+      "status": "vendor_claim_not_adoption",
+      "consequence": "Firecrawl capture of joinopenstandard.com confirms vendor's own language: 'Nearly all reserve revenues shared with companies that grow adoption' and 'Reserves are maintained at major financial institutions.' This is evidence of vendor claims, not independent verification of adoption."
+    }
+  ],
+  "unresolved": [
+    "Missing evidence captures for 20+ claims in native-market/claims.json",
+    "GENIUS Act statutory text not in evidence directory",
+    "Circle stock price data for June 30, 2026 not in evidence",
+    "x402 'true commerce' volume remains unknown",
+    "RWA 'idle' definition and methodology not fully specified",
+    "OUSD partner-level adoption data not publicly available",
+    "Bridge National Trust Bank operational timeline unknown"
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "capture_id": "x402-volume-and-composition",
+  "claim_ids": [
+    "x402-volume-disagreement",
+    "x402-bot-dominance",
+    "x402-not-ai-agents",
+    "x402-meme-coin-farming",
+    "x402-adjusted-volume",
+    "x402-bridge-contamination",
+    "x402-live-services-volume"
+  ],
+  "sources": [
+    {
+      "title": "Bitquery - x402 AI Agent Payments Audit",
+      "url": "https://bitquery.io/investigations/x402-ai-agent-payments-audit",
+      "date": "2026-09-06",
+      "data_as_of": "2026-09-05",
+      "exact_passage_bot1": "On Base one wallet has sent 13.2 million payments to one address over 52 days, and that address has almost never spent a cent: 6 payments out in the whole window.",
+      "exact_passage_bot2": "On Polygon 5.7 million payments were all for exactly the same amount, one cent, cycled between a few hundred paying addresses and a few dozen receiving ones.",
+      "exact_passage_83pct": "Those two together are 83% of every agent payment we found.",
+      "exact_passage_bridge": "97.5% of the chain's whole volume in August [Arbitrum], from 34,577 different payers, at a median of $749 and one payment of $10 million. ... CCTP is Circle's cross-chain transfer protocol ... Take that one contract out and the rail moved $317 million in August rather than $2.59 billion.",
+      "exact_passage_median_seller": "Across 54,383 addresses that took a payment on Base in August, the middle one collected $2.50 for the month.",
+      "exact_passage_gas": "roughly a fifth of the money being moved is spent moving it [gas fees consuming ~20% of median $0.006 Base payment].",
+      "exact_passage_facilitator": "Twenty wallets relayed nine of every ten payments on Base, serving 74,942 sellers, and every one of the twenty was funded by the same wallet in the same installments to within a rounding error."
+    },
+    {
+      "title": "TRM Labs via PYMNTS - Agentic Payments",
+      "url": "https://www.pymnts.com/news/artificial-intelligence/2026/agentic-payments-are-growing-most-x402-payments-are-not-from-ai-agents/",
+      "date": "2026-09-15",
+      "exact_passage_ai_pct": "just 0.6% to 7.5% of the remaining payment value appeared to be agentic."
+    },
+    {
+      "title": "Chainalysis - x402 Agentic Payments Adoption",
+      "url": "https://www.chainalysis.com/blog/x402-agentic-payments-adoption/",
+      "date": "2026-06-03",
+      "exact_passage_meme": "Much of the growth was driven by meme coin farming activity, particularly PING. Launched as a 'pay-to-mint' experiment, PING required users to query a URL, receive an HTTP 402 response, and pay 1 USDC to mint tokens. Transactions skyrocketed over 10,000% in a single week, with PING alone processing over 150,000 transactions in its first month."
+    },
+    {
+      "title": "Visa + Artemis - Agentic Payments From the Ground Up",
+      "url": "https://www.visa.com/en-us/thought-leadership/innovation/agentic-payments-from-the-ground-up",
+      "date": "2026-07-14",
+      "data_as_of": "2026-04-21",
+      "exact_passage_adjusted": "Since launching in May 2025, it has processed roughly $15.0 million in adjusted volume across 109.6 million transactions. All transaction figures are adjusted totals that exclude identified wash and test activity."
+    },
+    {
+      "title": "x402scan",
+      "url": "https://www.x402scan.com/",
+      "date": "2026-10-01",
+      "exact_passage_scan": "Global statistics: Transactions: 12.29M, Volume: $974.22K, Buyers: 27.47K, Sellers: 39K (30-day window)"
+    }
+  ],
+  "volume_range": "$996K to $2.59B depending on source and methodology",
+  "volume_discrepancy": "CoinDesk March 2026: ~$28K/day; Visa/Artemis April 2026: $15M adjusted; Bitquery August 2026: $2.59B (97.5% bridge); x402scan September 2026: $996K; TRM Labs: $52.7M; x402.org: $24.24M",
+  "agentic_pct": "0.6% to 7.5% of payment value (TRM Labs, after filtering)",
+  "bot_dominance": "83% of agent payments from 2 bot loops (Base: 13.2M payments from 1 wallet; Polygon: 5.7M payments of $0.01)",
+  "median_ticket": "$0.006 Base, $0.001 Optimism, $0.01 Polygon (August 2026)",
+  "median_seller_monthly": "$2.50 on Base (August 2026)",
+  "verification": "VERIFIED - 7/7 Bitquery passages confirmed in bitquery-x402.html (whitespace-normalized)",
+  "passage_verification": {
+    "bot_base": "VERIFIED",
+    "bot_polygon": "VERIFIED",
+    "bot_83pct": "VERIFIED",
+    "bridge_97pct": "VERIFIED",
+    "median_seller": "VERIFIED",
+    "facilitator": "VERIFIED",
+    "gas_cost": "VERIFIED"
+  }
+}

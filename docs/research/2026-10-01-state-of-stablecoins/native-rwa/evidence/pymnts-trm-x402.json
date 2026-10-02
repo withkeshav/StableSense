@@ -1,0 +1,15 @@
+{
+  "id": "pymnts-trm-x402",
+  "url": "https://www.pymnts.com/news/artificial-intelligence/2026/agentic-payments-are-growing-most-x402-payments-are-not-from-ai-agents/",
+  "source_date": "2026-09-15",
+  "retrieved_at": "2026-10-01",
+  "title": "Most x402 Payments Aren't From AI Agents",
+  "author": "PYMNTS (citing TRM Labs)",
+  "key_passages": [
+    "TRM examined about $52.7 million in value across 198.9 million x402 settlement transactions",
+    "just 0.6% to 7.5% of the remaining payment value appeared to be agentic",
+    "That reduced the original $52.7 million to $25.62 million of likely commerce",
+    "$52.47 million of $52.68 million in settled value, or 99.6%, used USDC"
+  ],
+  "relevance": "Critical counter-evidence: most x402 payments are NOT from AI agents."
+}

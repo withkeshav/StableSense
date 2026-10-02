@@ -1,0 +1,14 @@
+{
+  "id": "franklin-templeton-rwa",
+  "url": "https://www.franklintempleton.lu/articles/2026/digital-assets/revolution-not-evolution-detangling-tokenization-of-rwas",
+  "source_date": "2026-03-26",
+  "retrieved_at": "2026-10-01",
+  "title": "Revolution\u2014Not Evolution: Detangling tokenization of RWAs",
+  "author": "Sandy Kaul, Franklin Templeton",
+  "key_passages": [
+    "Synthetic exposure tokens: Token holders do not possess ownership rights, nor investor protections linked to the underlying assets. Instead, the token holder owns shares of a special purpose vehicle",
+    "Digitally native RWA tokens: Token holders are the official owners of the RWA and, as such, they get the full ownership rights including voting rights",
+    "Digital twin tokens: ownership of the asset is awarded and recorded in traditional, off-chain form"
+  ],
+  "relevance": "Legal structure and holder rights for RWA tokens - three distinct models."
+}

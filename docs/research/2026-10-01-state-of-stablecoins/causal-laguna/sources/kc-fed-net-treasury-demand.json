@@ -1,0 +1,20 @@
+{
+  "capture_id": "kc-fed-net-treasury-demand",
+  "claim_ids": [
+    "kc-fed-net-treasury-demand",
+    "kc-fed-zero-net-effect",
+    "thesis-verdict"
+  ],
+  "source_title": "Federal Reserve Bank of Kansas City - Economic Bulletin",
+  "source_url": "https://www.kansascityfed.org/research/economic-bulletin/stablecoins-could-increase-treasury-demand-but-only-by-reducing-demand-for-other-assets/",
+  "publication_date": "2025-08-08",
+  "data_as_of": "2025-08-08",
+  "retrieval_date": "2026-10-01",
+  "retrieval_method": "firecrawl-recovery/captures/kc-fed-treasury-demand.json",
+  "exact_passage_gross": "an additional $1 in stablecoins would increase total Treasury holdings by $0.50",
+  "exact_passage_net": "The corresponding $1 less in bank deposits would decrease Treasury holdings by $0.08 cents and decrease loans by $0.50",
+  "exact_passage_zero": "should the sources of the funds that are shifted toward stablecoins sell Treasuries at the same rate that stablecoin issuers purchase them, then a larger stablecoin market will have no net effect on Treasury demand at all",
+  "net_effect": "$1 moved from bank deposits to stablecoin issuers -> +$0.30 net Treasury demand (not +$1)",
+  "bank_lending_impact": "-$0.50 per $1 shifted (bank lending contraction)",
+  "verification": "VERIFIED - all passages found in evidence key_passages array"
+}

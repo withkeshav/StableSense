@@ -1,0 +1,14 @@
+{
+  "id": "bis-wp1270-treasury-yields",
+  "url": "https://www.bis.org/publications/working-paper-1270-stablecoins-and-safe-asset-prices",
+  "source_date": "2025-05-28",
+  "retrieved_at": "2026-10-01",
+  "title": "Stablecoins and safe asset prices",
+  "author": "Rashad Ahmed and Inaki Aldasoro, BIS",
+  "key_passages": [
+    "In 2025, they purchased nearly $35 billion of US Treasury bills, similar to the largest US government money market funds and larger than most foreign purchases",
+    "a $3.5 billion (2-standard deviation) inflow lowers 3-month Treasury bill yields by 0.71 basis points on impact, and up to 4 basis points within 10 days",
+    "Effects are state-dependent, increasing under Treasury market stress and with the scale of the stablecoin sector"
+  ],
+  "relevance": "Empirical evidence that stablecoin flows measurably affect T-bill yields."
+}
