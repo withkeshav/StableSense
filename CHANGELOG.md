@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Expanded the research method with claim revisions, formulas and their limits, independent review dispositions, acceptance and publication decisions, update triggers, and a proposed benchmark protocol. Benchmark performance and automatic updating have not been established.
 - Added a public research index, claim template and publication checklist, separating evidence review from approval and publication.
 - Added a tested publication-path check in CI. It rejects agent instructions, internal directories and unreviewed documentation; it is not a content or secret scanner.
+- Updated Vitest to 4.1.11 to fix the test-server path-traversal advisory GHSA-82fw-gwwq-j7x9. The production website does not run the test server.
 
 ## [3.7.1] - 2026-09-26
 
