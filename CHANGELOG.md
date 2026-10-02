@@ -4,6 +4,14 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- Narrowed the public repository to the website, supporting code and documentation, and research methodology. Working research is retained outside the current public tree. Older public commits remain accessible; history is not rewritten.
+- Expanded the research method with claim revisions, formulas and their limits, independent review dispositions, acceptance and publication decisions, update triggers, and a proposed benchmark protocol. Benchmark performance and automatic updating have not been established.
+- Added a public research index, claim template and publication checklist. The application and published research hub are unchanged; no deployment is included.
+- Added a tested publication-path check in CI. It rejects agent instructions, internal directories and unreviewed documentation; it is not a content or secret scanner.
+
 ## [3.7.1] - 2026-09-26
 
 ### Added

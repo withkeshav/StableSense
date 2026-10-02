@@ -15,7 +15,3 @@
 *.png binary
 *.jpg binary
 *.ico binary
-
-# Stored research captures must retain their exact bytes and source whitespace.
-docs/research/2026-10-01-state-of-stablecoins/final/evidence/*.html -text -whitespace
-docs/research/2026-10-01-state-of-stablecoins/final/evidence/*.txt -text -whitespace

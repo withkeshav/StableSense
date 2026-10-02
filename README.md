@@ -197,6 +197,8 @@ The frontend is static files with an optional AI base URL: deploy `dist/` anywhe
 - [docs/api-protocol.md](./docs/api-protocol.md): browser-direct endpoints + backend API contract.
 - [docs/data-sources.md](./docs/data-sources.md): upstream APIs used and how they are cached.
 - [docs/scaling.md](./docs/scaling.md): backend scaling and operations guide.
+- [Research methodology](./docs/research-methodology.md): claim lifecycle, formulas, review, finality and updating.
+- [Research publication boundary](./docs/research/README.md): public artifacts and the private working archive.
 - [State of Stablecoins research hub](https://stablesense.withkeshav.com/research/): long-form, fully-cited report on the stablecoin landscape and economic impact.
 - [CHANGELOG.md](./CHANGELOG.md): version history.
 - [SECURITY.md](./SECURITY.md): how to report vulnerabilities.
@@ -209,7 +211,7 @@ The software is licensed under Apache-2.0, which permits code changes and forks.
 - **A better or missing source.** Especially a primary source replacing a secondary one.
 - **A bug report.** Use the issue templates, they ask for the details needed to reproduce it.
 
-The research method behind the hub (independent research passes, every claim sourced and dated, cross-checking, and a manual verification gate on the highest-stakes numbers against primary sources) is the reason the hub's figures are cited rather than asserted, and it is described in the hub itself under Methodology.
+The [research method](./docs/research-methodology.md) uses independent passes, sourced and dated claims, cross-checking and primary-source verification for consequential conclusions. Proposed corrections must name the claim, source date, relevant passage and competing interpretation. We retain the review and evidence privately; the public repository holds the method, templates and publication material. Benchmark status has not been established. See the [publication boundary](./docs/research/README.md), including the limitation that earlier working records remain in public Git history.
 
 ## License
 

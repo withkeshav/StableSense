@@ -22,6 +22,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Verify publication boundary
+        run: |
+          node --test scripts/verify-public-tree.test.mjs
+          node scripts/verify-public-tree.mjs HEAD
+
+
       # vitest.config.js includes backend/**/*.test.js, but backend deps live in
       # backend/package.json (better-sqlite3, fastify). Without this the backend
       # suites fail to import rather than fail on their assertions, so root

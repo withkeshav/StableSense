@@ -42,9 +42,8 @@ docs/tmp/
 backend/data/
 
 # Local agent instructions (internal, not published).
-# AGENTS.md is deliberately NOT ignored: it is the canonical, durable agent spec for this repo and is
-# tracked in git, so it survives a clean checkout and is not lost when the scratch folder is cleared.
-# A root-level `agent.md` is ignored because it invites the exact confusion AGENTS.md exists to avoid.
+# Local instructions are backed up privately, never published with the website.
+AGENTS.md
 CLAUDE.md
 agent.md
 .claude/
@@ -58,3 +57,11 @@ oc.md
 .progress/
 *.packet/
 agent-transcripts/
+
+# Full research working records belong in the private archive.
+# Public templates and individually approved artifacts have a separate home.
+/docs/research/*
+!/docs/research/README.md
+!/docs/research/public/
+/docs/legal-readiness/
+/.hermes/
