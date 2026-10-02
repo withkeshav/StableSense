@@ -1,0 +1,150 @@
+{
+  "artifact": "final/verification.json.audit",
+  "note": "This file is R3's own verification record, distinct from verification.json, which is written by final/evidence/verify_captures.py and overwritten on every run. This file records what was run, when, and what it actually printed, including the software-integrity checks that are unrelated to factual evidence. Every value below was measured in the R3 session on 2026-10-02 and every 'actual_output' field is the recorded output, not an expected result.",
+  "task": "t_88335186",
+  "stage": "R3 reconciliation",
+  "record_root": "/mnt/ai-archive/other-tools/stablesense/docs/research/2026-10-01-state-of-stablecoins",
+
+  "factual_evidence_checks": {
+    "comment": "These test whether each claim's stored passage is really present in the capture it cites. They do NOT test whether the passage supports the whole claim, whether the capture is primary, or whether the extraction was complete. That limit is recorded in limitations-and-next-update.md section 0.",
+    "capture_verifier": {
+      "command": "python3 final/evidence/verify_captures.py",
+      "run_after_every_edit": true,
+      "actual_output": {
+        "total_claims": 41,
+        "unique_ids": 41,
+        "duplicate_ids": [],
+        "claims_with_resolved_capture": 41,
+        "unresolved_source_path": [],
+        "passage_verbatim_verified": 41,
+        "passage_absent_or_partial": [],
+        "unmeasurable_capture": [],
+        "capture_is_authored_digest_not_page_text": [],
+        "overall": "PASS"
+      },
+      "exit_code": 0,
+      "wrote": "final/verification.json"
+    },
+    "build_determinism": {
+      "command": "python3 final/evidence/build_claims.py, run twice, output diffed against the pre-existing files",
+      "actual_output": "copied 25 captures | claims: 41 | verbatim sliced: 41 | build exit 0 | claims.json byte-identical | evidence-manifest.json byte-identical",
+      "exit_code": 0,
+      "conclusion": "The ledger and the manifest are reproducible from the stored captures, not hand-maintained."
+    },
+    "independent_arithmetic_recompute": {
+      "method": "All 13 headline arithmetic values recomputed in a separate script that does not import build_claims.py, then compared against final/evidence/arithmetic.json.",
+      "actual_output": {
+        "kc_component_net": "stored 0.42 recomputed 0.42 OK",
+        "kc_internal_gap": "stored 0.12 recomputed 0.12 OK",
+        "circle_distribution_to_reserve_income_q2": "stored 0.6146 recomputed 0.6146 OK",
+        "circle_distribution_to_reserve_income_6m": "stored 0.6179 recomputed 0.6179 OK",
+        "circle_accrued_dist_pct_of_6m_reserve_income": "stored 8.01 recomputed 8.01 OK",
+        "bcg_real_economy_share_pct": "stored 6.77 recomputed 6.77 OK",
+        "bcg_bilateral_low_bound_pct": "stored 0.565 recomputed 0.565 OK",
+        "bcg_bilateral_high_bound_pct": "stored 0.887 recomputed 0.887 OK",
+        "x402scan_total_usd": "stored 974215.14 recomputed 974215.14 OK",
+        "x402scan_avg_usd_per_txn": "stored 0.079247 recomputed 0.079247 OK",
+        "ousd_pool_4_5pct": "stored 21080042.95 recomputed 21080042.95 OK",
+        "ousd_pool_per_200": "stored 105400.21 recomputed 105400.21 OK",
+        "imf_scaled_pct": "stored -18.57 recomputed -18.57 OK",
+        "mismatches": 0
+      },
+      "supplementary": "OUSD reserve composition recomputed: cash 54.91%, Treasuries 45.09%; the two components sum to 468445399, exactly the reported total supply."
+    },
+    "manifest_integrity": {
+      "method": "SHA-256 recomputed for every file named in evidence-manifest.json and compared with the recorded digest; copy names checked for duplicates.",
+      "actual_output": "declared_count 25 | manifest entries 25 | hash mismatches 0 | unique copy names 25 of 25 | files present in final/evidence but absent from the manifest: none (other than the two declared derived text files and arithmetic.json)",
+      "conclusion": "Every evidence file the manifest claims to hold is present and byte-identical to its recorded hash."
+    },
+    "claim_id_uniqueness": {
+      "actual_output": "41 claims, 41 unique ids, 0 duplicates"
+    },
+    "extractor_defect_measurement": {
+      "method": "final/evidence/build_claims.py retains flat_legacy(), the pre-fix greedy normaliser. Both normalisers were run over the same stored capture text and the outputs compared, to measure how much real text the defect deleted.",
+      "actual_output": {
+        "spark-money-rwa-tokenization.json": "legacy flat 18408 chars, fixed flat 22124 chars, 3716 chars recovered; probe 'BUIDL holds approximately' present under fixed normaliser, absent under legacy",
+        "imf-stablecoin-shocks-wp2644.json": "legacy flat 40460 chars, fixed flat 67046 chars, 26586 chars recovered",
+        "trigger_spark_money": "a table cell beginning '<$'",
+        "trigger_imf": "a significance marker beginning '<0'"
+      },
+      "correction_applied": "The inherited figures of 3,730 and 26,699 characters did not reproduce. The measured values 3,716 and 26,586 were written into build_claims.py, synthesis.md section 8 and limitations-and-next-update.md section 2 in place of the inherited ones.",
+      "residual_risk": "The fix and the measurement of it were performed by the same pass. Because the defect class is invisible to the verifier by construction, an independent re-measurement is listed as recommended next step 8 in limitations-and-next-update.md."
+    }
+  },
+
+  "cross_file_consistency_checks": {
+    "method": "Every SS-xxx reference in every prose file was resolved against the ledger's id set, every stale-count pattern was searched for, and dash characters were counted per file.",
+    "actual_output": {
+      "phantom_claim_references": {
+        "synthesis.md": "40 references, 0 phantom",
+        "operator-handoff.md": "12 references, 0 phantom",
+        "limitations-and-next-update.md": "5 references, 0 phantom",
+        "legal-and-contribution-readiness.md": "0 references",
+        "review-disposition.json": "23 references, 0 phantom"
+      },
+      "stale_count_patterns": "'37 claims', '37 of 37', '24 captures', '37 unique' searched across all five prose files. Remaining matches appear only inside review-disposition.json field r2_issue, where they quote the counts R2 observed at review time and are intentionally historical.",
+      "dash_characters_in_prose": {
+        "synthesis.md": "em 0, en 0",
+        "operator-handoff.md": "em 0, en 0",
+        "limitations-and-next-update.md": "em 0, en 0",
+        "legal-and-contribution-readiness.md": "em 0, en 0",
+        "review-disposition.json": "em 0, en 0"
+      },
+      "dash_characters_inside_quotations": "13 of 41 ledger passages contain an em or en dash inside exact_passage, from the GENIUS statute text, the IMF working papers, the BCG and Allium white paper and aggregator captures. These are source text inside verbatim quotations and are left intact deliberately; altering them would break the verbatim match verify_captures.py enforces. The project typography rule governs authored prose, not source text.",
+      "review_disposition_coverage": "R2 findings F-001 through F-006: 6 present, 0 missing. R3 own findings R3-01, R3-02, R3-03 also present.",
+      "synthesis_header_count": "'final/claims.json (41 claims, all passages verified verbatim against stored captures)'"
+    }
+  },
+
+  "software_integrity_checks": {
+    "comment": "These are software checks on the application repository. They are unrelated to the factual evidence checks above and are recorded separately so that one is not mistaken for evidence for the other. The research work changed no application source, no version and no dependency; these ran to confirm that.",
+    "npm_test": {
+      "command": "npm test",
+      "actual_output": "Test Files 12 passed (12) | Tests 203 passed (203) | Duration 502ms | vitest 4.1.10",
+      "exit_code": 0
+    },
+    "npm_run_build": {
+      "command": "npm run build",
+      "actual_output": "vite 8.2.1, 59 modules transformed, built in 753ms; dist/index.html 3.41 kB, index CSS 67.81 kB, index JS 168.91 kB, chart JS 171.33 kB",
+      "exit_code": 0
+    },
+    "git_diff_check": {
+      "command": "git diff --check",
+      "actual_output": "no output",
+      "exit_code": 0,
+      "meaning": "No whitespace errors introduced."
+    },
+    "python_compile": {
+      "command": "python3 -m py_compile final/evidence/build_claims.py final/evidence/verify_captures.py",
+      "actual_output": "no errors",
+      "exit_code": 0
+    },
+    "licensing_readback": {
+      "method": "Direct reads of LICENSE, NOTICE, RESEARCH-LICENSE, package.json and git status, to test the appendix's licensing claims rather than trusting them.",
+      "actual_output": "LICENSE reads Apache License Version 2.0 January 2004; package.json license field is Apache-2.0, changed from 'SEE LICENSE IN LICENSE'; NOTICE and RESEARCH-LICENSE are present but untracked in git; git diff --stat shows LICENSE modified with 203 insertions and 37 deletions and package.json modified; no NOTICE or RESEARCH-LICENSE diff because both are new files.",
+      "finding": "The earlier appendix stated that research terms were 'preserved exactly as found' and that no new research permission had been adopted. Measured, RESEARCH-LICENSE carries a new scope preamble. The appendix was corrected and the question was routed to the operator as a terms decision, not resolved as a research finding.",
+      "note": "These licensing files are outside this task's output boundary under final/ and were not edited by R3."
+    }
+  },
+
+  "unresolved_at_completion": [
+    "BUIDL primary AUM",
+    "RWA idle-value definition",
+    "True x402 commerce volume",
+    "GENIUS commencement and effective-date mechanics",
+    "Primary OCC orders for Circle and Bridge",
+    "Stablecoin funding-source decomposition",
+    "Circle and Open Standard distributor rates",
+    "DPDP lawful-basis mapping and Significant Data Fiduciary status",
+    "Whether the RESEARCH-LICENSE scope preamble states the operator's intended research terms",
+    "Whether Cloudflare belongs in the published processor inventory"
+  ],
+
+  "not_verified_here": [
+    "Whether the extractor fix is correct in general, as opposed to correct for the two captures measured. It was validated against those two.",
+    "Whether each passage supports its whole claim. That is an analyst judgement and is the main residual soft spot in the package.",
+    "Any live-deployment or external-law fact. The legal appendix's external items rest on a prior reviewer's reading of sources not stored in this record."
+  ],
+
+  "boundary": "Verification recorded here covers factual evidence checks and software integrity checks, and the two are distinct. PASS means the ledger's passages are present verbatim in their stored captures and the application still builds and tests clean. It does not mean the research is correct, complete, approved or publishable. Nothing in this record constitutes operator acceptance or publication approval."
+}

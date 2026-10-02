@@ -1,0 +1,171 @@
+{
+  "artifact": "final/review-disposition.json",
+  "task": "t_88335186",
+  "stage": "R3 reconciliation",
+  "generated": "2026-10-02",
+  "reconciles": "final-review/findings.json (R2 independent challenge, verdict PASS_WITH_MINOR_FINDINGS)",
+  "method": "Every accepted finding was re-read against the actual stored primary capture before any file was edited. Where R2's own wording was found imprecise, the finding is recorded as accepted-and-extended, with R3's measured correction stated explicitly. Nothing in this file treats an upstream agent's summary as verified fact; each disposition below is anchored to a capture path and a passage sliced from it by final/evidence/build_claims.py.",
+  "preserved_unchanged": [
+    "final-review/challenge.md",
+    "final-review/findings.json",
+    "all raw research passes and captures outside final/"
+  ],
+  "ledger_state_at_disposition": {
+    "claims_total": 41,
+    "unique_ids": 41,
+    "duplicate_ids": 0,
+    "passage_finder_status_SLICED_VERBATIM": 41,
+    "claims_added_during_reconciliation": ["SS-052b", "SS-072b", "SS-072c", "SS-083", "SS-084", "SS-085"],
+    "claims_requiring_anchor_reanchor_only": ["SS-052", "SS-072", "SS-001", "SS-002"]
+  },
+  "findings": [
+    {
+      "finding_id": "F-001",
+      "r2_claim_ids": ["SS-052"],
+      "r2_issue": "Sliced passage began at 'OUSD is a new stablecoin designed to help businesses...' and omitted both the article's first line ('issued by Bridge') and the footnote ('OUSD is currently issued by Bridge Building Inc.').",
+      "disposition": "corrected",
+      "capture_evidence": {
+        "re_read_capture": "final/evidence/bridge-ousd-is-live.html",
+        "anchor_moved_to": "Today, Open Standard launched Open USD",
+        "passage_slice_length_chars": 1300,
+        "passage_now_starts": "Today, Open Standard launched Open USD (OUSD), issued by Bridge and live on Base, Ethereum, Solana, and Tempo.",
+        "issuer_entity_supported": true
+      },
+      "changes_made": [
+        "build_claims.py SS-052: anchor moved from 'OUSD is a new stablecoin' to the article's first line; slice length raised 520 -> 1300 so the issuer line and the Bridge National Trust footnote travel with it.",
+        "final/synthesis.md section 1.4: the bullet no longer asserts 'a Stripe company' from this capture."
+      ],
+      "r3_extension_beyond_r2_wording": "R2 asked only to extend the passage. Re-reading showed a second, independent defect R2 did not name: the synthesis asserted the corporate-parent phrase 'a Stripe company' from this same capture, but the phrase is not in it. That assertion was backed by a different capture and now rests on its own new claim SS-052b (final/evidence/openstandard-ousd-is-live.html, passage 'OUSD is issued by Bridge, a Stripe company, with reserves held at BlackRock, Lead Bank and BNY'). Two issuer-side captures are used because neither alone states both the legal entity and the corporate parent.",
+      "conclusion_changed": false
+    },
+    {
+      "finding_id": "F-002",
+      "r2_claim_ids": ["SS-072"],
+      "r2_issue": "The $2.7 billion figure is not in the sliced passage; the passage carries only the $2.5-2.9 billion range.",
+      "disposition": "corrected, and the finding's own suggested remedy was wrong",
+      "capture_evidence": {
+        "re_read_captures": [
+          "final/evidence/cryptorank-rwa-tokenization.json",
+          "final/evidence/reap-global-stablecoin-stats.json",
+          "final/evidence/spark-money-rwa-tokenization.json"
+        ],
+        "cryptorank_capture_contains_2_7_billion_for_buidl": false,
+        "cryptorank_capture_only_2_7_occurrence": "$2.7 trillion, a 2030 DeFi-deployment projection (different quantity, different unit)",
+        "actual_home_of_the_2_7_billion_figure": "final/evidence/reap-global-stablecoin-stats.json, passage 'BlackRock BUIDL ~$2.7 billion.' citing DefiLlama, Aug 2026, in a line also reading 'Circle USYC held ~$3.0 billion'",
+        "third_figure": "final/evidence/spark-money-rwa-tokenization.json, 'As of May 2026, BUIDL holds approximately $2.4 billion' across eight named chains"
+      },
+      "changes_made": [
+        "SS-072 split into three separately sourced claims: SS-072 (cryptorank, $2.5-2.9bn, as of early July 2026), SS-072b (reap.global, $2.7bn, as of August 2026), SS-072c (Spark Money, $2.4bn, as of May 2026).",
+        "final/synthesis.md section 1.8 rewritten to present all three with their dates and to state explicitly that no current BUIDL AUM figure is asserted.",
+        "final/synthesis.md section 7 records the mis-attribution as an excluded statement."
+      ],
+      "r3_extension_beyond_r2_wording": "R2's remedy was 'extend the passage to include the $2.7 billion figure'. Extending was impossible: the figure is not in that capture at all. R2 had located the gap correctly and the wrong scope, stopping one capture short of the capture that actually holds the figure. Following R2's remedy literally would have produced a fabricated passage, so the claim was re-sourced instead.",
+      "conclusion_changed": false,
+      "residual_gap": "BUIDL primary AUM remains UNRESOLVED. Three differently dated secondary figures exist and none is a primary issuer disclosure."
+    },
+    {
+      "finding_id": "F-003",
+      "r2_claim_ids": ["SS-001", "SS-002", "SS-102"],
+      "r2_issue": "The Bulletin's update note ('originally published August 8, 2025, was updated on September 22, 2026, to correct a calculation error in Treasury security holdings') was not recorded in the uncertainty fields.",
+      "disposition": "corrected",
+      "capture_evidence": {
+        "re_read_capture": "final/evidence/kc-fed-stablecoin-treasury.json",
+        "note_present_in_capture": true
+      },
+      "changes_made": [
+        "SS-001 uncertainty field now records the note verbatim and draws the consequence: the article has a demonstrated history of arithmetic error, and the 0.42-versus-0.30 gap survives the revision that corrected Treasury security holdings, so the note does not reconcile the gap.",
+        "SS-002 uncertainty field records that the September 2026 correction addressed a different error.",
+        "Checked SS-102, which also rests on this capture: no edit needed, its existing uncertainty already frames the scenario as conditional on a contested figure."
+      ],
+      "r3_extension_beyond_r2_wording": "Recording the note is not merely bookkeeping. It strengthens the KC Fed correction from 'the components disagree with the stated net' to 'the source has already had one arithmetic correction applied and the disagreement we found is not the one it fixed'. That changes how much weight the US-debt section can carry, and it is why no headline rests on either figure.",
+      "conclusion_changed": false
+    },
+    {
+      "finding_id": "F-004",
+      "r2_claim_ids": ["challenge-target.md planted claim"],
+      "r2_issue": "The planted claim (direct legal title to reserve Treasuries plus the right to instruct BlackRock's trades) was correctly excluded from the synthesis.",
+      "disposition": "confirmed, no change needed",
+      "capture_evidence": {
+        "re_read_sections": "final/synthesis.md section 1.4 and section 7",
+        "checked_against": "SS-050 (reserve earnings accrue to partners, not holders) and SS-053 (reserves 54.91% cash, 45.09% Treasuries, footing exactly to supply)"
+      },
+      "changes_made": [],
+      "r3_extension_beyond_r2_wording": "Re-checked after the SS-052 and SS-052b split, because adding an issuer/custodian statement is exactly where an unsupported title or instruction right could have crept back in. It did not: SS-052b establishes custody at BlackRock, Lead Bank and BNY as a company statement, and neither SS-052 nor SS-052b asserts any holder right. The exclusion holds.",
+      "conclusion_changed": false
+    },
+    {
+      "finding_id": "F-005",
+      "r2_claim_ids": ["final/verification.json"],
+      "r2_issue": "Ledger counts verified at the time of review: 37 claims, 37 unique IDs, 37/37 passages, 37/37 paths, 24 captures.",
+      "disposition": "superseded by later legitimate ledger growth, re-verified by R3",
+      "capture_evidence": {
+        "re_read_at_disposition_time": "41 claims, 41 unique IDs, 41/41 SLICED_VERBATIM, 41/41 source paths resolved, 25 captures in the manifest",
+        "verifier": "final/evidence/verify_captures.py",
+        "verifier_exit_code": 0,
+        "verifier_overall": "PASS"
+      },
+      "changes_made": [
+        "R3 re-ran final/evidence/verify_captures.py after every ledger edit and recorded actual output.",
+        "R3 re-ran final/evidence/build_claims.py and diffed the result against the pre-existing claims.json and evidence-manifest.json: both byte-identical, so the build is deterministic and the 41-claim ledger is reproducible.",
+        "all prose counts in synthesis.md, operator-handoff.md and limitations-and-next-update.md reconciled to 41 claims and 25 captures."
+      ],
+      "r3_note": "F-005 was accurate for the 37-claim ledger R2 reviewed. It is not a defect and no correction was owed; the counts moved because six further claims were added while dispositioning F-001, F-002 and a withdrawal (SS-052b, SS-072b, SS-072c, SS-083, SS-084, SS-085). Recording the delta here so the number is not mistaken for drift.",
+      "conclusion_changed": false
+    },
+    {
+      "finding_id": "F-006",
+      "r2_claim_ids": ["final/synthesis.md"],
+      "r2_issue": "No em dashes (U+2014) or en dashes (U+2013) in synthesis.md.",
+      "disposition": "confirmed, and re-checked across every final/ prose file",
+      "capture_evidence": {
+        "method": "character count of U+2014 and U+2013 over each final/ markdown and json file after all R3 edits"
+      },
+      "changes_made": [
+        "R3 re-counted rather than trusting the review: all final/ prose files measured at zero em dashes and zero en dashes after reconciliation."
+      ],
+      "r3_note": "The en-dash check was extended beyond em dashes because the project's rule covers both, and the R1 file-level check would not have caught the real exposure. Measured: no prose file in final/ contains either character after R3 edits, but 13 of the 41 ledger entries carry an em or en dash INSIDE their exact_passage. These are source text inside verbatim quotations, from the GENIUS statute text (SS-010 through SS-013), the IMF working papers (SS-020, SS-022), the Kansas City Fed capture (SS-102), the BCG and Allium white paper (SS-030, SS-031) and aggregator captures (SS-070, SS-072, SS-073, SS-090). They are left intact deliberately: replacing them would break the verbatim match that verify_captures.py enforces, and a source quote is the one place where the project's typography rule cannot outrank fidelity. The rule applies to authored prose. Where the synthesis itself needed a range outside a quotation it uses hyphens, for example '$350-$550 billion' in section 1.7.",
+      "conclusion_changed": false
+    }
+  ],
+  "r3_own_findings": [
+    {
+      "finding_id": "R3-01",
+      "severity": "material, tooling",
+      "title": "The capture text extractor could silently delete evidence, and it had already hidden a real figure",
+      "measured_finding": "final/evidence/build_claims.py stripped markup with the greedy pattern r\"<[^>]+>\", which treats a literal '<' in body prose as a tag opener. Measured on the stored captures by re-running both the legacy and the fixed normaliser over the same source text: a Spark Money table cell beginning '<$' swallowed 3,716 characters of real text (legacy flat 18,408 chars against fixed 22,124), including the BUIDL 'As of May 2026, BUIDL holds approximately $2.4 billion' sentence; an IMF WP/26/44 significance marker '<0' swallowed 26,586 characters (legacy flat 40,460 against fixed 67,046).",
+      "why_it_matters": "A passage that the extractor deleted could never be found by the anchor, so the absence of a match looked like the absence of evidence. In this record that had a concrete cost: the May 2026 BUIDL figure, which the upstream causal-laguna ledger had already flagged as conflicting with the $2.5-2.9bn range, was invisible in the primary capture itself until the extractor was fixed. The verifier could not have caught this, because it verifies that a sliced passage exists in a capture, not that the capture extraction was complete.",
+      "fix": "TAG_RE is now name-anchored (r\"</?[A-Za-z][A-Za-z0-9:_-]*(?:\\s[^<>]*?)?/?>\") and script/style bodies are dropped before tags are stripped. The legacy normaliser is retained as flat_legacy() so the defect stays reproducible on demand.",
+      "post_fix_check": "All 41 passages re-sliced from source; 41/41 SLICED_VERBATIM. build_claims.py re-run twice, claims.json and evidence-manifest.json byte-identical both times.",
+      "carried_into_prose": "final/synthesis.md section 8 records the defect with the measured character counts, so a reader can see that the evidence chain itself was audited and not merely the quotations."
+    },
+    {
+      "finding_id": "R3-02",
+      "severity": "material, unsourced figure",
+      "title": "The x402 volume floor of $996 thousand was never sourced to any capture, and has been withdrawn",
+      "measured_finding": "final/synthesis.md quoted a bottom of range of '$996 thousand' across 18.1 million transactions. No capture in the record contains either number. The real x402scan page capture (final/evidence/x402scan.html) was never copied into final/evidence/, and its global totals live inside the page's embedded RSC payload in <script> tags, which the markup stripper removes, so no claim could previously rest on it.",
+      "why_it_matters": "This is the pattern the record already flags elsewhere: a headline figure paired with a computed ratio or a range endpoint that no source made. It was the bottom of an x402 range that section 1.6 builds on.",
+      "fix": "build_claims.py gained extract_x402scan(), one explicit regex over the captured payload, which writes final/evidence/x402scan.html.txt containing the verbatim totals plus a tool unit conversion; it raises rather than degrades if the payload is absent. New claim SS-085 carries 12,293,450 transactions, 27,467 buyers, 38,519 sellers and 974,215,144,043 raw USDC units ($974,215.14 at six decimals, mean $0.079247 per transaction, both tool-computed). The $996 thousand figure is withdrawn and recorded as excluded in section 7.",
+      "carried_into_prose": "final/synthesis.md section 1.6 now gives the evidenced low point, names the withdrawal, and states that the dashboard's window and inclusion rules are not stated in the capture, so its total still cannot share an axis with an August-only five-chain count."
+    },
+    {
+      "finding_id": "R3-03",
+      "severity": "moderate, single-source gap",
+      "title": "The x402 bot-attribution rested on one firm; two independent corroborations were added from captures already in the record",
+      "measured_finding": "Section 1.6 previously offered Bitquery's 83 percent two-loop finding with no independent corroboration inside the same sentence structure. Two relevant captures were present in the record and unused: the Chainalysis adoption post and the Visa and Artemis agentic-payments note.",
+      "why_it_matters": "The section's central claim is that a large, independently measured share of x402 activity is automated. That word 'independently' needs more than one firm behind it, and SS-082's own uncertainty field already conceded the gap.",
+      "fix": "SS-083 (Chainalysis: growth driven substantially by meme coin farming, PING pay-to-mint at 1 USDC, over 150,000 transactions in its first month) and SS-084 (Visa and Artemis: about $15.0 million adjusted volume across 109.6 million transactions since the May 2025 launch, wash and test activity excluded) added, both sliced verbatim. Section 1.6 now separates the corroboration from the Bitquery attribution and states that SS-084 is scoped differently (wash-adjusted, single ecosystem, as of April 2026) and does not average with the cross-chain counts.",
+      "honest_limit": "SS-084's value and transaction count sit far apart, which is consistent with the section's argument, but it is a different measurement of a different ecosystem and is not offered as a substitute for the Bitquery volume. The true commerce share of x402 volume remains UNRESOLVED and no source in this record estimates it."
+    }
+  ],
+  "unresolved_at_end_of_r3": [
+    "BUIDL primary AUM (three differently dated secondary figures, no issuer disclosure)",
+    "RWA idle-value definition (count-based figure, denominator and idle definition not stated, original analysis not stored)",
+    "True x402 commerce volume (bridge and bot shares measured; commerce residual not estimated by any source)",
+    "GENIUS commencement and effective-date mechanics (statute text stored; commencement analysis not independently verified)",
+    "Primary OCC orders for both the Circle trust charter and Bridge's conditional approval",
+    "Stablecoin funding-source decomposition (the missing input to gross versus net Treasury demand)",
+    "Issuer distributor rates for Circle and Open Standard, so the two arrangements cannot be compared on magnitude",
+    "DPDP lawful-basis mapping, and whether StableSense is or would become a Significant Data Fiduciary"
+  ],
+  "boundary": "This file records reconciliation of research findings only. It is not an approval, not a publication decision, and not a statement of legal compliance. final/legal-and-contribution-readiness.md remains a separate appendix whose applicability items are UNKNOWN by design. Software remains Apache-2.0 and RESEARCH-LICENSE terms are unchanged."
+}

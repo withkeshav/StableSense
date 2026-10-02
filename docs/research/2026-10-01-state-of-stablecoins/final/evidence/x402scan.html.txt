@@ -1,0 +1,15 @@
+Source: https://www.x402scan.com/
+Retrieved: 2026-10-01
+Extraction: final/evidence/build_claims.py extract_x402scan(), one regex on the
+            embedded RSC payload. Numbers below are copied verbatim from the
+            capture; the USD figure is a tool unit conversion, not a source quote.
+
+GLOBAL STATISTICS (verbatim from the page's embedded data payload)
+"total_transactions": 12,293,450
+"total_amount": 974,215,144,043   (raw units)
+"unique_buyers": 27,467
+"unique_sellers": 38,519
+"latest_block_timestamp": 2026-10-01T10:45:33.000Z
+
+total_amount at 6 decimals: $974,215.14
+average per transaction:    $0.079247

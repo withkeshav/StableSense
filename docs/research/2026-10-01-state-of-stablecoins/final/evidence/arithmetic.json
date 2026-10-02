@@ -1,0 +1,23 @@
+{
+ "tool": "final/evidence/build_claims.py",
+ "computed": {
+  "kc_component_net": 0.42,
+  "kc_stated_net": 0.3,
+  "kc_internal_gap": 0.12,
+  "ousd_pool_4_5pct": 21080042.95,
+  "ousd_pool_per_200": 105400.21,
+  "x402_arbitrum_bridge_excluded": 2525250000.0,
+  "x402_residual_if_subtracted": 64750000.0,
+  "imf_scaled_pct": -18.57,
+  "circle_distribution_to_reserve_income_q2": 0.6146,
+  "circle_distribution_to_reserve_income_6m": 0.6179,
+  "circle_accrued_dist_pct_of_6m_reserve_income": 8.01,
+  "bcg_real_economy_share_pct": 6.77,
+  "bcg_bilateral_low_bound_pct": 0.565,
+  "bcg_bilateral_high_bound_pct": 0.887,
+  "x402scan_total_usd": 974215.14,
+  "x402scan_avg_usd_per_txn": 0.079247,
+  "x402scan_buyers": 27467,
+  "x402scan_sellers": 38519
+ }
+}
