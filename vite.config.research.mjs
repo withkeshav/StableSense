@@ -21,7 +21,10 @@ export default defineConfig({
     emptyOutDir: true,
     assetsInlineLimit: 100000000, // inline CSS into the HTML for first paint
     rollupOptions: {
-      input: 'research/index.html',
+      input: {
+        hub: 'research/index.html',
+        changelog: 'research/changelog/index.html',
+      },
       output: {
         // keep the og image as a stable, hashed asset instead of inlining it
         assetFileNames: 'assets/[name]-[hash][extname]',

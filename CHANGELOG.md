@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [3.9.0] - 2026-10-03
+
+### Changed
+- Consolidated the research into one maintained page. The dated report is no longer presented as a separate "latest" entry point: current findings and open questions sit in a single document, and the update date is stated at the top of that page.
+- Moved edition history to a brief dated research changelog at `/research/changelog/`. Each entry records what moved and what the earlier text said. It carries no measurements and restates no findings, so the research page stays the single source for current results.
+- Replaced the trailing "Latest research" section with an "Open questions" section inside the research, so unresolved items read as part of the research rather than an appendix to a separate report.
+- Extended the hub checks: the research page must state an update date, link the changelog and carry no separate report entry point, and every listed correction must appear verbatim on the changelog page.
+
+### Notes
+- The changelog page is static HTML and renders its entries without JavaScript.
+- The dated edition document remains served and is cited exactly once, in the sources list. No redirect was added, so existing links to it keep working. The earlier proposal to redirect that URL was not applied.
+- Two research-build pages now share one stylesheet, and the contributor plugin passes through pages that carry no contributor records instead of failing the build.
+
 ## [3.8.0] - 2026-10-02
 
 ### Added

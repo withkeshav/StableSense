@@ -16,8 +16,15 @@ export function contributorsPlugin(registry = defaultRegistry) {
       this.addWatchFile(registry);
       snapshot = load();
     },
-    transformIndexHtml(html) {
-      if (!html.includes(marker)) throw new Error('Missing contributor HTML marker');
+    transformIndexHtml(html, ctx) {
+      // The contributor marker is required on the hub page. Other research pages
+      // (the changelog) deliberately carry no contributor records, so they are
+      // passed through rather than aborting the build.
+      if (!html.includes(marker)) {
+        const name = String(ctx?.filename || ctx?.path || '').replace(/\\/g, '/');
+        if (name.endsWith('/research/index.html')) throw new Error('Missing contributor HTML marker');
+        return html;
+      }
       if (development || !snapshot) snapshot = load();
       return html.replace(marker, () => snapshot.html);
     },

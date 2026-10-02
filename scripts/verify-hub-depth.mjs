@@ -2,6 +2,7 @@
 // Runs the same mapping the browser renderers use, on the built data,
 // so a data/model mismatch fails here rather than silently in the page.
 import * as data from '../research/data.js';
+import { readFileSync } from 'node:fs';
 
 let fail = 0;
 let checkCount = 0;
@@ -200,12 +201,34 @@ check('marketCapMeasure carries its own as-of date', !!mc.asOf && /2026-08-13/.t
 check('marketCapMeasure refuses to fabricate a second-source range',
   /no (verified )?second/i.test(JSON.stringify(mc)), '');
 
-// Latest-research edition note.
+// Research page structure. There is ONE maintained research page. Revision
+// history lives on the brief changelog subpage, so the hub must not present a
+// separate "latest report" entry point, and every correction must still be
+// reachable on the changelog page.
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const hubHtml = readFileSync(new URL('../research/index.html', import.meta.url), 'utf8');
+const changelogHtml = readFileSync(new URL('../research/changelog/index.html', import.meta.url), 'utf8');
+
+check('research page states last-updated above the fold',
+  /class="hub-updated"/.test(hubHtml) && /Last updated/.test(hubHtml));
+check('research page links the research changelog', /href="\.\/changelog\/"/.test(hubHtml));
+check('research page carries no separate latest-report section', !/id="latest-research"/.test(hubHtml));
+check('research page does not host the dated report as a page-level entry point',
+  !/state-of-stablecoins-2026-10-02\.md/.test(hubHtml));
+check('research page carries the open-questions section', /id="open-questions"/.test(hubHtml));
+
+check('changelog page is titled and dated',
+  /Research changelog/.test(changelogHtml) && /2026-10-02/.test(changelogHtml));
+check('changelog page says current findings live on the research page',
+  /research page/.test(changelogHtml) && /what changed/i.test(changelogHtml));
+
 check('latestResearchCorrections present and non-trivial',
   (data.latestResearchCorrections || []).length >= 10, `got ${(data.latestResearchCorrections || []).length}`);
 for (const c of data.latestResearchCorrections || []) {
   check(`correction "${c.title.slice(0, 34)}..." names what changed and its date`,
     !!(c.title && c.body && c.asOf));
+  check(`correction "${c.title.slice(0, 34)}..." is published verbatim on the changelog page`,
+    changelogHtml.includes(esc(c.title)) && changelogHtml.includes(esc(c.body)));
 }
 const lr = JSON.stringify(data.latestResearchCorrections);
 check('corrections name the earlier text, not just the new state',
@@ -215,6 +238,8 @@ check('latestResearchOpen lists the unresolved items',
 for (const o of data.latestResearchOpen || []) {
   check(`open item "${o.label}" states what evidence would close it`, !!(o.label && o.need));
 }
+check('open questions are rendered on the research page, not only in data',
+  /id="open-questions-list"/.test(hubHtml));
 check('sources list includes the dated full report',
   data.sources.some((s) => /state-of-stablecoins-2026-10-02/.test(s.url)),
   data.sources.length + ' sources');

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Research changelog - StableSense Research</title>
+  <meta name="description" content="A brief, dated record of what changed in StableSense's State of Stablecoins research, newest first. This page records edition changes only; current findings always live on the research page itself.">
+  <link rel="canonical" href="https://stablesense.withkeshav.com/research/changelog/">
+  <meta property="og:title" content="Research changelog - StableSense Research">
+  <meta property="og:description" content="A brief, dated record of what changed in StableSense's stablecoin research, newest first.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://stablesense.withkeshav.com/research/changelog/">
+  <meta property="og:site_name" content="StableSense Research">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="../styles.css">
+  <script>
+    // Pre-paint theme, same key the hub uses, so this page matches the reader's choice.
+    try {
+      var t = localStorage.getItem('stablesense:theme') || 'light';
+      if (t === 'system') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) { document.documentElement.setAttribute('data-theme', 'light'); }
+  </script>
+</head>
+<body>
+
+<a href="#main" class="skip-link" style="position:absolute;left:-9999px;">Skip to content</a>
+
+<header class="hub-header">
+  <div class="hub-header-inner">
+    <a href="/research/" class="hub-mark">StableSense<span class="gold-dot">.</span> Research</a>
+    <nav class="hub-nav" aria-label="Research pages">
+      <a href="/research/" class="to-dashboard">Back to the research &rsaquo;</a>
+      <a href="/" target="_blank" rel="noopener noreferrer">Live dashboard &rsaquo;</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="kicker">StableSense Research</div>
+      <h1>Research changelog</h1>
+      <p class="hub-updated">Last updated <time datetime="2026-10-02">2026-10-02</time></p>
+      <p class="thesis">A short, dated record of what changed in this research and why. Current findings are not here: they are always on the <a href="/research/">research page</a>, which is rewritten in place each edition. This page only says what moved.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-inner tight">
+      <div class="kicker">Edition 2026-10-02</div>
+      <h2>What changed</h2>
+      <p class="section-thesis">The research record was reconciled on 2026-10-02. That is a review date, not a measurement date: every figure keeps its own observation date, and the historical sections keep the dates of the events they describe. Each entry below names both the corrected state and what the earlier text said, so a reader who saw an earlier edition can tell which is which.</p>
+        <article class="change-entry">
+          <h3>Open USD is live, not announced-only</h3>
+          <p>Earlier text said OUSD had no circulating supply and was "still later this year". It was issued by Bridge Building Inc., a Stripe company, and went live on Base, Ethereum, Solana and Tempo on 2026-09-30. The issuer's own reserve page reported $468,445,399 supply at 11:30 UTC on 2026-10-01, split $257,214,691 cash (54.91%) and $211,230,708 Treasuries (45.09%), summing exactly to total supply. One dated self-report is not an adoption series. Reserve earnings accrue to partners, not token holders. An unsourced single-day price-move attribution for another issuer was removed.</p>
+          <p class="as-of">launch 2026-09-30; reserve snapshot 2026-10-01 11:30 UTC</p>
+        </article>
+        <article class="change-entry">
+          <h3>GENIUS reserves are a list, not Treasury bills</h3>
+          <p>Earlier text implied reserves are bound to Treasury bills. Section 4(a)(1)(A) requires at least 1:1 reserves drawn from eight eligible classes, of which 93-day Treasuries are one. The full list is now on the page.</p>
+          <p class="as-of">statute as enacted 2025-07-18</p>
+        </article>
+        <article class="change-entry">
+          <h3>GENIUS commencement is unresolved, not locked</h3>
+          <p>Earlier text called the 18-month fallback a locked date. Section 20 sets general commencement at the earlier of 18 months after enactment or 120 days after the primary federal regulators issue any final implementing regulations. 2027-01-18 is an outer limit. No final rule is verified, so the current trigger is UNRESOLVED and no GENIUS duty is described on this page as currently operative.</p>
+          <p class="as-of">Historical Sep 2026 tracker counts; final-rule issuance UNKNOWN</p>
+        </article>
+        <article class="change-entry">
+          <h3>Gross Treasury holdings are not net demand</h3>
+          <p>The Kansas City Fed Bulletin states a $0.30 net effect whose own stated components give $0.42, a $0.12 gap it does not reconcile, and its HTML and PDF versions disagree on the inputs (8 percent bank Treasury share and $0.08 versus 20 percent and $0.20). The intended coefficient is UNRESOLVED and no corrected coefficient is published here. The source's own hedge, that the effect can be zero or negative depending on where the money came from, is the part that survives.</p>
+          <p class="as-of">Bulletin 2025-08-08, publisher-corrected HTML 2026-09-22</p>
+        </article>
+        <article class="change-entry">
+          <h3>Paying distributors is not a new practice</h3>
+          <p>Earlier framing treated partner-oriented reserve economics as a departure. Circle's Q2 2026 Form 10-Q states distribution costs payable to key distributors such as Coinbase and Binance are directly impacted by the amount of USDC held on their platforms, and discloses named Coinbase terms ($324.6M for the quarter, $655.3M for the half year, allocated after undisclosed issuer retention). Routing reserve earnings to partners is a redistribution of an existing practice, not its introduction. Whether Open Standard is more or less generous is UNRESOLVED.</p>
+          <p class="as-of">Circle 10-Q, quarter ended 2026-06-30</p>
+        </article>
+        <article class="change-entry">
+          <h3>The 95-to-99 percent non-payment claim is withdrawn</h3>
+          <p>Earlier text claimed 95% to 99% of stablecoin volume was non-payment. No source contains that figure and it is removed. The verified framing is BCG and Allium Labs (2026-09-30): more than $62T annual transfers, of which real economic activity is $4.2T (about 7%), and separately roughly $350B to $550B of observable bilateral goods-and-services payments in 2025 (0.565% to 0.887% of the gross figure), which the authors call a directionally robust lower bound. The two definitions are not interchangeable.</p>
+          <p class="as-of">2025 payment data, published 2026-09-30</p>
+        </article>
+        <article class="change-entry">
+          <h3>x402 headline figures now carry their scopes</h3>
+          <p>An unsourced $996,474 floor across 18.1M transactions was withdrawn: it matches neither the volume nor the transaction count of the dashboard's own cumulative totals. Those totals (12,293,450 transactions, $974,215.14) are now quoted, with an unpublished window. The $317M figure is identified as a five-chain August 2026 residual after removing one bridging contract holding about 88% of the value, not an Arbitrum-only or commerce-only figure. The commerce-only share remains UNRESOLVED.</p>
+          <p class="as-of">dashboard cumulative, fetched 2026-10-01; Bitquery August 2026</p>
+        </article>
+        <article class="change-entry">
+          <h3>BUIDL has no verified current AUM</h3>
+          <p>Earlier text presented a $2.70-3.52B "sources disagree" range. A range implies a currency and a single valuation basis that none of the three underlying reports has, so they are now listed separately with their dates and no current AUM is asserted. The one cited aggregator capture contained no $2.7B BUIDL figure at all: its only 2.7 is a $2.7 trillion 2030 DeFi-deployment projection. Securitize's $4.3B is platform-wide tokenized AUM as of 2026-06-30, not BUIDL fund AUM, and is not substituted for it.</p>
+          <p class="as-of">reports dated May, early July and August 2026</p>
+        </article>
+        <article class="change-entry">
+          <h3>RWA count and value shares are separated</h3>
+          <p>910 of 1,289 tested assets above $100,000 recorded zero weekly transfers, which is 70.60% by count. The publisher's 56% is a different statement about value against a value-measured base. Neither establishes economically idle capital: about $27B of the reported dormant value came from "represented" assets not necessarily designed for public secondary-market movement, and a ledger-style holding can still perform economic functions off-chain.</p>
+          <p class="as-of">article 2026-07-02; publisher landing page data 2026-05-31</p>
+        </article>
+        <article class="change-entry">
+          <h3>No fabricated fallback on the headline counter</h3>
+          <p>When the live fetch fails, the counter now shows a hyphen. It previously displayed a research range midpoint as global stablecoin market cap: a different measure from the five coins the counter actually tracks, and a point estimate no source published. Missing observations must not be presented as measured values.</p>
+          <p class="as-of">static fallback removed</p>
+        </article>
+        <article class="change-entry">
+          <h3>No single dataset-wide as-of date</h3>
+          <p>The footer badge distinguishes the review date from measurement dates. Sources have different observation dates, stated with the reconciled findings. Older historical observations retain their original dates and are not newly verified just because this edition was published.</p>
+          <p class="as-of">review date 2026-10-02</p>
+        </article>
+      <hr class="rule" style="margin:2.5rem 0">
+      <p class="as-of">Entries are deliberately terse. Measurements, sources and the unresolved questions each live in the section of the <a href="/research/">research page</a> they belong to, not here.</p>
+      <div class="back-link">
+        <a href="/research/">&larr; Back to the research</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="hub-footer">
+  <div class="hub-footer-inner">
+    <div class="badge">Research changelog &middot; edition 2026-10-02</div>
+    <p class="as-of" style="margin-top:0.75rem">The review date is the date this edition's research record was reconciled. It is not a measurement date for the underlying figures.</p>
+    <p class="attribution">Research and maintained by <a href="https://www.withkeshav.com" target="_blank" rel="noopener noreferrer">Keshav Maheshwari</a>.</p>
+  </div>
+</footer>
+
+</body>
+</html>

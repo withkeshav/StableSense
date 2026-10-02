@@ -111,6 +111,11 @@ hr.rule { border: 0; border-top: 1px solid var(--hub-line); margin: 0; }
 .kicker { font-family: var(--hub-mono); font-size: 0.72rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--hub-gold); margin-bottom: 0.6rem; }
 .section h2 { margin-top: 0.2rem; }
 .section-thesis { font-size: 1.15rem; color: var(--hub-ink2); max-width: 60ch; margin-bottom: 2.5rem; }
+/* Changelog entries: one dated change per block, each naming the earlier text. */
+.change-entry { border-left: 2px solid var(--hub-line); padding: 0 0 0 1.1rem; margin-bottom: 2rem; }
+.change-entry h3 { margin: 0 0 0.5rem; font-size: 1.05rem; }
+.change-entry p { margin: 0 0 0.5rem; color: var(--hub-ink2); }
+.change-entry p.as-of { font-family: var(--hub-mono); font-size: 0.78rem; color: var(--hub-ink2); opacity: 0.85; }
 
 /* large tabular-numeral statistics = the hero content of each section */
 .stat { font-family: var(--hub-mono); font-variant-numeric: tabular-nums; font-weight: 500; color: var(--hub-ink); }
@@ -131,6 +136,9 @@ hr.rule { border: 0; border-top: 1px solid var(--hub-line); margin: 0; }
 .hero { padding: clamp(4rem, 14vw, 8rem) clamp(1rem, 5vw, 2rem) clamp(3rem, 8vw, 5rem); border-bottom: 1px solid var(--hub-line); }
 .hero-inner { max-width: 1100px; margin: 0 auto; }
 .hero h1 { margin-bottom: 1rem; }
+.hero .hub-updated { font-family: var(--hub-mono); font-size: 0.82rem; letter-spacing: 0.02em; color: var(--hub-ink2); margin: 0 0 1.25rem; }
+.hero .hub-updated a { color: var(--hub-gold); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--hub-gold) 45%, transparent); }
+.hero .hub-updated a:hover { border-bottom-color: var(--hub-gold); }
 .hero .thesis { font-size: 1.25rem; color: var(--hub-ink2); max-width: 56ch; margin-bottom: 1rem; }
 .hero-counter { font-family: var(--hub-mono); font-variant-numeric: tabular-nums; font-size: clamp(2.6rem, 8vw, 5rem); font-weight: 500; letter-spacing: -0.03em; color: var(--hub-cat-fiat-usd); margin: 0.4rem 0 0.3rem; }
 .hero-counter-label { font-family: var(--hub-mono); font-size: 0.78rem; color: var(--hub-ink2); max-width: 48ch; margin-bottom: 1.6rem; }

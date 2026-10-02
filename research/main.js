@@ -1244,20 +1244,14 @@ function buildDistributionEconomics() {
   `;
 }
 
-// Section 13: the dated edition note. Each correction names both the
-// corrected state and the earlier text, so a reader who saw an earlier
-// version can tell which is which.
-function buildLatestResearch() {
-  const corr = document.getElementById('latest-research-accordion');
-  if (corr) {
-    buildAccordion('latest-research-accordion', data.latestResearchCorrections || [], (c) => `
-      <p><strong>${c.title}.</strong> ${c.body}</p>
-      <p class="as-of">${c.asOf}</p>
-    `);
-  }
-  const open = document.getElementById('latest-research-open');
+// Section 13: the open questions this edition could not close. The edition's
+// own revision history lives on /research/changelog/, deliberately not here:
+// a reader arriving at this page should meet current research, not a diff
+// against a previous edition.
+function buildOpenQuestions() {
+  const open = document.getElementById('open-questions-list');
   if (open) {
-    buildAccordion('latest-research-open', data.latestResearchOpen || [], (o) => `
+    buildAccordion('open-questions-list', data.latestResearchOpen || [], (o) => `
       <p><strong>${o.label} - UNRESOLVED.</strong> ${o.need}</p>
     `);
   }
@@ -1289,7 +1283,7 @@ async function init() {
   buildGrowthHonest();
   buildRwaDepth();
   buildDistributionEconomics();
-  buildLatestResearch();
+  buildOpenQuestions();
   remittanceCalc();
   raceBars();
   buildFreshnessBadge();
