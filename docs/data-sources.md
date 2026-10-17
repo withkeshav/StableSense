@@ -1,28 +1,29 @@
 # Data Sources
 
-Everything StableSense shows comes from two keyless, CORS-open upstreams, fetched either browser-direct (live data) or by the backend cron jobs (history + AI).
+Everything StableSense shows comes from the market dataset the backend persists from Helix trends (the live market path), CoinGecko for coin-tab charts and tickers (fetched in the browser), and the backend cron jobs for stress, canonical alerts, and AI narratives.
 
 ## Upstreams
 
 | Source | Provides | Auth | CORS |
 |---|---|---|---|
-| [DefiLlama Stablecoins](https://stablecoins.llama.fi) | Per-coin supply, chain distribution, aggregate market cap, per-chain daily history | None | Open |
+| Helix (`HELIX_API_BASE`) | Per-coin supply trends, per-chain distribution, market totals (backend market dataset) | Key optional | N/A (backend server-side) |
 | [CoinGecko](https://www.coingecko.com/en/api) | Spot prices, 24h change/volume, 90-day price charts, exchange tickers | None | Open |
+| [DefiLlama Stablecoins](https://stablecoins.llama.fi) | Legacy supply/chain path, used only when `LEGACY_UPSTREAMS=1` | None | Open |
 
 ## Endpoints
 
 | Endpoint | Used by | Cadence |
 |---|---|---|
-| `GET https://stablecoins.llama.fi/stablecoins` | Frontend (60s throttle), backend `jobs/fetch.js` | 10 min (backend) |
-| `GET https://stablecoins.llama.fi/stablecoin/{id}` | Frontend (1h cache-first), backend `jobs/fetch.js` | 10 min (backend) |
-| `GET https://api.coingecko.com/api/v3/simple/price` | Frontend (60s throttle), backend `jobs/fetch.js` | 10 min (backend) |
+| Helix `GET /api/trends?asset=X` | backend `jobs/fetch.js`, `jobs/stress.js` | 10 min (backend) |
+| Helix `GET /api/trends/chains?asset=X` | backend `jobs/fetch.js` (skippable via `HELIX_FETCH_CHAINS=0`) | 10 min (backend) |
 | `GET https://api.coingecko.com/api/v3/coins/{id}/market_chart` | Frontend (lazy, coin tab) | 5 min cache |
 | `GET https://api.coingecko.com/api/v3/coins/{id}/tickers` | Frontend (lazy, coin tab) | 5 min cache |
+| `GET https://stablecoins.llama.fi/*` | backend only, with `LEGACY_UPSTREAMS=1` | off by default |
 
 ## Rate-limit posture
 
-- **Browser-direct:** each visitor pays their own IP's rate limit; the 60s throttle and inflight dedupe keep the frontend well within CoinGecko's free tier (~10-30 req/min/IP). DefiLlama is more generous.
-- **Backend:** a single VPS IP makes the 10-min fetch cadence the binding constraint; both upstreams comfortably absorb 5 coins x 2 endpoints every 10 minutes.
+- **Browser-direct (CoinGecko):** each visitor pays their own IP's rate limit; the 60s throttle and inflight dedupe keep the frontend well within CoinGecko's free tier (~10-30 req/min/IP). Chart/ticker calls are lazy per coin tab.
+- **Backend:** a single VPS IP makes the 10-min fetch cadence the binding constraint; the Helix trends path is 1 request per asset per fetch (2 with chains), 5 coins.
 
 ## Freshness
 

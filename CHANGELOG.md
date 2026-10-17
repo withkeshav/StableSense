@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+- The market total and 24h delta no longer substitute a zero from the era-consistent series with a stale backend snapshot from a different day, and overflowed sums no longer reach the payload as Infinity.
+- Spot prices of zero or below are treated as feed failures: a dead feed can no longer emit a CRITICAL 10000 bps depeg alert.
+- Timestamps and per-chain supply values that are not valid finite numbers are dropped instead of leaking NaN or strings into stored provenance and chart points.
+- Trim-empty string inputs render as the `-` missing-value placeholder in formatters instead of `$0.00`, `+0.00%` or a phantom bps move.
+- The publication-boundary checker now catches internal-named file variants (double extensions, `.tmp`/`.bak` suffixes, hyphen variants and Unicode homoglyphs) instead of passing them.
+- The research-hub depth checker reports a readable "cannot measure" state (exit 2) for missing data exports or unreadable hub files, instead of crashing with a stack trace, and its dash/replacement-character scan covers the hub pages.
+- A corrupted cached market payload in the browser is validated, purged and refetched rather than rendered; network-error fallback serves only valid cached copies.
+- The research hub escapes data-derived URLs and text (attribute-safe href policy), and the deployed nginx config sends security headers, correct cache policy and never caches API responses.
+
+### Changed
+- Legacy supply path (DefiLlama + CoinGecko) moved behind an explicit `LEGACY_UPSTREAMS=1` toggle in the backend; documented in `backend/.env.example` together with the `HELIX_*` names.
+- README, `.env.example`, `docs/architecture.md`, `docs/api-protocol.md` and `docs/data-sources.md` now describe the backend/Helix data path instead of the retired browser-direct market flow.
+
+### Removed
+- Unused exports: `coinTotalDelta` and `chainDelta` in `src/lib/derive.js`; the deprecated `shareChart` and `createSharePopover` share helpers in `src/utils/shareChart.js` (superseded by the ShareSheet component).
+
 ## [3.9.0] - 2026-10-03
 
 ### Changed

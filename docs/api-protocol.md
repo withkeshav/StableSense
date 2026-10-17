@@ -1,31 +1,30 @@
 # API Protocol
 
-This document covers how the frontend gets data: browser-direct calls to DefiLlama/CoinGecko, plus the optional backend endpoints for AI, history, and canonical alerts.
+This document covers how the frontend gets data: the optional same-origin backend endpoints (live market, AI, history, canonical alerts, stress), plus the browser-direct CoinGecko calls for coin-tab price charts and exchange tickers.
 
 ## Base URL
 
-- **Live market data:** hardcoded upstream URLs (DefiLlama, CoinGecko). No auth, no keys, CORS-open.
+- **Live market data:** served by the backend at `GET /api/market`; its SQLite dataset is populated by the backend fetch cron from Helix trends (`HELIX_API_BASE`). No keys in the frontend. With `LEGACY_UPSTREAMS=1` the backend cron instead reads DefiLlama + CoinGecko.
 - **AI/backend:** resolved by `src/config.js` as `aiApiBase` (see [architecture.md](./architecture.md)):
 
   1. `window.STABLESENSE_CONFIG.aiApiBase` (runtime)
   2. `import.meta.env.STABLESENSE_AI_API_BASE` (build time)
   3. Default `''` (same origin; AI disabled unless a backend is served alongside)
 
-## Browser-direct endpoints (`src/lib/api.js`)
+## Data endpoints (`src/lib/api.js`)
 
 | Endpoint | Purpose | Cache / TTL |
 |---|---|---|
-| `GET https://stablecoins.llama.fi/stablecoins` | Per-coin supply, chains, aggregate market cap | 60s throttle, SWR |
-| `GET https://stablecoins.llama.fi/stablecoin/{id}` | Per-chain daily history (drives `derive.js`) | 1h cache-first, SWR |
-| `GET https://api.coingecko.com/api/v3/simple/price` | Spot prices + 24h change/volume | 60s throttle, SWR |
+| `GET /api/market` (backend) | Dashboard supply, per-chain distribution, prices, market total | 60s TTL, SWR, 2h max-stale, shape-validated cache |
+| `GET /api/history` (backend) | Per-coin or per-chain daily series | direct |
 | `GET https://api.coingecko.com/api/v3/coins/{id}/market_chart` | 90-day price history | 5 min, lazy (coin tab) |
 | `GET https://api.coingecko.com/api/v3/coins/{id}/tickers` | Top exchange pairs | 5 min, lazy (coin tab) |
 
-The frontend fetches these from the visitor's own IP. Requests are throttled, deduped inflight, cached in localStorage + an in-memory Map, and fall back to stale data on error. The **20s fetch timeout** applies to all fetches.
+The market payload comes from the backend; the CoinGecko calls come from the visitor's own IP. Requests are throttled, deduped inflight, cached in localStorage + an in-memory Map (a cached payload that fails shape validation is purged and refetched), and fall back to stale data on error. The **20s fetch timeout** applies to all fetches.
 
 ### Frontend data assembly
 
-`src/lib/api.js` assembles the raw upstream responses into the shape `derive.js` expects:
+`src/lib/api.js` assembles the backend market payload (via `src/lib/marketBackend.js`) into the shape `derive.js` expects, merging CoinGecko chart/ticker responses lazily when a coin tab opens:
 
 ```jsonc
 {

@@ -77,7 +77,7 @@ The dashboard gets supply and prices from `/api/market` and computes display sta
 cd backend
 npm install
 cp .env.example .env   # fill in OPENAI_* keys, AI_CADENCE_MIN, etc.
-npm run fetch          # backfill the historical dataset from DefiLlama/CoinGecko
+npm run fetch          # persist the market dataset (Helix; LEGACY_UPSTREAMS=1 = DefiLlama/CoinGecko)
 npm run stress         # persist stress series and canonical alert events
 npm run ai             # generate one AI narrative immediately
 npm start              # serve /api/healthz, /api/ai, /api/history, /api/alerts on :8787
@@ -177,7 +177,7 @@ The frontend is static files: deploy the complete `dist/` anywhere and set `aiAp
    |- hooks/useTheme.js       theme state (default light)
    |- lib/derive.js           pure display logic + tests
    |- lib/freshness.js        check / market / snapshot clocks + tests
-   |- lib/api.js              browser-direct data layer (DefiLlama + CoinGecko)
+   |- lib/api.js              cache-aware data layer (backend /api/market + CoinGecko charts/tickers)
    |- lib/ai.js               AI narrative fetch
    |- utils/                  formatters, coin-config, depeg-cases, asset-meta + tests
 |- research/                  canonical State of Stablecoins hub (shared data for in-app Research)
@@ -194,7 +194,7 @@ The frontend is static files: deploy the complete `dist/` anywhere and set `aiAp
 ## Documentation
 
 - [docs/architecture.md](./docs/architecture.md): data flow, module map, derive.js, config resolution, Research surfaces and hub build.
-- [docs/api-protocol.md](./docs/api-protocol.md): browser-direct endpoints + backend API contract.
+- [docs/api-protocol.md](./docs/api-protocol.md): backend API contract + browser-direct CoinGecko calls.
 - [docs/data-sources.md](./docs/data-sources.md): upstream APIs used and how they are cached.
 - [docs/scaling.md](./docs/scaling.md): backend scaling and operations guide.
 - [Research methodology](./docs/research-methodology.md): claim lifecycle, formulas, review, finality and updating.

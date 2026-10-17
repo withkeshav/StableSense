@@ -1,18 +1,18 @@
 # Architecture
 
-StableSense is a mobile-first frontend with an optional lite backend. Live market data is fetched **directly in the browser** from DefiLlama and CoinGecko (both CORS-open and keyless). An optional VPS backend accumulates history and serves AI narratives.
+StableSense is a mobile-first frontend with an optional lite backend. The dashboard reads live market data from the backend's `/api/market`, which persists a market dataset from Helix trends into SQLite via its fetch cron. Coin-tab price charts and exchange tickers are still fetched **directly in the browser** from CoinGecko (CORS-open and keyless). The backend also serves AI narratives, canonical alerts, and stress series.
 
 ## Data flow
 
 ```
 Visitor's browser
-  |- src/lib/api.js: DefiLlama /stablecoins, /stablecoin/{id}   (supply, chains, history)
-  |- src/lib/api.js: CoinGecko  /simple/price, market_chart, tickers   (prices, charts)
+  |- src/lib/api.js: GET /api/market   (supply, per-chain distribution, prices, market total)
+  |- src/lib/api.js: CoinGecko market_chart, tickers   (coin-tab price charts, exchange tickers)
   |- src/lib/derive.js: compute stress index, flows, migrations, whale watch, alerts
   |- src/lib/ai.js: /api/ai (same origin or aiApiBase)   (narrative, optional)
 
 Backend (optional, lite VPS)
-  |- jobs/fetch.js (cron, 10 min): DefiLlama + CoinGecko -> SQLite history dataset
+  |- jobs/fetch.js (cron, 10 min): Helix trends -> SQLite market dataset (LEGACY_UPSTREAMS=1: DefiLlama + CoinGecko)
   |- jobs/stress.js (cron, 10 min, runs after fetch): derive.js computePegStress + generateAlerts -> stress_series + labels + alert_events
   |- jobs/ai.js (cron, gated by AI_CADENCE_MIN): student-explainable narrative from snapshots + stress_series + alert_events
   |- server.js: /api/healthz, /api/ai, /api/history, /api/stress, /api/labels, /api/alerts
@@ -30,7 +30,7 @@ The frontend makes its live-data calls from the visitor's own IP, so no single o
 | `src/config.js` | Resolves `aiApiBase` and exports `APP_VERSION` |
 | `src/App.jsx` | Fetch loop, refresh/countdown state, tab routing, settings panel |
 | `src/hooks/useTheme.js` | Theme state: Light default, Dark/System options |
-| `src/lib/api.js` | Browser-direct data layer: DefiLlama + CoinGecko with SWR caching |
+| `src/lib/api.js` | Cache-aware data layer: backend `/api/market` with SWR + shape-validated caching, CoinGecko charts/tickers direct |
 | `src/lib/ai.js` | AI narrative fetch from `aiApiBase` |
 | `src/lib/freshness.js` | Three-clock data age: browser check, upstream observation, optional persisted snapshot |
 | `src/lib/derive.js` | Pure display logic (framework-free, unit tested) |

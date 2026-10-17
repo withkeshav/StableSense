@@ -403,15 +403,6 @@ export function chainObservation(detail, chain) {
   };
 }
 
-function chainDelta(detail, chain) {
-  return chainObservation(detail, chain)?.delta || 0;
-}
-
-function coinTotalDelta(detail) {
-  const chains = Object.keys(detail?.chainBalances || {});
-  return chains.reduce((sum, chain) => sum + chainDelta(detail, chain), 0);
-}
-
 function fmtUsd(n) {
   const abs = Math.abs(n);
   if (abs >= 1e9) return `$${(abs / 1e9).toFixed(2)}B`;
