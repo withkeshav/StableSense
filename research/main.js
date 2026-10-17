@@ -51,6 +51,48 @@ const catLabel = (id) => {
   return t ? t.label : id;
 };
 
+// --- escaping helpers -----------------------------------------------------
+// The hub assembles HTML by string interpolation from data.js. Every value
+// that reaches innerHTML passes through one of these, so a poisoned data row
+// cannot close a tag or an attribute and inject markup.
+function escHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s == null ? '' : String(s);
+  // The DOM escapes & < >. Encode both quote styles as well so the same helper
+  // is safe for the label text rendered next to an escaping href value.
+  return d.innerHTML.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// Attribute-context escape for href/src values. Quotes are always encoded, so a
+// value can never terminate the attribute and open an event handler. Pair it
+// with safeHref below for any URL that comes out of data.js.
+function escAttr(s) {
+  return escHtml(s);
+}
+
+// URL policy for data.js-derived hrefs. Allowed: http, https, mailto, and
+// scheme-less same-origin relative paths (one is already in use in data.js,
+// so dropping it would break a live link). Refused: any other explicit scheme
+// (javascript:, data:, vbscript: ...), any protocol-relative '//host' value,
+// any control character (browsers strip them, so a newline inside a scheme is
+// a real bypass), and any value carrying a quote or angle bracket (an attempt
+// to break out of the attribute). Refused values fall back to '#'. A bare
+// "www." host gets an https scheme.
+function safeHref(url) {
+  if (url == null) return '#';
+  const raw = String(url).trim();
+  if (!raw) return '#';
+  if (/[\u0000-\u001f\u007f"'<>]/.test(raw)) return '#';
+  const scheme = raw.match(/^([a-z][a-z0-9+.\-]*):/i);
+  if (scheme) {
+    const s = scheme[1].toLowerCase();
+    return (s === 'http' || s === 'https' || s === 'mailto') ? escAttr(raw) : '#';
+  }
+  if (raw.startsWith('//')) return '#';
+  if (/^www\./i.test(raw)) return escAttr('https://' + raw);
+  return escAttr(raw);
+}
+
 // --- hero counter ----------------------------------------------------------
 async function heroCounter() {
   const el = document.getElementById('hero-counter');
@@ -596,8 +638,8 @@ function buildRegulation() {
   const newsWrap = document.getElementById('reg-news');
   if (newsWrap && Array.isArray(data.regulationNews)) {
     newsWrap.innerHTML = (data.regulationNews || []).map((n) => `<div class="reg-news-item" style="margin:0.6rem 0;padding:0.6rem 0.9rem;border-left:3px solid var(--hub-gold, #d4a017)">
-      <strong>${n.label}</strong> <span class="as-of">(${n.date})</span>
-      <p style="margin:0.3rem 0 0">${n.detail} <a href="${n.source}" target="_blank" rel="noopener noreferrer">Source</a></p>
+      <strong>${escHtml(n.label)}</strong> <span class="as-of">(${escHtml(n.date)})</span>
+      <p style="margin:0.3rem 0 0">${escHtml(n.detail)} <a href="${safeHref(n.source)}" target="_blank" rel="noopener noreferrer">Source</a></p>
     </div>`).join('');
   }
   document.querySelectorAll('#reg-chips .hub-chip').forEach((chip) => {
@@ -777,11 +819,11 @@ function buildFreshnessBadge() {
 function buildFooterLists() {
   const vc = document.getElementById('verified-claims-list');
   if (vc) {
-    vc.innerHTML = '<ol>' + data.verifiedClaims.map((c) => `<li><strong>${c.claim}.</strong> ${c.resolution}<br><span class="as-of">Sources: ${c.sources.map((s) => `<a href="${s.url}" target="_blank" rel="noopener noreferrer">${s.label}</a>`).join('; ')}.</span></li>`).join('') + '</ol>';
+    vc.innerHTML = '<ol>' + data.verifiedClaims.map((c) => `<li><strong>${escHtml(c.claim)}.</strong> ${escHtml(c.resolution)}<br><span class="as-of">Sources: ${c.sources.map((s) => `<a href="${safeHref(s.url)}" target="_blank" rel="noopener noreferrer">${escHtml(s.label)}</a>`).join('; ')}.</span></li>`).join('') + '</ol>';
   }
   const sl = document.getElementById('sources-list');
   if (sl) {
-    sl.innerHTML = data.sources.map((s) => `<li><a href="${s.url}" target="_blank" rel="noopener noreferrer">${s.label}</a></li>`).join('');
+    sl.innerHTML = data.sources.map((s) => `<li><a href="${safeHref(s.url)}" target="_blank" rel="noopener noreferrer">${escHtml(s.label)}</a></li>`).join('');
   }
 }
 
@@ -906,13 +948,13 @@ function buildGeniusStatus() {
   const g = data.geniusStatus;
   if (!g || !block) return;
   block.innerHTML = `
-    <p>Enacted <strong>${g.enacted}</strong>. Historical tracker snapshot (${g.asOf}): <strong>${g.totalRulemakings}</strong> total rulemakings across <strong>${g.agencies}</strong> agencies; <strong>${g.nprmsIssued}</strong> Notices of Proposed Rulemaking issued. Final rules completed: <strong>${g.finalRules == null ? 'UNKNOWN' : g.finalRules}</strong>.</p>
-    <p><strong>Commencement mechanics:</strong> ${g.commencementMechanics}</p>
-    <p><strong>Commencement status:</strong> ${g.commencementStatus}</p>
-    <p><strong>Reserves:</strong> ${g.reserveClasses}</p>
-    <p>${g.note}</p>
+    <p>Enacted <strong>${escHtml(g.enacted)}</strong>. Historical tracker snapshot (${escHtml(g.asOf)}): <strong>${escHtml(g.totalRulemakings)}</strong> total rulemakings across <strong>${escHtml(g.agencies)}</strong> agencies; <strong>${escHtml(g.nprmsIssued)}</strong> Notices of Proposed Rulemaking issued. Final rules completed: <strong>${escHtml(g.finalRules == null ? 'UNKNOWN' : g.finalRules)}</strong>.</p>
+    <p><strong>Commencement mechanics:</strong> ${escHtml(g.commencementMechanics)}</p>
+    <p><strong>Commencement status:</strong> ${escHtml(g.commencementStatus)}</p>
+    <p><strong>Reserves:</strong> ${escHtml(g.reserveClasses)}</p>
+    <p>${escHtml(g.note)}</p>
   `;
-  if (sourceEl) sourceEl.innerHTML = `Source: <a href="${g.url}" target="_blank" rel="noopener noreferrer">${g.source}</a>. This is a dated snapshot, not a live tracker, and no statement above asserts that any GENIUS duty is currently operative.`;
+  if (sourceEl) sourceEl.innerHTML = `Source: <a href="${safeHref(g.url)}" target="_blank" rel="noopener noreferrer">${escHtml(g.source)}</a>. This is a dated snapshot, not a live tracker, and no statement above asserts that any GENIUS duty is currently operative.`;
 }
 
 // Section 3: the statutory reserve list, stated as a list. Reading "1:1
@@ -923,13 +965,13 @@ function buildGeniusReserves() {
   if (!wrap || !r) return;
   wrap.innerHTML = `
     <div class="callout">
-      <div class="callout-label">${r.citation}</div>
-      <p class="stat md">${r.headline}</p>
-      <ol class="hub-class-list">${r.classes.map((c) => `<li>${c}</li>`).join('')}</ol>
-      <p><strong>Disclosure duty:</strong> ${r.disclosure}</p>
-      <p><strong>Encumbrance:</strong> ${r.pledgeBan}</p>
-      <p><strong>Accounting treatment:</strong> ${r.accounting}</p>
-      <p class="as-of">${r.scope} Source: <a href="${r.url}" target="_blank" rel="noopener noreferrer">GENIUS Act enrolled text</a>.</p>
+      <div class="callout-label">${escHtml(r.citation)}</div>
+      <p class="stat md">${escHtml(r.headline)}</p>
+      <ol class="hub-class-list">${r.classes.map((c) => `<li>${escHtml(c)}</li>`).join('')}</ol>
+      <p><strong>Disclosure duty:</strong> ${escHtml(r.disclosure)}</p>
+      <p><strong>Encumbrance:</strong> ${escHtml(r.pledgeBan)}</p>
+      <p><strong>Accounting treatment:</strong> ${escHtml(r.accounting)}</p>
+      <p class="as-of">${escHtml(r.scope)} Source: <a href="${safeHref(r.url)}" target="_blank" rel="noopener noreferrer">GENIUS Act enrolled text</a>.</p>
     </div>
   `;
 }
@@ -943,14 +985,14 @@ function buildTreasuryDemand() {
   if (!wrap || !t) return;
   wrap.innerHTML = `
     <div class="callout">
-      <div class="callout-label">${t.title}</div>
-      <p><strong>The measurement:</strong> ${t.lead}</p>
-      <p><strong>The conditional example:</strong> ${t.kcFed}</p>
-      <p><strong>Why no number is published:</strong> ${t.discrepancy}</p>
-      <p class="as-of"><strong>Status:</strong> ${t.status}</p>
-      <p><strong>What survives both versions:</strong> ${t.hedge}</p>
-      <p>${t.implication}</p>
-      <p class="as-of">Source: <a href="${t.url}" target="_blank" rel="noopener noreferrer">Kansas City Fed Economic Bulletin</a> and the Fed's December 2025 FEDS Note. Both are cited with their own dates and their own limitations.</p>
+      <div class="callout-label">${escHtml(t.title)}</div>
+      <p><strong>The measurement:</strong> ${escHtml(t.lead)}</p>
+      <p><strong>The conditional example:</strong> ${escHtml(t.kcFed)}</p>
+      <p><strong>Why no number is published:</strong> ${escHtml(t.discrepancy)}</p>
+      <p class="as-of"><strong>Status:</strong> ${escHtml(t.status)}</p>
+      <p><strong>What survives both versions:</strong> ${escHtml(t.hedge)}</p>
+      <p>${escHtml(t.implication)}</p>
+      <p class="as-of">Source: <a href="${safeHref(t.url)}" target="_blank" rel="noopener noreferrer">Kansas City Fed Economic Bulletin</a> and the Fed's December 2025 FEDS Note. Both are cited with their own dates and their own limitations.</p>
     </div>
   `;
 }
@@ -964,12 +1006,12 @@ function buildMarketCapMeasure() {
   wrap.innerHTML = `
     <div class="callout">
       <div class="callout-label">Total stablecoin market cap, one dated measurement</div>
-      <p class="stat md">${m.headline}</p>
-      <p class="as-of">As of ${m.asOf}</p>
-      <p><strong>What it measures:</strong> ${m.measures}</p>
-      <p><strong>Movement:</strong> ${m.changeYoy}, ${m.dollarShare}, and ${m.distanceFromPeak}.</p>
-      <p><strong>Why no range:</strong> ${m.crossSourceRange}</p>
-      <p class="as-of">Source: <a href="${m.url}" target="_blank" rel="noopener noreferrer">${m.source}</a>. This is a different measure from the hero counter above, which sums only the 5 coins tracked by the live dashboard.</p>
+      <p class="stat md">${escHtml(m.headline)}</p>
+      <p class="as-of">As of ${escHtml(m.asOf)}</p>
+      <p><strong>What it measures:</strong> ${escHtml(m.measures)}</p>
+      <p><strong>Movement:</strong> ${escHtml(m.changeYoy)}, ${escHtml(m.dollarShare)}, and ${escHtml(m.distanceFromPeak)}.</p>
+      <p><strong>Why no range:</strong> ${escHtml(m.crossSourceRange)}</p>
+      <p class="as-of">Source: <a href="${safeHref(m.url)}" target="_blank" rel="noopener noreferrer">${escHtml(m.source)}</a>. This is a different measure from the hero counter above, which sums only the 5 coins tracked by the live dashboard.</p>
     </div>
   `;
 }
@@ -1213,14 +1255,14 @@ function buildRwaDepth() {
   if (wrap && d) {
     wrap.innerHTML = `
       <div class="callout">
-        <div class="callout-label">${d.headline}</div>
-        <p><strong>Reported value:</strong> ${d.reportedValue}</p>
-        <p><strong>Weekly transfer activity:</strong> ${d.transferActivity}</p>
-        <p class="as-of"><strong>Why the two percentages differ:</strong> ${d.denominatorNote}</p>
-        <p class="as-of"><strong>Data dates:</strong> ${d.dataDate}</p>
-        <p><strong>What this does and does not show:</strong> ${d.interpretation}</p>
-        <p><strong>DeFi deployment share:</strong> ${d.defiShare}</p>
-        <p class="as-of">${d.notEstablished} Source: <a href="${d.url}" target="_blank" rel="noopener noreferrer">BeInCrypto (2026-07-02)</a>, with the publisher's report landing page dated 2026-05-31.</p>
+        <div class="callout-label">${escHtml(d.headline)}</div>
+        <p><strong>Reported value:</strong> ${escHtml(d.reportedValue)}</p>
+        <p><strong>Weekly transfer activity:</strong> ${escHtml(d.transferActivity)}</p>
+        <p class="as-of"><strong>Why the two percentages differ:</strong> ${escHtml(d.denominatorNote)}</p>
+        <p class="as-of"><strong>Data dates:</strong> ${escHtml(d.dataDate)}</p>
+        <p><strong>What this does and does not show:</strong> ${escHtml(d.interpretation)}</p>
+        <p><strong>DeFi deployment share:</strong> ${escHtml(d.defiShare)}</p>
+        <p class="as-of">${escHtml(d.notEstablished)} Source: <a href="${safeHref(d.url)}" target="_blank" rel="noopener noreferrer">BeInCrypto (2026-07-02)</a>, with the publisher's report landing page dated 2026-05-31.</p>
       </div>
     `;
   }
@@ -1232,14 +1274,14 @@ function buildDistributionEconomics() {
   if (!wrap || !d) return;
   wrap.innerHTML = `
     <div class="callout">
-      <div class="callout-label">${d.headline}</div>
-      <p><strong>The incumbent already does this:</strong> ${d.incumbent}</p>
-      <p><strong>What is actually disclosed:</strong> ${d.namedTerms}</p>
-      <p class="as-of">${d.caveat}</p>
-      <p><strong>The challenger:</strong> ${d.challenger}</p>
-      <p><strong>Conclusion:</strong> ${d.conclusion}</p>
-      <p class="as-of"><strong>Still UNRESOLVED:</strong> ${d.unresolved}</p>
-      <p class="as-of">Source: <a href="${d.circleUrl}" target="_blank" rel="noopener noreferrer">Circle's Form 10-Q for the quarter ended 2026-06-30</a>, and Open Standard's stated company structure.</p>
+      <div class="callout-label">${escHtml(d.headline)}</div>
+      <p><strong>The incumbent already does this:</strong> ${escHtml(d.incumbent)}</p>
+      <p><strong>What is actually disclosed:</strong> ${escHtml(d.namedTerms)}</p>
+      <p class="as-of">${escHtml(d.caveat)}</p>
+      <p><strong>The challenger:</strong> ${escHtml(d.challenger)}</p>
+      <p><strong>Conclusion:</strong> ${escHtml(d.conclusion)}</p>
+      <p class="as-of"><strong>Still UNRESOLVED:</strong> ${escHtml(d.unresolved)}</p>
+      <p class="as-of">Source: <a href="${safeHref(d.circleUrl)}" target="_blank" rel="noopener noreferrer">Circle's Form 10-Q for the quarter ended 2026-06-30</a>, and Open Standard's stated company structure.</p>
     </div>
   `;
 }

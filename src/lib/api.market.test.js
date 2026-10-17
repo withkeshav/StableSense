@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { transformMarketPayload } from './marketBackend.js';
+import { looksLikeMarketPayload } from './api.js';
 
 const T0 = 1_786_000_000_000;
 
@@ -179,6 +180,109 @@ describe('cachedRequest maxStale: a week-old payload is not served as live', () 
     const out = await cachedRequest('backendMarket', '/api/market', { maxStale: 2 * 3600_000 });
 
     expect(out.observedAt).toBe(1_786_000_000_000);
+  });
+});
+
+describe('looksLikeMarketPayload shape guard', () => {
+  it('accepts the real payload shape and rejects anything transform would misread', () => {
+    expect(looksLikeMarketPayload(marketPayload())).toBe(true);
+    expect(looksLikeMarketPayload({ coins: [], market: {} })).toBe(true);
+    expect(looksLikeMarketPayload(null)).toBe(false);
+    expect(looksLikeMarketPayload('nope')).toBe(false);
+    expect(looksLikeMarketPayload([marketPayload()])).toBe(false);
+    expect(looksLikeMarketPayload({ market: {} })).toBe(false);
+    expect(looksLikeMarketPayload({ coins: 'nope', market: {} })).toBe(false);
+    expect(looksLikeMarketPayload({ coins: [], market: null })).toBe(false);
+    expect(looksLikeMarketPayload({ coins: [], market: [] })).toBe(false);
+  });
+});
+
+describe('cachedRequest validate: a corrupted cache is a miss, not a number', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.resetModules();
+  });
+
+  const MARKET_KEY = 'stablesense:v2:backendMarket';
+
+  function stubStorage(entry) {
+    const store = new Map();
+    if (entry !== undefined) store.set(MARKET_KEY, JSON.stringify(entry));
+    vi.stubGlobal('localStorage', {
+      getItem: (k) => (store.has(k) ? store.get(k) : null),
+      setItem: (k, v) => store.set(k, v),
+      removeItem: (k) => store.delete(k),
+    });
+    return store;
+  }
+
+  it('refetches and serves transformed fresh data when the cached payload is corrupt', async () => {
+    const store = stubStorage({ ts: Date.now(), data: { coins: 'corrupt', market: 42 } });
+    const fresh = marketPayload();
+    const fetchMock = vi.fn(async () => ({ ok: true, json: async () => fresh }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const { fetchMarketFromBackend } = await import('./api.js');
+    const data = await fetchMarketFromBackend({});
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(data.marketTotals.peggedUSD).toBe(130_000);
+    expect(data.cgSimple.tether.usd).toBe(1.0001);
+    // The corrupt entry is replaced by the fresh payload, not left in place.
+    expect(JSON.parse(store.get(MARKET_KEY)).data.coins).toHaveLength(2);
+  });
+
+  it('serves a valid cached payload without refetching', async () => {
+    stubStorage({ ts: Date.now(), data: marketPayload() });
+    const fetchMock = vi.fn(async () => ({ ok: true, json: async () => marketPayload({ observedAt: T0 + 999 }) }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const { fetchMarketFromBackend } = await import('./api.js');
+    const data = await fetchMarketFromBackend({});
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(data.observedAt).toBe(T0);
+    expect(data.marketTotals.peggedUSD).toBe(130_000);
+  });
+
+  it('still serves a valid stale copy when the network fails', async () => {
+    const cached = marketPayload({ observedAt: T0 });
+    stubStorage({ ts: Date.now() - 9 * 86_400_000, data: cached });
+    const fetchMock = vi.fn(async () => { throw new Error('offline'); });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const { fetchMarketFromBackend } = await import('./api.js');
+    const data = await fetchMarketFromBackend({});
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(data.observedAt).toBe(T0);
+    expect(data.marketTotals.peggedUSD).toBe(130_000);
+  });
+
+  it('propagates the error instead of serving a corrupt cache when the network fails', async () => {
+    stubStorage({ ts: Date.now() - 9 * 86_400_000, data: { coins: 'corrupt', market: 42 } });
+    vi.stubGlobal('fetch', vi.fn(async () => { throw new Error('offline'); }));
+
+    const { fetchDashboardData } = await import('./api.js');
+    await expect(fetchDashboardData({})).rejects.toThrow('All market data sources are unavailable.');
+  });
+
+  it('never validates a network response, and purges a poisoned memory entry on the next read', async () => {
+    stubStorage(undefined);
+    const badFromNetwork = { coins: 'nope', market: null };
+    const fetchMock = vi.fn(async () => ({ ok: true, json: async () => badFromNetwork }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const { cachedRequest } = await import('./api.js');
+    const first = await cachedRequest('backendMarket', '/api/market', { validate: looksLikeMarketPayload });
+    // Network replies are passed through untouched: validate is a cache guard.
+    expect(first).toEqual(badFromNetwork);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    // The memory copy now fails validation, so it is dropped and a real fetch follows.
+    const second = await cachedRequest('backendMarket', '/api/market', { validate: looksLikeMarketPayload });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(second).toEqual(badFromNetwork);
   });
 });
 
