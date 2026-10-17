@@ -93,6 +93,83 @@ function safeHref(url) {
   return escAttr(raw);
 }
 
+// --- shared template builders ---------------------------------------------
+// The sections below repeat the same handful of fragments. Each one is built in
+// exactly one place here, so a class or attribute change lands once and every
+// call site says what it renders instead of restating the markup. These return
+// HTML strings; anything a caller wants escaped is escaped at the call site, so
+// the builders never change what a value renders as.
+
+// Outbound source link. Every data-derived URL in this file reaches an href
+// through safeHref here, never by direct interpolation.
+function sourceLink(url, labelHtml) {
+  return `<a href="${safeHref(url)}" target="_blank" rel="noopener noreferrer">${labelHtml}</a>`;
+}
+
+// "Label: value" lead-in, the part shared by the two paragraph forms below.
+// valueHtml is the already-rendered value; escaping stays at the call site.
+function strongLead(label, valueHtml) {
+  return `<strong>${label}:</strong> ${valueHtml}`;
+}
+
+// "Source: <link>" aside. Five sections end with the same sentence shape: an
+// optional lead-in, the source link, then a trailing qualifier that is specific
+// to the section and must stay specific.
+function sourceAside(prefixHtml, url, labelHtml, tailHtml) {
+  return `<p class="as-of">${prefixHtml}Source: ${sourceLink(url, labelHtml)}${tailHtml}</p>`;
+}
+
+// Labelled paragraph: <p><strong>Label:</strong> value</p>.
+function labelledPara(label, valueHtml) {
+  return `<p>${strongLead(label, valueHtml)}</p>`;
+}
+
+// Same shape, muted aside styling: dates, caveats, unresolved status.
+function labelledAside(label, valueHtml) {
+  return `<p class="as-of">${strongLead(label, valueHtml)}</p>`;
+}
+
+// One stat callout: label, headline figure, single note line.
+function statCallout(labelHtml, statHtml, noteHtml) {
+  return `
+    <div class="callout">
+      <div class="callout-label">${labelHtml}</div>
+      <p class="stat md">${statHtml}</p>
+      <p>${noteHtml}</p>
+    </div>
+  `;
+}
+
+// Scrollable table shell. tableId is always a hard-coded string at the call
+// site (never data), and the header cells carry their own <th> classes, so the
+// only per-section difference is the header row and the body rows.
+function hubTableHtml(tableId, headerCellsHtml, rowsHtml) {
+  return `
+    <div class="hub-table-wrap">
+      <table class="hub-table" id="${escAttr(tableId)}">
+        <thead>
+          <tr>${headerCellsHtml}</tr>
+        </thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+// Chip group: one active chip at a time. Clicking a chip in containerSelector
+// moves .active to it and calls onSelect with its data attribute value. Used by
+// the token, forecast, and regulation filters, which had the same wiring three
+// times.
+function wireChips(containerSelector, dataKey, onSelect) {
+  document.querySelectorAll(`${containerSelector} .hub-chip`).forEach((chip) => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll(`${containerSelector} .hub-chip`).forEach((c) => c.classList.remove('active'));
+      chip.classList.add('active');
+      onSelect(chip.dataset[dataKey]);
+    });
+  });
+}
+
 // --- hero counter ----------------------------------------------------------
 async function heroCounter() {
   const el = document.getElementById('hero-counter');
@@ -194,8 +271,8 @@ function buildAccordion(containerId, items, renderItem) {
 // --- taxonomy accordion + token table + chips -----------------------------
 function buildTaxonomy() {
   buildAccordion('taxonomy-accordion', data.taxonomy, (t) => {
-    return `<p><strong>Scale:</strong> <span class="num">${t.scale}</span> <span class="as-of">(${t.asOf})</span></p>
-      <p><strong>Examples:</strong> ${t.examples}</p>
+    return `${labelledPara('Scale', `<span class="num">${t.scale}</span> <span class="as-of">(${t.asOf})</span>`)}
+      ${labelledPara('Examples', t.examples)}
       <p>${t.mechanism}</p>
       <p class="why">${t.why}</p>`;
   });
@@ -230,13 +307,7 @@ function buildTaxonomy() {
   };
   renderRows('all');
 
-  document.querySelectorAll('#token-chips .hub-chip').forEach((chip) => {
-    chip.addEventListener('click', () => {
-      document.querySelectorAll('#token-chips .hub-chip').forEach((c) => c.classList.remove('active'));
-      chip.classList.add('active');
-      renderRows(chip.dataset.cat);
-    });
-  });
+  wireChips('#token-chips', 'cat', renderRows);
 }
 
 // --- Chart.js (lazy) ------------------------------------------------------
@@ -435,14 +506,10 @@ async function forecastChart() {
     },
   });
 
-  document.querySelectorAll('#forecast-chips .hub-chip').forEach((chip) => {
-    chip.addEventListener('click', () => {
-      document.querySelectorAll('#forecast-chips .hub-chip').forEach((c) => c.classList.remove('active'));
-      chip.classList.add('active');
-      activeFilter = chip.dataset.forecaster;
-      chart.data = buildData(activeFilter);
-      chart.update();
-    });
+  wireChips('#forecast-chips', 'forecaster', (value) => {
+    activeFilter = value;
+    chart.data = buildData(activeFilter);
+    chart.update();
   });
 }
 
@@ -639,16 +706,10 @@ function buildRegulation() {
   if (newsWrap && Array.isArray(data.regulationNews)) {
     newsWrap.innerHTML = (data.regulationNews || []).map((n) => `<div class="reg-news-item" style="margin:0.6rem 0;padding:0.6rem 0.9rem;border-left:3px solid var(--hub-gold, #d4a017)">
       <strong>${escHtml(n.label)}</strong> <span class="as-of">(${escHtml(n.date)})</span>
-      <p style="margin:0.3rem 0 0">${escHtml(n.detail)} <a href="${safeHref(n.source)}" target="_blank" rel="noopener noreferrer">Source</a></p>
+      <p style="margin:0.3rem 0 0">${escHtml(n.detail)} ${sourceLink(n.source, 'Source')}</p>
     </div>`).join('');
   }
-  document.querySelectorAll('#reg-chips .hub-chip').forEach((chip) => {
-    chip.addEventListener('click', () => {
-      document.querySelectorAll('#reg-chips .hub-chip').forEach((c) => c.classList.remove('active'));
-      chip.classList.add('active');
-      render(chip.dataset.jurisdiction);
-    });
-  });
+  wireChips('#reg-chips', 'jurisdiction', render);
 }
 
 // --- Section 9: reality check log-scale ----------------------------------
@@ -733,22 +794,25 @@ function remittanceCalc() {
 
     const hopOrSkip = (included, cost) => included ? fmtUsd(cost) : 'not in this path';
 
-    tradOutEl.innerHTML =
-      `<div class="calc-stack">` +
-        `<div class="calc-row"><span>Stated wire / MTO fee</span><span class="calc-val">${fmtUsd(tradFee)}</span></div>` +
-        `<div class="calc-row"><span>FX markup (${schedule.feePct}%)</span><span class="calc-val">${fmtUsd(tradFx)}</span></div>` +
-        `<div class="calc-row"><span>Float / interest (${rate}%, ${days}d)</span><span class="calc-val">${fmtUsd(tradFloat)}</span></div>` +
-        `<div class="calc-row calc-total"><span>All-in</span><span class="calc-val">${fmtUsd(tradAllIn)} (${fmtPctRow(tradAllIn, amt)})</span></div>` +
-      `</div>`;
+    // Each lever is its own row; the total is the last row, not a hero number.
+    const costRow = (label, value) => `<div class="calc-row"><span>${label}</span><span class="calc-val">${value}</span></div>`;
+    const totalRow = (value) => `<div class="calc-row calc-total"><span>All-in</span><span class="calc-val">${value}</span></div>`;
+    const costStack = (rowsHtml) => `<div class="calc-stack">${rowsHtml}</div>`;
 
-    stableOutEl.innerHTML =
-      `<div class="calc-stack">` +
-        `<div class="calc-row"><span>On-ramp</span><span class="calc-val">${hopOrSkip(includeOnramp, onrampCost)}</span></div>` +
-        `<div class="calc-row"><span>Network fee</span><span class="calc-val">${fmtUsd(gas)}</span></div>` +
-        `<div class="calc-row"><span>Off-ramp</span><span class="calc-val">${hopOrSkip(includeOfframp, offrampCost)}</span></div>` +
-        `<div class="calc-row"><span>Float / interest</span><span class="calc-val">${fmtUsd(stableFloat)}</span></div>` +
-        `<div class="calc-row calc-total"><span>All-in</span><span class="calc-val">${fmtUsd(stableAllIn)} (${fmtPctRow(stableAllIn, amt)})</span></div>` +
-      `</div>`;
+    tradOutEl.innerHTML = costStack(
+      costRow('Stated wire / MTO fee', fmtUsd(tradFee)) +
+      costRow(`FX markup (${schedule.feePct}%)`, fmtUsd(tradFx)) +
+      costRow(`Float / interest (${rate}%, ${days}d)`, fmtUsd(tradFloat)) +
+      totalRow(`${fmtUsd(tradAllIn)} (${fmtPctRow(tradAllIn, amt)})`)
+    );
+
+    stableOutEl.innerHTML = costStack(
+      costRow('On-ramp', hopOrSkip(includeOnramp, onrampCost)) +
+      costRow('Network fee', fmtUsd(gas)) +
+      costRow('Off-ramp', hopOrSkip(includeOfframp, offrampCost)) +
+      costRow('Float / interest', fmtUsd(stableFloat)) +
+      totalRow(`${fmtUsd(stableAllIn)} (${fmtPctRow(stableAllIn, amt)})`)
+    );
 
     // Warn when the RPW-like percentage is extrapolated beyond its survey size.
     if (warnEl) {
@@ -819,11 +883,11 @@ function buildFreshnessBadge() {
 function buildFooterLists() {
   const vc = document.getElementById('verified-claims-list');
   if (vc) {
-    vc.innerHTML = '<ol>' + data.verifiedClaims.map((c) => `<li><strong>${escHtml(c.claim)}.</strong> ${escHtml(c.resolution)}<br><span class="as-of">Sources: ${c.sources.map((s) => `<a href="${safeHref(s.url)}" target="_blank" rel="noopener noreferrer">${escHtml(s.label)}</a>`).join('; ')}.</span></li>`).join('') + '</ol>';
+    vc.innerHTML = '<ol>' + data.verifiedClaims.map((c) => `<li><strong>${escHtml(c.claim)}.</strong> ${escHtml(c.resolution)}<br><span class="as-of">Sources: ${c.sources.map((s) => sourceLink(s.url, escHtml(s.label))).join('; ')}.</span></li>`).join('') + '</ol>';
   }
   const sl = document.getElementById('sources-list');
   if (sl) {
-    sl.innerHTML = data.sources.map((s) => `<li><a href="${safeHref(s.url)}" target="_blank" rel="noopener noreferrer">${escHtml(s.label)}</a></li>`).join('');
+    sl.innerHTML = data.sources.map((s) => `<li>${sourceLink(s.url, escHtml(s.label))}</li>`).join('');
   }
 }
 
@@ -901,13 +965,7 @@ function buildRemittanceScenarios() {
 function buildYieldDebate() {
   const wrap = document.getElementById('yield-callouts');
   if (!wrap) return;
-  wrap.innerHTML = (data.yieldDebate || []).map((c) => `
-    <div class="callout">
-      <div class="callout-label">${c.label}</div>
-      <p class="stat md">${c.stat}</p>
-      <p>${c.detail}</p>
-    </div>
-  `).join('');
+  wrap.innerHTML = (data.yieldDebate || []).map((c) => statCallout(c.label, c.stat, c.detail)).join('');
 }
 
 // T-bill maturity-band visual (extends Section 3).
@@ -949,12 +1007,12 @@ function buildGeniusStatus() {
   if (!g || !block) return;
   block.innerHTML = `
     <p>Enacted <strong>${escHtml(g.enacted)}</strong>. Historical tracker snapshot (${escHtml(g.asOf)}): <strong>${escHtml(g.totalRulemakings)}</strong> total rulemakings across <strong>${escHtml(g.agencies)}</strong> agencies; <strong>${escHtml(g.nprmsIssued)}</strong> Notices of Proposed Rulemaking issued. Final rules completed: <strong>${escHtml(g.finalRules == null ? 'UNKNOWN' : g.finalRules)}</strong>.</p>
-    <p><strong>Commencement mechanics:</strong> ${escHtml(g.commencementMechanics)}</p>
-    <p><strong>Commencement status:</strong> ${escHtml(g.commencementStatus)}</p>
-    <p><strong>Reserves:</strong> ${escHtml(g.reserveClasses)}</p>
+    ${labelledPara('Commencement mechanics', escHtml(g.commencementMechanics))}
+    ${labelledPara('Commencement status', escHtml(g.commencementStatus))}
+    ${labelledPara('Reserves', escHtml(g.reserveClasses))}
     <p>${escHtml(g.note)}</p>
   `;
-  if (sourceEl) sourceEl.innerHTML = `Source: <a href="${safeHref(g.url)}" target="_blank" rel="noopener noreferrer">${escHtml(g.source)}</a>. This is a dated snapshot, not a live tracker, and no statement above asserts that any GENIUS duty is currently operative.`;
+  if (sourceEl) sourceEl.innerHTML = `Source: ${sourceLink(g.url, escHtml(g.source))}. This is a dated snapshot, not a live tracker, and no statement above asserts that any GENIUS duty is currently operative.`;
 }
 
 // Section 3: the statutory reserve list, stated as a list. Reading "1:1
@@ -968,10 +1026,10 @@ function buildGeniusReserves() {
       <div class="callout-label">${escHtml(r.citation)}</div>
       <p class="stat md">${escHtml(r.headline)}</p>
       <ol class="hub-class-list">${r.classes.map((c) => `<li>${escHtml(c)}</li>`).join('')}</ol>
-      <p><strong>Disclosure duty:</strong> ${escHtml(r.disclosure)}</p>
-      <p><strong>Encumbrance:</strong> ${escHtml(r.pledgeBan)}</p>
-      <p><strong>Accounting treatment:</strong> ${escHtml(r.accounting)}</p>
-      <p class="as-of">${escHtml(r.scope)} Source: <a href="${safeHref(r.url)}" target="_blank" rel="noopener noreferrer">GENIUS Act enrolled text</a>.</p>
+      ${labelledPara('Disclosure duty', escHtml(r.disclosure))}
+      ${labelledPara('Encumbrance', escHtml(r.pledgeBan))}
+      ${labelledPara('Accounting treatment', escHtml(r.accounting))}
+      ${sourceAside(escHtml(r.scope) + ' ', r.url, 'GENIUS Act enrolled text', '.')}
     </div>
   `;
 }
@@ -986,13 +1044,13 @@ function buildTreasuryDemand() {
   wrap.innerHTML = `
     <div class="callout">
       <div class="callout-label">${escHtml(t.title)}</div>
-      <p><strong>The measurement:</strong> ${escHtml(t.lead)}</p>
-      <p><strong>The conditional example:</strong> ${escHtml(t.kcFed)}</p>
-      <p><strong>Why no number is published:</strong> ${escHtml(t.discrepancy)}</p>
-      <p class="as-of"><strong>Status:</strong> ${escHtml(t.status)}</p>
-      <p><strong>What survives both versions:</strong> ${escHtml(t.hedge)}</p>
+      ${labelledPara('The measurement', escHtml(t.lead))}
+      ${labelledPara('The conditional example', escHtml(t.kcFed))}
+      ${labelledPara('Why no number is published', escHtml(t.discrepancy))}
+      ${labelledAside('Status', escHtml(t.status))}
+      ${labelledPara('What survives both versions', escHtml(t.hedge))}
       <p>${escHtml(t.implication)}</p>
-      <p class="as-of">Source: <a href="${safeHref(t.url)}" target="_blank" rel="noopener noreferrer">Kansas City Fed Economic Bulletin</a> and the Fed's December 2025 FEDS Note. Both are cited with their own dates and their own limitations.</p>
+      ${sourceAside('', t.url, 'Kansas City Fed Economic Bulletin', " and the Fed's December 2025 FEDS Note. Both are cited with their own dates and their own limitations.")}
     </div>
   `;
 }
@@ -1008,10 +1066,10 @@ function buildMarketCapMeasure() {
       <div class="callout-label">Total stablecoin market cap, one dated measurement</div>
       <p class="stat md">${escHtml(m.headline)}</p>
       <p class="as-of">As of ${escHtml(m.asOf)}</p>
-      <p><strong>What it measures:</strong> ${escHtml(m.measures)}</p>
-      <p><strong>Movement:</strong> ${escHtml(m.changeYoy)}, ${escHtml(m.dollarShare)}, and ${escHtml(m.distanceFromPeak)}.</p>
-      <p><strong>Why no range:</strong> ${escHtml(m.crossSourceRange)}</p>
-      <p class="as-of">Source: <a href="${safeHref(m.url)}" target="_blank" rel="noopener noreferrer">${escHtml(m.source)}</a>. This is a different measure from the hero counter above, which sums only the 5 coins tracked by the live dashboard.</p>
+      ${labelledPara('What it measures', escHtml(m.measures))}
+      ${labelledPara('Movement', `${escHtml(m.changeYoy)}, ${escHtml(m.dollarShare)}, and ${escHtml(m.distanceFromPeak)}.`)}
+      ${labelledPara('Why no range', escHtml(m.crossSourceRange))}
+      ${sourceAside('', m.url, escHtml(m.source), '. This is a different measure from the hero counter above, which sums only the 5 coins tracked by the live dashboard.')}
     </div>
   `;
 }
@@ -1031,22 +1089,13 @@ function buildFloatEconomics() {
       <td class="as-of">${r.note}</td>
     </tr>
   `).join('');
-  wrap.innerHTML = `
-    <div class="hub-table-wrap">
-      <table class="hub-table" id="float-table">
-        <thead>
-          <tr>
+  wrap.innerHTML = hubTableHtml('float-table', `
             <th>Issuer</th>
             <th>Measure (as the issuer names it)</th>
             <th class="num">Value</th>
             <th class="as-of">As of</th>
             <th class="as-of">What it measures, and what it does not</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>
-  `;
+          `, rows);
 }
 
 // Section 9: the yield ban, quoted from the statute rather than paraphrased.
@@ -1057,10 +1106,10 @@ function buildYieldBan() {
   const s = document.getElementById('yield-ban-scope');
   const si = document.getElementById('yield-ban-silence');
   const r = document.getElementById('yield-ban-reserve');
-  if (q) q.innerHTML = `<strong>${y.citation}:</strong> <em>${y.quote}</em>`;
-  if (s) s.innerHTML = `<strong>Who it binds:</strong> ${y.payor}`;
-  if (si) si.innerHTML = `<strong>What it does not say:</strong> ${y.silence}`;
-  if (r) r.innerHTML = `<strong>The reserve side:</strong> ${y.reserveIncome}`;
+  if (q) q.innerHTML = strongLead(y.citation, `<em>${y.quote}</em>`);
+  if (s) s.innerHTML = strongLead('Who it binds', y.payor);
+  if (si) si.innerHTML = strongLead('What it does not say', y.silence);
+  if (r) r.innerHTML = strongLead('The reserve side', y.reserveIncome);
 }
 
 // Section 10: rail vs authorization status, kept deliberately separate.
@@ -1075,21 +1124,12 @@ function buildAgenticRails() {
       <td class="as-of">${r.detail}</td>
     </tr>
   `).join('');
-  wrap.innerHTML = `
-    <div class="hub-table-wrap">
-      <table class="hub-table" id="agentic-rails-table">
-        <thead>
-          <tr>
+  wrap.innerHTML = hubTableHtml('agentic-rails-table', `
             <th>Protocol</th>
             <th>What layer it actually is</th>
             <th>Status</th>
             <th class="as-of">Detail</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>
-  `;
+          `, rows);
 }
 
 // Section 10: every published volume figure side by side, with its publisher
@@ -1105,21 +1145,12 @@ function buildAgenticVolume() {
       <td class="as-of">${r.label}</td>
     </tr>
   `).join('');
-  wrap.innerHTML = `
-    <div class="hub-table-wrap">
-      <table class="hub-table" id="agentic-volume-table">
-        <thead>
-          <tr>
+  wrap.innerHTML = hubTableHtml('agentic-volume-table', `
             <th class="num">Published figure</th>
             <th class="as-of">Window</th>
             <th>Publisher</th>
             <th class="as-of">Sourcing status</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>
-  `;
+          `, rows);
 }
 
 // Section 10: per-transaction size, the measure that survives the headline
@@ -1127,13 +1158,7 @@ function buildAgenticVolume() {
 function buildAgenticTicket() {
   const wrap = document.getElementById('agentic-ticket-wrap');
   if (!wrap) return;
-  wrap.innerHTML = (data.agenticTicketSize || []).map((t) => `
-    <div class="callout">
-      <div class="callout-label">${t.measure}</div>
-      <p class="stat md">${t.value}</p>
-      <p>${t.publisher}. ${t.note}</p>
-    </div>
-  `).join('');
+  wrap.innerHTML = (data.agenticTicketSize || []).map((t) => statCallout(t.measure, t.value, `${t.publisher}. ${t.note}`)).join('');
   wrap.classList.add('callout-row');
 }
 
@@ -1144,13 +1169,7 @@ function buildGrowthHonest() {
   if (!wrap) return;
   const g = data.growthHonest;
   if (!g) return;
-  wrap.innerHTML = (g.points || []).map((p) => `
-    <div class="callout">
-      <div class="callout-label">${p.label}</div>
-      <p class="stat md">${p.value}</p>
-      <p>${p.source}</p>
-    </div>
-  `).join('');
+  wrap.innerHTML = (g.points || []).map((p) => statCallout(p.label, p.value, p.source)).join('');
   wrap.classList.add('callout-row');
   const note = document.getElementById('growth-honest-note');
   if (note) note.textContent = g.note;
@@ -1165,7 +1184,7 @@ function buildBigPlayers() {
       <div class="callout">
         <div class="callout-label">${arc.name} - ${arc.operator}</div>
         <p class="stat md">${arc.status}</p>
-        <p><strong>Launched:</strong> ${arc.launched}. Mainnet chain ID ${arc.chainId}; testnet chain ID ${arc.testnetChainId}. Gas paid in ${arc.gas.charAt(0).toLowerCase()}${arc.gas.slice(1)}.</p>
+        <p>${strongLead('Launched', `${arc.launched}. Mainnet chain ID ${arc.chainId}; testnet chain ID ${arc.testnetChainId}. Gas paid in ${arc.gas.charAt(0).toLowerCase()}${arc.gas.slice(1)}.`)}</p>
         <p>${arc.verification}</p>
         <p>${arc.caveat}</p>
       </div>
@@ -1182,16 +1201,16 @@ function buildBigPlayers() {
         <div class="callout-label">${ousd.name} - issuer and consortium</div>
         <p class="stat md">${ousd.status}</p>
         <p>${ousd.issuer}</p>
-        <p><strong>Originally announced:</strong> ${ousd.announced}.</p>
-        <p><strong>Launch chains:</strong> ${ousd.chains}</p>
-        <p><strong>Reserve and supply snapshot:</strong> ${ousd.supplySnapshot}</p>
+        ${labelledPara('Originally announced', ousd.announced + '.')}
+        ${labelledPara('Launch chains', ousd.chains)}
+        ${labelledPara('Reserve and supply snapshot', ousd.supplySnapshot)}
         <p class="as-of">${ousd.supplyScope}</p>
-        <p><strong>Partner economics, not holder yield:</strong> ${ousd.reserveEarnings}</p>
-        <p><strong>What a holder actually has:</strong> ${ousd.holderRights}</p>
-        <p><strong>Charter status:</strong> ${ousd.charter}</p>
+        ${labelledPara('Partner economics, not holder yield', ousd.reserveEarnings)}
+        ${labelledPara('What a holder actually has', ousd.holderRights)}
+        ${labelledPara('Charter status', ousd.charter)}
         <p class="as-of">${ousd.preGuardClaim}</p>
-        <p class="as-of"><strong>Market reaction:</strong> ${ousd.marketReaction}</p>
-        <p class="as-of"><strong>Members confirmed from its own list:</strong> ${ousd.members}</p>
+        ${labelledAside('Market reaction', ousd.marketReaction)}
+        ${labelledAside('Members confirmed from its own list', ousd.members)}
       </div>
     `;
   }
@@ -1206,22 +1225,13 @@ function buildBigPlayers() {
       <td class="as-of">${r.note}</td>
     </tr>
   `).join('');
-  wrap.innerHTML = `
-    <div class="hub-table-wrap">
-      <table class="hub-table" id="rwa-funds-table">
-        <thead>
-          <tr>
+  wrap.innerHTML = hubTableHtml('rwa-funds-table', `
             <th>Product</th>
             <th class="num">Size</th>
             <th class="as-of">As of</th>
             <th class="as-of">What backs it</th>
             <th class="as-of">Note</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>
-  `;
+          `, rows);
 }
 
 // Section 12: BUIDL dated secondary reports kept separate, tokenized-value
@@ -1247,7 +1257,7 @@ function buildRwaDepth() {
       </div>
       <p class="as-of">${b.attributionCorrection}</p>
       <p class="as-of">${b.issuerSide}</p>
-      <p><strong>What would close it:</strong> ${b.whatWouldCloseIt}</p>
+      ${labelledPara('What would close it', b.whatWouldCloseIt)}
     `;
   }
   const wrap = document.getElementById('rwa-depth-wrap');
@@ -1256,13 +1266,13 @@ function buildRwaDepth() {
     wrap.innerHTML = `
       <div class="callout">
         <div class="callout-label">${escHtml(d.headline)}</div>
-        <p><strong>Reported value:</strong> ${escHtml(d.reportedValue)}</p>
-        <p><strong>Weekly transfer activity:</strong> ${escHtml(d.transferActivity)}</p>
-        <p class="as-of"><strong>Why the two percentages differ:</strong> ${escHtml(d.denominatorNote)}</p>
-        <p class="as-of"><strong>Data dates:</strong> ${escHtml(d.dataDate)}</p>
-        <p><strong>What this does and does not show:</strong> ${escHtml(d.interpretation)}</p>
-        <p><strong>DeFi deployment share:</strong> ${escHtml(d.defiShare)}</p>
-        <p class="as-of">${escHtml(d.notEstablished)} Source: <a href="${safeHref(d.url)}" target="_blank" rel="noopener noreferrer">BeInCrypto (2026-07-02)</a>, with the publisher's report landing page dated 2026-05-31.</p>
+        ${labelledPara('Reported value', escHtml(d.reportedValue))}
+        ${labelledPara('Weekly transfer activity', escHtml(d.transferActivity))}
+        ${labelledAside('Why the two percentages differ', escHtml(d.denominatorNote))}
+        ${labelledAside('Data dates', escHtml(d.dataDate))}
+        ${labelledPara('What this does and does not show', escHtml(d.interpretation))}
+        ${labelledPara('DeFi deployment share', escHtml(d.defiShare))}
+        ${sourceAside(escHtml(d.notEstablished) + ' ', d.url, 'BeInCrypto (2026-07-02)', ", with the publisher's report landing page dated 2026-05-31.")}
       </div>
     `;
   }
@@ -1275,13 +1285,13 @@ function buildDistributionEconomics() {
   wrap.innerHTML = `
     <div class="callout">
       <div class="callout-label">${escHtml(d.headline)}</div>
-      <p><strong>The incumbent already does this:</strong> ${escHtml(d.incumbent)}</p>
-      <p><strong>What is actually disclosed:</strong> ${escHtml(d.namedTerms)}</p>
+      ${labelledPara('The incumbent already does this', escHtml(d.incumbent))}
+      ${labelledPara('What is actually disclosed', escHtml(d.namedTerms))}
       <p class="as-of">${escHtml(d.caveat)}</p>
-      <p><strong>The challenger:</strong> ${escHtml(d.challenger)}</p>
-      <p><strong>Conclusion:</strong> ${escHtml(d.conclusion)}</p>
-      <p class="as-of"><strong>Still UNRESOLVED:</strong> ${escHtml(d.unresolved)}</p>
-      <p class="as-of">Source: <a href="${safeHref(d.circleUrl)}" target="_blank" rel="noopener noreferrer">Circle's Form 10-Q for the quarter ended 2026-06-30</a>, and Open Standard's stated company structure.</p>
+      ${labelledPara('The challenger', escHtml(d.challenger))}
+      ${labelledPara('Conclusion', escHtml(d.conclusion))}
+      ${labelledAside('Still UNRESOLVED', escHtml(d.unresolved))}
+      ${sourceAside('', d.circleUrl, "Circle's Form 10-Q for the quarter ended 2026-06-30", ", and Open Standard's stated company structure.")}
     </div>
   `;
 }

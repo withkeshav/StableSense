@@ -3,8 +3,18 @@ import { fmtB, fmtPct, fmtPrice, pctChange, bps } from '../../utils/formatters.j
 import { STABLECOIN_REGISTRY, getActiveCoins } from '../../utils/coin-config.js';
 import { getAssetMeta } from '../../utils/asset-meta.js';
 import { annotateWhaleRows, buildShareSeries, buildSupplySeries, buildWhaleWatchRows, dedupeTickers, pegChartOptions, pegRefLine, toPercentFromFirst } from '../../lib/derive.js';
-import ChartWrapper from '../ui/ChartWrapper.jsx';
-import { StabilityGauge } from '../Sections/SignalHero.jsx';
+import AssetHero from '../Coin/AssetHero.jsx';
+import AssetMetrics from '../Coin/AssetMetrics.jsx';
+import PegPricePanel from '../Coin/PegPricePanel.jsx';
+import StabilityPanel from '../Coin/StabilityPanel.jsx';
+import SupplyPanel from '../Coin/SupplyPanel.jsx';
+import ChainDistributionPanel from '../Coin/ChainDistributionPanel.jsx';
+import AssetLearnBand from '../Coin/AssetLearnBand.jsx';
+import DominanceChart from '../Coin/DominanceChart.jsx';
+import PegDeviationChart from '../Coin/PegDeviationChart.jsx';
+import ExchangeVolumeChart from '../Coin/ExchangeVolumeChart.jsx';
+import ChainSupplyTable from '../Coin/ChainSupplyTable.jsx';
+import WhaleAnomaliesCard from '../Coin/WhaleAnomaliesCard.jsx';
 
 function coinStabilityScore(price, warnBps, critBps) {
   const raw = bps(price);
@@ -203,253 +213,64 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
 
   return (
     <div class="tab-content active asset-page">
-      <section class="asset-hero glass signal-lens">
-        <div class="asset-identity">
-          <span class="asset-token" style={{ background: `linear-gradient(145deg, ${color}, ${color}cc)` }}>
-            {symbol.slice(0, 1)}
-          </span>
-          <div>
-            <p class="eyebrow">TRACKED ASSET · {meta.classification.toUpperCase()}</p>
-            <h1>
-              {meta.name} <em>{symbol}</em>
-            </h1>
-            <p>{meta.thesis}</p>
-          </div>
-        </div>
-        <div class="asset-watch">
-          <span>WHAT TO WATCH</span>
-          <b>{watchNote}</b>
-          <p>Observation only - not a recommendation.</p>
-        </div>
-      </section>
+      <AssetHero symbol={symbol} meta={meta} color={color} watchNote={watchNote} />
 
-      <section class="asset-metrics">
-        <article>
-          <span>Current price</span>
-          <strong>{fmtPrice(price)}</strong>
-          <small>{pegBps == null ? 'Price unavailable' : pegBps === 0 ? 'On peg' : `${pegBps > 0 ? '+' : ''}${pegBps} bp from peg`}</small>
-        </article>
-        <article>
-          <span>Peg stability</span>
-          <strong>{score} <small>/100</small></strong>
-          <small>{pegBps == null ? 'Waiting for price data' : Math.abs(pegBps) < warnBps ? 'Normal 24h conditions' : 'Elevated drift - observe'}</small>
-        </article>
-        <article>
-          <span>Circulating supply</span>
-          <strong>{fmtB(supply)}</strong>
-          <small>{fmtPct(chg)} market · {supply == null || prev == null ? '-' : fmtB(supply - prev)} 24h supply Δ</small>
-        </article>
-        <article>
-          <span>Reserve design</span>
-          <strong>{meta.reserveDesign}</strong>
-          <small>Classification fact, not a credit rating</small>
-        </article>
-      </section>
+      <AssetMetrics
+        price={price}
+        pegBps={pegBps}
+        score={score}
+        warnBps={warnBps}
+        supply={supply}
+        prev={prev}
+        chg={chg}
+        meta={meta}
+      />
 
       <section class="asset-grid">
-        <article class="panel glass asset-price-panel signal-lens">
-          <header class="panel-head">
-            <div>
-              <p class="panel-kicker">PRICE DISCIPLINE</p>
-              <h2>{symbol} around the peg</h2>
-              <p class="panel-sub">Market price versus the $1.00 reference</p>
-            </div>
-          </header>
-          <div class="panel-chart">
-            <ChartWrapper
-              type="line"
-              data={priceLineData}
-              height={280}
-              aspectRatio={16 / 10}
-              options={priceChartOpts}
-              ariaLabel={`${symbol} price versus one dollar peg`}
-              shareTitle={`${symbol} peg`}
-              shareRange="~90D"
-              shareInterpretation={`${symbol} market price relative to the $1.00 reference. This is a price picture, not a reserve-quality assessment.`}
-              shareDefinition={`Secondary-market ${symbol} price versus a $1.00 peg line for tracked coins on this dashboard.`}
-              shareHighlight={pegBps == null ? `${fmtPrice(price)} now · price unavailable` : `${fmtPrice(price)} now · ${pegBps > 0 ? '+' : ''}${pegBps} bp from peg`}
-            />
-          </div>
-          <footer class="chart-footer">
-            <span><i class="legend-dot cobalt-dot" />{pegBps == null ? `${fmtPrice(price)} now · price unavailable` : `${fmtPrice(price)} now · ${pegBps > 0 ? '+' : ''}${pegBps} bp from peg`}</span>
-            <button type="button" onClick={goLearn}>What moves the peg?</button>
-          </footer>
-        </article>
+        <PegPricePanel
+          symbol={symbol}
+          price={price}
+          pegBps={pegBps}
+          priceLineData={priceLineData}
+          priceChartOpts={priceChartOpts}
+          goLearn={goLearn}
+        />
 
-        <article class="asset-score glass">
-          <p class="panel-kicker">STABILITY INDEX</p>
-          <StabilityGauge value={score} />
-          <h2>{pegBps == null ? 'Waiting for data' : Math.abs(pegBps) < warnBps ? 'Normal conditions' : 'Watch conditions'}</h2>
-          <p>
-            Score from current distance to $1.00 versus this asset&apos;s warn ({warnBps} bps) and critical ({critBps} bps) bands.
-            It is not a solvency or reserve audit.
-          </p>
-        </article>
+        <StabilityPanel score={score} pegBps={pegBps} warnBps={warnBps} critBps={critBps} />
       </section>
 
       <section class="asset-grid lower-asset">
-        <article class="panel glass">
-          <header class="panel-head">
-            <div>
-              <p class="panel-kicker">MARKET DEPTH</p>
-              <h2>Circulating supply</h2>
-              <p class="panel-sub">{symbol} supply history</p>
-            </div>
-            <div class="segmented">
-              <button type="button" class={supplyPct ? 'selected' : ''} onClick={() => setSupplyPct((v) => !v)} aria-pressed={supplyPct}>%</button>
-              <button type="button" class={supplyLog ? 'selected' : ''} onClick={() => setSupplyLog((v) => !v)} aria-pressed={supplyLog}>Log</button>
-            </div>
-          </header>
-          <div class="panel-chart">
-            <ChartWrapper
-              type="line"
-              data={supplyLineData}
-              options={supplyLineOptions}
-              height={220}
-              aspectRatio={16 / 10}
-              ariaLabel={`${symbol} circulating supply`}
-              shareTitle={`${symbol} supply`}
-              shareRange="History"
-              shareInterpretation={`${symbol} circulating supply from backend history, deduplicated per day for tracked coins on this dashboard.`}
-              shareDefinition={`Circulating ${symbol} supply over time for tracked coins on this dashboard, not global market supply.`}
-              shareAsOf={data?.observedAt ?? data?.marketObservedAt ?? null}
-            />
-          </div>
-        </article>
+        <SupplyPanel
+          symbol={symbol}
+          data={data}
+          supplyLineData={supplyLineData}
+          supplyLineOptions={supplyLineOptions}
+          supplyPct={supplyPct}
+          supplyLog={supplyLog}
+          setSupplyPct={setSupplyPct}
+          setSupplyLog={setSupplyLog}
+        />
 
-        <article class="panel glass chain-panel">
-          <header class="panel-head">
-            <div>
-              <p class="panel-kicker">WHERE IT MOVES</p>
-              <h2>Chain distribution</h2>
-              <p class="panel-sub">Share of tracked {symbol} supply</p>
-            </div>
-          </header>
-          <div class="chain-list">
-            {chainShares.length ? chainShares.map((r, idx) => (
-              <div key={r.chain}>
-                <span><i class={`chain-dot ${['one', 'two', 'three', 'four'][idx] || 'one'}`} />{r.chain}</span>
-                <b>{r.pct}%</b>
-                <em style={{ width: `${r.pct}%` }} />
-              </div>
-            )) : <div class="info-empty">No chain rows</div>}
-          </div>
-          <footer class="chart-footer">
-            <span>Top chains by circulating supply</span>
-            {setActiveTab ? (
-              <button type="button" onClick={() => setActiveTab('chains')}>Explore chains</button>
-            ) : null}
-          </footer>
-        </article>
+        <ChainDistributionPanel symbol={symbol} chainShares={chainShares} setActiveTab={setActiveTab} />
       </section>
 
-      <section class="asset-learn glass">
-        <div>
-          <p class="panel-kicker">STUDY THIS ASSET</p>
-          <h2>{meta.learnQuestion}</h2>
-          <p>A short StableSense lesson tied to this asset&apos;s design.</p>
-        </div>
-        <button type="button" class="primary-btn" onClick={goLearn}>Read the explainer</button>
-      </section>
+      <AssetLearnBand meta={meta} goLearn={goLearn} />
 
       {dominanceData ? (
-        <div class="card mb-4 mt-4">
-          <div class="card-header"><div class="card-title">{symbol} Dominance</div></div>
-          <div class="card-body chart-card-body">
-            <ChartWrapper type="line" data={dominanceData} options={dominanceOpts} height={200} aspectRatio={16 / 10} shareTitle={`${symbol} dominance`} shareRange="Tracked supply" shareInterpretation={`${symbol} share of the combined 5 tracked stablecoins on this dashboard over time.`} shareDefinition={`${symbol}'s share of combined tracked stablecoin supply (USDT, USDC, DAI, USDE, PYUSD), not global market share.`} shareAsOf={data?.observedAt ?? data?.marketObservedAt ?? null} />
-            <p class="text-muted small" style="margin-top:6px">{symbol}&apos;s share of the combined tracked stablecoin supply (USDT, USDC, DAI, USDE, PYUSD) over time.</p>
-          </div>
-        </div>
+        <DominanceChart symbol={symbol} data={data} dominanceData={dominanceData} dominanceOpts={dominanceOpts} />
       ) : null}
 
       {bpsData ? (
-        <div class="card mb-4">
-          <div class="card-header"><div class="card-title">{symbol} Peg Deviation (bps)</div></div>
-          <div class="card-body chart-card-body">
-            <ChartWrapper type="line" data={bpsData} options={bpsOpts} height={200} aspectRatio={16 / 10} shareTitle={`${symbol} deviation`} shareRange="~90D" shareInterpretation={`${symbol} distance from the $1 peg in basis points over time for tracked coins on this dashboard.`} shareDefinition="Secondary-market distance from the $1 peg in basis points for tracked coins on this dashboard." shareAsOf={data?.observedAt ?? data?.marketObservedAt ?? null} />
-            <p class="text-muted small" style="margin-top:6px">Distance from the $1 peg in basis points. Fixed -50/+50 bounds so daily noise does not look like a depeg. 0 bps = exactly on peg.</p>
-          </div>
-        </div>
+        <PegDeviationChart symbol={symbol} data={data} bpsData={bpsData} bpsOpts={bpsOpts} />
       ) : null}
 
       <div class="grid-2 mb-4">
-        <div class="card">
-          <div class="card-header"><div class="card-title">{symbol} Exchange Volume</div></div>
-          <div class="card-body chart-card-body">
-            <ChartWrapper type="bar" data={exchBars} height={180} aspectRatio={16 / 10} options={chartOptions} shareTitle={`${symbol} volume`} shareRange="Top venues" shareInterpretation={`${symbol} 24h volume across top CoinGecko venues, deduped by exchange. Venue sample, not full market volume.`} shareDefinition="Top venue volumes from CoinGecko tickers for tracked coins on this dashboard, deduplicated, not full market volume." shareAsOf={data?.observedAt ?? data?.marketObservedAt ?? null} />
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header"><div class="card-title">{symbol} by Chain</div></div>
-          <div class="card-body p0">
-            <div class="chain-table-desktop tbl-wrap">
-              <table class="data-table">
-                <thead><tr><th>Chain</th><th>Supply</th><th>1d %</th></tr></thead>
-                <tbody>
-                  {rows.length ? rows.slice(0, 8).map((r) => (
-                    <tr key={r.chain}>
-                      <td class="td-name">{r.chain}</td>
-                      <td class="mono">{fmtB(r.cur)}</td>
-                      <td class={`mono ${r.d1 > 0 ? 'td-pos' : r.d1 < 0 ? 'td-neg' : ''}`}>{r.d1 == null ? '-' : fmtPct(r.d1)}</td>
-                    </tr>
-                  )) : <tr><td colspan="3" class="info-empty">No chain rows</td></tr>}
-                </tbody>
-              </table>
-            </div>
-            <div class="chain-cards-mobile">
-              {rows.length ? rows.slice(0, 8).map((r) => (
-                <div class="chain-mobile-card" key={r.chain}>
-                  <div class="cm-main">{r.chain}</div>
-                  <div>
-                    <div class="cm-label">Supply</div>
-                    <div class="cm-val">{fmtB(r.cur)}</div>
-                  </div>
-                  <div>
-                    <div class="cm-label">1d %</div>
-                    <div class={`cm-val ${r.d1 > 0 ? 'td-pos' : r.d1 < 0 ? 'td-neg' : ''}`}>{r.d1 == null ? '-' : fmtPct(r.d1)}</div>
-                  </div>
-                </div>
-              )) : <div class="info-empty">No chain rows</div>}
-            </div>
-          </div>
-        </div>
+        <ExchangeVolumeChart symbol={symbol} data={data} exchBars={exchBars} chartOptions={chartOptions} />
+        <ChainSupplyTable symbol={symbol} rows={rows} />
       </div>
 
       {whaleRows.length > 0 ? (
-        <div class="card mb-4">
-          <div class="card-header"><div class="card-title">{symbol} Anomalies</div></div>
-          <div class="card-body p0">
-            <div class="whale-cards-mobile">
-              {whaleRows.map((row, idx) => (
-                <div class="whale-mobile-card" key={`cw-${idx}`}>
-                  <div class="wm-main">{row.chain}</div>
-                  {row.migration ? <p class="whale-mig-note">Leg of {row.migration.label} migration</p> : null}
-                  <div><div class="wm-label">Supply Delta</div><div class="wm-val">{fmtB(row.delta)}</div></div>
-                  <div><div class="wm-label">Z-score</div><div class="wm-val" title={`Raw z: ${row.z.toFixed(1)}σ`}>{row.displayZ >= 10 ? '>10σ' : `${row.displayZ.toFixed(1)}σ`}</div></div>
-                  <div><div class="wm-label">Share of tracked</div><div class="wm-val">{fmtPct(row.shareOfTracked)}</div></div>
-                </div>
-              ))}
-            </div>
-            <div class="whale-table-desktop">
-              <table class="data-table whale-watch-table" style="min-width:320px">
-                <thead><tr><th>Chain</th><th>Supply Delta</th><th>Z-score</th><th>Share of tracked</th></tr></thead>
-                <tbody>
-                  {whaleRows.map((row, idx) => (
-                    <tr key={`tw-${idx}`}>
-                      <td class="td-name">
-                        {row.chain}
-                        {row.migration ? <div class="whale-mig-note">Leg of {row.migration.label} migration</div> : null}
-                      </td>
-                      <td class="mono">{fmtB(row.delta)}</td>
-                      <td class="mono" title={`Raw z: ${row.z.toFixed(1)}σ`}>{row.displayZ >= 10 ? '>10σ' : `${row.displayZ.toFixed(1)}σ`}</td>
-                      <td class="mono">{fmtPct(row.shareOfTracked)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+        <WhaleAnomaliesCard symbol={symbol} whaleRows={whaleRows} />
       ) : null}
     </div>
   );

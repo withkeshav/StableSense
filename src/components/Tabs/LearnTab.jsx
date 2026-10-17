@@ -1,31 +1,10 @@
 import { useEffect, useMemo, useState } from 'preact/hooks';
 import { buildLearnObservations } from '../../lib/insights.js';
-
-const GLOSSARY = [
-  { term: 'Peg', def: 'The target price a stablecoin tries to hold, almost always $1.00.' },
-  { term: 'Depeg', def: 'A move away from the peg, usually measured in basis points (bps). 50 bps is half a percent.' },
-  { term: 'Collateral', def: 'The assets backing the stablecoin so each token stays redeemable at $1.' },
-  { term: 'Mint', def: 'New stablecoin tokens created, adding supply.' },
-  { term: 'Burn', def: 'Stablecoin tokens destroyed, removing supply.' },
-  { term: 'Cross-chain flow', def: 'Supply moving between blockchains, often for yield or liquidity reasons.' },
-  { term: 'Stress index', def: 'A 0-100 score combining peg drift, active alerts, and flow pressure.' },
-  { term: 'Whale watch', def: 'Detection of unusual supply jumps on a chain using z-scores.' },
-  { term: 'Basis point (bps)', def: 'One hundredth of a percentage point. 100 bps = 1%.' },
-  { term: 'Redemption', def: 'Exchanging a stablecoin for its backing at face value. The mechanism that keeps the peg honest.' },
-  { term: 'Reserve attestation', def: 'A third-party check on an issuer\'s backing assets, usually a snapshot rather than a full audit.' },
-  { term: 'Over-collateralization', def: 'Backing each token with more than $1 of assets so the peg survives market drawdowns.' },
-  { term: 'Delta-neutral', def: 'A position that cancels out price moves, used by synthetic issuers to hold value without cash reserves.' },
-  { term: 'Bridge', def: 'A mechanism that moves tokens between blockchains, a common vector for liquidity migration.' },
-  { term: 'TVL', def: 'Total value locked: assets deposited in DeFi protocols, often denominated in stablecoins.' },
-  { term: 'Dominance', def: 'A coin\'s share of tracked stablecoin supply. Shifts in it trigger DOM_SHIFT alerts.' },
-  { term: 'Z-score', def: 'How many standard deviations a supply move sits from its recent baseline. High z-scores drive whale-watch flags.' },
-  { term: 'Severity', def: 'The alert triage: WARNING, HIGH, CRITICAL. Higher levels signal more real stress.' },
-  { term: 'Algorithmic stablecoin', def: 'A model with no direct backing that relies on market incentives. Historically the highest depeg risk.' },
-  { term: 'Arbitrage', def: 'Buying a coin below $1 and redeeming at face value (or minting and selling above $1). The force that pulls prices back to the peg.' },
-  { term: 'Reference asset', def: 'The real-world value a stablecoin is designed to track. Usually the US dollar, but can be gold, another fiat currency, or a basket.' },
-  { term: 'Tokenized fund', def: 'A regulated security that holds traditional assets like Treasuries on-chain. Unlike a payment stablecoin, it pays yield but requires KYC and restricts transfers.' },
-  { term: 'Funding rate', def: 'The periodic fee longs pay shorts (or vice versa) in perpetual futures. Ethena\'s USDe earns its yield from this.' },
-];
+import LearnPrimer from '../Learn/LearnPrimer.jsx';
+import LearnModuleCard from '../Learn/LearnModuleCard.jsx';
+import LearnAlertHistory from '../Learn/LearnAlertHistory.jsx';
+import LearnGlossary from '../Learn/LearnGlossary.jsx';
+import LearnDisclaimer from '../Learn/LearnDisclaimer.jsx';
 
 const MODULES = [
   {
@@ -324,8 +303,6 @@ const MODULES = [
   },
 ];
 
-const OBSERVATION_NOTE = 'Live, computed from this dashboard\'s data - not AI-generated.';
-
 export default function LearnTab({ data, alerts, alertHistory = [], alertSource = 'local' }) {
   const [openModule, setOpenModule] = useState(MODULES[0]?.id || null);
 
@@ -349,133 +326,23 @@ export default function LearnTab({ data, alerts, alertHistory = [], alertSource 
 
   return (
     <div class="tab-content active">
-      <section class="card mb-4">
-        <div class="card-header">
-          <div class="card-title">Stablecoins, explained</div>
-        </div>
-        <div class="card-body">
-          <p class="mb-0">
-            Everything in StableSense is built on one idea: a stablecoin is a token engineered to hold
-            steady value against some reference, usually the US dollar but not always. This dashboard
-            tracks five dollar-pegged coins, which is the common case. These modules cover how pegs
-            work, how they fail, the wider landscape beyond the dollar, and how the signals here help
-            you see stress before it becomes a headline. Where the market is live, the lessons carry a
-            small observation computed from this dashboard's data at this moment.
-          </p>
-          <p class="mt-3 mb-0">
-            <a class="learn-link-btn" href="/research/#taxonomy" target="_blank" rel="noopener noreferrer">Read the full research: State of Stablecoins &rsaquo;</a>
-          </p>
-        </div>
-      </section>
+      <LearnPrimer />
 
       {MODULES.map((mod) => (
-        <section class={`card learn-module mb-4 ${openModule === mod.id ? 'open' : ''}`} key={mod.id}>
-          <button
-            type="button"
-            class="learn-module-header"
-            onClick={() => setOpenModule(openModule === mod.id ? null : mod.id)}
-            aria-expanded={openModule === mod.id}
-          >
-            <span>{mod.title}</span>
-            <span class="learn-module-expand">›</span>
-          </button>
-          <div class="learn-module-detail">
-            {mod.lessons.map((lesson) => {
-              const observation = lesson.observationId ? observationsById[lesson.observationId] : null;
-              return (
-                <div class="learn-lesson" id={`lesson-${lesson.id}`} key={lesson.id}>
-                  <div class="learn-lesson-title">
-                    {lesson.title}
-                    {lesson.lastUpdated ? <span class="learn-lesson-date">Updated {lesson.lastUpdated}</span> : null}
-                  </div>
-                  <p class="text-muted small mb-0">{lesson.body}</p>
-                  {lesson.sources && lesson.sources.length ? (
-                    <p class="learn-observation-note mb-0">
-                      Sources:{' '}
-                      {lesson.sources.map((s, i) => (
-                        <span key={s.href}>
-                          {i > 0 ? ' | ' : null}
-                          <a href={s.href} target="_blank" rel="noopener noreferrer" style="text-decoration:underline">
-                            {s.label}
-                          </a>
-                        </span>
-                      ))}
-                    </p>
-                  ) : null}
-                  {lesson.hubLink ? (
-                    <p class="mb-0" style="margin-top:6px">
-                      <a class="learn-link-btn" href={lesson.hubLink.href} target="_blank" rel="noopener noreferrer">
-                        {lesson.hubLink.label} &rsaquo;
-                      </a>
-                    </p>
-                  ) : null}
-                  {lesson.unknown ? (
-                    <p class="text-muted small mb-0" style="margin-top:6px">
-                      <strong>Open question:</strong> {lesson.unknown}
-                    </p>
-                  ) : null}
-                  {observation ? (
-                    <div class="learn-observation">
-                      <div class="learn-observation-label">Live observation</div>
-                      <p class="mb-0">{observation.text}</p>
-                      <p class="learn-observation-note mb-0">{OBSERVATION_NOTE}</p>
-                    </div>
-                  ) : null}
-                </div>
-              );
-            })}
-            {mod.moduleLink ? (
-              <p class="learn-lesson" style="padding-top:8px">
-                <a class="learn-link-btn" href={mod.moduleLink.href} target="_blank" rel="noopener noreferrer">{mod.moduleLink.label} &rsaquo;</a>
-              </p>
-            ) : null}
-          </div>
-        </section>
+        <LearnModuleCard
+          mod={mod}
+          isOpen={openModule === mod.id}
+          onToggle={() => setOpenModule(openModule === mod.id ? null : mod.id)}
+          observationsById={observationsById}
+          key={mod.id}
+        />
       ))}
 
-      <section class="card mb-4">
-        <div class="card-header">
-          <div class="card-title">Persisted alert history</div>
-        </div>
-        <div class="card-body">
-          {alertSource !== 'canonical' || !alertHistory.length ? (
-            <p class="mb-0 text-muted small">
-              No stored alert events yet. The event table starts empty on a new backend and is not backfilled with invented history. Current Alerts may still show live derivation until the first stress job writes rows.
-            </p>
-          ) : (
-            <div class="learn-alert-history">
-              {alertHistory.slice(0, 12).map((event) => (
-                <article key={event.id} class="learn-history-row">
-                  <strong>{event.rule}</strong>
-                  <span>{event.coin} · {event.state || 'open'} · {event.id}</span>
-                  <p>{event.headline || event.rationale}</p>
-                </article>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+      <LearnAlertHistory alertSource={alertSource} alertHistory={alertHistory} />
 
-      <section class="card">
-        <div class="card-header">
-          <div class="card-title">Glossary</div>
-        </div>
-        <div class="card-body p0">
-          <div class="coverage-list p-3">
-            {GLOSSARY.map((item) => (
-              <div class="learn-term" key={item.term}>
-                <div class="learn-term-name">{item.term}</div>
-                <div class="text-muted small">{item.def}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <LearnGlossary />
 
-      <p class="text-muted small mt-4 mb-0">
-        Educational content for context only, not financial advice. Verify any claim against primary
-        sources before acting on it.
-      </p>
+      <LearnDisclaimer />
     </div>
   );
 }

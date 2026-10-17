@@ -505,6 +505,216 @@ function makeAlert({
   };
 }
 
+// Every chain-spike and migration severity compares its magnitude against
+// twice the coin's chain-spike threshold, so the rule lives in one place.
+function spikeSeverity(absMagnitude, cfg) {
+  return absMagnitude >= 2 * cfg.thresholds.chainSpikeUsd ? 'HIGH' : 'WARNING';
+}
+
+// Observations are the last two valid snapshots per chain; `invalidSupply`
+// marks a quarantined reading that becomes DATA_QUALITY, not a market event.
+function chainObservations(detail) {
+  return Object.keys(detail?.chainBalances || {})
+    .map((chain) => chainObservation(detail, chain))
+    .filter(Boolean);
+}
+
+// PEG_BREAK: per-coin spot price drift from $1. Only called for a live,
+// positive, finite price; `devBps` is passed in so the bps() guard in the
+// orchestrator stays the single place that can skip a coin.
+function pegBreakAlert({ cfg, price, devBps, lastUpdatedAt, detectedAt, provenance }) {
+  const absDev = Math.abs(devBps);
+  let severity = null;
+  if (absDev >= cfg.thresholds.pegCriticalBps) severity = 'CRITICAL';
+  else if (absDev >= cfg.thresholds.pegWarnBps) severity = 'HIGH';
+  if (!severity) return null;
+  const observedAt = tokenTsMs({ date: lastUpdatedAt });
+  return makeAlert({
+    rule: 'PEG_BREAK',
+    coin: cfg.symbol,
+    severity,
+    magnitude: absDev,
+    headline: `${cfg.symbol} is ${devBps} bps ${devBps < 0 ? 'below' : 'above'} the $1 peg (price ${price.toFixed(4)}).`,
+    explanation: `This is a secondary-market price observation, not a reserve or redemption proof.`,
+    window: {
+      sourceTsCurrent: observedAt,
+      observedAt,
+      cadenceValid: observedAt != null,
+      intervalLabel: observedAt != null ? 'spot price observation' : 'observation interval unavailable',
+    },
+    confidence: observedAt != null ? 'high' : 'low',
+    confidenceNote: observedAt != null ? 'Peg distance from live spot price.' : 'Spot timestamp missing; recency is unknown.',
+    detectedAt,
+    provenance: { ...provenance, field: 'cgSimple.usd' },
+  });
+}
+
+// DATA_QUALITY: invalid, non-finite or negative supply readings are quarantined
+// up front so they never read as a mint, burn or migration event.
+function dataQualityAlerts(coin, observations, detectedAt, provenance) {
+  const out = [];
+  for (const obs of observations) {
+    if (obs.invalidSupply || !Number.isFinite(obs.current) || !Number.isFinite(obs.previous)) {
+      out.push(makeAlert({
+        rule: 'DATA_QUALITY',
+        coin,
+        chain: obs.chain,
+        severity: 'WARNING',
+        magnitude: Math.abs(obs.delta) || 0,
+        headline: `${coin} on ${obs.chain} failed supply validation (non-finite or negative circulating USD).`,
+        explanation: 'This observation was quarantined. It is not a mint, burn, or migration event.',
+        window: obs,
+        confidence: 'low',
+        confidenceNote: 'Invalid circulating-USD observation.',
+        detectedAt,
+        provenance,
+      }));
+    }
+  }
+  return out;
+}
+
+// MIGRATION: opposing chain flows paired within 10% magnitude are one
+// reallocation, not two independent supply shocks.
+function migrationAlerts(cfg, pairs, netSupplyDelta, detectedAt, provenance) {
+  const out = [];
+  for (const pair of pairs) {
+    const grossFlow = pair.grossFlow;
+    const netCap = Math.max(MIGRATION_NET_FRAC * grossFlow, cfg.thresholds.megaSupplyUsd);
+    const window = windowMeta([pair.from, pair.to]);
+    const cadenceOk = window.cadenceValid;
+    const confidence = cadenceOk ? 'high' : 'low';
+    const netNote = Math.abs(netSupplyDelta) < netCap
+      ? `net ${cfg.symbol} supply broadly unchanged (${signedUsd(netSupplyDelta)})`
+      : `net ${cfg.symbol} supply ${signedUsd(netSupplyDelta)}`;
+    out.push(makeAlert({
+      rule: 'MIGRATION',
+      coin: cfg.symbol,
+      chains: [pair.from.chain, pair.to.chain],
+      chain: pair.from.chain,
+      fromChain: pair.from.chain,
+      toChain: pair.to.chain,
+      severity: spikeSeverity(grossFlow, cfg),
+      magnitude: grossFlow,
+      grossFlow,
+      netSupplyDelta,
+      headline: `${cfg.symbol} liquidity moved: ${pair.from.chain} → ${pair.to.chain}`,
+      explanation: `${fmtUsd(grossFlow)} gross chain movement; ${netNote}. This is a chain allocation correlation from successive circulating-supply snapshots, not evidence on its own of a depeg, whale, or reserve problem.`,
+      window,
+      confidence,
+      confidenceNote: cadenceOk
+        ? 'High: matched opposing chain movements.'
+        : 'Low: matched opposing flows, but the observation interval is not a valid 24h window.',
+      detectedAt,
+      provenance,
+    }));
+  }
+  return out;
+}
+
+// CHAIN_FLOW: an unpaired single-chain supply delta above the coin threshold.
+function chainFlowAlerts(cfg, unpaired, netSupplyDelta, detectedAt, provenance) {
+  return unpaired.map((spike) => {
+    const direction = spike.delta > 0 ? 'increased' : 'decreased';
+    return makeAlert({
+      rule: 'CHAIN_FLOW',
+      coin: cfg.symbol,
+      chain: spike.chain,
+      severity: spikeSeverity(Math.abs(spike.delta), cfg),
+      magnitude: Math.abs(spike.delta),
+      grossFlow: Math.abs(spike.delta),
+      netSupplyDelta,
+      headline: `${cfg.symbol} supply ${direction} by ${fmtUsd(spike.delta)} on ${spike.chain} ${spike.intervalLabel}.`,
+      explanation: `Single-chain circulating-supply change from the latest two DefiLlama snapshots. This is not by itself a mint, burn, whale, or depeg conclusion.`,
+      window: spike,
+      confidence: spike.cadenceValid ? 'medium' : 'low',
+      confidenceNote: spike.cadenceValid
+        ? 'Directional chain flow above threshold.'
+        : 'Low: interval is outside the 20-28h 24h band.',
+      detectedAt,
+      provenance,
+    });
+  });
+}
+
+// NET_MINT / NET_BURN: the coin-wide net change once it clears the mega-supply
+// threshold. Paired migrations are still emitted separately.
+function netSupplyAlert(cfg, detail, usable, netSupplyDelta, detectedAt, provenance) {
+  if (!detail || !Object.keys(detail.chainBalances || {}).length) return null;
+  const total = netSupplyDelta;
+  if (Math.abs(total) < cfg.thresholds.megaSupplyUsd) return null;
+  const window = windowMeta(usable);
+  return makeAlert({
+    rule: total >= 0 ? 'NET_MINT' : 'NET_BURN',
+    coin: cfg.symbol,
+    chains: usable.map((o) => o.chain),
+    severity: Math.abs(total) >= 3 * cfg.thresholds.megaSupplyUsd ? 'CRITICAL' : 'HIGH',
+    magnitude: Math.abs(total),
+    grossFlow: usable.reduce((sum, o) => sum + Math.abs(o.delta), 0),
+    netSupplyDelta: total,
+    headline: `${cfg.symbol} net supply ${total >= 0 ? 'increased' : 'decreased'} by ${fmtUsd(total)} across tracked chains ${window.intervalLabel}.`,
+    explanation: `Coin-wide net circulating-USD change after summing every chain snapshot. Paired migrations are still shown separately when they match.`,
+    window,
+    confidence: window.cadenceValid ? 'medium' : 'low',
+    confidenceNote: window.cadenceValid
+      ? 'Net issuance or burn cleared the coin threshold.'
+      : 'Low: net change cleared the threshold but the observation interval is not a valid 24h window.',
+    detectedAt,
+    provenance,
+  });
+}
+
+// Per-coin supply series long enough (>= 8 points) to measure share drift.
+function dominanceSupplyByCoin(data, coins) {
+  const supplyByCoin = {};
+  for (const cfg of coins) {
+    const detail = data?.[`${cfg.symbol.toLowerCase()}Detail`];
+    const series = buildSupplySeries(detail);
+    if (series.length >= 8) supplyByCoin[cfg.symbol] = series;
+  }
+  return supplyByCoin;
+}
+
+// DOM_SHIFT: a coin's share of tracked supply moving 1 pt or more against its
+// own share ~7 observations earlier. Requires at least two coins to compare.
+function domShiftAlerts(coins, supplyByCoin, detectedAt) {
+  if (Object.keys(supplyByCoin).length < 2) return [];
+  const out = [];
+  for (const cfg of coins) {
+    if (!supplyByCoin[cfg.symbol]) continue;
+    const share = buildShareSeries(supplyByCoin, cfg.symbol);
+    if (share.length < 8) continue;
+    const latest = share[share.length - 1];
+    const ref = share[share.length - 8];
+    const drift = latest.share - ref.share;
+    if (Math.abs(drift) < 1) continue;
+    const severity = Math.abs(drift) >= 3 ? 'HIGH' : 'WARNING';
+    const hours = intervalHours(ref.date, latest.date);
+    const cadenceValid = hours != null && hours >= 5 * 24 && hours <= 9 * 24;
+    out.push(makeAlert({
+      rule: 'DOM_SHIFT',
+      coin: cfg.symbol,
+      severity,
+      magnitude: Math.abs(drift),
+      headline: `${cfg.symbol} dominance ${drift > 0 ? 'gained' : 'lost'} ${Math.abs(drift).toFixed(1)} pts of tracked stablecoin supply over the observed share window.`,
+      explanation: 'Share of the five tracked coins on this dashboard, not of the global stablecoin market.',
+      window: {
+        sourceTsCurrent: latest.date,
+        sourceTsPrevious: ref.date,
+        observedAt: latest.date,
+        intervalHours: hours,
+        cadenceValid,
+        intervalLabel: formatIntervalLabel(hours),
+      },
+      confidence: cadenceValid ? 'medium' : 'low',
+      confidenceNote: 'Dominance uses the latest vs ~7-point-prior share observations.',
+      detectedAt,
+      provenance: { source: 'deflama', field: 'share-series' },
+    }));
+  }
+  return out;
+}
+
 /**
  * Derive alert events from the dashboard payload using per-coin thresholds.
  * Event time is the upstream observation timestamp, never browser Date.now().
@@ -536,191 +746,30 @@ export function generateAlerts(data, opts = {}) {
     if (typeof price === 'number' && Number.isFinite(price) && price > 0) {
       const devBps = bps(price);
       if (devBps == null) continue;
-      const absDev = Math.abs(devBps);
-      let severity = null;
-      if (absDev >= cfg.thresholds.pegCriticalBps) severity = 'CRITICAL';
-      else if (absDev >= cfg.thresholds.pegWarnBps) severity = 'HIGH';
-      if (severity) {
-        const observedAt = tokenTsMs({ date: lastUpdatedAt });
-        alerts.push(makeAlert({
-          rule: 'PEG_BREAK',
-          coin: cfg.symbol,
-          severity,
-          magnitude: absDev,
-          headline: `${cfg.symbol} is ${devBps} bps ${devBps < 0 ? 'below' : 'above'} the $1 peg (price ${price.toFixed(4)}).`,
-          explanation: `This is a secondary-market price observation, not a reserve or redemption proof.`,
-          window: {
-            sourceTsCurrent: observedAt,
-            observedAt,
-            cadenceValid: observedAt != null,
-            intervalLabel: observedAt != null ? 'spot price observation' : 'observation interval unavailable',
-          },
-          confidence: observedAt != null ? 'high' : 'low',
-          confidenceNote: observedAt != null ? 'Peg distance from live spot price.' : 'Spot timestamp missing; recency is unknown.',
-          detectedAt,
-          provenance: { ...provenance, field: 'cgSimple.usd' },
-        }));
-      }
+      const pegAlert = pegBreakAlert({ cfg, price, devBps, lastUpdatedAt, detectedAt, provenance });
+      if (pegAlert) alerts.push(pegAlert);
     }
 
-    const observations = Object.keys(detail?.chainBalances || {})
-      .map((chain) => chainObservation(detail, chain))
-      .filter(Boolean);
-
-    for (const obs of observations) {
-      if (obs.invalidSupply || !Number.isFinite(obs.current) || !Number.isFinite(obs.previous)) {
-        alerts.push(makeAlert({
-          rule: 'DATA_QUALITY',
-          coin: cfg.symbol,
-          chain: obs.chain,
-          severity: 'WARNING',
-          magnitude: Math.abs(obs.delta) || 0,
-          headline: `${cfg.symbol} on ${obs.chain} failed supply validation (non-finite or negative circulating USD).`,
-          explanation: 'This observation was quarantined. It is not a mint, burn, or migration event.',
-          window: obs,
-          confidence: 'low',
-          confidenceNote: 'Invalid circulating-USD observation.',
-          detectedAt,
-          provenance,
-        }));
-      }
-    }
+    const observations = chainObservations(detail);
+    alerts.push(...dataQualityAlerts(cfg.symbol, observations, detectedAt, provenance));
 
     const usable = observations.filter((o) => !o.invalidSupply && Number.isFinite(o.delta));
     const positives = usable.filter((o) => o.delta >= cfg.thresholds.chainSpikeUsd);
     const negatives = usable.filter((o) => o.delta <= -cfg.thresholds.chainSpikeUsd);
     const { pairs, unpairedPos, unpairedNeg } = pairOpposingFlows(positives, negatives);
     const netSupplyDelta = usable.reduce((sum, o) => sum + o.delta, 0);
-    const pairedChains = new Set();
-
-    for (const pair of pairs) {
-      const grossFlow = pair.grossFlow;
-      const netCap = Math.max(MIGRATION_NET_FRAC * grossFlow, cfg.thresholds.megaSupplyUsd);
-      const window = windowMeta([pair.from, pair.to]);
-      const cadenceOk = window.cadenceValid;
-      const confidence = cadenceOk ? 'high' : 'low';
-      const headline = `${cfg.symbol} liquidity moved: ${pair.from.chain} → ${pair.to.chain}`;
-      const netNote = Math.abs(netSupplyDelta) < netCap
-        ? `net ${cfg.symbol} supply broadly unchanged (${signedUsd(netSupplyDelta)})`
-        : `net ${cfg.symbol} supply ${signedUsd(netSupplyDelta)}`;
-      alerts.push(makeAlert({
-        rule: 'MIGRATION',
-        coin: cfg.symbol,
-        chains: [pair.from.chain, pair.to.chain],
-        chain: pair.from.chain,
-        fromChain: pair.from.chain,
-        toChain: pair.to.chain,
-        severity: grossFlow >= 2 * cfg.thresholds.chainSpikeUsd ? 'HIGH' : 'WARNING',
-        magnitude: grossFlow,
-        grossFlow,
-        netSupplyDelta,
-        headline,
-        explanation: `${fmtUsd(grossFlow)} gross chain movement; ${netNote}. This is a chain allocation correlation from successive circulating-supply snapshots, not evidence on its own of a depeg, whale, or reserve problem.`,
-        window,
-        confidence,
-        confidenceNote: cadenceOk
-          ? 'High: matched opposing chain movements.'
-          : 'Low: matched opposing flows, but the observation interval is not a valid 24h window.',
-        detectedAt,
-        provenance,
-      }));
-      pairedChains.add(pair.from.chain);
-      pairedChains.add(pair.to.chain);
-    }
+    alerts.push(...migrationAlerts(cfg, pairs, netSupplyDelta, detectedAt, provenance));
+    const pairedChains = new Set(pairs.flatMap((p) => [p.from.chain, p.to.chain]));
 
     const unpaired = [...unpairedPos, ...unpairedNeg].filter((o) => !pairedChains.has(o.chain));
-    for (const spike of unpaired) {
-      const severity = Math.abs(spike.delta) >= 2 * cfg.thresholds.chainSpikeUsd ? 'HIGH' : 'WARNING';
-      const direction = spike.delta > 0 ? 'increased' : 'decreased';
-      const confidence = spike.cadenceValid ? 'medium' : 'low';
-      alerts.push(makeAlert({
-        rule: 'CHAIN_FLOW',
-        coin: cfg.symbol,
-        chain: spike.chain,
-        severity,
-        magnitude: Math.abs(spike.delta),
-        grossFlow: Math.abs(spike.delta),
-        netSupplyDelta,
-        headline: `${cfg.symbol} supply ${direction} by ${fmtUsd(spike.delta)} on ${spike.chain} ${spike.intervalLabel}.`,
-        explanation: `Single-chain circulating-supply change from the latest two DefiLlama snapshots. This is not by itself a mint, burn, whale, or depeg conclusion.`,
-        window: spike,
-        confidence,
-        confidenceNote: spike.cadenceValid
-          ? 'Directional chain flow above threshold.'
-          : 'Low: interval is outside the 20-28h 24h band.',
-        detectedAt,
-        provenance,
-      }));
-    }
+    alerts.push(...chainFlowAlerts(cfg, unpaired, netSupplyDelta, detectedAt, provenance));
 
-    if (detail && Object.keys(detail.chainBalances || {}).length) {
-      const total = netSupplyDelta;
-      if (Math.abs(total) >= cfg.thresholds.megaSupplyUsd) {
-        const rule = total >= 0 ? 'NET_MINT' : 'NET_BURN';
-        const severity = Math.abs(total) >= 3 * cfg.thresholds.megaSupplyUsd ? 'CRITICAL' : 'HIGH';
-        const window = windowMeta(usable);
-        alerts.push(makeAlert({
-          rule,
-          coin: cfg.symbol,
-          chains: usable.map((o) => o.chain),
-          severity,
-          magnitude: Math.abs(total),
-          grossFlow: usable.reduce((sum, o) => sum + Math.abs(o.delta), 0),
-          netSupplyDelta: total,
-          headline: `${cfg.symbol} net supply ${total >= 0 ? 'increased' : 'decreased'} by ${fmtUsd(total)} across tracked chains ${window.intervalLabel}.`,
-          explanation: `Coin-wide net circulating-USD change after summing every chain snapshot. Paired migrations are still shown separately when they match.`,
-          window,
-          confidence: window.cadenceValid ? 'medium' : 'low',
-          confidenceNote: window.cadenceValid
-            ? 'Net issuance or burn cleared the coin threshold.'
-            : 'Low: net change cleared the threshold but the observation interval is not a valid 24h window.',
-          detectedAt,
-          provenance,
-        }));
-      }
-    }
+    const netAlert = netSupplyAlert(cfg, detail, usable, netSupplyDelta, detectedAt, provenance);
+    if (netAlert) alerts.push(netAlert);
   }
 
-  const supplyByCoin = {};
-  for (const cfg of coins) {
-    const detail = data?.[`${cfg.symbol.toLowerCase()}Detail`];
-    const series = buildSupplySeries(detail);
-    if (series.length >= 8) supplyByCoin[cfg.symbol] = series;
-  }
-  if (Object.keys(supplyByCoin).length >= 2) {
-    for (const cfg of coins) {
-      if (!supplyByCoin[cfg.symbol]) continue;
-      const share = buildShareSeries(supplyByCoin, cfg.symbol);
-      if (share.length < 8) continue;
-      const latest = share[share.length - 1];
-      const ref = share[share.length - 8];
-      const drift = latest.share - ref.share;
-      if (Math.abs(drift) >= 1) {
-        const severity = Math.abs(drift) >= 3 ? 'HIGH' : 'WARNING';
-        const hours = intervalHours(ref.date, latest.date);
-        alerts.push(makeAlert({
-          rule: 'DOM_SHIFT',
-          coin: cfg.symbol,
-          severity,
-          magnitude: Math.abs(drift),
-          headline: `${cfg.symbol} dominance ${drift > 0 ? 'gained' : 'lost'} ${Math.abs(drift).toFixed(1)} pts of tracked stablecoin supply over the observed share window.`,
-          explanation: 'Share of the five tracked coins on this dashboard, not of the global stablecoin market.',
-          window: {
-            sourceTsCurrent: latest.date,
-            sourceTsPrevious: ref.date,
-            observedAt: latest.date,
-            intervalHours: hours,
-            cadenceValid: hours != null && hours >= 5 * 24 && hours <= 9 * 24,
-            intervalLabel: formatIntervalLabel(hours),
-          },
-          confidence: hours != null && hours >= 5 * 24 && hours <= 9 * 24 ? 'medium' : 'low',
-          confidenceNote: 'Dominance uses the latest vs ~7-point-prior share observations.',
-          detectedAt,
-          provenance: { source: 'deflama', field: 'share-series' },
-        }));
-      }
-    }
-  }
+  const supplyByCoin = dominanceSupplyByCoin(data, coins);
+  alerts.push(...domShiftAlerts(coins, supplyByCoin, detectedAt));
 
   return alerts.sort(
     (a, b) =>

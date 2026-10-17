@@ -10,46 +10,9 @@ import SignalSummary from '../Sections/SignalSummary.jsx';
 import WhaleWatch from '../Sections/WhaleWatch.jsx';
 import FirstRunTour from '../ui/FirstRunTour.jsx';
 
-export default function HomeTab({ data, alerts, setActiveTab, refreshIntervalSec = 900, freshness = null }) {
-  const cg = data?.cgSimple;
-  const coins = getActiveCoins();
-
-  const priceByCoin = useMemo(() => {
-    const m = {};
-    coins.forEach((c) => {
-      // Null-safe: missing market data stays null and renders as hyphen.
-      // Never fall back to 1, which would hide an outage as on-peg.
-      m[c.symbol] = cg?.[c.coingeckoId]?.usd ?? data?.prices?.[c.symbol]?.price ?? null;
-    });
-    return m;
-  }, [coins, cg, data]);
-
-  const detailsByCoin = useMemo(() => {
-    const m = {};
-    coins.forEach((c) => {
-      m[c.symbol] = data?.[`${c.symbol.toLowerCase()}Detail`];
-    });
-    return m;
-  }, [coins, data]);
-
-  const supplySeriesByCoin = useMemo(() => {
-    const m = {};
-    coins.forEach((c) => {
-      // Prefer the backend's deduped daily series; fall back to the shim
-      // rebuild only if it is missing (should not happen post-phase-2).
-      const backend = data?.supplyHistory?.[c.symbol];
-      m[c.symbol] = Array.isArray(backend) && backend.length
-        ? backend
-        : buildSupplySeries(detailsByCoin[c.symbol]);
-    });
-    return m;
-  }, [coins, detailsByCoin, data]);
-
-  const [supplyLog, setSupplyLog] = useState(false);
-  const [supplyPct, setSupplyPct] = useState(false);
-  const [compareAll, setCompareAll] = useState(false);
+/** Mobile detection for the narrow chart layout (fewer ticks, top-2 coins). */
+function useNarrowViewport() {
   const [narrow, setNarrow] = useState(false);
-
   useEffect(() => {
     if (typeof window === 'undefined' || !window.matchMedia) return undefined;
     const mq = window.matchMedia('(max-width:768px)');
@@ -58,6 +21,128 @@ export default function HomeTab({ data, alerts, setActiveTab, refreshIntervalSec
     mq.addEventListener('change', apply);
     return () => mq.removeEventListener('change', apply);
   }, []);
+  return narrow;
+}
+
+function buildPriceByCoin(coins, cg, data) {
+  const m = {};
+  coins.forEach((c) => {
+    // Null-safe: missing market data stays null and renders as hyphen.
+    // Never fall back to 1, which would hide an outage as on-peg.
+    m[c.symbol] = cg?.[c.coingeckoId]?.usd ?? data?.prices?.[c.symbol]?.price ?? null;
+  });
+  return m;
+}
+
+function buildDetailsByCoin(coins, data) {
+  const m = {};
+  coins.forEach((c) => {
+    m[c.symbol] = data?.[`${c.symbol.toLowerCase()}Detail`];
+  });
+  return m;
+}
+
+function buildSupplySeriesByCoin(coins, detailsByCoin, data) {
+  const m = {};
+  coins.forEach((c) => {
+    // Prefer the backend's deduped daily series; fall back to the shim
+    // rebuild only if it is missing (should not happen post-phase-2).
+    const backend = data?.supplyHistory?.[c.symbol];
+    m[c.symbol] = Array.isArray(backend) && backend.length
+      ? backend
+      : buildSupplySeries(detailsByCoin[c.symbol]);
+  });
+  return m;
+}
+
+function buildSupplyLabels(coins, supplySeriesByCoin) {
+  const any = coins.map((c) => supplySeriesByCoin[c.symbol]).find((s) => s.length);
+  return (any || []).map((p) => new Date(p.ts ?? p.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }));
+}
+
+function buildPegLabels(coins, data) {
+  const any = coins.map((c) => data?.[`cg${c.symbol}Chart`]?.prices).find((p) => p?.length);
+  return (any || []).slice(-90).map((p) => new Date(p[0]).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+}
+
+function buildSupplyChartData({ coins, supplySeriesByCoin, supplyLabels, supplyPct, narrow, compareAll }) {
+  const transform = (series) => (supplyPct ? toPercentFromFirst(series).map((p) => p.value) : series.map((p) => p.value));
+  const ranked = [...coins].sort((a, b) => {
+    const av = (supplySeriesByCoin[a.symbol] || []).slice(-1)[0]?.value || 0;
+    const bv = (supplySeriesByCoin[b.symbol] || []).slice(-1)[0]?.value || 0;
+    return bv - av;
+  });
+  const visible = narrow && !compareAll ? ranked.slice(0, 2) : ranked;
+  return {
+    labels: supplyLabels,
+    datasets: visible.map((c) => ({
+      label: supplyPct ? `${c.symbol} %` : c.symbol,
+      data: transform(supplySeriesByCoin[c.symbol]),
+      borderColor: c.color,
+      tension: 0.25,
+    })),
+  };
+}
+
+function buildSupplyChartOptions(supplyLog, supplyPct, narrow) {
+  const yScale = supplyLog && !supplyPct
+    ? { type: 'logarithmic', ticks: { callback: (v) => fmtB(v) } }
+    : supplyPct
+      ? { ticks: { callback: (v) => (v >= 0 ? '+' : '') + Number(v).toFixed(1) + '%' } }
+      : { ticks: { callback: (v) => fmtB(v) } };
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: yScale,
+      x: { ticks: { autoSkip: true, maxTicksLimit: narrow ? 5 : 10 } },
+    },
+  };
+}
+
+function buildPegChartData(coins, pegLabels, data) {
+  const refColor = typeof document !== 'undefined'
+    ? getComputedStyle(document.documentElement).getPropertyValue('--text2').trim() || '#9CA3AF'
+    : '#9CA3AF';
+  const coinLines = coins.map((c) => ({
+    label: c.symbol,
+    data: (data?.[`cg${c.symbol}Chart`]?.prices || []).slice(-90).map((p) => p[1]),
+    borderColor: c.color,
+    tension: 0.25,
+  }));
+  return { labels: pegLabels, datasets: [...coinLines, pegRefLine(pegLabels, refColor)] };
+}
+
+function buildPegChartOptions(pegChartData) {
+  const allPrices = pegChartData.datasets
+    .filter((d) => d.label !== '$1 peg')
+    .flatMap((d) => d.data)
+    .filter((v) => typeof v === 'number' && v > 0);
+  return pegChartOptions(allPrices);
+}
+
+/** Sum 24h volume across the tracked coins; null when any coin is missing. */
+function sumTrackedVolume(coins, cg) {
+  const values = coins.map((c) => cg?.[c.coingeckoId]?.usd_24h_vol);
+  return values.every((v) => typeof v === 'number' && Number.isFinite(v))
+    ? values.reduce((sum, v) => sum + v, 0) : null;
+}
+
+export default function HomeTab({ data, alerts, setActiveTab, refreshIntervalSec = 900, freshness = null }) {
+  const cg = data?.cgSimple;
+  const coins = getActiveCoins();
+
+  const priceByCoin = useMemo(() => buildPriceByCoin(coins, cg, data), [coins, cg, data]);
+  const detailsByCoin = useMemo(() => buildDetailsByCoin(coins, data), [coins, data]);
+  const supplySeriesByCoin = useMemo(
+    () => buildSupplySeriesByCoin(coins, detailsByCoin, data),
+    [coins, detailsByCoin, data]
+  );
+
+  const [supplyLog, setSupplyLog] = useState(false);
+  const [supplyPct, setSupplyPct] = useState(false);
+  const [compareAll, setCompareAll] = useState(false);
+  const narrow = useNarrowViewport();
 
   const chainFlows = useMemo(
     () => annotateChainFlows(rankChainFlows(detailsByCoin), alerts),
@@ -73,84 +158,21 @@ export default function HomeTab({ data, alerts, setActiveTab, refreshIntervalSec
     [detailsByCoin, alerts]
   );
 
-  const supplyLabels = useMemo(() => {
-    const any = coins.map((c) => supplySeriesByCoin[c.symbol]).find((s) => s.length);
-    return (any || []).map((p) => new Date(p.ts ?? p.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }));
-  }, [coins, supplySeriesByCoin]);
-
-  const pegLabels = useMemo(() => {
-    const any = coins.map((c) => data?.[`cg${c.symbol}Chart`]?.prices).find((p) => p?.length);
-    return (any || []).slice(-90).map((p) => new Date(p[0]).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
-  }, [coins, data]);
-
+  const supplyLabels = useMemo(() => buildSupplyLabels(coins, supplySeriesByCoin), [coins, supplySeriesByCoin]);
+  const pegLabels = useMemo(() => buildPegLabels(coins, data), [coins, data]);
   const supplyChartData = useMemo(
-    () => {
-      const transform = (series) => (supplyPct ? toPercentFromFirst(series).map((p) => p.value) : series.map((p) => p.value));
-      const ranked = [...coins].sort((a, b) => {
-        const av = (supplySeriesByCoin[a.symbol] || []).slice(-1)[0]?.value || 0;
-        const bv = (supplySeriesByCoin[b.symbol] || []).slice(-1)[0]?.value || 0;
-        return bv - av;
-      });
-      const visible = narrow && !compareAll ? ranked.slice(0, 2) : ranked;
-      return {
-        labels: supplyLabels,
-        datasets: visible.map((c) => ({
-          label: supplyPct ? `${c.symbol} %` : c.symbol,
-          data: transform(supplySeriesByCoin[c.symbol]),
-          borderColor: c.color,
-          tension: 0.25,
-        })),
-      };
-    },
+    () => buildSupplyChartData({ coins, supplySeriesByCoin, supplyLabels, supplyPct, narrow, compareAll }),
     [coins, supplyLabels, supplySeriesByCoin, supplyPct, narrow, compareAll]
   );
-
-  const supplyChartOptions = useMemo(() => {
-    const yScale = supplyLog && !supplyPct
-      ? { type: 'logarithmic', ticks: { callback: (v) => fmtB(v) } }
-      : supplyPct
-        ? { ticks: { callback: (v) => (v >= 0 ? '+' : '') + Number(v).toFixed(1) + '%' } }
-        : { ticks: { callback: (v) => fmtB(v) } };
-    return {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        y: yScale,
-        x: { ticks: { autoSkip: true, maxTicksLimit: narrow ? 5 : 10 } },
-      },
-    };
-  }, [supplyLog, supplyPct, narrow]);
-
-  const pegChartData = useMemo(
-    () => {
-      const refColor = typeof document !== 'undefined'
-        ? getComputedStyle(document.documentElement).getPropertyValue('--text2').trim() || '#9CA3AF'
-        : '#9CA3AF';
-      const coinLines = coins.map((c) => ({
-        label: c.symbol,
-        data: (data?.[`cg${c.symbol}Chart`]?.prices || []).slice(-90).map((p) => p[1]),
-        borderColor: c.color,
-        tension: 0.25,
-      }));
-      return { labels: pegLabels, datasets: [...coinLines, pegRefLine(pegLabels, refColor)] };
-    },
-    [coins, pegLabels, data]
+  const supplyChartOptions = useMemo(
+    () => buildSupplyChartOptions(supplyLog, supplyPct, narrow),
+    [supplyLog, supplyPct, narrow]
   );
-
-  const pegChartOpts = useMemo(() => {
-    const allPrices = pegChartData.datasets
-      .filter((d) => d.label !== '$1 peg')
-      .flatMap((d) => d.data)
-      .filter((v) => typeof v === 'number' && v > 0);
-    return pegChartOptions(allPrices);
-  }, [pegChartData]);
+  const pegChartData = useMemo(() => buildPegChartData(coins, pegLabels, data), [coins, pegLabels, data]);
+  const pegChartOpts = useMemo(() => buildPegChartOptions(pegChartData), [pegChartData]);
 
   const totalMC = data?.allStables?.totalMarketCap?.peggedUSD ?? null;
-  const vol = useMemo(() => {
-    const values = coins.map((c) => cg?.[c.coingeckoId]?.usd_24h_vol);
-    return values.every((v) => typeof v === 'number' && Number.isFinite(v))
-      ? values.reduce((sum, v) => sum + v, 0) : null;
-  }, [coins, cg]);
+  const vol = useMemo(() => sumTrackedVolume(coins, cg), [coins, cg]);
 
   return (
     <div class="tab-content active">

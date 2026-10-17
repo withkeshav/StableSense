@@ -1,3 +1,5 @@
+import { realpathSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { getActiveCoins } from '../../src/utils/coin-config.js';
 import { loadEnv } from '../lib/env.js';
 import db from '../lib/db.js';
@@ -30,16 +32,24 @@ function skipIfWithinCadence() {
   }
 }
 
-function buildContext() {
+/**
+ * Assemble the model input from the persisted snapshot, price, stress and alert
+ * tables.
+ * @param {object} [dataSource] better-sqlite3 handle used for every query.
+ *   Defaults to the module-level db, so `buildContext()` behaves exactly as
+ *   before; tests and tooling can inject an isolated in-memory database.
+ * @returns {string} Newline-joined context lines.
+ */
+export function buildContext(dataSource = db) {
   const lines = [];
-  const market = db.prepare('SELECT * FROM market_snapshots ORDER BY ts DESC LIMIT 1').get();
+  const market = dataSource.prepare('SELECT * FROM market_snapshots ORDER BY ts DESC LIMIT 1').get();
   if (market) {
     const delta = typeof market.delta_24h_usd === 'number' ? `${market.delta_24h_usd >= 0 ? '+' : ''}$${(market.delta_24h_usd / 1e9).toFixed(2)}B` : 'n/a';
     lines.push(`Total stablecoin market cap: $${(market.total_circulating_usd / 1e9).toFixed(2)}B (24h ${delta})`);
   }
 
   for (const coin of getActiveCoins()) {
-    const latest = db
+    const latest = dataSource
       .prepare(
         `SELECT chain, circulating_usd, delta_24h_usd FROM snapshots
          WHERE coin = ? AND ts = (SELECT MAX(ts) FROM snapshots WHERE coin = ?)
@@ -55,7 +65,7 @@ function buildContext() {
         return `${r.chain} $${(r.circulating_usd / 1e9).toFixed(2)}B (${delta} 24h)`;
       })
       .join('; ');
-    const price = db.prepare('SELECT price, change_24h FROM prices WHERE coin = ? ORDER BY ts DESC LIMIT 1').get(coin.symbol);
+    const price = dataSource.prepare('SELECT price, change_24h FROM prices WHERE coin = ? ORDER BY ts DESC LIMIT 1').get(coin.symbol);
     const spot = price?.price != null ? `$${price.price.toFixed(4)} (${price.change_24h ?? 'n/a'}% 24h)` : 'n/a';
     lines.push(`${coin.symbol}: total $${(total / 1e9).toFixed(2)}B. Top chains: ${top}. Spot ${spot}.`);
   }
@@ -63,7 +73,7 @@ function buildContext() {
   // Stress series (Pass 4): the latest per-coin peg stress index, z-score,
   // and normalized delta, so the narrative can explain "how this was computed".
   for (const coin of getActiveCoins()) {
-    const row = db
+    const row = dataSource
       .prepare('SELECT peg_stress_index, z_score, normalized_delta FROM stress_series WHERE symbol = ? ORDER BY ts DESC LIMIT 1')
       .get(coin.symbol);
     if (row) {
@@ -73,7 +83,7 @@ function buildContext() {
 
   // Recent alert labels (Pass 4): the last cycle's active alerts, so the
   // narrative can name the specific rule that fired.
-  const recentEvents = db
+  const recentEvents = dataSource
     .prepare('SELECT symbol, rule, severity, headline FROM alert_events WHERE state = ? ORDER BY detected_at DESC LIMIT 5')
     .all('open');
   if (recentEvents.length) {
@@ -82,7 +92,7 @@ function buildContext() {
       lines.push(`- ${l.symbol} ${l.rule} (${l.severity}): ${l.headline}`);
     }
   } else {
-    const recentLabels = db
+    const recentLabels = dataSource
       .prepare('SELECT symbol, alert_type, severity, explanation FROM labels ORDER BY ts DESC LIMIT 5')
       .all();
     if (recentLabels.length) {
@@ -141,38 +151,59 @@ function parse(content) {
   }
 }
 
-skipIfWithinCadence();
-
-if (!process.env.OPENAI_API_KEY) {
-  console.error('[ai] OPENAI_API_KEY is not set; skipping narrative generation');
-  process.exit(1);
-}
-
-const job = startJob('ai');
-try {
-let content;
-let modelUsed = MODEL;
-try {
-  content = await callModel(MODEL);
-} catch (err) {
-  console.error(`[ai] primary model failed: ${err.message}`);
-  if (!FALLBACK_MODEL || FALLBACK_MODEL === MODEL) {
-    throw err;
+// CLI body gate. This module is both a cron entry point and (now) an importable
+// module for tests. Before this guard, `await import('./jobs/ai.js')` ran the
+// cron sequence: it opened the production db, could process.exit(0) from the
+// cadence check, and process.exit(1) when OPENAI_API_KEY was unset (verified:
+// exit code 1). The gate runs the identical sequence when this file is the
+// executed entry point (`node jobs/ai.js`, `npm run ai`, cron) and skips it when
+// the module is imported instead.
+const isEntryPoint = (() => {
+  const entry = process.argv[1];
+  if (!entry) return false;
+  const selfPath = fileURLToPath(import.meta.url);
+  if (entry === selfPath) return true;
+  try {
+    return realpathSync(entry) === realpathSync(selfPath);
+  } catch {
+    return false;
   }
-  modelUsed = FALLBACK_MODEL;
-  content = await callModel(FALLBACK_MODEL);
-}
+})();
 
-const parsed = parse(content);
-const savedAt = Date.now();
-db.prepare(
-  'INSERT INTO intelligence (ts, headline, narrative, implications, model, meta) VALUES (?, ?, ?, ?, ?, ?)'
-).run(savedAt, parsed.headline, parsed.narrative, parsed.implications, modelUsed, JSON.stringify({ source: 'cron' }));
+if (isEntryPoint) {
+  skipIfWithinCadence();
 
-console.log(`[ai] saved narrative (${modelUsed}): ${parsed.headline}`);
-  finishJob(job, { ok: true, sourceTs: savedAt });
-} catch (err) {
-  finishJob(job, { ok: false, error: err });
-  console.error(`[ai] failed: ${err.message || err}`);
-  process.exit(1);
+  if (!process.env.OPENAI_API_KEY) {
+    console.error('[ai] OPENAI_API_KEY is not set; skipping narrative generation');
+    process.exit(1);
+  }
+
+  const job = startJob('ai');
+  try {
+  let content;
+  let modelUsed = MODEL;
+  try {
+    content = await callModel(MODEL);
+  } catch (err) {
+    console.error(`[ai] primary model failed: ${err.message}`);
+    if (!FALLBACK_MODEL || FALLBACK_MODEL === MODEL) {
+      throw err;
+    }
+    modelUsed = FALLBACK_MODEL;
+    content = await callModel(FALLBACK_MODEL);
+  }
+
+  const parsed = parse(content);
+  const savedAt = Date.now();
+  db.prepare(
+    'INSERT INTO intelligence (ts, headline, narrative, implications, model, meta) VALUES (?, ?, ?, ?, ?, ?)'
+  ).run(savedAt, parsed.headline, parsed.narrative, parsed.implications, modelUsed, JSON.stringify({ source: 'cron' }));
+
+  console.log(`[ai] saved narrative (${modelUsed}): ${parsed.headline}`);
+    finishJob(job, { ok: true, sourceTs: savedAt });
+  } catch (err) {
+    finishJob(job, { ok: false, error: err });
+    console.error(`[ai] failed: ${err.message || err}`);
+    process.exit(1);
+  }
 }
