@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [3.10.0] - 2026-10-17
+
 ### Fixed
 - The market total and 24h delta no longer substitute a zero from the era-consistent series with a stale backend snapshot from a different day, and overflowed sums no longer reach the payload as Infinity.
 - Spot prices of zero or below are treated as feed failures: a dead feed can no longer emit a CRITICAL 10000 bps depeg alert.
