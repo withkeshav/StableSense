@@ -12,6 +12,9 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          # The commit-identity guard walks full history on every push.
+          fetch-depth: 0
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -26,6 +29,12 @@ jobs:
         run: |
           node --test scripts/verify-public-tree.test.mjs
           node scripts/verify-public-tree.mjs HEAD
+
+      # Device-independent identity gate (companion to the tower pre-push hook).
+      # Fails if any commit on the pushed history would attribute to a non-ownwer
+      # GitHub account.
+      - name: Verify commit identity
+        run: node scripts/verify-commit-identity.mjs
 
 
       # vitest.config.js includes backend/**/*.test.js, but backend deps live in
