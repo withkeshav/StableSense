@@ -116,6 +116,12 @@ export function buildMarketView({ priceRows = [], snapshotRows = [], marketRow =
 
   const seriesTotal = coins.reduce((acc, c) => acc + (Number.isFinite(c.supply) ? c.supply : 0), 0);
   const seriesDelta = coins.reduce((acc, c) => acc + (Number.isFinite(c.supplyDelta24h) ? c.supplyDelta24h : 0), 0);
+  // The series is the preferred measure only when it actually measured
+  // something and its sum is finite. A truthy test (`seriesDelta || ...`)
+  // substituted a legitimate 0 with a stale market_snapshots value from a
+  // different day, and an overflowed sum (>=1e308 scale) leaked Infinity.
+  const measuredSeriesTotal = coins.some((c) => Number.isFinite(c.supply)) && Number.isFinite(seriesTotal);
+  const measuredSeriesDelta = coins.some((c) => Number.isFinite(c.supplyDelta24h)) && Number.isFinite(seriesDelta);
   return {
     generatedAt: nowMs,
     source: 'helix-via-cron',
@@ -123,9 +129,10 @@ export function buildMarketView({ priceRows = [], snapshotRows = [], marketRow =
     market: {
       // Prefer the sum of era-consistent per-coin supplies: Helix's trends
       // total_supply layer understates vs its own chains layer, so a stored
-      // market_snapshots total is only a fallback.
-      totalCirculatingUsd: seriesTotal || (marketRow?.total ?? null),
-      delta24hUsd: seriesDelta || (marketRow?.delta ?? null),
+      // market_snapshots total is only a fallback when the series measured
+      // nothing (or its sum overflowed to a non-finite value).
+      totalCirculatingUsd: measuredSeriesTotal ? seriesTotal : (marketRow?.total ?? null),
+      delta24hUsd: measuredSeriesDelta ? seriesDelta : (marketRow?.delta ?? null),
       ts: marketRow?.ts ?? null,
     },
     coins,

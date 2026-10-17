@@ -451,6 +451,13 @@ describe('generateAlerts', () => {
     expect(after).toBeGreaterThanOrEqual(before);
   });
 
+  it('does not raise PEG_BREAK for zero or negative price (feed failure, not depeg)', () => {
+    const zeroRun = generateAlerts({ cgSimple: { tether: { usd: 0, last_updated_at: T1 } } });
+    expect(zeroRun.find((a) => a.rule === 'PEG_BREAK')).toBeUndefined();
+    const negativeRun = generateAlerts({ cgSimple: { tether: { usd: -1, last_updated_at: T1 } } });
+    expect(negativeRun.find((a) => a.rule === 'PEG_BREAK')).toBeUndefined();
+  });
+
   it('marks peg drift above the warning band as HIGH', () => {
     const data = { cgSimple: { tether: { usd: 1.002 } } };
     const peg = generateAlerts(data).find((a) => a.rule === 'PEG_BREAK' && a.coin === 'USDT');

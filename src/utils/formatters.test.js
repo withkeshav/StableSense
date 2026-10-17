@@ -294,3 +294,22 @@ describe('formatUtc', () => {
     expect(formatUtc('nope')).toBe('-');
   });
 });
+
+describe('empty-string inputs are missing values, not zero', () => {
+  it('renders the hyphen placeholder for trim-empty strings', () => {
+    expect(fmtB('')).toBe('-');
+    expect(fmtB('   ')).toBe('-');
+    expect(fmtPct('')).toBe('-');
+    expect(fmtPrice('')).toBe('-');
+    expect(timeAgo('')).toBe('-');
+  });
+
+  it('keeps numeric strings with surrounding spaces valid', () => {
+    expect(fmtB(' 12 ')).toBe('$12.00');
+    expect(fmtPct(' 1.5 ')).toBe('+1.50%');
+  });
+
+  it('returns null from bps for trim-empty strings', () => {
+    expect(bps('')).toBe(null);
+  });
+});

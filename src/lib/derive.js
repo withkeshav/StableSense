@@ -540,7 +540,9 @@ export function generateAlerts(data, opts = {}) {
     const detail = data?.[`${cfg.symbol.toLowerCase()}Detail`];
     const provenance = { source: 'deflama+coingecko', coin: cfg.symbol };
 
-    if (typeof price === 'number' && Number.isFinite(price)) {
+    // Zero or negative price is a feed failure, not a depeg observation: a
+    // missing price must not become a CRITICAL alert (numeric-claim rule 6).
+    if (typeof price === 'number' && Number.isFinite(price) && price > 0) {
       const devBps = bps(price);
       if (devBps == null) continue;
       const absDev = Math.abs(devBps);

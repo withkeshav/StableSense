@@ -89,4 +89,41 @@ describe('buildMarketView', () => {
     expect(usdt.chains[0].delta24h).toBe(null);
     expect(out.market.delta24hUsd).toBe(null);
   });
+
+  it('keeps a measured zero delta instead of substituting a stale market row', () => {
+    // buildSupplyHistory keys its 30-day window off the real clock (nowMs is
+    // not injectable through buildMarketView), so the history rows must be
+    // relative to Date.now(). Asserted values stay deterministic regardless
+    // of the date.
+    const base = Date.now();
+    const dayA = base - 2 * 86_400_000;
+    const dayB = base - 86_400_000;
+    const out = buildMarketView({
+      priceRows: [price('USDT', base, 1.0001)],
+      snapshotRows: [snap('USDT', 'ethereum', base, 60_000)],
+      historyRows: [
+        snap('USDT', 'ethereum', dayA, 60_000),
+        snap('USDT', 'ethereum', dayB, 60_000),
+      ],
+      marketRow: { ts: dayA, total: 999_999, delta: 777 },
+      nowMs: base + 1000,
+      supplySeriesDays: 30,
+    });
+    expect(out.market.totalCirculatingUsd).toBe(60_000);
+    expect(out.market.delta24hUsd).toBe(0);
+  });
+
+  it('falls back to the market row when the series sum overflows to Infinity', () => {
+    const out = buildMarketView({
+      priceRows: [price('USDT', T0, 1), price('USDC', T0, 1)],
+      snapshotRows: [
+        snap('USDT', 'ethereum', T0, 1e308),
+        snap('USDC', 'ethereum', T0, 1e308),
+      ],
+      marketRow: { ts: T0 - 3_600_000, total: 130_000, delta: 60 },
+      nowMs: T0 + 1000,
+    });
+    expect(out.market.totalCirculatingUsd).toBe(130_000);
+    expect(out.market.delta24hUsd).toBe(60);
+  });
 });

@@ -16,6 +16,20 @@ import { STABLECOIN_REGISTRY } from '../utils/coin-config.js';
  * @param {object} payload /api/market JSON.
  * @returns {object} Internal dashboard data object.
  */
+
+/**
+ * Coerce a millisecond timestamp to epoch seconds, or null unless the value
+ * is a positive finite number. A string ts ("not-a-number") must become
+ * null, never NaN: NaN flows into stored alert provenance and chart dates
+ * as if it were a valid value. (Math.floor("x" / 1000) === NaN.)
+ * @param {unknown} ts
+ * @returns {number|null}
+ */
+function epochSeconds(ts) {
+  if (typeof ts !== 'number' || !Number.isFinite(ts) || ts <= 0) return null;
+  return Math.floor(ts / 1000);
+}
+
 export function transformMarketPayload(payload) {
   const data = {};
   const coins = Array.isArray(payload?.coins) ? payload.coins : [];
@@ -29,7 +43,7 @@ export function transformMarketPayload(payload) {
       usd: c.price ?? null,
       usd_24h_change: c.change24h ?? null,
       usd_24h_vol: null,
-      last_updated_at: c.ts != null ? Math.floor(c.ts / 1000) : null,
+      last_updated_at: epochSeconds(c.ts),
     };
     const chains = Array.isArray(c.chains) ? c.chains : [];
     const chainBalances = {};
@@ -38,19 +52,22 @@ export function transformMarketPayload(payload) {
       // Two points in ascending time order: derive.js chainObservation takes
       // the last two entries as previous then current, so previous must come
       // first. Previously this was inverted, which flipped flow direction.
-      const curTs = ch.ts != null ? Math.floor(ch.ts / 1000) : null;
-      const curSupply = ch.supply ?? null;
+      const curTs = epochSeconds(ch.ts);
+      const curSupply = typeof ch.supply === 'number' && Number.isFinite(ch.supply) ? ch.supply : null;
+      const prevDelta = typeof ch.delta24h === 'number' && Number.isFinite(ch.delta24h) ? ch.delta24h : null;
       const tokens = [];
-      if (ch.delta24h != null && curSupply != null && curTs != null) {
+      if (prevDelta != null && curSupply != null && curTs != null) {
         tokens.push({
           date: curTs - 86400,
-          circulating: { peggedUSD: curSupply - ch.delta24h },
+          circulating: { peggedUSD: curSupply - prevDelta },
         });
       }
-      tokens.push({
-        date: curTs,
-        circulating: { peggedUSD: curSupply },
-      });
+      if (curSupply != null && curTs != null) {
+        tokens.push({
+          date: curTs,
+          circulating: { peggedUSD: curSupply },
+        });
+      }
       chainBalances[ch.chain] = { tokens };
     }
     data[`${symbol.toLowerCase()}Detail`] = { chainBalances };

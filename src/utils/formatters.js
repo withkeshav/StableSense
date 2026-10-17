@@ -6,6 +6,9 @@
  */
 export function fmtB(n, d = 2) {
   if (n === null || n === undefined) return '-';
+  // A trim-empty string is a missing value, not zero: Number('') === 0 would
+  // render a data hole as a real "$0.00" / "+0.00%".
+  if (typeof n === 'string' && n.trim() === '') return '-';
   const value = Number(n);
   if (!Number.isFinite(value)) return '-';
   const decimals = Number.isFinite(Number(d)) ? Math.max(0, Number(d)) : 2;
@@ -26,6 +29,9 @@ export function fmtB(n, d = 2) {
  */
 export function fmtPct(n, d = 2) {
   if (n === null || n === undefined) return '-';
+  // A trim-empty string is a missing value, not zero: Number('') === 0 would
+  // render a data hole as a real "$0.00" / "+0.00%".
+  if (typeof n === 'string' && n.trim() === '') return '-';
   const value = Number(n);
   if (!Number.isFinite(value)) return '-';
   const decimals = Number.isFinite(Number(d)) ? Math.max(0, Number(d)) : 2;
@@ -39,6 +45,9 @@ export function fmtPct(n, d = 2) {
  */
 export function fmtPrice(n) {
   if (n === null || n === undefined) return '-';
+  // A trim-empty string is a missing value, not zero: Number('') === 0 would
+  // render a data hole as a real "$0.00" / "+0.00%".
+  if (typeof n === 'string' && n.trim() === '') return '-';
   const value = Number(n);
   if (!Number.isFinite(value)) return '-';
   return '$' + value.toFixed(4);
@@ -76,6 +85,7 @@ export function chgClass(n) {
  */
 export function bps(p) {
   if (p === null || p === undefined) return null;
+  if (typeof p === 'string' && p.trim() === '') return null;
   const price = Number(p);
   if (!Number.isFinite(price)) return null;
   return Math.round((price - 1) * 10000);
@@ -88,6 +98,7 @@ export function bps(p) {
  */
 export function timeAgo(ts) {
   if (ts === null || ts === undefined) return '-';
+  if (typeof ts === 'string' && ts.trim() === '') return '-';
   const tsMs = ts instanceof Date ? ts.getTime() : Number(ts);
   if (!Number.isFinite(tsMs)) return '-';
   const s = Math.max(0, Math.floor((Date.now() - tsMs) / 1000));

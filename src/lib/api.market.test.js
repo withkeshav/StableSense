@@ -207,4 +207,19 @@ describe('fetchDashboardData via mocked backend', () => {
     const { fetchDashboardData } = await import('./api.js');
     await expect(fetchDashboardData({})).rejects.toThrow('All market data sources are unavailable.');
   });
+
+  it('rejects non-numeric ts/supply instead of leaking NaN or string values', () => {
+    const data = transformMarketPayload(marketPayload({
+      coins: [
+        {
+          symbol: 'USDT', name: 'Tether USD', price: 1.0001, change24h: 0.01, ts: 'not-a-number',
+          supply: 100_000, supplyDelta24h: 50, depegIndex: null,
+          chains: [{ chain: 'ethereum', ts: '2026-10-17', supply: '60_000', delta24h: 'x' }],
+        },
+      ],
+    }));
+    expect(data.cgSimple.tether.last_updated_at).toBe(null);
+    expect(Number.isNaN(data.cgSimple.tether.last_updated_at)).toBe(false);
+    expect(data.usdtDetail.chainBalances.ethereum.tokens).toHaveLength(0);
+  });
 });
