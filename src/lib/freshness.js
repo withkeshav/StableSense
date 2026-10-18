@@ -17,7 +17,7 @@ export const NOMINAL_24H_MAX = 28;
 
 const CURRENT_MS = 2 * 3600_000;
 const DELAYED_MS = 24 * 3600_000;
-/** DefiLlama chain history is a daily snapshot; 8-20h old is on cadence, not a failed fetch. */
+/** Upstream chain history is a daily snapshot; 8-20h old is on cadence, not a failed fetch. */
 const SUPPLY_CURRENT_MS = 28 * 3600_000;
 const SUPPLY_DELAYED_MS = 48 * 3600_000;
 
@@ -88,7 +88,7 @@ export function classifySupplyFreshness(tsMs, now = Date.now()) {
 }
 
 /**
- * Latest DefiLlama token date (unix seconds or ms) across coin details.
+ * Latest upstream supply point date (unix seconds or ms) across coin details.
  * @param {object} data Dashboard payload.
  * @returns {number|null} Epoch ms.
  */
@@ -116,7 +116,7 @@ export function extractSpotObservedAt(data) {
 }
 
 /**
- * Prefer live spot timestamps; fall back to DefiLlama daily supply dates.
+ * Prefer live spot timestamps; fall back to supply observation timestamps.
  */
 export function extractMarketObservedAt(data) {
   return extractSpotObservedAt(data) ?? extractSupplyObservedAt(data);
