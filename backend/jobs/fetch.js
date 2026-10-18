@@ -9,6 +9,8 @@ import {
   selectNewestPoint,
   toMs,
 } from './lib/helixMap.js';
+import { mapBulkMarketPayload } from './lib/helixV2.js';
+import { upsertMarketRow, writePriceRows, writeSnapshotRows } from './lib/marketWrites.js';
 
 loadEnv();
 
@@ -129,6 +131,30 @@ if (typeof total === 'number' && total > 0) {
 console.log('[fetch] done');
   const snap = db.prepare('SELECT MAX(ts) AS ts FROM snapshots').get();
   finishJob(job, { ok: true, sourceTs: snap?.ts ?? now });
+} else if (process.env.HELIX_V2 === '1') {
+// Staged switch: one bulk read instead of five trends plus five chains calls.
+// The v1 branch below stays the default until the Helix deploy is verified.
+const helixV2Base = process.env.HELIX_API_BASE || 'https://helix.withkeshav.com';
+const v2Coins = getActiveCoins();
+const v2Symbols = v2Coins.map((c) => c.symbol).join(',');
+const bulk = await helixGetJson(
+  `${helixV2Base}/api/v2/market?assets=${encodeURIComponent(v2Symbols)}&window=latest&include=chains`
+);
+const mapped = mapBulkMarketPayload(bulk);
+const priceCount = writePriceRows(db, mapped.priceRows);
+const snapshotCount = writeSnapshotRows(db, mapped.snapshotRows);
+const marketWritten = upsertMarketRow(db, mapped.marketRow);
+if (mapped.failed.length) {
+  console.log(`[fetch] helix v2 failed assets: ${mapped.failed.map((f) => `${f.asset}:${f.code}`).join(', ')}`);
+}
+if (mapped.coverage) {
+  console.log(
+    `[fetch] helix v2 coverage: ${mapped.coverage.included ?? '-'}/${mapped.coverage.requested ?? '-'} included, ${mapped.coverage.failed ?? '-'} failed`
+  );
+}
+console.log(`[fetch] helix v2 prices=${priceCount} snapshots=${snapshotCount} market=${marketWritten ? 'yes' : 'no'}`);
+console.log('[fetch] done');
+finishJob(job, { ok: true, sourceTs: mapped.marketRow?.ts ?? Date.now() });
 } else {
 const helixBase = process.env.HELIX_API_BASE || 'https://helix.withkeshav.com';
 const coins = getActiveCoins();

@@ -17,6 +17,7 @@ The dashboard's market figures come from the market dataset the backend persists
 | Helix `GET /api/trends?asset=X` | backend `jobs/fetch.js`, `jobs/stress.js` (supply, price, 24h change, stress series) | 10 min (backend) |
 | Helix `GET /api/trends/chains?asset=X` | backend `jobs/fetch.js` (per-chain supply; skippable via `HELIX_FETCH_CHAINS=0`) | 10 min (backend) |
 | Helix `GET /api/events?asset=X&limit=25` | backend `jobs/stress.js` (canonical alert events) | 10 min (backend) |
+| Helix `GET /api/v2/market?assets=...&window=latest&include=chains` | backend `jobs/fetch.js` when `HELIX_V2=1` (one bulk read replaces the per-coin trends and chains calls) | 10 min (backend) |
 | `GET https://api.coingecko.com/api/v3/coins/{id}/market_chart` | Frontend (lazy, coin tab) | 5 min cache |
 | `GET https://api.coingecko.com/api/v3/coins/{id}/tickers` | Frontend (lazy, coin tab) | 5 min cache |
 | `GET https://stablecoins.llama.fi/*` | backend only, with `LEGACY_UPSTREAMS=1` | off by default |
