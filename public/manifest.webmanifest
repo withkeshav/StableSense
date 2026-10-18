@@ -3,8 +3,9 @@
   "short_name": "StableSense",
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "description": "Stablecoin intelligence and learning",
+  "background_color": "#F7F5F2",
+  "theme_color": "#F7F5F2",
+  "description": "Stablecoin market observatory and sourced research portal",
   "icons": [
     {
       "src": "favicon.svg",

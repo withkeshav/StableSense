@@ -4,8 +4,10 @@ import { shareTextIssues } from './shareChart.js';
 const complete = {
   title: 'USDT price vs $1.00',
   rangeLabel: '~90D',
+  rangeDetail: '20 Jul to 18 Oct 2026',
   interpretation: 'USDT secondary-market price against the $1.00 reference.',
   definition: 'USDT market price versus a $1.00 reference line over the last 90 days.',
+  sourceLabel: 'CoinGecko price history',
 };
 
 describe('shareTextIssues', () => {
@@ -14,7 +16,7 @@ describe('shareTextIssues', () => {
   });
 
   it('names every missing field instead of filling a generic default', () => {
-    expect(shareTextIssues({})).toEqual(['title', 'range', 'interpretation', 'definition']);
+    expect(shareTextIssues({})).toEqual(['title', 'range', 'range detail', 'interpretation', 'definition', 'source']);
   });
 
   it('treats a blank or whitespace field as missing', () => {
@@ -28,6 +30,11 @@ describe('shareTextIssues', () => {
   });
 
   it('is safe with no argument', () => {
-    expect(shareTextIssues()).toEqual(['title', 'range', 'interpretation', 'definition']);
+    expect(shareTextIssues()).toEqual(['title', 'range', 'range detail', 'interpretation', 'definition', 'source']);
+  });
+
+  it('requires the exact range and source so the image stands alone', () => {
+    expect(shareTextIssues({ ...complete, rangeDetail: '' })).toEqual(['range detail']);
+    expect(shareTextIssues({ ...complete, sourceLabel: '  ' })).toEqual(['source']);
   });
 });

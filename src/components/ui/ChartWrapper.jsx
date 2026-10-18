@@ -93,8 +93,10 @@ export default function ChartWrapper({
   ariaLabel = null,
   shareTitle,
   shareRange,
+  shareRangeDetail,
   shareInterpretation,
   shareDefinition,
+  shareSource,
   shareHighlight = '',
   shareAsOf = null,
   enableShare = true,
@@ -102,13 +104,16 @@ export default function ChartWrapper({
 }) {
   // No generic fallbacks. A card with a placeholder title or an empty read is
   // a claim the chart does not support, so the share control is withheld and
-  // the omission is logged instead of exported.
+  // the omission is logged instead of exported. The exact range and source are
+  // required: the image must stand alone.
   const shareIssues = enableShare
     ? shareTextIssues({
       title: shareTitle,
       rangeLabel: shareRange,
+      rangeDetail: shareRangeDetail,
       interpretation: shareInterpretation,
       definition: shareDefinition,
+      sourceLabel: shareSource,
     })
     : [];
   const shareReady = enableShare && shareIssues.length === 0;
@@ -247,8 +252,10 @@ export default function ChartWrapper({
           chartInstance={chartRef.current}
           title={shareTitle}
           rangeLabel={shareRange}
+          rangeDetail={shareRangeDetail}
           interpretation={shareInterpretation}
           definition={shareDefinition}
+          sourceLabel={shareSource}
           highlight={shareHighlight}
           asOf={shareAsOf}
         />

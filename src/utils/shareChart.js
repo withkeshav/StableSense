@@ -19,8 +19,10 @@ export function shareTextIssues(meta = {}) {
   const fields = {
     title: 'title',
     rangeLabel: 'range',
+    rangeDetail: 'range detail',
     interpretation: 'interpretation',
     definition: 'definition',
+    sourceLabel: 'source',
   };
   const issues = [];
   for (const [key, label] of Object.entries(fields)) {
@@ -96,10 +98,12 @@ function drawBrandMark(ctx, x, y, size) {
  * @param {object} chartInstance Chart.js instance
  * @param {object} meta
  * @param {string} meta.title
- * @param {string} meta.rangeLabel
+ * @param {string} meta.rangeLabel Short range token, for example "~90D".
+ * @param {string} meta.rangeDetail Exact start and end, for example "20 Jul to 18 Oct 2026".
  * @param {string} meta.interpretation
- * @param {string} meta.definition
- * @param {string} [meta.timestamp]
+ * @param {string} meta.definition What it measures, scope and exclusions.
+ * @param {string} meta.sourceLabel Data source, for example "Helix daily supply history".
+ * @param {string} [meta.timestamp] As-of date and time.
  * @param {string} [meta.sourceUrl]
  * @param {string} formatKey story|square|landscape
  */
@@ -173,8 +177,10 @@ export function shareSignalCard(chartInstance, meta, formatKey) {
   }
 
   const chartCanvas = chartInstance?.canvas;
-  const footerH = Math.round(fmt.h * 0.12);
-  const metaH = Math.round(fmt.h * 0.08);
+  const footerH = Math.round(fmt.h * 0.10);
+  // Two meta rows: measure and as-of, then range and source. A card without
+  // these is not self-sufficient, so the space is reserved, not squeezed.
+  const metaH = Math.round(fmt.h * 0.19);
   const chartTop = y + 8;
   const chartBottom = fmt.h - footerH - metaH - pad;
   const chartBoxH = Math.max(120, chartBottom - chartTop);
@@ -201,18 +207,44 @@ export function shareSignalCard(chartInstance, meta, formatKey) {
     ctx.drawImage(chartCanvas, dx, dy, dw, dh);
   }
 
-  const metaY = fmt.h - footerH - metaH + 10;
-  ctx.fillStyle = faint;
-  ctx.font = `800 ${Math.round(fmt.w * 0.011)}px Manrope, Arial, sans-serif`;
-  ctx.fillText('WHAT THIS MEASURES', pad, metaY);
-  ctx.textAlign = 'right';
-  ctx.fillText('AS OF', fmt.w - pad, metaY);
-  ctx.textAlign = 'left';
-  ctx.font = `600 ${Math.round(fmt.w * 0.013)}px Manrope, Arial, sans-serif`;
-  ctx.fillStyle = soft;
-  wrapText(ctx, meta.definition, pad, metaY + Math.round(fmt.h * 0.022), fmt.w * 0.48, Math.round(fmt.h * 0.018), 3);
-  ctx.textAlign = 'right';
-  ctx.fillText(meta.timestamp || new Date().toISOString(), fmt.w - pad, metaY + Math.round(fmt.h * 0.022));
+  const labelFont = Math.round(fmt.w * 0.0105);
+  const bodyFont = Math.round(fmt.w * 0.0125);
+  const bodyLine = Math.round(bodyFont * 1.35);
+  const metaY = fmt.h - footerH - metaH + 6;
+  const rowH = Math.round(metaH * 0.46);
+  const leftW = Math.round((fmt.w - pad * 2) * 0.54);
+  const rightW = Math.round((fmt.w - pad * 2) * 0.38);
+  const rightX = fmt.w - pad;
+
+  const drawLabel = (text, x, y, align = 'left') => {
+    ctx.textAlign = align;
+    ctx.fillStyle = faint;
+    ctx.font = `800 ${labelFont}px Manrope, Arial, sans-serif`;
+    ctx.fillText(text, x, y);
+  };
+  const drawBody = (text, x, y, width, maxLines, align = 'left') => {
+    ctx.textAlign = align;
+    ctx.fillStyle = soft;
+    ctx.font = `600 ${bodyFont}px Manrope, Arial, sans-serif`;
+    if (align === 'right') {
+      ctx.fillText(fitText(ctx, text, width), x, y);
+      return;
+    }
+    wrapText(ctx, text, x, y, width, bodyLine, maxLines);
+  };
+
+  // Row one: what it measures and when it was observed.
+  drawLabel('WHAT THIS MEASURES', pad, metaY);
+  drawLabel('AS OF', rightX, metaY, 'right');
+  drawBody(meta.definition, pad, metaY + labelFont + 6, leftW, 2);
+  drawBody(meta.timestamp || new Date().toISOString(), rightX, metaY + labelFont + 6, rightW, 1, 'right');
+
+  // Row two: the exact range and the source.
+  const row2 = metaY + rowH;
+  drawLabel('RANGE', pad, row2);
+  drawLabel('SOURCE', rightX, row2, 'right');
+  drawBody(meta.rangeDetail, pad, row2 + labelFont + 6, leftW, 2);
+  drawBody(meta.sourceLabel, rightX, row2 + labelFont + 6, rightW, 1, 'right');
 
   ctx.strokeStyle = line;
   ctx.beginPath();
@@ -229,6 +261,19 @@ export function shareSignalCard(chartInstance, meta, formatKey) {
 
   const safeTitle = String(meta.title).replace(/[^\w.-]+/g, '-').slice(0, 48);
   download(off, `StableSense-${safeTitle}-${formatKey}.png`);
+}
+
+/**
+ * Trim a single line to fit a width, adding an ellipsis. Used for the as-of and
+ * source lines, which must stay on one line.
+ */
+function fitText(ctx, text, maxWidth) {
+  let value = String(text || '');
+  if (ctx.measureText(value).width <= maxWidth) return value;
+  while (value.length > 1 && ctx.measureText(`${value}…`).width > maxWidth) {
+    value = value.slice(0, -1);
+  }
+  return `${value.replace(/[.,;:!?\s]+$/, '')}…`;
 }
 
 /**

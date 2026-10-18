@@ -15,8 +15,10 @@ export default function ShareSheet({
   chartInstance,
   title,
   rangeLabel,
+  rangeDetail,
   interpretation,
   definition,
+  sourceLabel,
   highlight = '',
   sourceUrl = 'stablesense.withkeshav.com',
   asOf = null,
@@ -79,7 +81,7 @@ export default function ShareSheet({
   });
   // A card with a generic title or an empty read states a claim the chart does
   // not support. Refuse to export it and name the missing fields.
-  const issues = shareTextIssues({ title, rangeLabel, interpretation, definition });
+  const issues = shareTextIssues({ title, rangeLabel, rangeDetail, interpretation, definition, sourceLabel });
   const read = interpretation;
 
   const download = () => {
@@ -87,8 +89,10 @@ export default function ShareSheet({
     shareSignalCard(chartInstance, {
       title,
       rangeLabel,
+      rangeDetail,
       interpretation,
       definition,
+      sourceLabel,
       highlight,
       timestamp: stamp,
       sourceUrl,
@@ -164,6 +168,16 @@ export default function ShareSheet({
                 <span>
                   <b>As of</b>
                   {stamp}
+                </span>
+              </div>
+              <div class="signal-card-meta signal-card-meta-2">
+                <span>
+                  <b>Range</b>
+                  {rangeDetail}
+                </span>
+                <span>
+                  <b>Source</b>
+                  {sourceLabel}
                 </span>
               </div>
               <footer>

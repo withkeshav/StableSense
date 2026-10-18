@@ -855,6 +855,7 @@ body.compact .tab-content{padding:8px}
 .signal-card-chart-note{margin:12px 0;padding:12px;border:1px dashed #c7dcf3;border-radius:12px;font-size:10px;color:#5d7289;line-height:1.45}
 .signal-card-meta{display:flex;justify-content:space-between;gap:10px;font-size:8px;line-height:1.4;color:#677e93;margin-top:auto}
 .signal-card-meta b{display:block;font-size:8px;text-transform:uppercase;letter-spacing:.08em}
+.signal-card-meta-2{margin-top:8px}
 .signal-card footer{border-top:1px solid #d5e3ef;margin-top:13px;padding-top:10px;color:#7d92a4;font-size:8px}
 .share-controls{display:flex;flex-direction:column;gap:17px}
 .format-list{display:grid;gap:6px}

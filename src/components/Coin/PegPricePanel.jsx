@@ -24,8 +24,10 @@ export default function PegPricePanel({ symbol, price, pegBps, priceLineData, pr
           ariaLabel={`${symbol} price versus one dollar peg`}
           shareTitle={`${symbol} price vs $1.00`}
           shareRange="~90D"
+          shareRangeDetail={priceLineData?.labels?.length ? `${priceLineData.labels[0]} to ${priceLineData.labels[priceLineData.labels.length - 1]}` : '90 days'}
           shareInterpretation={`${symbol} secondary-market price against the $1.00 reference. A price picture, not a reserve-quality assessment.`}
           shareDefinition={`${symbol} market price versus a $1.00 reference line over the last 90 days, for the tracked asset on this dashboard.`}
+          shareSource="CoinGecko price history"
           shareHighlight={pegBps == null ? `${fmtPrice(price)} now · price unavailable` : `${fmtPrice(price)} now · ${pegBps > 0 ? '+' : ''}${pegBps} bp from peg`}
           shareAsOf={asOf}
         />

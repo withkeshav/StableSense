@@ -36,8 +36,10 @@ export default function SupplyPanel({
           ariaLabel={`${symbol} circulating supply`}
           shareTitle={`${symbol} circulating supply`}
           shareRange="Daily history"
+          shareRangeDetail={supplyLineData?.labels?.length ? `${supplyLineData.labels[0]} to ${supplyLineData.labels[supplyLineData.labels.length - 1]}` : 'Daily history'}
           shareInterpretation={`${symbol} circulating supply from the backend's daily history, one point per day.`}
           shareDefinition={`Circulating ${symbol} supply over time on this dashboard. Not global ${symbol} supply and not a reserve figure.`}
+          shareSource="Helix daily supply history"
           shareAsOf={data?.observedAt ?? data?.marketObservedAt ?? null}
         />
       </div>
