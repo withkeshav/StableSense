@@ -857,6 +857,8 @@ body.compact .tab-content{padding:8px}
 .signal-card-meta b{display:block;font-size:8px;text-transform:uppercase;letter-spacing:.08em}
 .signal-card-meta-2{margin-top:8px}
 .signal-card footer{border-top:1px solid #d5e3ef;margin-top:13px;padding-top:10px;color:#7d92a4;font-size:8px}
+.signal-card footer span{white-space:nowrap}
+.signal-card.story footer{font-size:7px;gap:6px}
 .share-controls{display:flex;flex-direction:column;gap:17px}
 .format-list{display:grid;gap:6px}
 .format-list button{padding:10px;min-height:44px;border-radius:10px;border:1px solid transparent;background:var(--surface-2);display:flex;align-items:center;gap:9px;text-align:left;color:var(--ink-soft)}

@@ -96,6 +96,26 @@ export default function AboutTab() {
         </div>
       </section>
 
+      <section class="card mb-4">
+        <div class="card-header">
+          <div class="card-title">Contact and contributions</div>
+        </div>
+        <div class="card-body">
+          <p>
+            StableSense is open source. Bug reports, corrections, sources and code changes all go through GitHub.
+            The contributing section covers corrections, sources and bug reports; the research method explains review.
+          </p>
+          <p class="mb-0">
+            <a class="learn-link-btn" href="https://github.com/withkeshav/StableSense" target="_blank" rel="noopener noreferrer">Open the repository &rsaquo;</a>
+          </p>
+          <p class="text-muted small mb-0 mt-3">
+            <a href="https://github.com/withkeshav/StableSense/blob/main/README.md#contributing" target="_blank" rel="noopener noreferrer">Contributing section</a>
+            {' '}&middot;{' '}
+            <a href="https://github.com/withkeshav/StableSense/issues/new/choose" target="_blank" rel="noopener noreferrer">Open an issue</a>
+          </p>
+        </div>
+      </section>
+
       <section class="card">
         <div class="card-header">
           <div class="card-title">Methodology note</div>

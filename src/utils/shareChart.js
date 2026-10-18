@@ -260,7 +260,7 @@ export function shareSignalCard(chartInstance, meta, formatKey) {
   ctx.textAlign = 'left';
   ctx.fillText(meta.sourceUrl || 'stablesense.withkeshav.com', pad, fmt.h - pad * 0.75);
   ctx.textAlign = 'right';
-  ctx.fillText('StableSense · Research, not advice', fmt.w - pad, fmt.h - pad * 0.75);
+  ctx.fillText('Research, not advice', fmt.w - pad, fmt.h - pad * 0.75);
 
   const safeTitle = String(meta.title).replace(/[^\w.-]+/g, '-').slice(0, 48);
   download(off, `StableSense-${safeTitle}-${formatKey}.png`);

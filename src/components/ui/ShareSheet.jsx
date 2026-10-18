@@ -182,7 +182,7 @@ export default function ShareSheet({
               </div>
               <footer>
                 <span>{sourceUrl}</span>
-                <span>StableSense · Research, not advice</span>
+                <span>Research, not advice</span>
               </footer>
             </div>
           </div>
