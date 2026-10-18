@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import ShareSheet from './ShareSheet.jsx';
+import { shareTextIssues } from '../../utils/shareChart.js';
 
 let chartPromise;
 function getChart() {
@@ -90,15 +91,32 @@ export default function ChartWrapper({
   height = 220,
   aspectRatio = null,
   ariaLabel = null,
-  shareTitle = 'StableSense chart',
-  shareRange = 'Live',
-  shareInterpretation = '',
-  shareDefinition = 'Market observation from live StableSense data.',
+  shareTitle,
+  shareRange,
+  shareInterpretation,
+  shareDefinition,
   shareHighlight = '',
   shareAsOf = null,
   enableShare = true,
   sharePlacement = 'toolbar',
 }) {
+  // No generic fallbacks. A card with a placeholder title or an empty read is
+  // a claim the chart does not support, so the share control is withheld and
+  // the omission is logged instead of exported.
+  const shareIssues = enableShare
+    ? shareTextIssues({
+      title: shareTitle,
+      rangeLabel: shareRange,
+      interpretation: shareInterpretation,
+      definition: shareDefinition,
+    })
+    : [];
+  const shareReady = enableShare && shareIssues.length === 0;
+  if (enableShare && shareIssues.length) {
+    console.error(
+      `ChartWrapper: share disabled for "${ariaLabel || `${type} chart`}"; missing ${shareIssues.join(', ')}`
+    );
+  }
   const canvasRef = useRef(null);
   const chartRef = useRef(null);
   const lastRef = useRef({ type: null, data: null, options: null, aspectRatio: null, height: null, themeEpoch: -1 });
@@ -198,7 +216,7 @@ export default function ChartWrapper({
     if (chartRef.current) setShareOpen(true);
   };
 
-  const shareControl = enableShare ? (
+  const shareControl = shareReady ? (
     <button
       class={`share-chart-btn ${sharePlacement === 'footer' ? 'share-chart-btn-block' : ''}`}
       type="button"
@@ -213,16 +231,16 @@ export default function ChartWrapper({
 
   return (
     <div class="chart-block">
-      {enableShare && sharePlacement === 'toolbar' ? (
+      {shareReady && sharePlacement === 'toolbar' ? (
         <div class="chart-share-toolbar">{shareControl}</div>
       ) : null}
       <div class="chart-wrap chart-canvas-box" style={wrapStyle} aria-label={label} role="img">
         <canvas ref={canvasRef}></canvas>
       </div>
-      {enableShare && sharePlacement === 'footer' ? (
+      {shareReady && sharePlacement === 'footer' ? (
         <div class="chart-share-footer">{shareControl}</div>
       ) : null}
-      {enableShare ? (
+      {shareReady ? (
         <ShareSheet
           open={shareOpen}
           onClose={() => setShareOpen(false)}

@@ -14,6 +14,7 @@ export default function MarketPulse({
   narrow = false,
   onLearn,
   observedAt = null,
+  pegObservedAt = null,
 }) {
   return (
     <section class="content-grid main-insights mb-4">
@@ -42,10 +43,10 @@ export default function MarketPulse({
             height={260}
             aspectRatio={16 / 10}
             ariaLabel="Supply trend for tracked stablecoins"
-            shareTitle="Stablecoin supply"
+            shareTitle="Stablecoin supply, tracked coins"
             shareRange="Tracked coins"
-            shareInterpretation="Circulating supply of the stablecoins tracked on this dashboard. Smaller coins stay comparable when Log or % mode is selected."
-            shareDefinition="Combined circulating value path for tracked coins only - not total global stablecoin market cap."
+            shareInterpretation="Combined circulating supply of the stablecoins tracked on this dashboard. Smaller coins stay comparable when Log or percent mode is on."
+            shareDefinition="Combined circulating value of the tracked stablecoins over time. Not total global stablecoin market cap and not all issuers."
             shareAsOf={observedAt}
           />
         </div>
@@ -73,11 +74,12 @@ export default function MarketPulse({
             height={260}
             aspectRatio={16 / 10}
             ariaLabel="Peg monitor with one dollar reference line"
-            shareTitle="Peg monitor"
+            shareTitle="Peg monitor, tracked coins"
             shareRange="~90D"
-            shareInterpretation="Major tracked stablecoins relative to the $1.00 peg. This is a market-price picture, not a reserve-quality assessment."
-            shareDefinition="Secondary-market price versus a $1.00 reference line for tracked coins."
-            shareHighlight="Visible $1.00 peg reference included"
+            shareInterpretation="Market price of the tracked stablecoins against the $1.00 reference. A price picture, not a reserve-quality assessment."
+            shareDefinition="Secondary-market price versus a $1.00 reference line for the tracked stablecoins."
+            shareHighlight="Dashed line marks the $1.00 peg"
+            shareAsOf={pegObservedAt ?? observedAt}
           />
         </div>
         <footer class="chart-footer">

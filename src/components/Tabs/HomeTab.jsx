@@ -170,6 +170,14 @@ export default function HomeTab({ data, alerts, setActiveTab, refreshIntervalSec
   );
   const pegChartData = useMemo(() => buildPegChartData(coins, pegLabels, data), [coins, pegLabels, data]);
   const pegChartOpts = useMemo(() => buildPegChartOptions(pegChartData), [pegChartData]);
+  // The peg chart is CoinGecko 90-day price history, so its as-of is the newest
+  // price point, not the Helix market clock used for supply.
+  const pegAsOf = useMemo(() => {
+    const stamps = coins
+      .map((c) => data?.[`cg${c.symbol}Chart`]?.prices?.slice(-1)[0]?.[0])
+      .filter((v) => typeof v === 'number' && Number.isFinite(v));
+    return stamps.length ? Math.max(...stamps) : null;
+  }, [coins, data]);
 
   const totalMC = data?.allStables?.totalMarketCap?.peggedUSD ?? null;
   const vol = useMemo(() => sumTrackedVolume(coins, cg), [coins, cg]);
@@ -253,6 +261,7 @@ export default function HomeTab({ data, alerts, setActiveTab, refreshIntervalSec
         narrow={narrow}
         onLearn={() => setActiveTab('learn')}
         observedAt={data?.observedAt ?? null}
+        pegObservedAt={pegAsOf}
       />
       <SignalSummary
         data={data}

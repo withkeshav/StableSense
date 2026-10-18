@@ -265,6 +265,10 @@ export async function loadCoinChart(symbol, data, { signal } = {}) {
   }).catch(() => null);
   if (tickers && Array.isArray(tickers?.tickers)) {
     data[`cg${symbol}`] = { tickers: tickers.tickers.slice(0, 8) };
+    // The ticker sample has its own clock, separate from the Helix market
+    // clock. Share cards use this instead of pretending the market as-of is
+    // the ticker as-of.
+    data[`cg${symbol}TickersAt`] = Date.now();
   }
 }
 

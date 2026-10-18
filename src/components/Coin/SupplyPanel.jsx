@@ -34,10 +34,10 @@ export default function SupplyPanel({
           height={220}
           aspectRatio={16 / 10}
           ariaLabel={`${symbol} circulating supply`}
-          shareTitle={`${symbol} supply`}
-          shareRange="History"
-          shareInterpretation={`${symbol} circulating supply from backend history, deduplicated per day for tracked coins on this dashboard.`}
-          shareDefinition={`Circulating ${symbol} supply over time for tracked coins on this dashboard, not global market supply.`}
+          shareTitle={`${symbol} circulating supply`}
+          shareRange="Daily history"
+          shareInterpretation={`${symbol} circulating supply from the backend's daily history, one point per day.`}
+          shareDefinition={`Circulating ${symbol} supply over time on this dashboard. Not global ${symbol} supply and not a reserve figure.`}
           shareAsOf={data?.observedAt ?? data?.marketObservedAt ?? null}
         />
       </div>

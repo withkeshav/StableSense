@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { BrandWordmark } from '../BrandMark.jsx';
-import { SHARE_FORMATS, shareSignalCard } from '../../utils/shareChart.js';
+import { SHARE_FORMATS, shareSignalCard, shareTextIssues } from '../../utils/shareChart.js';
 
 const FORMAT_LIST = Object.entries(SHARE_FORMATS).map(([id, f]) => ({
   id,
@@ -12,10 +12,10 @@ export default function ShareSheet({
   open,
   onClose,
   chartInstance,
-  title = 'StableSense chart',
-  rangeLabel = 'Live',
-  interpretation = '',
-  definition = 'Market observation from live StableSense data.',
+  title,
+  rangeLabel,
+  interpretation,
+  definition,
   highlight = '',
   sourceUrl = 'stablesense.withkeshav.com',
   asOf = null,
@@ -76,14 +76,17 @@ export default function ShareSheet({
     timeZone: 'UTC',
     timeZoneName: 'short',
   });
-  const read = interpretation || 'Live market observation. This is a price and market picture, not a reserve-quality or investment conclusion.';
+  // A card with a generic title or an empty read states a claim the chart does
+  // not support. Refuse to export it and name the missing fields.
+  const issues = shareTextIssues({ title, rangeLabel, interpretation, definition });
+  const read = interpretation;
 
   const download = () => {
-    if (!chartInstance) return;
+    if (!chartInstance || issues.length) return;
     shareSignalCard(chartInstance, {
       title,
       rangeLabel,
-      interpretation: read,
+      interpretation,
       definition,
       highlight,
       timestamp: stamp,
@@ -118,6 +121,15 @@ export default function ShareSheet({
           </button>
         </header>
         <div class="share-content" ref={scrollerRef}>
+          {issues.length ? (
+            <div class="share-text-error" role="alert">
+              <p class="panel-kicker">CARD TEXT INCOMPLETE</p>
+              <p>
+                This chart is missing: {issues.join(', ')}. It will not be exported until the
+                title, range, interpretation and definition are real.
+              </p>
+            </div>
+          ) : (
           <div class={`share-preview ${previewOpen ? 'is-open' : ''}`}>
             <button
               type="button"
@@ -127,7 +139,7 @@ export default function ShareSheet({
             >
               {previewOpen ? 'Hide card preview' : 'Preview card'}
             </button>
-            <div class={`signal-card ${format}`} style={{ aspectRatio: current.ratio.replace(' / ', '/') }}>
+            <div class={`signal-card ${format} signal-card-social`} style={{ aspectRatio: current.ratio.replace(' / ', '/') }}>
               <div class="signal-card-top">
                 <BrandWordmark size={22} />
                 <span>{String(rangeLabel).toUpperCase()}</span>
@@ -138,7 +150,7 @@ export default function ShareSheet({
                 {highlight ? <strong>{highlight}</strong> : null}
               </div>
               <div class="signal-card-chart signal-card-chart-note">
-                <p>Export captures the live Chart.js rendering, including the visible $1.00 peg reference when present.</p>
+                <p>The exported card captures the live Chart.js rendering, including any reference line visible on this chart.</p>
               </div>
               <div class="signal-card-meta">
                 <span>
@@ -156,6 +168,7 @@ export default function ShareSheet({
               </footer>
             </div>
           </div>
+          )}
           <aside class="share-controls">
             <div>
               <p class="panel-kicker">FORMAT</p>
@@ -178,12 +191,12 @@ export default function ShareSheet({
             </div>
             <div class="share-read">
               <p class="panel-kicker">SIGNAL READ</p>
-              <p>{read}</p>
+              <p>{issues.length ? 'Unavailable until the chart supplies real share text.' : read}</p>
             </div>
           </aside>
         </div>
         <div class="share-sheet-actions">
-          <button type="button" class="primary-btn download-btn" onClick={download} disabled={!chartInstance}>
+          <button type="button" class="primary-btn download-btn" onClick={download} disabled={!chartInstance || issues.length > 0}>
             Download Signal Card
           </button>
           <p class="share-note">Includes date, source context, and StableSense branding.</p>

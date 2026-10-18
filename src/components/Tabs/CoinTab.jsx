@@ -76,6 +76,12 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
   }, [data, symbol, detail]);
   const [supplyLog, setSupplyLog] = useState(false);
   const [supplyPct, setSupplyPct] = useState(false);
+  // Coin-tab price charts are CoinGecko history; their as-of is the newest
+  // price point, not the Helix supply clock. Tickers carry their own fetch time.
+  const priceAsOf = chartData?.prices?.length
+    ? chartData.prices[chartData.prices.length - 1][0]
+    : null;
+  const tickersAsOf = data?.[`cg${symbol}TickersAt`] ?? null;
 
   const priceLineData = useMemo(() => {
     const series = (chartData?.prices || []).slice(-90);
@@ -232,6 +238,7 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
           priceLineData={priceLineData}
           priceChartOpts={priceChartOpts}
           goLearn={goLearn}
+          asOf={priceAsOf}
         />
 
         <StabilityPanel score={score} pegBps={pegBps} warnBps={warnBps} critBps={critBps} />
@@ -259,11 +266,11 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
       ) : null}
 
       {bpsData ? (
-        <PegDeviationChart symbol={symbol} data={data} bpsData={bpsData} bpsOpts={bpsOpts} />
+        <PegDeviationChart symbol={symbol} data={data} bpsData={bpsData} bpsOpts={bpsOpts} asOf={priceAsOf} />
       ) : null}
 
       <div class="grid-2 mb-4">
-        <ExchangeVolumeChart symbol={symbol} data={data} exchBars={exchBars} chartOptions={chartOptions} />
+        <ExchangeVolumeChart symbol={symbol} data={data} exchBars={exchBars} chartOptions={chartOptions} asOf={tickersAsOf} />
         <ChainSupplyTable symbol={symbol} rows={rows} />
       </div>
 

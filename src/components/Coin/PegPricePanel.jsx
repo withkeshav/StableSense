@@ -4,7 +4,7 @@ import ChartWrapper from '../ui/ChartWrapper.jsx';
 /**
  * Price-discipline panel: secondary-market price against the $1.00 reference line.
  */
-export default function PegPricePanel({ symbol, price, pegBps, priceLineData, priceChartOpts, goLearn }) {
+export default function PegPricePanel({ symbol, price, pegBps, priceLineData, priceChartOpts, goLearn, asOf = null }) {
   return (
     <article class="panel glass asset-price-panel signal-lens">
       <header class="panel-head">
@@ -22,11 +22,12 @@ export default function PegPricePanel({ symbol, price, pegBps, priceLineData, pr
           aspectRatio={16 / 10}
           options={priceChartOpts}
           ariaLabel={`${symbol} price versus one dollar peg`}
-          shareTitle={`${symbol} peg`}
+          shareTitle={`${symbol} price vs $1.00`}
           shareRange="~90D"
-          shareInterpretation={`${symbol} market price relative to the $1.00 reference. This is a price picture, not a reserve-quality assessment.`}
-          shareDefinition={`Secondary-market ${symbol} price versus a $1.00 peg line for tracked coins on this dashboard.`}
+          shareInterpretation={`${symbol} secondary-market price against the $1.00 reference. A price picture, not a reserve-quality assessment.`}
+          shareDefinition={`${symbol} market price versus a $1.00 reference line over the last 90 days, for the tracked asset on this dashboard.`}
           shareHighlight={pegBps == null ? `${fmtPrice(price)} now · price unavailable` : `${fmtPrice(price)} now · ${pegBps > 0 ? '+' : ''}${pegBps} bp from peg`}
+          shareAsOf={asOf}
         />
       </div>
       <footer class="chart-footer">

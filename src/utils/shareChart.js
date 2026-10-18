@@ -8,9 +8,46 @@ export const SHARE_FORMATS = {
   landscape: { w: 1920, h: 1080, label: 'Landscape 16:9', ratio: '16 / 9' },
 };
 
-function isDark() {
-  return document.documentElement.getAttribute('data-theme') === 'dark';
+/**
+ * Required share text. A card with a generic title, an empty interpretation or
+ * a filler definition is worse than no card: it states a claim the chart does
+ * not support. Callers must supply all four fields explicitly.
+ * @param {object} meta
+ * @returns {string[]} Missing or blank field names, empty when complete.
+ */
+export function shareTextIssues(meta = {}) {
+  const fields = {
+    title: 'title',
+    rangeLabel: 'range',
+    interpretation: 'interpretation',
+    definition: 'definition',
+  };
+  const issues = [];
+  for (const [key, label] of Object.entries(fields)) {
+    const value = meta?.[key];
+    if (typeof value !== 'string' || !value.trim()) issues.push(label);
+  }
+  return issues;
 }
+
+function requireShareText(meta) {
+  const issues = shareTextIssues(meta);
+  if (issues.length) {
+    throw new Error(`Signal card text incomplete: missing ${issues.join(', ')}`);
+  }
+}
+
+// Fixed light social palette. The card is a screenshot meant to read the same
+// in every feed, so it must not inherit the viewer's theme.
+const BG0 = '#fbfcfd';
+const BG1 = '#ecf4fb';
+const INK = '#1b2d41';
+const SOFT = '#5d7289';
+const FAINT = '#7590aa';
+const LINE = '#d5e3ef';
+const ACCENT = '#2e79dd';
+const PLOT_BG = '#ffffff';
+const PLOT_LINE = '#dbe7f2';
 
 function drawRoundedRect(ctx, x, y, w, h, r) {
   const radius = Math.min(r, w / 2, h / 2);
@@ -67,16 +104,16 @@ function drawBrandMark(ctx, x, y, size) {
  * @param {string} formatKey story|square|landscape
  */
 export function shareSignalCard(chartInstance, meta, formatKey) {
+  requireShareText(meta);
   const fmt = SHARE_FORMATS[formatKey] || SHARE_FORMATS.landscape;
-  const dark = isDark();
   const pad = Math.round(fmt.w * 0.055);
-  const bg0 = dark ? '#152431' : '#fbfcfd';
-  const bg1 = dark ? '#101923' : '#ecf4fb';
-  const ink = dark ? '#edf4fb' : '#1b2d41';
-  const soft = dark ? '#a6b5c4' : '#5d7289';
-  const faint = dark ? '#728395' : '#7590aa';
-  const line = dark ? '#29475e' : '#d5e3ef';
-  const accent = dark ? '#72afff' : '#2e79dd';
+  const bg0 = BG0;
+  const bg1 = BG1;
+  const ink = INK;
+  const soft = SOFT;
+  const faint = FAINT;
+  const line = LINE;
+  const accent = ACCENT;
 
   const off = document.createElement('canvas');
   off.width = fmt.w;
@@ -90,7 +127,7 @@ export function shareSignalCard(chartInstance, meta, formatKey) {
   ctx.fillRect(0, 0, fmt.w, fmt.h);
 
   const wash = ctx.createRadialGradient(fmt.w * 0.94, 0, 0, fmt.w * 0.94, 0, fmt.w * 0.45);
-  wash.addColorStop(0, dark ? 'rgba(95,158,236,0.25)' : 'rgba(116,178,255,0.32)');
+  wash.addColorStop(0, 'rgba(116,178,255,0.32)');
   wash.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = wash;
   ctx.fillRect(0, 0, fmt.w, fmt.h);
@@ -113,20 +150,19 @@ export function shareSignalCard(chartInstance, meta, formatKey) {
   ctx.fillStyle = faint;
   ctx.font = `800 ${Math.round(fmt.w * 0.014)}px Manrope, Arial, sans-serif`;
   ctx.textAlign = 'right';
-  ctx.fillText(String(meta.rangeLabel || 'MARKET SIGNAL').toUpperCase(), fmt.w - pad, pad + markSize * 0.55);
+  ctx.fillText(String(meta.rangeLabel).toUpperCase(), fmt.w - pad, pad + markSize * 0.55);
 
   let y = pad + markSize + Math.round(fmt.h * 0.04);
   ctx.textAlign = 'left';
   ctx.fillStyle = faint;
   ctx.font = `800 ${Math.round(fmt.w * 0.012)}px Manrope, Arial, sans-serif`;
-  ctx.fillText(String(meta.title || 'StableSense chart').toUpperCase(), pad, y);
+  ctx.fillText(String(meta.title).toUpperCase(), pad, y);
 
   y += Math.round(fmt.h * 0.035);
   const titleSize = Math.round(fmt.w * (formatKey === 'story' ? 0.052 : 0.038));
   ctx.fillStyle = ink;
   ctx.font = `800 ${titleSize}px Manrope, Arial, sans-serif`;
-  const interpretation = meta.interpretation || 'Live market observation from StableSense.';
-  wrapText(ctx, interpretation, pad, y, fmt.w - pad * 2, Math.round(titleSize * 1.15), 3);
+  wrapText(ctx, meta.interpretation, pad, y, fmt.w - pad * 2, Math.round(titleSize * 1.15), 3);
 
   y += Math.round(titleSize * 1.15 * 3) + 8;
   if (meta.highlight) {
@@ -144,12 +180,24 @@ export function shareSignalCard(chartInstance, meta, formatKey) {
   const chartBoxH = Math.max(120, chartBottom - chartTop);
   const chartBoxW = fmt.w - pad * 2;
 
+  // A fixed white plot panel keeps the chart legible on a light card even when
+  // the viewer's dashboard is in dark mode.
+  ctx.fillStyle = PLOT_BG;
+  drawRoundedRect(ctx, pad, chartTop, chartBoxW, chartBoxH, 14);
+  ctx.fill();
+  ctx.strokeStyle = PLOT_LINE;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
   if (chartCanvas) {
-    const ratio = Math.min(chartBoxW / chartCanvas.width, chartBoxH / chartCanvas.height);
+    const plotInset = 8;
+    const innerW = chartBoxW - plotInset * 2;
+    const innerH = chartBoxH - plotInset * 2;
+    const ratio = Math.min(innerW / chartCanvas.width, innerH / chartCanvas.height);
     const dw = chartCanvas.width * ratio;
     const dh = chartCanvas.height * ratio;
-    const dx = pad + (chartBoxW - dw) / 2;
-    const dy = chartTop + (chartBoxH - dh) / 2;
+    const dx = pad + plotInset + (innerW - dw) / 2;
+    const dy = chartTop + plotInset + (innerH - dh) / 2;
     ctx.drawImage(chartCanvas, dx, dy, dw, dh);
   }
 
@@ -162,7 +210,7 @@ export function shareSignalCard(chartInstance, meta, formatKey) {
   ctx.textAlign = 'left';
   ctx.font = `600 ${Math.round(fmt.w * 0.013)}px Manrope, Arial, sans-serif`;
   ctx.fillStyle = soft;
-  wrapText(ctx, meta.definition || 'Market observation from live sources.', pad, metaY + Math.round(fmt.h * 0.022), fmt.w * 0.48, Math.round(fmt.h * 0.018), 2);
+  wrapText(ctx, meta.definition, pad, metaY + Math.round(fmt.h * 0.022), fmt.w * 0.48, Math.round(fmt.h * 0.018), 2);
   ctx.textAlign = 'right';
   ctx.fillText(meta.timestamp || new Date().toISOString(), fmt.w - pad, metaY + Math.round(fmt.h * 0.022));
 
@@ -179,7 +227,7 @@ export function shareSignalCard(chartInstance, meta, formatKey) {
   ctx.textAlign = 'right';
   ctx.fillText('StableSense · Research, not advice', fmt.w - pad, fmt.h - pad * 0.75);
 
-  const safeTitle = String(meta.title || 'chart').replace(/[^\w.-]+/g, '-').slice(0, 48);
+  const safeTitle = String(meta.title).replace(/[^\w.-]+/g, '-').slice(0, 48);
   download(off, `StableSense-${safeTitle}-${formatKey}.png`);
 }
 
