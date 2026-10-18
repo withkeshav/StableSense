@@ -4,12 +4,12 @@ export default function AlertHero({ intelligence, alertCount }) {
   return (
     <div class="alert-hero card mb-4">
       <div class="card-body">
-        <div class="alert-hero-kicker">AI Signal</div>
+        <div class="alert-hero-kicker">AI Signal <span class="alpha-chip">Alpha</span></div>
         <h2 class="alert-hero-title">{intelligence?.headline || 'Monitoring stablecoin stress in real time.'}</h2>
         <p class="alert-hero-copy">{intelligence?.narrative || 'No AI narrative available in this cycle.'}</p>
         <p class="alert-hero-copy muted">{intelligence?.implications || 'Watch chain-level shifts and peg movements for follow-through.'}</p>
         <AiTicker intelligence={intelligence} />
-        <div class="alert-hero-meta">Active alerts: {alertCount}</div>
+        <div class="alert-hero-meta">Active alerts: {alertCount} · Alpha: alert rules and thresholds may change between releases</div>
       </div>
     </div>
   );

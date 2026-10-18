@@ -67,6 +67,7 @@ export default function Sidebar({
               onClick={() => go(tab.id)}
             >
               <span class="nav-label">{tab.label}</span>
+              {tab.id === 'alerts' ? <i class="new-pill tag-alpha">ALPHA</i> : null}
               {tab.id === 'alerts' && alertCount > 0 ? <span class="nav-badge">{alertCount}</span> : null}
               {tab.id === 'research' ? <i class="new-pill">NEW</i> : null}
               {tab.id === 'learn' ? <i class="new-pill">GUIDE</i> : null}

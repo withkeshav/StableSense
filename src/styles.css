@@ -118,6 +118,8 @@ a{color:inherit;text-decoration:none}
 .nav-item.active{background:linear-gradient(135deg,color-mix(in srgb,var(--blue-wash) 95%,var(--surface)),color-mix(in srgb,var(--surface) 90%,var(--blue-wash)));color:var(--blue-deep);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--blue) 17%,transparent),0 5px 13px color-mix(in srgb,var(--blue) 8%,transparent)}
 .nav-item.active:before{content:"";position:absolute;left:-12px;height:23px;width:3px;border-radius:0 5px 5px 0;background:var(--blue);box-shadow:0 0 12px color-mix(in srgb,var(--blue) 75%,transparent)}
 .new-pill{font-style:normal;font-size:9px;margin-left:auto;background:var(--blue-wash);color:var(--blue-deep);border-radius:20px;padding:3px 6px;font-weight:800;letter-spacing:.06em}
+.new-pill.tag-alpha{background:color-mix(in srgb,var(--coral) 14%,transparent);color:var(--coral)}
+.new-pill + .nav-badge{margin-left:6px}
 .nav-badge{margin-left:auto;background:var(--coral);color:#fff;font-size:10px;font-weight:700;border-radius:10px;padding:1px 5px;min-width:18px;text-align:center}
 .side-divider{height:1px;background:var(--line);margin:18px 10px 2px}
 .asset-nav{display:grid;gap:2px}
@@ -450,6 +452,7 @@ body.compact .tab-content{padding:8px}
 .alerts-page{width:100%;max-width:none}
 .alerts-page > .alert-hero,.alerts-page > .card{width:100%;max-width:none}
 .alert-hero-kicker{font-size:var(--xs);font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.alpha-chip{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:20px;background:color-mix(in srgb,var(--coral) 14%,transparent);color:var(--coral);font-size:9px;font-weight:800;letter-spacing:.06em;vertical-align:2px}
 .alert-hero-title{font-size:clamp(1.1rem,2.8vw,1.28rem);font-weight:700;line-height:1.35;margin-bottom:8px}
 .alert-hero-copy{font-size:var(--sm);color:var(--text2);line-height:1.55;margin-bottom:8px}
 .alert-hero-copy.muted{color:var(--text3)}

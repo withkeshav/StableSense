@@ -200,7 +200,6 @@ export default function HomeTab({ data, alerts, setActiveTab, freshness = null }
         coins={coins}
         priceByCoin={priceByCoin}
         stress={stress}
-        alerts={alerts}
         freshness={freshness}
         chainFlows={chainFlows}
       />
@@ -218,14 +217,6 @@ export default function HomeTab({ data, alerts, setActiveTab, freshness = null }
             {netDelta == null ? '-' : fmtB(Math.abs(netDelta))}
           </div>
           <span class="od-metric-note">Across tracked coins</span>
-        </div>
-        <div class="od-metric">
-          <span class="od-metric-label">Open alerts</span>
-          <div class="od-metric-value">
-            <span class="od-metric-dot alert" />
-            {data ? String((alerts || []).length).padStart(2, '0') : '-'}
-          </div>
-          <span class="od-metric-note">across tracked coins</span>
         </div>
       </section>
 

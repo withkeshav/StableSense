@@ -22,7 +22,7 @@ function countWord(value) {
  * right. The band is the signature element; every mark is a tracked coin's
  * measured drift from $1.00, not a decorative sample.
  */
-export default function PegBandHero({ coins = [], priceByCoin = {}, stress, alerts = [], freshness, chainFlows = [] }) {
+export default function PegBandHero({ coins = [], priceByCoin = {}, stress, freshness, chainFlows = [] }) {
   const state = freshness?.overallState || 'Current';
   const measured = typeof stress?.score === 'number' && Number.isFinite(stress.score);
   const stressScore = measured ? stress.score : null;
@@ -50,7 +50,6 @@ export default function PegBandHero({ coins = [], priceByCoin = {}, stress, aler
   const flowLine = gain && loss
     ? `Supply is leaving ${titleCase(loss.chain)} and settling on ${titleCase(gain.chain)} today.`
     : 'Peg drift, supply and cross-chain flow, in one calm view.';
-  const alertCount = (alerts || []).length;
   const coinCount = countWord(coins.length);
   const heroCount = coinCount.charAt(0).toUpperCase() + coinCount.slice(1);
   const observedAt = freshness?.marketObservedAt ?? null;
@@ -75,7 +74,6 @@ export default function PegBandHero({ coins = [], priceByCoin = {}, stress, aler
             <b>{stability == null ? '-' : `${stability} / 100`}</b>
             <span class="od-meter" aria-hidden="true"><i style={{ width: `${stability ?? 0}%` }} /></span>
           </span>
-          <span class="od-pill"><span class="od-pdot" aria-hidden="true" /><span><b>{alertCount}</b> open alerts</span></span>
           <span class={`od-pill od-state ${state === 'Current' || state === 'Delayed' ? 'is-live' : 'is-stale'}`}>{state}</span>
         </div>
         <p class="od-freshness">{observedText}</p>
