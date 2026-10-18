@@ -1,4 +1,4 @@
-import { StabilityGauge } from '../Sections/SignalHero.jsx';
+import { StabilityGauge } from './StabilityGauge.jsx';
 
 /**
  * Stability index panel: gauge plus the warn/critical band explanation.

@@ -41,7 +41,7 @@ The frontend makes its live-data calls from the visitor's own IP, so no single o
 | `src/utils/asset-meta.js` | Per-coin copy/meta for asset pages |
 | `src/components/Tabs/` | Views: Home, Coin, Research, Learn, Chains, Alerts, About. Learn covers the value-referenced-token taxonomy (peg mechanics, collateral types, gold/commodity, crypto-collateralized, synthetic, algorithmic, tokenized funds) plus the macroeconomic impact (Treasury demand, bank disintermediation, cross-border, depeg history, regulation); fast-decaying lessons carry a per-lesson `lastUpdated` date rendered next to the title |
 | `src/components/Sections/` | Page content: signal hero, market pulse, capital flows, whale watch, summary, depeg case study |
-| `src/components/ui/` | StatCard, Sparkline, ChartWrapper, ShareSheet, RefreshCountdown, SkeletonLoader, AiTicker |
+| `src/components/ui/` | Sparkline, ChartWrapper, ShareSheet, Subtabs, RefreshCountdown, SkeletonLoader, AiTicker |
 | `src/components/` | Header, Sidebar (instrument rail), MobileNav, SettingsPanel, ThemeToggle, BrandMark |
 | `src/styles.css` | Single stylesheet: Icewater tokens (`--page-bg`, Glacier Blue accent), light/dark themes, responsive rules |
 | `backend/` | Optional Fastify + SQLite service: history, canonical alert events, AI narratives |
@@ -117,7 +117,7 @@ Hub logo links to the hub home; the live dashboard is a separately labeled link,
 
 The "State of Stablecoins" research hub is a separate static build, not a Preact route, so crawlers get fully-rendered HTML content (the SPA's client-rendered tabs are invisible to link-preview crawlers and slower for first paint, which works against the hub's SEO goal).
 
-- **Source:** `research/` (`index.html`, `styles.css`, `main.js`, `data.js`, `og.svg`/`og.png` in `research/public/`). The hub has its own engraved-ledger design system (`--hub-*` tokens), deliberately distinct from the dashboard's Icewater tokens. The two properties connect through one bridge element (the "Open the live dashboard" link), not a shared palette.
+- **Source:** `research/` (`index.html`, `styles.css`, `main.js`, `data.js`, `og.png` in `research/public/`). The hub has its own engraved-ledger design system (`--hub-*` tokens), deliberately distinct from the dashboard's Icewater tokens. The two properties connect through one bridge element (the "Open the live dashboard" link), not a shared palette. The portal is being ported to the accepted OpenDesign research reference; this paragraph describes the current published page until that port lands.
 - **Build:** `npm run build:research` uses a second Vite config (`vite.config.research.mjs`) with `root: 'research'`, emitting to `dist/research/`. Chart.js is the only shared dependency, lazy-loaded as a separate chunk. `npm run build:all` builds both the SPA and the hub.
 - **Serving:** nginx serves `dist/research/` at `/research/` via a dedicated `location` block. An exact `location = /research` 301s slashless URLs to `/research/` before the SPA fallback (see `backend/deploy/nginx.conf`). The hub is single-page-with-anchors (`#taxonomy`, `#treasury`, etc.); distinct per-section URLs are a flagged follow-up, not the current architecture.
 - **Progressive enhancement:** `main.js` (loaded with `defer`) adds the live hero counter, IntersectionObserver scroll reveals, charts, chip filters, the remittance calculator, and accordion behavior. All section content renders as real HTML without it. Respects `prefers-reduced-motion` throughout.

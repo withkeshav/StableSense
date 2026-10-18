@@ -68,14 +68,18 @@ export function pegChartOptions(prices) {
  * Normalize a supply series to "percent change from the first point" so coins
  * of very different magnitudes (USDT ~$183B vs PYUSD ~$1B) can be read on one
  * axis. The first point becomes 0; subsequent points are `(v / first - 1) * 100`.
+ * A zero first point has no defined percent base, so those points are null and
+ * the chart shows a gap.
  * @param {Array<{date:number, value:number}>} series Supply series.
- * @returns {Array<{date:number, value:number}>} Normalized series (empty if no first point).
+ * @returns {Array<{date:number, value:number|null}>} Normalized series (empty if no first point).
  */
 export function toPercentFromFirst(series) {
   const arr = series || [];
   if (!arr.length) return [];
   const first = arr[0].value;
-  if (!first) return arr.map((p) => ({ date: p.date, value: 0 }));
+  // Percent change from zero is undefined. A gap is honest; a fabricated
+  // flat 0.00% line says the data did not move.
+  if (!first) return arr.map((p) => ({ date: p.date, value: null }));
   return arr.map((p) => ({ date: p.date, value: (p.value / first - 1) * 100 }));
 }
 
@@ -102,15 +106,30 @@ export function rankChainFlows(detailsByCoin) {
   for (const [coin, detail] of Object.entries(detailsByCoin || {})) {
     for (const [chain, chainData] of Object.entries(detail?.chainBalances || {})) {
       const tokens = chainData?.tokens || [];
-      const cur = tokens[tokens.length - 1]?.circulating?.peggedUSD || 0;
-      const pd = tokens[tokens.length - 2]?.circulating?.peggedUSD ?? cur;
+      const cur = tokens[tokens.length - 1]?.circulating?.peggedUSD;
+      const pd = tokens[tokens.length - 2]?.circulating?.peggedUSD;
+      if (!map[chain]) map[chain] = { chain, deltas: {}, totalDelta: 0, missing: false };
+      if (!Number.isFinite(cur)) {
+        map[chain].missing = true;
+        continue;
+      }
+      if (!Number.isFinite(pd)) {
+        // One reading is not a measured 24h change. Keep the coin visible as a
+        // gap and never turn the missing prior point into a zero delta.
+        map[chain].deltas[coin] = null;
+        map[chain].missing = true;
+        continue;
+      }
       const delta = cur - pd;
-      if (!map[chain]) map[chain] = { chain, deltas: {}, totalDelta: 0 };
       map[chain].deltas[coin] = (map[chain].deltas[coin] || 0) + delta;
       map[chain].totalDelta += delta;
     }
   }
-  return Object.values(map).sort((a, b) => Math.abs(b.totalDelta) - Math.abs(a.totalDelta));
+  for (const flow of Object.values(map)) {
+    // A chain with no measured delta has no total; null is not a $0 flow.
+    if (!Object.values(flow.deltas).some((value) => Number.isFinite(value))) flow.totalDelta = null;
+  }
+  return Object.values(map).sort((a, b) => Math.abs(b.totalDelta || 0) - Math.abs(a.totalDelta || 0));
 }
 
 export function buildMigrationPairs(flows) {
@@ -469,6 +488,7 @@ function makeAlert({
   explanation,
   grossFlow = null,
   netSupplyDelta = null,
+  delta = null,
   window = {},
   confidence = 'medium',
   confidenceNote = '',
@@ -503,6 +523,7 @@ function makeAlert({
     magnitude,
     grossFlow,
     netSupplyDelta,
+    delta,
     headline,
     rationale: headline,
     explanation,
@@ -644,6 +665,7 @@ function chainFlowAlerts(cfg, unpaired, netSupplyDelta, detectedAt, provenance) 
       magnitude: Math.abs(spike.delta),
       grossFlow: Math.abs(spike.delta),
       netSupplyDelta,
+      delta: spike.delta,
       headline: `${cfg.symbol} supply ${direction} by ${fmtUsd(spike.delta)} on ${spike.chain} ${spike.intervalLabel}.`,
       explanation: `Single-chain circulating-supply change from the latest two DefiLlama snapshots. This is not by itself a mint, burn, whale, or depeg conclusion.`,
       window: spike,
@@ -791,11 +813,28 @@ export function generateAlerts(data, opts = {}) {
   const supplyByCoin = dominanceSupplyByCoin(data, coins);
   alerts.push(...domShiftAlerts(coins, supplyByCoin, detectedAt));
 
-  return alerts.sort(
+  const sorted = alerts.sort(
     (a, b) =>
       (SEVERITY_RANK[a.severity] ?? 3) - (SEVERITY_RANK[b.severity] ?? 3) ||
       (b.magnitude || 0) - (a.magnitude || 0)
   );
+
+  // A coin-wide burn or mint that is already explained by one unpaired chain
+  // move is the same event with a second headline. Keep the chain-level alert;
+  // keep the coin-wide one when the change is spread across several chains.
+  return sorted.filter((alert) => {
+    if (alert.rule !== 'NET_MINT' && alert.rule !== 'NET_BURN') return true;
+    const net = Math.abs(alert.magnitude || 0);
+    if (!net) return true;
+    const sign = Math.sign(alert.netSupplyDelta ?? alert.magnitude ?? 0);
+    return !sorted.some((other) => (
+      other !== alert
+      && other.coin === alert.coin
+      && other.rule === 'CHAIN_FLOW'
+      && Math.sign(other.delta || 0) === sign
+      && Math.abs(other.magnitude || 0) >= net * 0.5
+    ));
+  });
 }
 
 /**

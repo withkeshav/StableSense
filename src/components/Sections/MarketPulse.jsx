@@ -8,6 +8,15 @@ const VIEWS = [
   { id: 'peg', label: 'Peg' },
 ];
 
+function hasSeries(series) {
+  return Array.isArray(series?.labels)
+    && series.labels.length > 0
+    && (series.datasets || []).some((dataset) => (
+      Array.isArray(dataset.data)
+      && dataset.data.some((value) => typeof value === 'number' && Number.isFinite(value))
+    ));
+}
+
 export default function MarketPulse({
   supplyChartData,
   supplyChartOptions = {},
@@ -26,6 +35,8 @@ export default function MarketPulse({
 }) {
   const [view, setView] = useState('supply');
   const supply = view === 'supply';
+  const supplyReady = hasSeries(supplyChartData);
+  const pegReady = hasSeries(pegChartData);
   const rangeFromLabels = (labels, fallback) => {
     const list = labels || [];
     return list.length ? `${list[0]} to ${list[list.length - 1]}` : fallback;
@@ -61,7 +72,7 @@ export default function MarketPulse({
         </header>
         <div class="panel-chart market-detail-chart">
           <div id="subtab-panel-supply" role="tabpanel" aria-labelledby="subtab-supply" hidden={!supply}>
-            {supply ? (
+            {supply ? (supplyReady ? (
               <ChartWrapper
                 type="line"
                 data={supplyChartData}
@@ -76,10 +87,12 @@ export default function MarketPulse({
                 shareSource="Helix daily supply history"
                 shareAsOf={observedAt}
               />
-            ) : null}
+            ) : (
+              <div class="info-empty">No measured supply history yet. The chart waits for the next backend snapshot.</div>
+            )) : null}
           </div>
           <div id="subtab-panel-peg" role="tabpanel" aria-labelledby="subtab-peg" hidden={supply}>
-            {!supply ? (
+            {!supply ? (pegReady ? (
               <ChartWrapper
                 type="line"
                 data={pegChartData}
@@ -95,7 +108,9 @@ export default function MarketPulse({
                 shareHighlight="Dashed line marks the $1.00 peg"
                 shareAsOf={pegObservedAt ?? observedAt}
               />
-            ) : null}
+            ) : (
+              <div class="info-empty">No measured peg history yet. The chart waits for the next CoinGecko response.</div>
+            )) : null}
           </div>
         </div>
         <footer class="chart-footer">

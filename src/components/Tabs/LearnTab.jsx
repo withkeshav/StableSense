@@ -1,48 +1,20 @@
 import { useEffect, useMemo, useState } from 'preact/hooks';
 import { buildLearnObservations } from '../../lib/insights.js';
+import FOUNDATIONS from '../Learn/foundations.js';
+import LearnHero from '../Learn/LearnHero.jsx';
 import LearnPrimer from '../Learn/LearnPrimer.jsx';
 import LearnModuleCard from '../Learn/LearnModuleCard.jsx';
-import LearnAlertHistory from '../Learn/LearnAlertHistory.jsx';
 import LearnGlossary from '../Learn/LearnGlossary.jsx';
+import LearnSources from '../Learn/LearnSources.jsx';
 import LearnDisclaimer from '../Learn/LearnDisclaimer.jsx';
 
 const MODULES = [
-  {
-    id: 'fundamentals',
-    title: 'Fundamentals',
-    lessons: [
-      {
-        id: 'what-is',
-        title: 'What is a stablecoin?',
-        body: 'A stablecoin is a cryptocurrency designed to hold a fixed value, usually $1.00. The value is held through a peg: each token is backed by reserves, collateral, or an algorithm that works to keep the price stable. This makes them useful for payments, trading pairs, and as a safe haven inside crypto markets.',
-      },
-      {
-        id: 'peg-mechanics',
-        title: 'How does a peg actually work?',
-        body: 'Issuers keep the price near $1 through redemption: you can normally exchange the token for its backing. If the price drifts below $1, arbitrageurs buy the token cheap and redeem it at face value, which pushes the price back up. If it trades above $1, arbitrageurs mint new tokens and sell them, which pushes the price back down. The peg is only as strong as the backing behind it.',
-      },
-      {
-        id: 'collateral-types',
-        title: 'Types of collateral',
-        observationId: 'collateral-mix',
-        body: 'Fiat-backed coins (USDT, USDC, PYUSD) hold cash and equivalents in bank accounts. Crypto-backed coins (DAI) hold other digital assets in over-collateralized vaults. Synthetic or yield-backed coins (USDE) use delta-neutral positions to neutralize price moves. Algorithmic coins use market incentives with no direct backing, and they carry the highest depeg risk.',
-      },
-      {
-        id: 'depeg-causes',
-        title: 'What causes a depeg?',
-        body: 'A depeg happens when redemption confidence drops. Common triggers: doubts about the issuer reserves, a bank run on the backing assets, a large redemption wave, or a panic move across the market. When the peg breaks, the stress index in this app rises, alerts fire, and the flow view shows where supply is moving.',
-      },
-      {
-        id: 'read-dashboard',
-        title: 'How to read this dashboard',
-        observationId: 'peg-drift',
-        body: 'The peg stress index gives a 0-100 health score. The supply and price charts show 90-day history. Cross-chain flows show which chains are gaining or losing supply. Whale watch flags unusual supply jumps. The AI narrative sums up the signal in plain language, and the alerts hub lists deterministic events with severity and magnitude.',
-      },
-    ],
-  },
+  FOUNDATIONS,
   {
     id: 'ecosystem',
     title: 'The ecosystem map',
+    summary: 'Issuers, chains and the difference between a stablecoin, a CBDC and a tokenized deposit.',
+    level: 'Context',
     lessons: [
       {
         id: 'who-issues',
@@ -80,6 +52,8 @@ const MODULES = [
   {
     id: 'risk-history',
     title: 'Risk & history',
+    summary: 'How pegs break, what history teaches, and what the signals can and cannot see.',
+    level: 'Risk',
     lessons: [
       {
         id: 'depeg-cases',
@@ -107,6 +81,8 @@ const MODULES = [
   {
     id: 'regulation',
     title: 'Regulation & outlook',
+    summary: 'The rules that decide who can issue, what backs a coin, and who can redeem.',
+    level: 'Rules',
     lessons: [
       {
         id: 'regulation-state',
@@ -130,6 +106,8 @@ const MODULES = [
   {
     id: 'beyond-dollar',
     title: 'Beyond the dollar',
+    summary: 'Gold, baskets and tokenized funds. The dollar is the common case, not the definition.',
+    level: 'Scope',
     moduleLink: { href: '/research/#taxonomy', label: 'Explore the full taxonomy with charts and data' },
     lessons: [
       {
@@ -179,6 +157,8 @@ const MODULES = [
   {
     id: 'bigger-picture',
     title: 'The bigger picture',
+    summary: 'Treasury demand, bank funding, cross-border flows and the limits of the evidence.',
+    level: 'Evidence',
     moduleLink: { href: '/research/#treasury', label: 'Read the full economic-impact analysis' },
     lessons: [
       {
@@ -266,7 +246,7 @@ const MODULES = [
         id: 'open-usd',
         title: 'Reading a new issuer\'s launch claims',
         lastUpdated: '2026-10-02',
-        body: 'Open USD (OUSD) illustrates how to read an issuer\'s launch claims. Bridge reported on 2026-09-30 that OUSD, issued by Bridge Building Inc., a Stripe company, went live on Base, Ethereum, Solana and Tempo. Open Standard named BlackRock, Lead Bank and BNY as reserve institutions. Bridge\'s reserve page reported total supply of $468,445,399 at 11:30 UTC on 2026-10-01 against $257,214,691 cash and $211,230,708 Treasuries, which sums exactly to total supply and is 54.91% cash against 45.09% Treasuries. Its Treasury category includes money-market funds with T-bill ladders of less than three-month duration. This is an issuer-reported snapshot, not an independent audit or evidence of payment adoption. Open Standard states that founding and participating partners, not token holders, can earn equity based on supply and activity they drive; that opportunity does not establish realized payouts. Balance-linked distribution economics already exist: Circle\'s Q2 2026 Form 10-Q ties distributor costs such as those paid to Coinbase and Binance directly to balances held, with Coinbase distribution costs of $324.6 million in the quarter.',
+        body: 'Open USD (OUSD) shows how to read an issuer\'s launch claims. Bridge reported on 2026-09-30 that OUSD, issued by Bridge Building Inc., a Stripe company, went live on Base, Ethereum, Solana and Tempo. Open Standard named BlackRock, Lead Bank and BNY as reserve institutions. Bridge\'s reserve page reported total supply of $468,445,399 at 11:30 UTC on 2026-10-01 against $257,214,691 cash and $211,230,708 Treasuries, which sums exactly to total supply and is 54.91% cash against 45.09% Treasuries. Its Treasury category includes money-market funds with T-bill ladders of less than three-month duration. This is an issuer-reported snapshot, not an independent audit or evidence of payment adoption. Open Standard states that founding and participating partners, not token holders, can earn equity based on supply and activity they drive; that opportunity does not establish realized payouts. Balance-linked distribution economics already exist: Circle\'s Q2 2026 Form 10-Q ties distributor costs such as those paid to Coinbase and Binance directly to balances held, with Coinbase distribution costs of $324.6 million in the quarter.',
         sources: [
           {
             label: 'Bridge: OUSD is live, issued by Bridge (as of 2026-09-30)',
@@ -326,11 +306,13 @@ export default function LearnTab({ data, alerts, alertHistory = [], alertSource 
 
   return (
     <div class="tab-content active">
+      <LearnHero />
       <LearnPrimer />
 
-      {MODULES.map((mod) => (
+      {MODULES.map((mod, index) => (
         <LearnModuleCard
           mod={mod}
+          index={String(index + 1).padStart(2, '0')}
           isOpen={openModule === mod.id}
           onToggle={() => setOpenModule(openModule === mod.id ? null : mod.id)}
           observationsById={observationsById}
@@ -338,10 +320,8 @@ export default function LearnTab({ data, alerts, alertHistory = [], alertSource 
         />
       ))}
 
-      <LearnAlertHistory alertSource={alertSource} alertHistory={alertHistory} />
-
       <LearnGlossary />
-
+      <LearnSources />
       <LearnDisclaimer />
     </div>
   );

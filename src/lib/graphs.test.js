@@ -40,6 +40,16 @@ describe('buildChainFlowBars', () => {
     expect(bars.complete).toBe(false);
   });
 
+  it('marks the all view incomplete when a flow reports a missing reading', () => {
+    const partial = [
+      { chain: 'A', totalDelta: 10, deltas: { USDT: 10 }, missing: true },
+      { chain: 'B', totalDelta: 5, deltas: { USDT: 5 } },
+    ];
+    const bars = buildChainFlowBars(partial, 'all');
+    expect(bars.labels).toEqual(['A', 'B']);
+    expect(bars.complete).toBe(false);
+  });
+
   it('caps the bar count at the requested limit', () => {
     const many = Array.from({ length: 10 }, (_, i) => ({
       chain: `C${i}`,

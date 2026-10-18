@@ -43,7 +43,7 @@ assign an automatic publication verdict.
 - Keep prior evidence versions and corrections; do not rewrite findings silently.
 - A failed retrieval or absent measurement remains UNKNOWN or UNRESOLVED.
 - Benchmark claims name the fixture version, answer-key review and measured runs.
-  Application tests and illustrative arithmetic are not benchmark measurements.
+  Application tests and worked examples are not benchmark measurements.
 
 Current-tree removal is not confidentiality: earlier public commits and downloaded
 copies can still contain working records. History rewriting is a separate decision.

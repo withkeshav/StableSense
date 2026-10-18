@@ -94,7 +94,7 @@ export default function AlertsTab({ alerts, intelligence, data, setActiveTab, al
   );
 
   return (
-    <div class="tab-content active">
+    <div class="tab-content active alerts-page">
       <AlertHero intelligence={intelligence} alertCount={counts.all} />
 
       {alertSource === 'provisional' ? (

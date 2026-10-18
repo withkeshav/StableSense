@@ -28,6 +28,35 @@ export default function ShareSheet({
   const sheetRef = useRef(null);
   const closeRef = useRef(null);
   const scrollerRef = useRef(null);
+  const [previewSrc, setPreviewSrc] = useState(null);
+  const [cardTheme, setCardTheme] = useState(() => {
+    if (typeof document === 'undefined') return 'light';
+    return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  });
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return undefined;
+    const readTheme = () => {
+      setCardTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light');
+    };
+    readTheme();
+    const observer = new MutationObserver(readTheme);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!open || !chartInstance?.canvas) {
+      setPreviewSrc(null);
+      return undefined;
+    }
+    try {
+      setPreviewSrc(chartInstance.canvas.toDataURL('image/png'));
+    } catch {
+      setPreviewSrc(null);
+    }
+    return undefined;
+  }, [open, chartInstance, format, cardTheme]);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -98,7 +127,7 @@ export default function ShareSheet({
       highlight,
       timestamp: stamp,
       sourceUrl,
-    }, format);
+    }, format, cardTheme);
   };
 
   // Portal to body: the chart lives inside a glass panel whose backdrop-filter
@@ -149,7 +178,7 @@ export default function ShareSheet({
             >
               {previewOpen ? 'Hide card preview' : 'Preview card'}
             </button>
-            <div class={`signal-card ${format} signal-card-social`} style={{ aspectRatio: current.ratio.replace(' / ', '/') }}>
+            <div class={`signal-card ${format} signal-card-social ${cardTheme === 'dark' ? 'is-dark' : ''}`} style={{ aspectRatio: current.ratio.replace(' / ', '/') }}>
               <div class="signal-card-top">
                 <BrandWordmark size={22} />
                 <span>{String(rangeLabel).toUpperCase()}</span>
@@ -159,8 +188,12 @@ export default function ShareSheet({
                 <h3>{read}</h3>
                 {highlight ? <strong>{highlight}</strong> : null}
               </div>
-              <div class="signal-card-chart signal-card-chart-note">
-                <p>The exported card captures the live Chart.js rendering, including any reference line visible on this chart.</p>
+              <div class="signal-card-chart">
+                {previewSrc ? (
+                  <img class="signal-card-chart-preview" src={previewSrc} alt={`${title} chart preview`} />
+                ) : (
+                  <p class="signal-card-chart-note">The chart preview appears after the chart renders.</p>
+                )}
               </div>
               <div class="signal-card-meta">
                 <span>
@@ -208,6 +241,7 @@ export default function ShareSheet({
                   </button>
                 ))}
               </div>
+              <p class="share-theme-note">Card theme: <b>{cardTheme === 'dark' ? 'Dark' : 'Light'}</b> (matches the dashboard)</p>
             </div>
             <div class="share-read">
               <p class="panel-kicker">SIGNAL READ</p>

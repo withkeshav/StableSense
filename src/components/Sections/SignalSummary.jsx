@@ -3,8 +3,9 @@ import AlertCard from '../Alerts/AlertCard.jsx';
 import AlertPrimer from './AlertPrimer.jsx';
 import { buildAlertSparkSeries } from '../../lib/derive.js';
 
-export default function SignalSummary({ data, alerts, onViewAll, onLearn }) {
+export default function SignalSummary({ data, alerts, freshness = null, onViewAll, onLearn }) {
   const top = (alerts || []).slice(0, 3);
+  const stale = freshness?.overallState && !['Current', 'Delayed'].includes(freshness.overallState);
   const sparks = useMemo(() => {
     const m = {};
     for (const alert of top) m[alert.id] = buildAlertSparkSeries(alert, data);
@@ -22,7 +23,12 @@ export default function SignalSummary({ data, alerts, onViewAll, onLearn }) {
           <button type="button" class="quiet-link" onClick={onViewAll}>See all signals</button>
         </header>
         <div class="signal-list">
-          {top.length ? (
+          {stale ? (
+            <div class="signal-stale-note">
+              <p><strong>Alerts paused.</strong> The market observation is stale, so the latest events are not current. The alert log still keeps the history.</p>
+              {onViewAll ? <button type="button" class="quiet-link" onClick={onViewAll}>Open the alert log</button> : null}
+            </div>
+          ) : top.length ? (
             top.map((alert) => (
               <AlertCard
                 key={alert.id}

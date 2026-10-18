@@ -84,7 +84,7 @@ export default function DominanceAreaChart({ data, observedAt = null }) {
               shareRange="Tracked supply"
               shareRangeDetail={rangeDetail}
               shareInterpretation={shareInterpretation}
-              shareDefinition="Share of combined circulating supply of the five tracked stablecoins. Not global market share."
+              shareDefinition={`Share of combined circulating supply of the ${coins.length} tracked stablecoins. Not global market share.`}
               shareSource="Helix supply history"
               shareAsOf={observedAt}
             />
@@ -97,7 +97,7 @@ export default function DominanceAreaChart({ data, observedAt = null }) {
         <span>
           {latestSorted.slice(0, 2).map((s) => `${s.symbol} ${s.share.toFixed(1)}%`).join(', ')}
         </span>
-        <span>Five tracked coins, not global market share.</span>
+        <span>{coins.length} tracked coins, not global market share.</span>
       </footer>
     </article>
   );

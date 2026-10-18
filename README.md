@@ -1,6 +1,6 @@
 # StableSense
 
-![Version](https://img.shields.io/badge/version-3.8.0-2A6FDB)
+![Version](https://img.shields.io/badge/version-3.12.0-2A6FDB)
 ![Code license: Apache-2.0](https://img.shields.io/badge/code%20license-Apache--2.0-blue)
 ![CI](https://github.com/withkeshav/StableSense/actions/workflows/ci.yml/badge.svg)
 ![Node](https://img.shields.io/badge/node-%3E%3D18-339933)
@@ -171,8 +171,8 @@ The frontend is static files: deploy the complete `dist/` anywhere and set `aiAp
    |- components/
       |- Header.jsx, Sidebar.jsx, MobileNav.jsx, SettingsPanel.jsx, ThemeToggle.jsx, BrandMark.jsx
       |- Tabs/                HomeTab, CoinTab, ResearchTab, LearnTab, ChainsTab, AlertsTab, AboutTab
-      |- Sections/            SignalHero, MarketPulse, CapitalFlows, WhaleWatch, SignalSummary, DepegCaseStudy
-      |- ui/                  StatCard, Sparkline, ChartWrapper, ShareSheet, RefreshCountdown, SkeletonLoader, AiTicker
+      |- Sections/            PegBandHero, CoinStrip, MarketPulse, ChainFlowChart, DominanceAreaChart, SignalSummary, WhaleWatch, DepegCaseStudy
+      |- ui/                  Sparkline, ChartWrapper, ShareSheet, Subtabs, RefreshCountdown, SkeletonLoader, AiTicker
       |- Alerts/              AlertHero, AlertCard
    |- hooks/useTheme.js       theme state (default light)
    |- lib/derive.js           pure display logic + tests

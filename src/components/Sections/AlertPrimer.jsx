@@ -23,27 +23,27 @@ export default function AlertPrimer({ compact = false, onLearn }) {
         <article class="alert-rule-card">
           <b>PEG_BREAK</b>
           <p>Fires when a coin drifts beyond its bps threshold from $1 (example: critical around 50 bps).</p>
-          <a href="#lesson-pegs" onClick={(e) => { e.preventDefault(); go('pegs'); }}>Learn pegs</a>
+          <a href="#lesson-peg-mechanics" onClick={(e) => { e.preventDefault(); go('peg-mechanics'); }}>Learn pegs</a>
         </article>
         <article class="alert-rule-card">
           <b>CHAIN_FLOW</b>
           <p>Fires when one chain shows a large circulating-supply move that is not paired as a migration.</p>
-          <a href="#lesson-signals" onClick={(e) => { e.preventDefault(); go('signals'); }}>Learn signals</a>
+          <a href="#lesson-read-dashboard" onClick={(e) => { e.preventDefault(); go('read-dashboard'); }}>Learn signals</a>
         </article>
         <article class="alert-rule-card">
           <b>MIGRATION</b>
           <p>Fires when two chains move similar amounts in opposite directions, with net supply broadly unchanged.</p>
-          <a href="#lesson-signals" onClick={(e) => { e.preventDefault(); go('signals'); }}>Learn signals</a>
+          <a href="#lesson-read-dashboard" onClick={(e) => { e.preventDefault(); go('read-dashboard'); }}>Learn signals</a>
         </article>
         <article class="alert-rule-card">
           <b>NET_MINT / NET_BURN</b>
           <p>Fires when a coin's net circulating USD across chains clears the issuance threshold.</p>
-          <a href="#lesson-supply" onClick={(e) => { e.preventDefault(); go('supply'); }}>Learn supply</a>
+          <a href="#lesson-supply-market-cap" onClick={(e) => { e.preventDefault(); go('supply-market-cap'); }}>Learn supply</a>
         </article>
         <article class="alert-rule-card">
           <b>DOM_SHIFT</b>
           <p>Fires when a coin's share of tracked supply moves by about a point or more in a week.</p>
-          <a href="#lesson-signals" onClick={(e) => { e.preventDefault(); go('signals'); }}>Learn signals</a>
+          <a href="#lesson-read-dashboard" onClick={(e) => { e.preventDefault(); go('read-dashboard'); }}>Learn signals</a>
         </article>
       </div>
       )}

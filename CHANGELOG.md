@@ -6,6 +6,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [3.12.0] - 2026-10-18
+
+### Added
+- OpenDesign home shell: peg-band hero, metric strip, coin strip, Supply and Peg tabs, chain flow and tracked supply dominance.
+- Learn foundations path with nine lessons, self-checks, grouped glossary and a source ledger.
+- Theme-aware Signal Cards with the actual selected chart preview and light or dark export.
+- Mixed-theme OG cards for the dashboard and research portal, one-word wordmark and cache-busted image URLs.
+
+### Changed
+- Home drops the old gauge hero, tour banner, ten StatCards, research callout and long sync banner.
+- Alerts suppress a coin-wide net mint or burn when one same-direction chain flow explains at least half of it; Home pauses the feed when the market is stale.
+- The individual coin page uses fixed chart heights, a real two-column grid and sparse axes.
+- The Alerts page fills the main column.
+
+### Fixed
+- The wordmark is one word, `stablesense`, with no flex gap inside it.
+- Missing share as-of says unavailable instead of the browser clock.
+- Tiny negative percentages no longer render as -0.00%.
+- Removed old OG SVGs, unused old components, the old signal image and the old concept boards.
+
+### Notes
+- The research portal is an approved local shell preview. Its full section port is not included in this release; the public research page remains the current hub.
+
 ## [3.11.0] - 2026-10-18
 
 ### Added

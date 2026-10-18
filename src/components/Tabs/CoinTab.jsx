@@ -118,7 +118,14 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
       : supplyPct
         ? { ticks: { callback: (v) => (v >= 0 ? '+' : '') + Number(v).toFixed(1) + '%' } }
         : { ticks: { callback: (v) => fmtB(v) } };
-    return { responsive: true, maintainAspectRatio: false, scales: { y: yScale } };
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: yScale,
+        x: { ticks: { autoSkip: true, maxTicksLimit: 8, maxRotation: 0 } },
+      },
+    };
   }, [supplyLog, supplyPct]);
 
   const exchBars = useMemo(
@@ -137,13 +144,38 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
     return allRows.filter((r) => r.coin === symbol).slice(0, 5);
   }, [symbol, detail, alerts]);
 
-  const chartOptions = useMemo(() => ({ responsive: true, maintainAspectRatio: false }), []);
+  const chartOptions = useMemo(() => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { ticks: { autoSkip: true, maxTicksLimit: 6, maxRotation: 0 } },
+      y: { ticks: { callback: (v) => fmtB(v) } },
+    },
+  }), []);
   const priceChartOpts = useMemo(() => {
     const prices = (priceLineData.datasets || [])
       .filter((d) => d.label !== '$1 peg')
       .flatMap((d) => d.data)
       .filter((v) => typeof v === 'number' && v > 0);
-    return { responsive: true, maintainAspectRatio: false, ...pegChartOptions(prices) };
+    const base = pegChartOptions(prices);
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      ...base,
+      scales: {
+        ...(base.scales || {}),
+        x: {
+          ...(base.scales?.x || {}),
+          ticks: {
+            autoSkip: true,
+            maxTicksLimit: 8,
+            maxRotation: 0,
+            ...(base.scales?.x?.ticks || {}),
+          },
+        },
+      },
+    };
   }, [priceLineData]);
 
   const dominanceData = useMemo(() => {
@@ -165,7 +197,10 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
   const dominanceOpts = useMemo(() => ({
     responsive: true,
     maintainAspectRatio: false,
-    scales: { y: { ticks: { callback: (v) => Number(v).toFixed(1) + '%' } } },
+    scales: {
+      y: { ticks: { callback: (v) => Number(v).toFixed(1) + '%' } },
+      x: { ticks: { autoSkip: true, maxTicksLimit: 8, maxRotation: 0 } },
+    },
     plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${Number(ctx.parsed.y).toFixed(1)}%` } } },
   }), []);
 
@@ -188,7 +223,10 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
   const bpsOpts = useMemo(() => ({
     responsive: true,
     maintainAspectRatio: false,
-    scales: { y: { min: -50, max: 50, ticks: { callback: (v) => (v > 0 ? '+' : '') + v + ' bps' } } },
+    scales: {
+      y: { min: -50, max: 50, ticks: { callback: (v) => (v > 0 ? '+' : '') + v + ' bps' } },
+      x: { ticks: { autoSkip: true, maxTicksLimit: 8, maxRotation: 0 } },
+    },
     plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y > 0 ? '+' : ''}${ctx.parsed.y} bps` } } },
   }), []);
 
@@ -261,13 +299,21 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
 
       <AssetLearnBand meta={meta} goLearn={goLearn} />
 
-      {dominanceData ? (
-        <DominanceChart symbol={symbol} data={data} dominanceData={dominanceData} dominanceOpts={dominanceOpts} />
-      ) : null}
-
-      {bpsData ? (
-        <PegDeviationChart symbol={symbol} data={data} bpsData={bpsData} bpsOpts={bpsOpts} asOf={priceAsOf} />
-      ) : null}
+      {dominanceData && bpsData ? (
+        <div class="grid-2 mb-4">
+          <DominanceChart symbol={symbol} data={data} dominanceData={dominanceData} dominanceOpts={dominanceOpts} />
+          <PegDeviationChart symbol={symbol} data={data} bpsData={bpsData} bpsOpts={bpsOpts} asOf={priceAsOf} />
+        </div>
+      ) : (
+        <>
+          {dominanceData ? (
+            <DominanceChart symbol={symbol} data={data} dominanceData={dominanceData} dominanceOpts={dominanceOpts} />
+          ) : null}
+          {bpsData ? (
+            <PegDeviationChart symbol={symbol} data={data} bpsData={bpsData} bpsOpts={bpsOpts} asOf={priceAsOf} />
+          ) : null}
+        </>
+      )}
 
       <div class="grid-2 mb-4">
         <ExchangeVolumeChart symbol={symbol} data={data} exchBars={exchBars} chartOptions={chartOptions} asOf={tickersAsOf} />

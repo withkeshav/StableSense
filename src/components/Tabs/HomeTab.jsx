@@ -2,14 +2,13 @@ import { useEffect, useMemo, useState } from 'preact/hooks';
 import { fmtB } from '../../utils/formatters.js';
 import { coinTabId, getActiveCoins } from '../../utils/coin-config.js';
 import { annotateChainFlows, annotateWhaleRows, buildSupplySeries, buildWhaleWatchRows, computePegStress, pegChartOptions, pegRefLine, rankChainFlows, toPercentFromFirst } from '../../lib/derive.js';
-import SignalHero from '../Sections/SignalHero.jsx';
+import PegBandHero from '../Sections/PegBandHero.jsx';
 import MarketPulse from '../Sections/MarketPulse.jsx';
-import CompactCoinTable from '../Sections/CompactCoinTable.jsx';
+import CoinStrip from '../Sections/CoinStrip.jsx';
 import ChainFlowChart from '../Sections/ChainFlowChart.jsx';
 import DominanceAreaChart from '../Sections/DominanceAreaChart.jsx';
 import SignalSummary from '../Sections/SignalSummary.jsx';
 import WhaleWatch from '../Sections/WhaleWatch.jsx';
-import FirstRunTour from '../ui/FirstRunTour.jsx';
 
 /** Mobile detection for the narrow chart layout (fewer ticks, top-2 coins). */
 function useNarrowViewport() {
@@ -119,17 +118,27 @@ function buildPegChartOptions(pegChartData) {
     .filter((d) => d.label !== '$1 peg')
     .flatMap((d) => d.data)
     .filter((v) => typeof v === 'number' && v > 0);
-  return pegChartOptions(allPrices);
+  const base = pegChartOptions(allPrices);
+  return {
+    ...base,
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      ...(base.scales || {}),
+      x: {
+        ...(base.scales?.x || {}),
+        ticks: {
+          autoSkip: true,
+          maxTicksLimit: 8,
+          maxRotation: 0,
+          ...(base.scales?.x?.ticks || {}),
+        },
+      },
+    },
+  };
 }
 
-/** Sum 24h volume across the tracked coins; null when any coin is missing. */
-function sumTrackedVolume(coins, cg) {
-  const values = coins.map((c) => cg?.[c.coingeckoId]?.usd_24h_vol);
-  return values.every((v) => typeof v === 'number' && Number.isFinite(v))
-    ? values.reduce((sum, v) => sum + v, 0) : null;
-}
-
-export default function HomeTab({ data, alerts, setActiveTab, refreshIntervalSec = 900, freshness = null }) {
+export default function HomeTab({ data, alerts, setActiveTab, freshness = null }) {
   const cg = data?.cgSimple;
   const coins = getActiveCoins();
 
@@ -180,61 +189,47 @@ export default function HomeTab({ data, alerts, setActiveTab, refreshIntervalSec
   }, [coins, data]);
 
   const totalMC = data?.allStables?.totalMarketCap?.peggedUSD ?? null;
-  const vol = useMemo(() => sumTrackedVolume(coins, cg), [coins, cg]);
+  const totalPrev = data?.allStables?.totalMarketCap?.prevDay?.peggedUSD
+    ?? data?.marketTotals?.prevDay?.peggedUSD
+    ?? null;
+  const netDelta = totalMC != null && totalPrev != null ? totalMC - totalPrev : null;
 
   return (
     <div class="tab-content active">
-      <SignalHero
+      <PegBandHero
         coins={coins}
         priceByCoin={priceByCoin}
         stress={stress}
-        intelligence={data?.intelligence}
-        onLearn={() => setActiveTab('learn')}
-        dataQuality={data?.dataQuality}
-        refreshIntervalSec={refreshIntervalSec}
+        alerts={alerts}
         freshness={freshness}
+        chainFlows={chainFlows}
       />
-      <FirstRunTour />
 
-      <section class="metric-strip" aria-label="Key market metrics">
-        <article class="metric-chip">
-          <div class="metric-icon blue" aria-hidden="true" />
-          <div>
-            <p>Combined market cap (tracked)</p>
-            <strong>{fmtB(totalMC)}</strong>
-            <span>{coins.length} coins on this dashboard · not all issuers</span>
+      <section class="od-metrics" aria-label="Key market metrics">
+        <div class="od-metric">
+          <span class="od-metric-label">Tracked market cap</span>
+          <div class="od-metric-value">{fmtB(totalMC)}</div>
+          <span class="od-metric-note">{coins.length} coins, not all issuers</span>
+        </div>
+        <div class="od-metric">
+          <span class="od-metric-label">{netDelta == null ? 'Net flow 24h' : netDelta < 0 ? 'Net burn 24h' : 'Net mint 24h'}</span>
+          <div class="od-metric-value">
+            <span class={`od-metric-dot ${netDelta != null && netDelta >= 0 ? 'mint' : ''}`} />
+            {netDelta == null ? '-' : fmtB(Math.abs(netDelta))}
           </div>
-        </article>
-        <article class="metric-chip">
-          <div class="metric-icon violet" aria-hidden="true" />
-          <div>
-            <p>24h volume (tracked)</p>
-            <strong>{fmtB(vol)}</strong>
-            <span>{coins.length} coins on this dashboard</span>
+          <span class="od-metric-note">Across tracked coins</span>
+        </div>
+        <div class="od-metric">
+          <span class="od-metric-label">Open alerts</span>
+          <div class="od-metric-value">
+            <span class="od-metric-dot alert" />
+            {data ? String((alerts || []).length).padStart(2, '0') : '-'}
           </div>
-        </article>
-        <article class="metric-chip">
-          <div class="metric-icon amber" aria-hidden="true" />
-          <div>
-            <p>Open alerts</p>
-            <strong>{data ? String((alerts || []).length).padStart(2, '0') : '-'}</strong>
-            <span>across tracked coins</span>
-          </div>
-          <div class="signal-pips" aria-hidden="true"><i /><i /><i /></div>
-        </article>
+          <span class="od-metric-note">across tracked coins</span>
+        </div>
       </section>
 
-      <a class="research-callout" href="/research/" target="_blank" rel="noopener noreferrer">
-        <span class="research-callout-kicker">New</span>
-        <span class="research-callout-text">Read the full stablecoin research: The State of Stablecoins</span>
-        <span class="research-callout-arrow">&rsaquo;</span>
-      </a>
-
-      <p class="sync-cadence-hint">
-        Checked time is this browser's last successful fetch. Market observation is the upstream snapshot used in the math. Historical snapshot is the last row written to the StableSense database. They are three different clocks.
-      </p>
-
-      <CompactCoinTable
+      <CoinStrip
         coins={coins}
         priceByCoin={priceByCoin}
         cg={cg}
@@ -265,6 +260,7 @@ export default function HomeTab({ data, alerts, setActiveTab, refreshIntervalSec
       <SignalSummary
         data={data}
         alerts={alerts}
+        freshness={freshness}
         onViewAll={() => setActiveTab('alerts')}
         onLearn={() => setActiveTab('learn')}
       />

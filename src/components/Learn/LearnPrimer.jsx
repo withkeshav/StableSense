@@ -1,24 +1,23 @@
 /**
- * Opening primer card for the Learn tab: what the modules cover and how to read them.
+ * Short guide to the page. The hero carries the path; this card explains how a
+ * lesson is built so the reader knows what to expect.
  */
 export default function LearnPrimer() {
   return (
-    <section class="card mb-4">
-      <div class="card-header">
-        <div class="card-title">Stablecoins, explained</div>
+    <section class="learn-how card mb-4">
+      <div class="learn-how-copy">
+        <p class="panel-kicker">HOW TO USE THIS PAGE</p>
+        <h2>One idea, one example, one check.</h2>
+        <p>
+          Start with Foundations. Each lesson gives the core idea, a dated example, and what it does
+          not prove. Open the advanced modules when you need them. Live observations are computed from
+          this dashboard; dated examples keep their source date.
+        </p>
       </div>
-      <div class="card-body">
-        <p class="mb-0">
-          Everything in StableSense is built on one idea: a stablecoin is a token engineered to hold
-          steady value against some reference, usually the US dollar but not always. This dashboard
-          tracks five dollar-pegged coins, which is the common case. These modules cover how pegs
-          work, how they fail, the wider landscape beyond the dollar, and how the signals here help
-          you see stress before it becomes a headline. Where the market is live, the lessons carry a
-          small observation computed from this dashboard's data at this moment.
-        </p>
-        <p class="mt-3 mb-0">
-          <a class="learn-link-btn" href="/research/#taxonomy" target="_blank" rel="noopener noreferrer">Read the full research: State of Stablecoins &rsaquo;</a>
-        </p>
+      <div class="learn-how-steps">
+        <span><b>1</b>Read the idea.</span>
+        <span><b>2</b>Test it on the example.</span>
+        <span><b>3</b>Answer the check.</span>
       </div>
     </section>
   );

@@ -18,8 +18,7 @@ export default function PegPricePanel({ symbol, price, pegBps, priceLineData, pr
         <ChartWrapper
           type="line"
           data={priceLineData}
-          height={280}
-          aspectRatio={16 / 10}
+          height={260}
           options={priceChartOpts}
           ariaLabel={`${symbol} price versus one dollar peg`}
           shareTitle={`${symbol} price vs $1.00`}

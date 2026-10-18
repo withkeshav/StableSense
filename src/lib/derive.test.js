@@ -104,11 +104,11 @@ describe('toPercentFromFirst', () => {
     expect(out[2].value).toBeCloseTo(-10, 5);
   });
 
-  it('returns zeros when the first point is zero to avoid division by zero', () => {
+  it('returns gaps when the first point is zero because percent change is undefined', () => {
     const series = [{ date: 1000, value: 0 }, { date: 2000, value: 50 }];
     expect(toPercentFromFirst(series)).toEqual([
-      { date: 1000, value: 0 },
-      { date: 2000, value: 0 },
+      { date: 1000, value: null },
+      { date: 2000, value: null },
     ]);
   });
 });
@@ -165,10 +165,12 @@ describe('rankChainFlows', () => {
     expect(flows[1].totalDelta).toBe(-30);
   });
 
-  it('defaults missing previous point to current (zero delta)', () => {
+  it('leaves a single reading unmeasured instead of inventing a zero delta', () => {
     const detailsByCoin = { USDT: { chainBalances: { Solana: { tokens: [token(1, 100)] } } } };
     const flows = rankChainFlows(detailsByCoin);
-    expect(flows[0].totalDelta).toBe(0);
+    expect(flows[0].deltas.USDT).toBe(null);
+    expect(flows[0].totalDelta).toBe(null);
+    expect(flows[0].missing).toBe(true);
   });
 
   it('handles zero-supply edge case properly', () => {
@@ -531,17 +533,17 @@ describe('generateAlerts', () => {
     expect(alerts.filter((a) => a.rule === 'CHAIN_FLOW')).toHaveLength(0);
   });
 
-  it('flags a true net burn without inventing a migration', () => {
+  it('does not duplicate a single-chain net burn as a coin-wide alert', () => {
     const data = {
       daiDetail: { chainBalances: { Ethereum: { tokens: [token(T0, 2e9), token(T1, 2e9 - 300e6)] } } },
     };
     const alerts = generateAlerts(data).filter((a) => a.coin === 'DAI');
     expect(alerts.some((a) => a.rule === 'MIGRATION')).toBe(false);
     const burn = alerts.find((a) => a.rule === 'NET_BURN');
-    expect(burn).toBeDefined();
-    expect(burn.magnitude).toBe(300e6);
+    expect(burn).toBeUndefined();
     const flow = alerts.find((a) => a.rule === 'CHAIN_FLOW');
     expect(flow).toBeDefined();
+    expect(flow.magnitude).toBe(300e6);
   });
 
   it('does not call a stale interval the last 24h', () => {
@@ -564,14 +566,16 @@ describe('generateAlerts', () => {
     expect(dq.confidence).toBe('low');
   });
 
-  it('flags a NET_MINT coin-wide increase above the threshold', () => {
+  it('does not duplicate a single-chain net mint as a coin-wide alert', () => {
     const data = {
       usdtDetail: { chainBalances: { Ethereum: { tokens: [token(T0, 1e10), token(T1, 1.2e10)] } } },
     };
-    const mega = generateAlerts(data).find((a) => a.rule === 'NET_MINT' && a.coin === 'USDT');
-    expect(mega).toBeDefined();
-    expect(mega.severity).toBe('HIGH');
-    expect(mega.magnitude).toBe(2e9);
+    const alerts = generateAlerts(data).filter((a) => a.coin === 'USDT');
+    const mega = alerts.find((a) => a.rule === 'NET_MINT');
+    expect(mega).toBeUndefined();
+    const flow = alerts.find((a) => a.rule === 'CHAIN_FLOW');
+    expect(flow).toBeDefined();
+    expect(flow.magnitude).toBe(2e9);
   });
 
   it('flags a DOM_SHIFT when a coin gains tracked supply share', () => {

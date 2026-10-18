@@ -39,17 +39,40 @@ function requireShareText(meta) {
   }
 }
 
-// Fixed light social palette. The card is a screenshot meant to read the same
-// in every feed, so it must not inherit the viewer's theme.
-const BG0 = '#fbfcfd';
-const BG1 = '#ecf4fb';
-const INK = '#1b2d41';
-const SOFT = '#5d7289';
-const FAINT = '#7590aa';
-const LINE = '#d5e3ef';
-const ACCENT = '#2e79dd';
-const PLOT_BG = '#ffffff';
-const PLOT_LINE = '#dbe7f2';
+// The card follows the dashboard theme. The chart canvas is already rendered
+// in that theme, so the card surface, type and plot panel must match it.
+const CARD_THEMES = {
+  light: {
+    bg0: '#fbfcfd',
+    bg1: '#ecf4fb',
+    ink: '#1b2d41',
+    soft: '#5d7289',
+    faint: '#7590aa',
+    line: '#d5e3ef',
+    accent: '#2e79dd',
+    plotBg: '#ffffff',
+    plotLine: '#dbe7f2',
+    wash: 'rgba(116,178,255,0.32)',
+    markOuter: '#5B9CFF',
+    markInner: '#286FCF',
+    markDot: '#5B9CFF',
+  },
+  dark: {
+    bg0: '#141e28',
+    bg1: '#101821',
+    ink: '#edf4fb',
+    soft: '#b7c5d4',
+    faint: '#9aabbc',
+    line: '#263645',
+    accent: '#72afff',
+    plotBg: '#141e28',
+    plotLine: '#29465f',
+    wash: 'rgba(114,175,255,0.16)',
+    markOuter: '#72afff',
+    markInner: '#9bc6ff',
+    markDot: '#72afff',
+  },
+};
 
 function drawRoundedRect(ctx, x, y, w, h, r) {
   const radius = Math.min(r, w / 2, h / 2);
@@ -62,24 +85,24 @@ function drawRoundedRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
-function drawBrandMark(ctx, x, y, size) {
+function drawBrandMark(ctx, x, y, size, palette) {
   ctx.save();
   ctx.translate(x, y);
   const s = size / 64;
   ctx.scale(s, s);
-  ctx.strokeStyle = '#5B9CFF';
+  ctx.strokeStyle = palette.markOuter;
   ctx.lineWidth = 2.2;
   ctx.beginPath();
   ctx.ellipse(32, 34, 22, 14, 0, 0, Math.PI * 2);
   ctx.stroke();
   ctx.globalAlpha = 0.65;
-  ctx.strokeStyle = '#286FCF';
+  ctx.strokeStyle = palette.markInner;
   ctx.lineWidth = 1.8;
   ctx.beginPath();
   ctx.ellipse(32, 30, 16, 10, 0, 0, Math.PI * 2);
   ctx.stroke();
   ctx.globalAlpha = 1;
-  ctx.strokeStyle = '#5B9CFF';
+  ctx.strokeStyle = palette.markOuter;
   ctx.lineWidth = 2;
   ctx.lineCap = 'round';
   ctx.beginPath();
@@ -87,7 +110,7 @@ function drawBrandMark(ctx, x, y, size) {
   ctx.bezierCurveTo(18, 30, 24, 28, 32, 28);
   ctx.bezierCurveTo(40, 28, 46, 30, 54, 34);
   ctx.stroke();
-  ctx.fillStyle = '#5B9CFF';
+  ctx.fillStyle = palette.markDot;
   ctx.beginPath();
   ctx.arc(32, 34, 3.2, 0, Math.PI * 2);
   ctx.fill();
@@ -106,18 +129,20 @@ function drawBrandMark(ctx, x, y, size) {
  * @param {string} [meta.timestamp] As-of date and time.
  * @param {string} [meta.sourceUrl]
  * @param {string} formatKey story|square|landscape
+ * @param {string} [theme='light'] light|dark, matching the dashboard theme.
  */
-export function shareSignalCard(chartInstance, meta, formatKey) {
+export function shareSignalCard(chartInstance, meta, formatKey, theme = 'light') {
   requireShareText(meta);
   const fmt = SHARE_FORMATS[formatKey] || SHARE_FORMATS.landscape;
+  const palette = CARD_THEMES[theme] || CARD_THEMES.light;
   const pad = Math.round(fmt.w * 0.055);
-  const bg0 = BG0;
-  const bg1 = BG1;
-  const ink = INK;
-  const soft = SOFT;
-  const faint = FAINT;
-  const line = LINE;
-  const accent = ACCENT;
+  const bg0 = palette.bg0;
+  const bg1 = palette.bg1;
+  const ink = palette.ink;
+  const soft = palette.soft;
+  const faint = palette.faint;
+  const line = palette.line;
+  const accent = palette.accent;
 
   const off = document.createElement('canvas');
   off.width = fmt.w;
@@ -131,7 +156,7 @@ export function shareSignalCard(chartInstance, meta, formatKey) {
   ctx.fillRect(0, 0, fmt.w, fmt.h);
 
   const wash = ctx.createRadialGradient(fmt.w * 0.94, 0, 0, fmt.w * 0.94, 0, fmt.w * 0.45);
-  wash.addColorStop(0, 'rgba(116,178,255,0.32)');
+  wash.addColorStop(0, palette.wash);
   wash.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = wash;
   ctx.fillRect(0, 0, fmt.w, fmt.h);
@@ -142,7 +167,7 @@ export function shareSignalCard(chartInstance, meta, formatKey) {
   ctx.stroke();
 
   const markSize = Math.round(fmt.w * 0.042);
-  drawBrandMark(ctx, pad, pad * 0.85, markSize);
+  drawBrandMark(ctx, pad, pad * 0.85, markSize, palette);
   ctx.fillStyle = ink;
   ctx.font = `800 ${Math.round(fmt.w * 0.028)}px Manrope, Arial, sans-serif`;
   ctx.textAlign = 'left';
@@ -191,10 +216,10 @@ export function shareSignalCard(chartInstance, meta, formatKey) {
 
   // A fixed white plot panel keeps the chart legible on a light card even when
   // the viewer's dashboard is in dark mode.
-  ctx.fillStyle = PLOT_BG;
+  ctx.fillStyle = palette.plotBg;
   drawRoundedRect(ctx, pad, chartTop, chartBoxW, chartBoxH, 14);
   ctx.fill();
-  ctx.strokeStyle = PLOT_LINE;
+  ctx.strokeStyle = palette.plotLine;
   ctx.lineWidth = 2;
   ctx.stroke();
 
@@ -263,7 +288,7 @@ export function shareSignalCard(chartInstance, meta, formatKey) {
   ctx.fillText('Research, not advice', fmt.w - pad, fmt.h - pad * 0.75);
 
   const safeTitle = String(meta.title).replace(/[^\w.-]+/g, '-').slice(0, 48);
-  download(off, `StableSense-${safeTitle}-${formatKey}.png`);
+  download(off, `StableSense-${safeTitle}-${formatKey}-${theme}.png`);
 }
 
 /**

@@ -33,7 +33,6 @@ export default function SupplyPanel({
           data={supplyLineData}
           options={supplyLineOptions}
           height={220}
-          aspectRatio={16 / 10}
           ariaLabel={`${symbol} circulating supply`}
           shareTitle={`${symbol} circulating supply`}
           shareRange="Daily history"

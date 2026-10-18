@@ -43,8 +43,12 @@ export function buildChainFlowBars(chainFlows, coin = 'all', limit = 8) {
   const selected = coin == null ? 'all' : coin;
   const pick = (flow) => (selected === 'all' ? flow?.totalDelta : flow?.deltas?.[selected]);
 
-  // Complete only when every source flow carries a real reading for this coin.
-  const complete = flows.every((flow) => Number.isFinite(pick(flow)));
+  // Complete only when every source flow carries a real reading for this
+  // selection. The all view also carries a per-flow missing flag from
+  // rankChainFlows; a partial total is not a complete one.
+  const complete = flows.every((flow) => (
+    selected === 'all' ? !flow?.missing && Number.isFinite(pick(flow)) : Number.isFinite(pick(flow))
+  ));
 
   const measured = flows
     .map((flow) => ({ chain: flow?.chain, value: pick(flow) }))

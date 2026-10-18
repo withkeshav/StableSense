@@ -26,8 +26,7 @@ export function BrandWordmark({ size = 36, withImage = false }) {
         <BrandMark size={size} />
       )}
       <span>
-        stable
-        <span>sense</span>
+        stable<span>sense</span>
       </span>
     </div>
   );

@@ -264,7 +264,7 @@ A zero denominator is undefined or NOT_APPLICABLE, not a perfect result. Keep
 false support on central claims visible rather than averaging it away with
 correct answers to easy cases. Synthetic example: nine correct supported
 outputs and one incorrect supported output give a false-support rate of 10%.
-That is an illustration of the metric, not a measured method performance.
+That is an example of the metric, not a measured method performance.
 
 The synthetic examples can be checked independently with this command:
 
@@ -272,7 +272,7 @@ The synthetic examples can be checked independently with this command:
 python3 -c 'from decimal import Decimal as D; print(D(80)-D(12)-D(28), D(100)-D(70), D(3)/D(4)*100, D(30)/D(100)*100, abs(D(20)-D(8))/max(abs(D(20)),abs(D(8)))*100, D(1)/(D(9)+D(1))*100)'
 ```
 
-This verifies the illustrative arithmetic only. It does not run a benchmark,
+This verifies the worked example only. It does not run a benchmark,
 verify source support or measure the actual stablecoin market.
 
 Benchmark status requires actual runs, checked answer keys, measured results,

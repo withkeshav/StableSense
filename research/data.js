@@ -317,7 +317,7 @@ export const geniusReserves = {
 };
 
 // Gross issuer Treasury exposure is not net new Treasury demand. The Kansas
-// City Fed example is the clearest available illustration, and the source
+// City Fed example is the clearest available example, and the source
 // disagrees with itself, so the coefficient is UNRESOLVED and no headline
 // rests on it.
 export const treasuryDemandMechanism = {

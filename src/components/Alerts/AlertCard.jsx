@@ -36,6 +36,9 @@ export default function AlertCard({ alert, compact = false, spark = null, onLear
   // A tracked-chain alert can carry hundreds of chains. Keep the compact Home
   // card readable; the full Alerts tab still shows the complete list.
   const chainSummary = (() => {
+    // A coin-wide mint or burn already names the coin; listing every chain
+    // turns the meta line into noise. The chain-level alert carries the rail.
+    if (alert?.rule === 'NET_MINT' || alert?.rule === 'NET_BURN') return '';
     if (Array.isArray(alert?.chains) && alert.chains.length > 1) {
       const shown = compact ? alert.chains.slice(0, 3) : alert.chains;
       const more = compact && alert.chains.length > 3 ? ` and ${alert.chains.length - 3} more` : '';

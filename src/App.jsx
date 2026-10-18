@@ -111,7 +111,7 @@ export default function App() {
                   {apiStatus.message ? (
                     <div class="card api-status-card">{apiStatus.message}</div>
                   ) : null}
-                  {!loading && lastUpdated ? (
+                  {!loading && lastUpdated && !['home', 'learn', 'about', 'research'].includes(activeTab) ? (
                     <RefreshCountdown
                       lastUpdated={lastUpdated}
                       refreshIntervalSec={refreshIntervalSec}
