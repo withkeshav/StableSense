@@ -41,6 +41,7 @@ export const HISTORICAL_DATASETS = {
   depegs: 'Events dated May 2022, March 2023 and October 2025. Each case carries its own event and price date; a review pass does not re-date a historical event.',
   marketCapHistory: 'Year-end marks 2017 to 2025 from one aggregator series, plus a dated 2026 observation. The 2026 point is not a year-end mark.',
   regulationTable: 'Per-jurisdiction status dates, carried per row.',
+  recoveryTable: 'Per-jurisdiction instrument and status dates, carried per row; section as-of 2026-10-18.',
 };
 
 // Hub build marker rendered in the footer freshness badge. Derived from
@@ -49,7 +50,7 @@ export const HISTORICAL_DATASETS = {
 // literal did. The fallback is the dev-server case, where no define runs.
 export const HUB_BUILD = typeof __HUB_BUILD__ === 'string' ? __HUB_BUILD__ : 'dev';
 
-// --- the four manually-verified claims (see the methodology note in the footer) -
+// --- manually-verified claims (see the methodology note in the footer) ---------
 export const verifiedClaims = [
   {
     id: 'treasury-ranking',
@@ -69,6 +70,20 @@ export const verifiedClaims = [
       { label: 'GENIUS Act enacted text, Sec. 20 (12 U.S.C. 5901 note)', url: 'https://www.congress.gov/bill/119th-congress/senate-bill/1582/text' },
       { label: 'OCC bulletin 2026-3 - GENIUS Act NPRM', url: 'https://www.occ.gov/news-issuances/bulletins/2026/bulletin-2026-3.html' },
       { label: 'FDIC - GENIUS Act proposed rulemaking', url: 'https://www.fdic.gov/news/financial-institution-letters/2026/notice-proposed-rulemaking-establish-genius-act' },
+    ],
+  },
+  {
+    id: 'holder-recovery-waterfall',
+    claim: 'Stablecoin holder recovery after issuer insolvency in Singapore, Hong Kong, the EU and the US',
+    resolution: 'As of 2026-10-18: Hong Kong has an effective Ordinance (2025-08-01) whose Schedule 2 s 6(4) gives holders a right to direct disposal of the segregated reserve pool pro rata, with an unsecured claim for any shortfall; the HKMA requires an effective trust and an independent legal opinion. The EU treats USD payment stablecoins as e-money tokens under MiCA Title IV (applies 2024-06-30): a statutory claim against the issuer, redemption at par at any time, and funds safeguarded under EMD Article 7, but no Title IV no-recourse or priority rule. The US GENIUS Act is enacted but not operative: Section 20 sets commencement at the earlier of 2027-01-18 or 120 days after final rules, and no final rule is verified. Singapore is proposed only: P015-2026 closed 2026-10-16 with no outcome, and the draft Bill delegates insolvency safeguarding to regulations. No realized fiat-reserve-backed stablecoin issuer insolvency in these four jurisdictions was found. Terraform Labs (UST) is a realized issuer insolvency with an impaired crypto-loss class, but it was algorithmic and had no reserve pool, so it does not test the reserve-pool path. The USDC/SVB event was a reserve-custodian failure, not an issuer insolvency. The absence of a case is UNRESOLVED, not proof that the paths work.',
+    sources: [
+      { label: 'HK e-Legislation - Cap. 656 Stablecoins Ordinance', url: 'https://www.elegislation.gov.hk/hk/cap656' },
+      { label: 'HKMA - Guideline on Supervision of Licensed Stablecoin Issuers (Aug 2025)', url: 'https://www.hkma.gov.hk/media/eng/doc/key-functions/ifc/stablecoin-issuers/Guideline_on_supervision_of_licensed_stablecoin_issuers_eng.pdf' },
+      { label: 'ESMA - MiCA Article 49, issuance and redeemability of e-money tokens', url: 'https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-49-issuance-and-redeemability-e' },
+      { label: 'ESMA - MiCA Article 54, investment of funds received for e-money tokens', url: 'https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-54-investment-funds-received' },
+      { label: 'Directive 2009/110/EC Article 7, safeguarding requirements', url: 'https://www.legislation.gov.uk/eudr/2009/110/article/7' },
+      { label: 'Public Law 119-27, GENIUS Act, Section 11 and Section 20', url: 'https://www.congress.gov/119/plaws/publ27/PLAW-119publ27.pdf' },
+      { label: 'MAS - Consultation P015-2026, proposed amendments for stablecoin regulation', url: 'https://www.mas.gov.sg/publications/consultations/2026/consultation-on-proposed-amendments-to-the-payment-services-act-for-stablecoin-regulation' },
     ],
   },
   {
@@ -517,7 +532,7 @@ export const regulation = [
   { jurisdiction: 'European Union', framework: 'MiCA', status: 'Token rules live Jun 30, 2024; CASP grandfathering ended Jul 1, 2026; EC review consultation closes Sep 30, 2026', pegs: 'EUR focus; other currencies capped', algorithmic: 'Banned in practice', rules: 'EMTs (single fiat) + ARTs (basket); 30/60% bank deposit quota; non-euro daily caps (euro-pegged EMTs are not subject to the cap)' },
   { jurisdiction: 'United Kingdom', framework: 'FSMA / FCA', status: 'FCA authorisation opens Sep 30, 2026; regime commences Oct 25, 2027; BoE systemic-issuer consultation closes Sep 22, 2026', pegs: 'GBP focus', algorithmic: 'Banned in practice', rules: '100% HQLA; 1% capital (diluted from 2%); no yield; BoE oversight for systemic' },
   { jurisdiction: 'Japan', framework: 'Payment Services Act', status: 'Live (2023, updated Jun 2025); foreign coins via licensed distributors from Jun 1 2026', pegs: 'JPY; USD via distributor', algorithmic: 'Banned', rules: 'Issuers limited to banks/trust/transfer providers; up to 50% gov bonds' },
-  { jurisdiction: 'Singapore', framework: 'MAS Stablecoin Framework', status: 'Framework effective Jul 1, 2026 (single-currency stablecoins); legislation 2026', pegs: 'SGD + G10', algorithmic: 'Banned in practice', rules: '100% segregated reserves; monthly independent checks; MPI license' },
+  { jurisdiction: 'Singapore', framework: 'MAS Stablecoin Framework', status: 'Framework announced 2023; implementing amendments consulted Sep-Oct 2026 (P015-2026, closed 2026-10-16); no outcome or enacted text verified as of 2026-10-18', pegs: 'SGD + G10', algorithmic: 'Banned in practice', rules: '100% segregated reserves; monthly independent checks; MPI license' },
   { jurisdiction: 'Hong Kong', framework: 'Stablecoins Ordinance', status: 'Effective Aug 1, 2025; first licenses Apr 2026 (HSBC/StanChart tipped)', pegs: 'HKD + foreign', algorithmic: 'Explicitly banned', rules: 'HK$25M capital min; 100% reserve at market value' },
   { jurisdiction: 'UAE', framework: 'CBUAE Payment Token Reg', status: 'Live (Aug 2024)', pegs: 'AED focus; fiat', algorithmic: 'Banned in practice', rules: '100% fiat backing; first licensed AED token late 2024' },
   { jurisdiction: 'India', framework: 'Pending / ambiguous', status: 'Debated 2025-2026', pegs: 'n/a', algorithmic: 'n/a', rules: 'No explicit law; 30% tax; RBI favors CBDC; FEMA classification uncertain' },
@@ -528,6 +543,56 @@ export const regulationNews = [
   { date: 'Sep 2026', label: 'US: CLARITY Act Senate vote due Sep 15', detail: 'Market-structure bill that would narrow the SEC/CFTC gap for stablecoin-adjacent activity; a separate bill from the GENIUS Act (S.1582).', source: 'https://www.congress.gov/bill/119th-congress/house-bill/3633' },
   { date: 'Aug 26, 2026', label: 'Korea: Shinhan-Visa stablecoin pilot', detail: 'Strategic agreement to test stablecoin issuance, remittance, and redemption for the Korean market.', source: 'https://reports.tiger-research.com/p/2026-asia-stablecoin-market-overview-eng' },
   { date: 'Jul 14, 2026', label: 'Japan: JCB-Circle MOU', detail: 'Card network exploring USDC payments and cross-border settlement in Japan; travel-rule data requirements live from Aug 3, 2026.', source: 'https://cointelegraph.com/news/japans-jcb-signs-mou-with-circle-to-explore-usdc-payments-and-cross-border-settlements' },
+];
+
+// --- Section 8c: holder recovery after issuer insolvency -----------------
+// A reserve rule is not a recovery path. Each row states the instrument, whether
+// it is effective, and what it leaves unresolved. The ART/EMT distinction
+// matters: USD payment stablecoins are e-money tokens under MiCA Title IV, not
+// asset-referenced tokens under Title III.
+export const RECOVERY_AS_OF = '2026-10-18';
+
+export const recoveryMatrix = [
+  {
+    jurisdiction: 'Hong Kong',
+    instrument: 'Stablecoins Ordinance (Cap. 656), Schedule 2 s 6',
+    status: 'Effective 2025-08-01',
+    reserve: "A separate pool per stablecoin type, segregated and protected from the licensee's other creditors. HKMA requires an effective trust arrangement, an independent trustee or declaration of trust, and an independent legal opinion.",
+    holderPath: "On the licensee's insolvency, holders may direct disposal of the reserve pool to redeem all outstanding stablecoins of that type pro rata.",
+    shortfall: 'A claim against the licensee. The Ordinance states no priority, so on its face it is a personal claim that appears to rank as unsecured; this report did not verify the HK winding-up ranking.',
+    unresolved: 'Enforcement in a realized winding-up is untested. The Ordinance text is a licensee duty; the trust is a supervisory requirement, not a statutory trust.',
+    sourceIds: ['hk-cap656', 'hkma-stablecoin-guideline'],
+  },
+  {
+    jurisdiction: 'European Union (e-money token)',
+    instrument: 'MiCA Title IV, Articles 48-49 and 54-55',
+    status: 'Applies 2024-06-30',
+    reserve: 'Funds safeguarded under E-Money Directive 2009/110/EC Article 7(1); at least 30% in separate accounts, the rest in secure low-risk assets. The safeguarding method is left to national law.',
+    holderPath: 'A statutory claim against the issuer; redeem at any time at par value in funds other than e-money, with no fee.',
+    shortfall: 'Title IV has no no-recourse or priority rule. The shortfall and its ranking are left to national insolvency law.',
+    unresolved: 'National transposition of EMD Article 7 and the shortfall ranking differ by member state.',
+    sourceIds: ['mica-art-3', 'mica-art-48', 'mica-art-49', 'mica-art-54', 'mica-art-55', 'mica-art-149', 'emd-art-7'],
+  },
+  {
+    jurisdiction: 'United States',
+    instrument: 'GENIUS Act, Section 11 and 11 U.S.C. 507(e)',
+    status: 'Enacted 2025-07-18; not operative until the earlier of 2027-01-18 or 120 days after final implementing rules',
+    reserve: 'Required payment stablecoin reserves are excluded from the estate; the automatic stay applies to them.',
+    holderPath: 'Holders have priority over required reserves, ratable with other holders.',
+    shortfall: 'First priority only to the extent additional reserves were required under Section 4. Any loss above that is an ordinary claim.',
+    unresolved: 'No final implementing rule is verified, and no permitted payment stablecoin issuer exists yet.',
+    sourceIds: ['genius-plaw-119-27'],
+  },
+  {
+    jurisdiction: 'Singapore',
+    instrument: 'Draft Payment Services Act amendments, P015-2026',
+    status: 'Proposed; consultation closed 2026-10-16, no outcome published',
+    reserve: 'Proposed trust segregation of reserve assets. Not enacted.',
+    holderPath: 'The draft Bill gives a redemption right and a separate reserve pool, but no holder insolvency right. Insolvency safeguarding is delegated to future regulations.',
+    shortfall: 'Proposed; unresolved.',
+    unresolved: 'No published consultation outcome and no enacted text as of 2026-10-18.',
+    sourceIds: ['mas-p015-2026', 'mas-p015-paper', 'mas-annex-c'],
+  },
 ];
 
 // --- Section 9: reality check -------------------------------------------
@@ -866,6 +931,21 @@ export const sources = [
   { id: 'beincrypto-report-landing', label: 'BeInCrypto report landing page - data dated 2026-05-31, $60B market base (a different denominator again)', url: 'https://research.beincrypto.com/tokenization-2026-report-first-edition' },
   { id: 'spark-buidl', label: 'Spark Money (May 2026) - BUIDL about $2.4B across eight named chains (secondary, not an issuer AUM disclosure)', url: 'https://www.spark.money/research/rwa-tokenization-bitcoin-blockchain' },
   { id: 'securitize-q2-2026', label: 'Securitize - Q2 2026 results (2026-08-12): $4.3B platform tokenized AUM as of 2026-06-30, not BUIDL fund AUM', url: 'https://investors.securitize.io/news/news-details/2026/Securitize-Reports-Second-Quarter-2026-Results/default.aspx' },
+  { id: 'hk-cap656', label: 'HK e-Legislation - Cap. 656 Stablecoins Ordinance (Schedule 2 reserve and redemption criteria)', url: 'https://www.elegislation.gov.hk/hk/cap656' },
+  { id: 'hkma-stablecoin-guideline', label: 'HKMA - Guideline on Supervision of Licensed Stablecoin Issuers (Aug 2025), paras 2.5.2 and 3.3.2 on trust arrangements and legal opinions', url: 'https://www.hkma.gov.hk/media/eng/doc/key-functions/ifc/stablecoin-issuers/Guideline_on_supervision_of_licensed_stablecoin_issuers_eng.pdf' },
+  { id: 'mica-art-3', label: 'ESMA - MiCA Article 3 definitions (asset-referenced token is not an e-money token; e-money token references one official currency)', url: 'https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-3-definitions' },
+  { id: 'mica-art-36', label: 'ESMA - MiCA Article 36 reserve of assets (legal segregation and no creditor recourse; asset-referenced tokens only)', url: 'https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-36-obligation-have-reserve-assets' },
+  { id: 'mica-art-39', label: 'ESMA - MiCA Article 39 right of redemption (asset-referenced tokens, including reserve assets on issuer failure)', url: 'https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-39-right-redemption' },
+  { id: 'mica-art-48', label: 'ESMA - MiCA Article 48 e-money tokens deemed electronic money; EMD Titles II and III apply', url: 'https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-48-requirements-offer-public-or' },
+  { id: 'mica-art-49', label: 'ESMA - MiCA Article 49 e-money token holder claim, redemption at any time at par, no fee', url: 'https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-49-issuance-and-redeemability-e' },
+  { id: 'mica-art-54', label: 'ESMA - MiCA Article 54 safeguarding of funds for e-money tokens under EMD Article 7(1)', url: 'https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-54-investment-funds-received' },
+  { id: 'mica-art-55', label: 'ESMA - MiCA Article 55 recovery and redemption plans; Title III Chapter 6 applies to e-money tokens', url: 'https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-55-recovery-and-redemption-plans' },
+  { id: 'mica-art-149', label: 'ESMA - MiCA Article 149 application dates; Titles III and IV apply from 2024-06-30', url: 'https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-149-entry-force-and-application' },
+  { id: 'emd-art-7', label: 'Directive 2009/110/EC Article 7 safeguarding requirements; method left to national law', url: 'https://www.legislation.gov.uk/eudr/2009/110/article/7' },
+  { id: 'mas-p015-2026', label: 'MAS - Consultation P015-2026, proposed amendments to the Payment Services Act for stablecoin regulation (closed 2026-10-16)', url: 'https://www.mas.gov.sg/publications/consultations/2026/consultation-on-proposed-amendments-to-the-payment-services-act-for-stablecoin-regulation' },
+  { id: 'mas-p015-paper', label: 'MAS - P015-2026 consultation paper (Sep 2026), reserve trust and orderly redemption proposals', url: 'https://www.mas.gov.sg/-/media/mas-media-library/publications/consultations/pd/2026/sept-2026_consultation-paper-on-proposed-amendments-to-ps-act-for-stablecoins-regulation/consultation-paper-on-proposed-amendments-to-ps-act-for-stablecoins-regulation_vfinal.pdf' },
+  { id: 'mas-annex-c', label: 'MAS - P015-2026 Annex C, draft Payment Services Act amendments (clause 21B)', url: 'https://www.mas.gov.sg/-/media/mas-media-library/publications/consultations/pd/2026/sept-2026_consultation-paper-on-proposed-amendments-to-ps-act-for-stablecoins-regulation/annex-c_consolidated-ps-act-amendment_vfinal.pdf' },
+  { id: 'genius-plaw-119-27', label: 'Public Law 119-27, GENIUS Act, Section 11 insolvency priority and Section 20 effective date', url: 'https://www.congress.gov/119/plaws/publ27/PLAW-119publ27.pdf' },
   { id: 'report-full-2026-10-02', label: 'StableSense Research - State of Stablecoins, full dated report (2026-10-02)', url: './state-of-stablecoins-2026-10-02.md' },
 ];
 

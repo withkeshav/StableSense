@@ -702,6 +702,32 @@ function buildRegulation() {
     </tr>`).join('');
   };
   render('all');
+
+  const sourceById = new Map((data.sources || []).map((s) => [s.id, s]));
+  const recoveryBody = document.querySelector('#recovery-table tbody');
+  if (recoveryBody && Array.isArray(data.recoveryMatrix)) {
+    recoveryBody.innerHTML = data.recoveryMatrix.map((r) => {
+      const links = (r.sourceIds || [])
+        .map((id) => sourceById.get(id))
+        .filter(Boolean)
+        .map((s) => sourceLink(s.url, escHtml(s.label)))
+        .join('; ');
+      return `<tr>
+        <td><strong>${escHtml(r.jurisdiction)}</strong>${links ? `<br><span class="as-of">Sources: ${links}</span>` : ''}</td>
+        <td>${escHtml(r.instrument)}<br><span class="as-of">${escHtml(r.status)}</span></td>
+        <td>${escHtml(r.reserve)}</td>
+        <td>${escHtml(r.holderPath)}</td>
+        <td>${escHtml(r.shortfall)}</td>
+      </tr>`;
+    }).join('');
+  }
+  const recoveryNote = document.getElementById('recovery-unresolved');
+  if (recoveryNote && Array.isArray(data.recoveryMatrix)) {
+    recoveryNote.textContent = 'Unresolved: ' + data.recoveryMatrix
+      .map((r) => `${r.jurisdiction}: ${r.unresolved}`)
+      .join(' ');
+  }
+
   const newsWrap = document.getElementById('reg-news');
   if (newsWrap && Array.isArray(data.regulationNews)) {
     newsWrap.innerHTML = (data.regulationNews || []).map((n) => `<div class="reg-news-item" style="margin:0.6rem 0;padding:0.6rem 0.9rem;border-left:3px solid var(--hub-gold, #d4a017)">
