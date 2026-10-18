@@ -14,13 +14,13 @@ export default function AssetMetrics({ price, pegBps, score, warnBps, supply, pr
       </article>
       <article>
         <span>Peg stability</span>
-        <strong>{score} <small>/100</small></strong>
-        <small>{pegBps == null ? 'Waiting for price data' : Math.abs(pegBps) < warnBps ? 'Normal 24h conditions' : 'Elevated drift - observe'}</small>
+        <strong>{score == null ? '-' : score} <small>/100</small></strong>
+        <small>{score == null ? 'Waiting for price data' : Math.abs(pegBps) < warnBps ? 'Normal 24h conditions' : 'Elevated drift - observe'}</small>
       </article>
       <article>
         <span>Circulating supply</span>
         <strong>{fmtB(supply)}</strong>
-        <small>{fmtPct(chg)} market · {supply == null || prev == null ? '-' : fmtB(supply - prev)} 24h supply Δ</small>
+        <small>{fmtPct(chg)} price · {supply == null || prev == null ? '-' : fmtB(supply - prev)} 24h supply Δ</small>
       </article>
       <article>
         <span>Reserve design</span>

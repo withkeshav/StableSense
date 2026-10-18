@@ -2,7 +2,7 @@ import { useMemo, useState } from 'preact/hooks';
 import { fmtB, fmtPct, fmtPrice, pctChange, bps } from '../../utils/formatters.js';
 import { STABLECOIN_REGISTRY, getActiveCoins } from '../../utils/coin-config.js';
 import { getAssetMeta } from '../../utils/asset-meta.js';
-import { annotateWhaleRows, buildShareSeries, buildSupplySeries, buildWhaleWatchRows, dedupeTickers, pegChartOptions, pegRefLine, toPercentFromFirst } from '../../lib/derive.js';
+import { annotateWhaleRows, buildShareSeries, buildSupplySeries, buildWhaleWatchRows, coinStabilityScore, dedupeTickers, pegChartOptions, pegRefLine, toPercentFromFirst } from '../../lib/derive.js';
 import AssetHero from '../Coin/AssetHero.jsx';
 import AssetMetrics from '../Coin/AssetMetrics.jsx';
 import PegPricePanel from '../Coin/PegPricePanel.jsx';
@@ -16,16 +16,6 @@ import ExchangeVolumeChart from '../Coin/ExchangeVolumeChart.jsx';
 import ChainSupplyTable from '../Coin/ChainSupplyTable.jsx';
 import WhaleAnomaliesCard from '../Coin/WhaleAnomaliesCard.jsx';
 
-function coinStabilityScore(price, warnBps, critBps) {
-  const raw = bps(price);
-  if (raw == null) return 50;
-  const drift = Math.abs(raw);
-  if (!Number.isFinite(drift)) return 50;
-  if (drift >= critBps) return Math.max(5, 40 - Math.min(35, drift - critBps));
-  if (drift >= warnBps) return Math.max(55, 85 - Math.round((drift - warnBps) * 2));
-  return Math.min(99, 92 + Math.round((warnBps - drift) / 2));
-}
-
 export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
   const symbol = (coin || '').toUpperCase();
   const cfg = STABLECOIN_REGISTRY[symbol];
@@ -37,37 +27,45 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
   const asset = data?.allStables?.peggedAssets?.find((x) => x.symbol.toLowerCase() === symbol.toLowerCase());
   // Null-safe: missing market data must render as hyphen, never as $1 or $0.
   const price = data?.cgSimple?.[cgKey]?.usd ?? data?.prices?.[symbol]?.price ?? null;
-  const chg = data?.cgSimple?.[cgKey]?.usd_24h_change ?? 0;
+  // Unknown 24h change stays null so the tile shows '-' instead of +0.00%.
+  const chg = data?.cgSimple?.[cgKey]?.usd_24h_change ?? null;
   const supply = asset?.circulating?.peggedUSD ?? null;
-  const prev = asset?.circulatingPrevDay?.peggedUSD ?? supply;
+  // A missing prior-day value is unknown, not zero. Keeping it null lets the
+  // tile render a hyphen instead of a false "$0.00 24h supply delta".
+  const prev = asset?.circulatingPrevDay?.peggedUSD ?? null;
   const color = cfg?.color || '#468bf0';
   const warnBps = cfg?.thresholds?.pegWarnBps ?? 10;
   const critBps = cfg?.thresholds?.pegCriticalBps ?? 50;
   const score = coinStabilityScore(price, warnBps, critBps);
   const pegBps = bps(price);
 
-  const rows = useMemo(
+  // Every positive chain drives the distribution denominator. The visible
+  // table is capped at 10, but the caption claims a share of tracked supply,
+  // so the denominator must not shrink to the visible rows.
+  const allChainRows = useMemo(
     () =>
       Object.entries(detail?.chainBalances || {})
         .map(([chain, chainData]) => {
           const tokens = chainData?.tokens || [];
           const cur = tokens[tokens.length - 1]?.circulating?.peggedUSD || 0;
-          const pd = tokens[tokens.length - 2]?.circulating?.peggedUSD || cur;
+          // Same rule as the supply tile: a missing previous point is unknown,
+          // not a zero change.
+          const pd = tokens[tokens.length - 2]?.circulating?.peggedUSD ?? null;
           return { chain, cur, pd, d1: pctChange(cur, pd) };
         })
         .filter((r) => r.cur > 0)
-        .sort((a, b) => b.cur - a.cur)
-        .slice(0, 10),
+        .sort((a, b) => b.cur - a.cur),
     [detail]
   );
+  const rows = useMemo(() => allChainRows.slice(0, 10), [allChainRows]);
 
   const chainShares = useMemo(() => {
-    const total = rows.reduce((s, r) => s + r.cur, 0) || 1;
+    const total = allChainRows.reduce((s, r) => s + r.cur, 0) || 1;
     return rows.slice(0, 4).map((r) => ({
       ...r,
       pct: Math.round((r.cur / total) * 100),
     }));
-  }, [rows]);
+  }, [allChainRows, rows]);
 
   const supplySeries = useMemo(() => {
     // Backend's deduped daily series is the source of truth; the shim

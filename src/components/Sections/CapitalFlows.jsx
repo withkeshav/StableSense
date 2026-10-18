@@ -49,7 +49,7 @@ export default function CapitalFlows({ migrationPairs, chainFlows }) {
                         width: `${Math.min(100, Math.max(0, (Math.abs(f.deltas?.[c.symbol] || 0) / maxAbs) * 100))}%`,
                         background: c.color,
                       }}
-                      title={`${c.symbol}: ${fmtB(f.deltas?.[c.symbol] || 0)}`}
+                      title={`${c.symbol}: ${f.deltas?.[c.symbol] == null ? '-' : fmtB(f.deltas[c.symbol])}`}
                     ></div>
                   ))}
                 </div>

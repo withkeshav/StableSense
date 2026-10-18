@@ -91,7 +91,9 @@ export function transformMarketPayload(payload) {
       chainCirculating[ch.chain] = {
         current: { peggedUSD: ch.supply ?? null },
         circulatingPrevDay: {
-          peggedUSD: ch.delta24h != null && ch.supply != null ? ch.supply - ch.delta24h : (ch.supply ?? null),
+          // Unknown delta stays null. Falling back to current would print a
+          // measured-looking 0% change for a day the source did not report.
+          peggedUSD: ch.delta24h != null && ch.supply != null ? ch.supply - ch.delta24h : null,
         },
       };
     }
@@ -101,7 +103,7 @@ export function transformMarketPayload(payload) {
       name: c?.name ?? symbol,
       circulating: { peggedUSD: c?.supply ?? null },
       circulatingPrevDay: {
-        peggedUSD: c?.supplyDelta24h != null && c?.supply != null ? c.supply - c.supplyDelta24h : (c?.supply ?? null),
+        peggedUSD: c?.supplyDelta24h != null && c?.supply != null ? c.supply - c.supplyDelta24h : null,
       },
       chainCirculating,
     };

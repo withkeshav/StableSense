@@ -142,6 +142,26 @@ export function computePegStress({ pricesByCoin, alerts, topChainFlow }) {
   return { score, level, pegDriftBps, critical, high, warning };
 }
 
+/**
+ * Per-coin stability score (0-100) from the current distance to $1 against that
+ * coin's warn and critical bands. Returns null when the price is unmeasured:
+ * a missing price must never render as a real score (the Home gauge already
+ * shows UNKNOWN, so the coin tile must not disagree with it).
+ * @param {number|string|null|undefined} price Current spot price.
+ * @param {number} warnBps Warn band in bps.
+ * @param {number} critBps Critical band in bps.
+ * @returns {number|null} Score, or null when no price is available.
+ */
+export function coinStabilityScore(price, warnBps, critBps) {
+  const raw = bps(price);
+  if (raw == null) return null;
+  const drift = Math.abs(raw);
+  if (!Number.isFinite(drift)) return null;
+  if (drift >= critBps) return Math.max(5, 40 - Math.min(35, drift - critBps));
+  if (drift >= warnBps) return Math.max(55, 85 - Math.round((drift - warnBps) * 2));
+  return Math.min(99, 92 + Math.round((warnBps - drift) / 2));
+}
+
 function mean(values) {
   if (!values.length) return 0;
   return values.reduce((a, b) => a + b, 0) / values.length;

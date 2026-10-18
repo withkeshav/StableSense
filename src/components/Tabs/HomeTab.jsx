@@ -208,9 +208,9 @@ export default function HomeTab({ data, alerts, setActiveTab, refreshIntervalSec
         <article class="metric-chip">
           <div class="metric-icon amber" aria-hidden="true" />
           <div>
-            <p>Learning signals</p>
-            <strong>{stress.score == null ? '-' : String((alerts || []).length).padStart(2, '0')}</strong>
-            <span>worth understanding</span>
+            <p>Open alerts</p>
+            <strong>{data ? String((alerts || []).length).padStart(2, '0') : '-'}</strong>
+            <span>across tracked coins</span>
           </div>
           <div class="signal-pips" aria-hidden="true"><i /><i /><i /></div>
         </article>

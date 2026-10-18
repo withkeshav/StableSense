@@ -327,3 +327,25 @@ describe('fetchDashboardData via mocked backend', () => {
     expect(data.usdtDetail.chainBalances.ethereum.tokens).toHaveLength(0);
   });
 });
+
+describe('transformMarketPayload unknown deltas', () => {
+  it('keeps prev-day null instead of pretending the change was zero', () => {
+    const payload = marketPayload({
+      coins: [{
+        symbol: 'USDT',
+        name: 'Tether USD',
+        price: 1,
+        change24h: 0,
+        ts: T0,
+        supply: 100_000,
+        supplyDelta24h: null,
+        depegIndex: null,
+        chains: [{ chain: 'ethereum', supply: 60_000, delta24h: null, ts: T0 }],
+      }],
+    });
+    const data = transformMarketPayload(payload);
+    const usdt = data.allStables.peggedAssets.find((a) => a.symbol === 'USDT');
+    expect(usdt.circulatingPrevDay).toEqual({ peggedUSD: null });
+    expect(usdt.chainCirculating.ethereum.circulatingPrevDay).toEqual({ peggedUSD: null });
+  });
+});

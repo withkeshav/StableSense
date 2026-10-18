@@ -14,7 +14,8 @@ export default function ChainsTab({ data }) {
         .map(([chain, info]) => ({
           chain,
           cur: info?.current?.peggedUSD || 0,
-          pd: info?.circulatingPrevDay?.peggedUSD || info?.current?.peggedUSD || 0,
+          // Unknown prior-day value stays null, never a measured-looking zero.
+          pd: info?.circulatingPrevDay?.peggedUSD ?? null,
         }))
         .filter((r) => r.cur > 0)
         .sort((a, b) => b.cur - a.cur);
@@ -66,10 +67,13 @@ export default function ChainsTab({ data }) {
     assets.forEach((asset) => {
       if (!asset?.chainCirculating) return;
       const deltas = Object.entries(asset.chainCirculating).map(([chain, info]) => {
-        const cur = info?.current?.peggedUSD || 0;
-        const pd = info?.circulatingPrevDay?.peggedUSD || cur;
+        const cur = info?.current?.peggedUSD;
+        const pd = info?.circulatingPrevDay?.peggedUSD;
+        // A migration is only claimed when both snapshots were measured.
+        if (typeof cur !== 'number' || !Number.isFinite(cur)) return null;
+        if (typeof pd !== 'number' || !Number.isFinite(pd)) return null;
         return { chain, delta: cur - pd };
-      }).sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
+      }).filter(Boolean).sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
       if (deltas.length >= 2) {
         const from = deltas.find((d) => d.delta < 0);
         const to = deltas.find((d) => d.delta > 0);

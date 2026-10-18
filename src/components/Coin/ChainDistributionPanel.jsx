@@ -8,7 +8,7 @@ export default function ChainDistributionPanel({ symbol, chainShares, setActiveT
         <div>
           <p class="panel-kicker">WHERE IT MOVES</p>
           <h2>Chain distribution</h2>
-          <p class="panel-sub">Share of tracked {symbol} supply</p>
+          <p class="panel-sub">Share of {symbol} supply across the chains tracked here</p>
         </div>
       </header>
       <div class="chain-list">

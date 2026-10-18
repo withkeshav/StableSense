@@ -10,6 +10,7 @@ import {
   buildSupplySeries,
   buildWhaleWatchRows,
   chainObservation,
+  coinStabilityScore,
   computePegStress,
   dedupeTickers,
   generateAlerts,
@@ -704,5 +705,32 @@ describe('migration presentation helpers', () => {
     ], alerts);
     expect(flows[0].migrationLegs[0].label).toBe('DAI Polygon → Ethereum');
     expect(flows[1].migrationLegs[0].label).toBe('DAI Polygon → Ethereum');
+  });
+});
+
+describe('coinStabilityScore', () => {
+  it('returns null when the price is unmeasured so a tile never invents 50', () => {
+    expect(coinStabilityScore(null, 10, 50)).toBeNull();
+    expect(coinStabilityScore(undefined, 10, 50)).toBeNull();
+    expect(coinStabilityScore('', 10, 50)).toBeNull();
+    expect(coinStabilityScore(Number.NaN, 10, 50)).toBeNull();
+  });
+
+  it('scores a pinned coin near the top of the band', () => {
+    expect(coinStabilityScore(1, 10, 50)).toBe(97);
+    expect(coinStabilityScore(0.9996, 10, 50)).toBe(95);
+  });
+
+  it('walks the warn and critical bands', () => {
+    expect(coinStabilityScore(0.999, 10, 50)).toBe(85);
+    expect(coinStabilityScore(0.998, 10, 50)).toBe(65);
+    expect(coinStabilityScore(0.995, 10, 50)).toBe(40);
+    expect(coinStabilityScore(0.994, 10, 50)).toBe(30);
+    expect(coinStabilityScore(0.99, 10, 50)).toBe(5);
+  });
+
+  it('uses the coin-specific bands it is given', () => {
+    expect(coinStabilityScore(0.9988, 12, 60)).toBe(85);
+    expect(coinStabilityScore(0.9994, 12, 60)).toBe(95);
   });
 });
