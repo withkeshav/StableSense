@@ -33,6 +33,16 @@ export default function AlertCard({ alert, compact = false, spark = null, onLear
   const observed = alert?.observedAt || alert?.timestamp;
   const title = alert?.headline || alert?.rationale || 'Alert event';
   const conf = confidenceText(alert, detail);
+  // A tracked-chain alert can carry hundreds of chains. Keep the compact Home
+  // card readable; the full Alerts tab still shows the complete list.
+  const chainSummary = (() => {
+    if (Array.isArray(alert?.chains) && alert.chains.length > 1) {
+      const shown = compact ? alert.chains.slice(0, 3) : alert.chains;
+      const more = compact && alert.chains.length > 3 ? ` and ${alert.chains.length - 3} more` : '';
+      return ` / ${shown.join(' → ')}${more}`;
+    }
+    return alert?.chain ? ` / ${alert.chain}` : '';
+  })();
 
   return (
     <article class={`alert-card ${sevClass} ${open ? 'open' : ''} ${alert?.state === 'resolved' ? 'is-resolved' : ''}`}>
@@ -41,8 +51,7 @@ export default function AlertCard({ alert, compact = false, spark = null, onLear
         <div class="alert-body-text">
           <div class="alert-title">{title}</div>
           <div class="alert-meta">
-            {alert?.rule || 'RULE'} · {alert?.coin || 'N/A'}
-            {alert?.chains?.length > 1 ? ` / ${alert.chains.join(' → ')}` : alert?.chain ? ` / ${alert.chain}` : ''}
+            {alert?.rule || 'RULE'} · {alert?.coin || 'N/A'}{chainSummary}
             {observed ? ` · Observed ${timeAgo(observed)}` : ''}
             {alert?.state && alert.state !== 'open' ? ` · ${alert.state}` : ''}
           </div>

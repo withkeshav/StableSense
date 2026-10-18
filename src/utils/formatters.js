@@ -35,7 +35,11 @@ export function fmtPct(n, d = 2) {
   const value = Number(n);
   if (!Number.isFinite(value)) return '-';
   const decimals = Number.isFinite(Number(d)) ? Math.max(0, Number(d)) : 2;
-  return (value >= 0 ? '+' : '') + value.toFixed(decimals) + '%';
+  // A tiny negative that rounds to zero must not render as "-0.00%". Normalize
+  // the rounded value (including negative zero) before choosing the sign.
+  const rounded = Number(value.toFixed(decimals));
+  const shown = Object.is(rounded, -0) ? 0 : rounded;
+  return (shown >= 0 ? '+' : '') + shown.toFixed(decimals) + '%';
 }
 
 /**
@@ -90,7 +94,7 @@ export function pctChange(cur, prev) {
  */
 export function chgClass(n) {
   const value = Number(n);
-  if (!Number.isFinite(value)) return '';
+  if (!Number.isFinite(value) || Math.abs(value) < 0.005) return '';
   return value > 0 ? 'td-pos' : value < 0 ? 'td-neg' : '';
 }
 

@@ -196,6 +196,7 @@ The frontend is static files: deploy the complete `dist/` anywhere and set `aiAp
 - [docs/architecture.md](./docs/architecture.md): data flow, module map, derive.js, config resolution, Research surfaces and hub build.
 - [docs/api-protocol.md](./docs/api-protocol.md): backend API contract + browser-direct CoinGecko calls.
 - [docs/data-sources.md](./docs/data-sources.md): upstream APIs used and how they are cached.
+- [Adapting data sources](./docs/adapting-data-sources.md): how a fork replaces the Helix market source, the canonical payload, the adapter seam, null/as-of rules and the test checklist.
 - [docs/scaling.md](./docs/scaling.md): backend scaling and operations guide.
 - [Research methodology](./docs/research-methodology.md): claim lifecycle, formulas, review, finality and updating.
 - [Research publication boundary](./docs/research/README.md): public artifacts and the private working archive.

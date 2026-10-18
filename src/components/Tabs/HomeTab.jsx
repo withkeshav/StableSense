@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'preact/hooks';
-import { fmtB, fmtPrice } from '../../utils/formatters.js';
-import { getActiveCoins } from '../../utils/coin-config.js';
-import StatCard from '../ui/StatCard.jsx';
-import { annotateChainFlows, annotateWhaleRows, buildMigrationPairs, buildSupplySeries, buildWhaleWatchRows, computePegStress, pegChartOptions, pegRefLine, rankChainFlows, toPercentFromFirst } from '../../lib/derive.js';
+import { fmtB } from '../../utils/formatters.js';
+import { coinTabId, getActiveCoins } from '../../utils/coin-config.js';
+import { annotateChainFlows, annotateWhaleRows, buildSupplySeries, buildWhaleWatchRows, computePegStress, pegChartOptions, pegRefLine, rankChainFlows, toPercentFromFirst } from '../../lib/derive.js';
 import SignalHero from '../Sections/SignalHero.jsx';
 import MarketPulse from '../Sections/MarketPulse.jsx';
-import CapitalFlows from '../Sections/CapitalFlows.jsx';
+import CompactCoinTable from '../Sections/CompactCoinTable.jsx';
+import ChainFlowChart from '../Sections/ChainFlowChart.jsx';
+import DominanceAreaChart from '../Sections/DominanceAreaChart.jsx';
 import SignalSummary from '../Sections/SignalSummary.jsx';
 import WhaleWatch from '../Sections/WhaleWatch.jsx';
 import FirstRunTour from '../ui/FirstRunTour.jsx';
@@ -148,7 +149,6 @@ export default function HomeTab({ data, alerts, setActiveTab, refreshIntervalSec
     () => annotateChainFlows(rankChainFlows(detailsByCoin), alerts),
     [detailsByCoin, alerts]
   );
-  const migrationPairs = useMemo(() => buildMigrationPairs(chainFlows), [chainFlows]);
   const stress = useMemo(
     () => computePegStress({ pricesByCoin: priceByCoin, alerts, topChainFlow: chainFlows[0]?.totalDelta || 0 }),
     [priceByCoin, alerts, chainFlows]
@@ -234,18 +234,13 @@ export default function HomeTab({ data, alerts, setActiveTab, refreshIntervalSec
         Checked time is this browser's last successful fetch. Market observation is the upstream snapshot used in the math. Historical snapshot is the last row written to the StableSense database. They are three different clocks.
       </p>
 
-      <div class="sticky-stats-wrap">
-        <div class="stats-grid" id="home-stats">
-          {coins.map((c) => (
-            <StatCard key={c.symbol} label={`${c.symbol} Price`} value={fmtPrice(priceByCoin[c.symbol])} meta={(() => { const chg = cg?.[c.coingeckoId]?.usd_24h_change; return typeof chg === 'number' ? `${chg > 0 ? '+' : ''}${chg.toFixed(2)}% 24h` : null; })()} />
-          ))}
-          {coins.map((c) => {
-            const asset = data?.allStables?.peggedAssets?.find((x) => x.symbol.toLowerCase() === c.symbol.toLowerCase());
-            const dq = data?.dataQuality?.find((q) => q.coin === c.symbol);
-            return <StatCard key={`${c.symbol}-supply`} label={`${c.symbol} Supply`} value={fmtB(asset?.circulating?.peggedUSD)} warning={dq ? 'Data unavailable' : null} />;
-          })}
-        </div>
-      </div>
+      <CompactCoinTable
+        coins={coins}
+        priceByCoin={priceByCoin}
+        cg={cg}
+        data={data}
+        onSelectCoin={(symbol) => setActiveTab(coinTabId(symbol))}
+      />
 
       <MarketPulse
         supplyChartData={supplyChartData}
@@ -263,6 +258,10 @@ export default function HomeTab({ data, alerts, setActiveTab, refreshIntervalSec
         observedAt={data?.observedAt ?? null}
         pegObservedAt={pegAsOf}
       />
+      <section class="content-grid flow-grid" aria-label="Flow and dominance">
+        <ChainFlowChart chainFlows={chainFlows} coins={coins} observedAt={data?.observedAt ?? null} />
+        <DominanceAreaChart data={data} observedAt={data?.observedAt ?? null} />
+      </section>
       <SignalSummary
         data={data}
         alerts={alerts}
@@ -270,7 +269,6 @@ export default function HomeTab({ data, alerts, setActiveTab, refreshIntervalSec
         onLearn={() => setActiveTab('learn')}
       />
       <WhaleWatch rows={whaleRows} />
-      <CapitalFlows migrationPairs={migrationPairs} chainFlows={chainFlows} />
     </div>
   );
 }

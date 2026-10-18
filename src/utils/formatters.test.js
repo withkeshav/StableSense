@@ -75,6 +75,12 @@ describe('fmtPct', () => {
     expect(fmtPct(0)).toBe('+0.00%');
   });
 
+  it('never renders a tiny negative as -0.00%', () => {
+    expect(fmtPct(-0.0001)).toBe('+0.00%');
+    expect(fmtPct(-0.004)).toBe('+0.00%');
+    expect(fmtPct(-0.006)).toBe('-0.01%');
+  });
+
   it('respects the decimals parameter', () => {
     expect(fmtPct(1.1234, 3)).toBe('+1.123%');
     expect(fmtPct(1.5, 0)).toBe('+2%');
@@ -183,6 +189,7 @@ describe('chgClass', () => {
   it('returns empty string for zero', () => {
     expect(chgClass(0)).toBe('');
     expect(chgClass(-0)).toBe('');
+    expect(chgClass(-0.0001)).toBe('');
   });
 
   it('returns empty string for invalid inputs', () => {

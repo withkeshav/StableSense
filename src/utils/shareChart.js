@@ -240,7 +240,7 @@ export function shareSignalCard(chartInstance, meta, formatKey) {
   drawLabel('WHAT THIS MEASURES', pad, metaY);
   drawLabel('AS OF', rightX, metaY, 'right');
   drawBody(meta.definition, pad, metaY + labelFont + 6, leftW, 3);
-  drawBody(meta.timestamp || new Date().toISOString(), rightX, metaY + labelFont + 6, rightW, 1, 'right');
+  drawBody(meta.timestamp || 'as of unavailable', rightX, metaY + labelFont + 6, rightW, 1, 'right');
 
   // Row two: the exact range and the source.
   const row2 = metaY + rowH;

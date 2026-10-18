@@ -68,9 +68,11 @@ export default function ShareSheet({
   if (!open) return null;
 
   const current = FORMAT_LIST.find((item) => item.id === format) || FORMAT_LIST[1];
-  // Prefer the chart's data timestamp ("as of" the data); fall back to now.
-  // Always render in UTC so exports match formatUtc provenance elsewhere.
-  const stamp = new Date(asOf ?? Date.now()).toLocaleString('en-US', {
+  // Prefer the chart's data timestamp ("as of" the data). A missing clock is
+  // stated as unavailable; the browser time is not an observation. Always
+  // render in UTC so exports match formatUtc provenance elsewhere.
+  const asOfDate = asOf == null ? null : new Date(asOf);
+  const stamp = !asOfDate || Number.isNaN(asOfDate.getTime()) ? 'as of unavailable' : asOfDate.toLocaleString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',

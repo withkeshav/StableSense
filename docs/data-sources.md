@@ -37,6 +37,12 @@ The dashboard shows three clocks (`src/lib/freshness.js`), not one "last updated
 
 Overall state is Current / Delayed / Stale / Unavailable from the market (or checked) clock, with supply cadence treating under 28h as Current. AI narratives follow `AI_CADENCE_MIN` (default 120 min).
 
+## Replacing the source
+
+A fork can replace the Helix market path without rewriting the frontend. The seam is the canonical `/api/market` payload assembled from SQLite rows. See [adapting-data-sources.md](./adapting-data-sources.md) for the payload, the adapter row shapes, the source switch, null/as-of rules and the test checklist.
+
+The current paths are Helix v1 by default, Helix v2 with `HELIX_V2=1`, and the legacy DefiLlama + CoinGecko path with `LEGACY_UPSTREAMS=1`. There is no generic source flag today; a fork adds one explicitly.
+
 ## Privacy
 
 - Browser-direct fetches come from the visitor's own IP (no central aggregator, no API keys exposed).

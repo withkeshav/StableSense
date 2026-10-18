@@ -176,6 +176,16 @@ export default function ChartWrapper({
         maintainAspectRatio: aspectRatio ? false : (options.maintainAspectRatio ?? true),
         plugins: {
           ...options.plugins,
+          legend: {
+            ...(options.plugins?.legend || {}),
+            labels: {
+              boxWidth: 10,
+              boxHeight: 10,
+              font: { size: 10 },
+              padding: 8,
+              ...(options.plugins?.legend?.labels || {}),
+            },
+          },
           tooltip: {
             backgroundColor: surface,
             titleColor: tick,

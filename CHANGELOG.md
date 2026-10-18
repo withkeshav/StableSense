@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [3.11.0] - 2026-10-18
+
+### Added
+- A compact tracked-coin table replaces the ten duplicate price and supply StatCards on Home.
+- Market detail now has Supply and Peg tabs, so one full chart occupies the page at a time.
+- A chain flow chart and a tracked supply dominance area chart, both with Signal Card sharing and explicit range, source and as-of text.
+- [Adapting data sources](docs/adapting-data-sources.md): a fork guide for replacing the Helix market source, with the canonical `/api/market` payload, adapter row shapes, the source switch, null/as-of rules and a test checklist.
+
+### Changed
+- Home keeps four chart modules: the peg band, the tabbed supply and peg detail, chain flow, and dominance. The migration map stays on Chains, where it already has a full view.
+- Compact Home alert cards summarize a long chain list after three chains; the Alerts tab still shows the full list.
+- Chart legends use smaller swatches and labels so five tracked coins fit a 390px view.
+
+### Fixed
+- Percent formatting no longer renders a tiny negative as `-0.00%`, and the change class stays neutral when the rounded value is zero.
+
 ## [3.10.0] - 2026-10-17
 
 ### Fixed
