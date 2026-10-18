@@ -1,4 +1,5 @@
 import ChartWrapper from '../ui/ChartWrapper.jsx';
+import { rangeWithYear } from '../../utils/formatters.js';
 
 /**
  * Circulating supply panel, with the percent and log scale toggles.
@@ -36,7 +37,7 @@ export default function SupplyPanel({
           ariaLabel={`${symbol} circulating supply`}
           shareTitle={`${symbol} circulating supply`}
           shareRange="Daily history"
-          shareRangeDetail={supplyLineData?.labels?.length ? `${supplyLineData.labels[0]} to ${supplyLineData.labels[supplyLineData.labels.length - 1]}` : 'Daily history'}
+          shareRangeDetail={rangeWithYear(supplyLineData?.labels?.length ? `${supplyLineData.labels[0]} to ${supplyLineData.labels[supplyLineData.labels.length - 1]}` : 'Daily history', data?.observedAt ?? data?.marketObservedAt)}
           shareInterpretation={`${symbol} circulating supply from the backend's daily history, one point per day.`}
           shareDefinition={`Circulating ${symbol} supply over time on this dashboard. Not global ${symbol} supply and not a reserve figure.`}
           shareSource="Helix daily supply history"

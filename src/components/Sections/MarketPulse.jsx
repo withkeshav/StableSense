@@ -1,4 +1,5 @@
 ﻿import ChartWrapper from '../ui/ChartWrapper.jsx';
+import { rangeWithYear } from '../../utils/formatters.js';
 
 export default function MarketPulse({
   supplyChartData,
@@ -49,7 +50,7 @@ export default function MarketPulse({
             ariaLabel="Supply trend for tracked stablecoins"
             shareTitle="Stablecoin supply, tracked coins"
             shareRange="Tracked coins"
-            shareRangeDetail={rangeFromLabels(supplyChartData?.labels, '30 days')}
+            shareRangeDetail={rangeWithYear(rangeFromLabels(supplyChartData?.labels, '30 days'), observedAt)}
             shareInterpretation="Combined circulating supply of the stablecoins tracked on this dashboard. Smaller coins stay comparable when Log or percent mode is on."
             shareDefinition="Combined circulating value of the tracked stablecoins over time. Not total global stablecoin market cap and not all issuers."
             shareSource="Helix daily supply history"
@@ -82,7 +83,7 @@ export default function MarketPulse({
             ariaLabel="Peg monitor with one dollar reference line"
             shareTitle="Peg monitor, tracked coins"
             shareRange="~90D"
-            shareRangeDetail={rangeFromLabels(pegChartData?.labels, '90 days')}
+            shareRangeDetail={rangeWithYear(rangeFromLabels(pegChartData?.labels, '90 days'), pegObservedAt ?? observedAt)}
             shareInterpretation="Market price of the tracked stablecoins against the $1.00 reference. A price picture, not a reserve-quality assessment."
             shareDefinition="Secondary-market price versus a $1.00 reference line for the tracked stablecoins."
             shareSource="CoinGecko price history"

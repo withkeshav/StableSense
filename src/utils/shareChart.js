@@ -163,10 +163,13 @@ export function shareSignalCard(chartInstance, meta, formatKey) {
   ctx.fillText(String(meta.title).toUpperCase(), pad, y);
 
   y += Math.round(fmt.h * 0.035);
-  const titleSize = Math.round(fmt.w * (formatKey === 'story' ? 0.052 : 0.038));
+  const titleSize = Math.round(fmt.w * (formatKey === 'story' ? 0.052 : formatKey === 'landscape' ? 0.034 : 0.038));
   ctx.fillStyle = ink;
   ctx.font = `800 ${titleSize}px Manrope, Arial, sans-serif`;
-  const interpLines = wrapText(ctx, meta.interpretation, pad, y, fmt.w - pad * 2, Math.round(titleSize * 1.15), 4);
+  // Story and landscape have more vertical or horizontal room; do not truncate
+  // the read to the square card's four lines.
+  const maxInterpLines = formatKey === 'square' ? 4 : 5;
+  const interpLines = wrapText(ctx, meta.interpretation, pad, y, fmt.w - pad * 2, Math.round(titleSize * 1.15), maxInterpLines);
 
   y += Math.round(titleSize * 1.15) * interpLines + 8;
   if (meta.highlight) {
@@ -236,7 +239,7 @@ export function shareSignalCard(chartInstance, meta, formatKey) {
   // Row one: what it measures and when it was observed.
   drawLabel('WHAT THIS MEASURES', pad, metaY);
   drawLabel('AS OF', rightX, metaY, 'right');
-  drawBody(meta.definition, pad, metaY + labelFont + 6, leftW, 2);
+  drawBody(meta.definition, pad, metaY + labelFont + 6, leftW, 3);
   drawBody(meta.timestamp || new Date().toISOString(), rightX, metaY + labelFont + 6, rightW, 1, 'right');
 
   // Row two: the exact range and the source.

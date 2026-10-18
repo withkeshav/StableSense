@@ -39,6 +39,22 @@ export function fmtPct(n, d = 2) {
 }
 
 /**
+ * Append the as-of year to a short range label when the label does not carry
+ * one. Share cards must state the year without repeating it twice.
+ * @param {string} text Short range, e.g. "Jul 22 to Oct 18".
+ * @param {number|string|Date|null|undefined} ts As-of timestamp.
+ * @returns {string} Range with the year, or the original range.
+ */
+export function rangeWithYear(text, ts) {
+  const value = String(text || '');
+  const ms = ts instanceof Date ? ts.getTime() : Number(ts);
+  if (!Number.isFinite(ms) || ms <= 0) return value;
+  const year = new Date(ms < 1e12 ? ms * 1000 : ms).getUTCFullYear();
+  if (!Number.isFinite(year) || value.includes(String(year))) return value;
+  return `${value}, ${year}`;
+}
+
+/**
  * Format a unit price in dollars.
  * @param {number|string|null|undefined} n Price value.
  * @returns {string} Dollar formatted price or hyphen placeholder on invalid input.

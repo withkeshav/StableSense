@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { fmtB, fmtPct, fmtPrice, pctChange, chgClass, bps, timeAgo, formatUtc } from './formatters.js';
+import { fmtB, fmtPct, fmtPrice, pctChange, chgClass, bps, timeAgo, formatUtc, rangeWithYear } from './formatters.js';
 
 describe('fmtB', () => {
   it('formats values below 1000 with 2 decimals', () => {
@@ -311,5 +311,21 @@ describe('empty-string inputs are missing values, not zero', () => {
 
   it('returns null from bps for trim-empty strings', () => {
     expect(bps('')).toBe(null);
+  });
+});
+
+describe('rangeWithYear', () => {
+  const T = Date.UTC(2026, 9, 18, 9, 42);
+
+  it('appends the as-of year to a short range', () => {
+    expect(rangeWithYear('Jul 22 to Oct 18', T)).toBe('Jul 22 to Oct 18, 2026');
+  });
+
+  it('does not append the year twice', () => {
+    expect(rangeWithYear('Jul 22 to Oct 18, 2026', T)).toBe('Jul 22 to Oct 18, 2026');
+  });
+
+  it('keeps the range unchanged when the timestamp is missing', () => {
+    expect(rangeWithYear('Jul 22 to Oct 18', null)).toBe('Jul 22 to Oct 18');
   });
 });
