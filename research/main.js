@@ -1186,6 +1186,14 @@ function buildAgenticTicket() {
   if (!wrap) return;
   wrap.innerHTML = (data.agenticTicketSize || []).map((t) => statCallout(t.measure, t.value, `${t.publisher}. ${t.note}`)).join('');
   wrap.classList.add('callout-row');
+
+  const attributionWrap = document.getElementById('agentic-attribution-wrap');
+  if (attributionWrap) {
+    attributionWrap.innerHTML = (data.agenticAttribution || [])
+      .map((t) => statCallout(t.measure, t.value, `${t.publisher}. ${t.note}`))
+      .join('');
+    attributionWrap.classList.add('callout-row');
+  }
 }
 
 // Section 12: honest growth. The counterweight to the forecast chart, computed

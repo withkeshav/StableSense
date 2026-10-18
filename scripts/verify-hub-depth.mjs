@@ -29,7 +29,7 @@ const HUB_PAGES = ['research/index.html', 'research/changelog/index.html'];
 // was indistinguishable from a named content violation.
 const REQUIRED_EXPORTS = [
   'floatEconomics', 'yieldBan', 'agenticRails', 'agenticVolume',
-  'agenticTicketSize', 'HUB_BUILD', 'arcStatus', 'openUsdStatus', 'rwaFunds',
+  'agenticTicketSize', 'agenticAttribution', 'HUB_BUILD', 'arcStatus', 'openUsdStatus', 'rwaFunds',
   'buidlSecondaryReports', 'rwaDepth', 'distributionEconomics', 'geniusReserves',
   'geniusStatus', 'treasuryDemandMechanism', 'growthHonest', 'marketCapMeasure',
   'latestResearchCorrections', 'latestResearchOpen', 'sources', 'AS_OF',
@@ -98,14 +98,22 @@ function measureHub(data, hubHtml, changelogHtml, hubFiles) {
   check('ERC-8004 marked as not a payment layer', erc && /NONE/.test(erc.asset));
 
   // --- section 10: volume ---
-  // Eight rows, not seven: the five-chain residual was split out so the
-  // $317M figure could not be read as an Arbitrum-only or commerce-only number.
-  check('agenticVolume has 8 rows', data.agenticVolume.length === 8, `got ${data.agenticVolume.length}`);
+  // Ten rows: the five-chain residual was split out so the $317M figure could
+  // not be read as an Arbitrum-only or commerce-only number, then the
+  // 2026-10-18 x402scan panel and the x402stats window range were added so the
+  // frozen and unstated-window sources stay visible.
+  check('agenticVolume has 10 rows', data.agenticVolume.length === 10, `got ${data.agenticVolume.length}`);
   for (const r of data.agenticVolume) {
     check(`volume row "${r.publisher}" labelled`, !!(r.figure && r.window && r.publisher && r.label));
   }
   check('every volume row names its publisher', data.agenticVolume.every((r) => !!r.publisher));
   check('volume table shows more than one publisher', new Set(data.agenticVolume.map((r) => r.publisher)).size > 3, `${data.agenticVolume.length} rows, ${new Set(data.agenticVolume.map((r) => r.publisher)).size} publishers`);
+
+  // --- section 10: attribution ---
+  check('agenticAttribution has 2 rows', data.agenticAttribution.length === 2, `got ${data.agenticAttribution.length}`);
+  for (const r of data.agenticAttribution) {
+    check(`attribution row "${r.measure}" labelled`, !!(r.measure && r.value && r.publisher && r.note));
+  }
 
   // --- section 10: ticket size ---
   check('agenticTicketSize has 5 rows', data.agenticTicketSize.length === 5, `got ${data.agenticTicketSize.length}`);

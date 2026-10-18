@@ -28,6 +28,10 @@ export const MEASURE_AS_OF = {
   openUsdReserveSnapshot: '2026-10-01',
   circleDistributionCosts: '2026-06-30',
   x402CumulativeTotal: '2026-10-01',
+  x402ScanPanel: '2026-10-18',
+  x402CounterFrozen: '2026-10-18',
+  x402AgenticShare: '2026-09-09',
+  x402SolanaShare: '2026-08-22 to 2026-09-19',
   x402FiveChainMonth: 'August 2026',
   x402WashAdjusted: '2026-04-21',
   tokenizedRwaReported: 'early July 2026',
@@ -694,8 +698,10 @@ export const agenticRails = [
  * quantity measured more or less precisely, they are different quantities.
  */
 export const agenticVolume = [
-  { figure: '12,293,450 transactions and $974,215.14 at six decimals, 27,467 unique buyers, 38,519 unique sellers', window: 'dashboard cumulative total, window and inclusion rules not stated in the page', publisher: 'x402scan (operator: Merit Systems), fetched 2026-10-01', label: 'MEASURED for what it indexes; the stated window and inclusion rules are not published, so this total cannot be placed on the same axis as an August-only count' },
-  { figure: '$24.24M across 75.41M transactions', window: '"last 30 days", undated on the page', publisher: 'x402.org (the Foundation)', label: 'SELF-REPORT, no methodology and no timestamp on the landing page' },
+  { figure: '2.99M transactions and $1.13M, 36.54K buyers, 39K sellers', window: '"Overall Stats", window and inclusion rules not stated', publisher: 'x402scan (operator: Naven / Merit Systems), fetched 2026-10-18', label: 'Window unstated, per the operator docs. A prior pass recorded 12,293,450 transactions and $974,215.14 on 2026-10-01 without an archived page, so the two readings are not a verified time series.' },
+  { figure: '12,293,450 transactions and $974,215.14 at six decimals, 27,467 unique buyers, 38,519 unique sellers', window: 'dashboard cumulative total, window and inclusion rules not stated in the page', publisher: 'x402scan (operator: Merit Systems), prior observation 2026-10-01', label: 'PRIOR OBSERVATION, no archived page in the record; the window and inclusion rules were not published, so it cannot be placed on the same axis as an August-only count or the 2026-10-18 reading' },
+  { figure: '$24.24M across 75.41M transactions', window: '"Last 30 Days" label, but the counter has not moved since March 2026', publisher: 'x402.org (the Foundation)', label: 'FROZEN COUNTER, not a current 30-day measurement. Independent observers recorded the same four values on 2026-08-27, 08-31, 09-03, 09-04 and 09-06; CoinDesk reported the same values on 2026-07-15. No methodology and no last-updated stamp.' },
+  { figure: 'comparable 30-day raw totals ranged from roughly $0.8M to $1.1M across public dashboards', window: '30 days, at the time of writing (captured 2026-10-18)', publisher: 'x402stats.io methodology', label: 'INDEPENDENT TRACKER documenting why totals differ: window boundaries, dust truncation and facilitator coverage. This is a range across dashboards, not a market total.' },
   { figure: 'more than 100 million x402 payments across Base and Solana', window: 'cumulative, window unbounded', publisher: 'Coinbase CDP docs', label: 'SELF-REPORT, a vendor counting its own facilitator' },
   { figure: '$52.7M across 198.9M settlement transactions', window: 'cumulative since May 2025, as of 2026-09-09', publisher: 'TRM Labs', label: 'MEASURED, independent third party' },
   { figure: '$2.59bn across 18.3M payments, five countably comparable EVM chains; about 88% of that value in one bridging contract on Arbitrum', window: 'August 2026', publisher: 'Bitquery', label: 'MEASURED by a publisher-operated indexer; dominated by bridge transfers, not commerce' },
@@ -714,6 +720,16 @@ export const agenticTicketSize = [
   { measure: 'x402 index census', value: 'median $0.009; 99th percentile $0.28; 51.4% under one cent', publisher: 'third-party census', note: 'SECONDARY, modelled from price lists times call counts, not measured on-chain.' },
   { measure: 'x402 mean settled value', value: '$0.265 raw, $0.129 on screened commerce', publisher: 'TRM Labs', note: 'MEASURED, independent.' },
   { measure: 'ERC-8004 agents on Base, value at stake', value: 'per-agent median $0.70, mean $16.74', publisher: 'Xiong et al., arXiv:2606.26028', note: 'MEASURED, independent academic. This is per agent, not per transaction.' },
+];
+
+/**
+ * Who is actually paying. A rail can carry real money without carrying agent
+ * commerce. These are the two best attribution measurements found, each a
+ * behavior-based bound rather than a census of agent identity.
+ */
+export const agenticAttribution = [
+  { measure: 'Agentic share of screened x402 commerce', value: '0.6% to 7.5%', publisher: 'TRM Labs, 2026-09-09', note: 'Share of the $25.62M screened commerce, about $154K to $1.92M, not of the $52.7M cumulative headline. Permissive and strict behavioral screens; a bound, not a census.' },
+  { measure: 'x402 transactions on Solana', value: '76% self-reported (23.2M vs 3.39M)', publisher: 'Solana Foundation, 2026-10-09', note: 'August 22 to September 19. The source heading says "agent payments" but the body counts x402 transactions. Its own 23.2M and 3.39M imply 87% of those two networks, so the 76% denominator is not shown.' },
 ];
 
 export const growthHonest = {
@@ -843,6 +859,10 @@ export const sources = [
   { id: 'x402-foundation', label: 'x402 Foundation - protocol homepage and 30-day network panel', url: 'https://x402.org/' },
   { id: 'x402scan', label: 'x402scan (Merit Systems) - live x402 transaction index', url: 'https://www.x402scan.com/' },
   { id: 'trm-x402', label: 'TRM Labs - "Who\'s actually paying? Measuring AI agent payments on-chain"', url: 'https://www.trmlabs.com/trm-tech-blog/whos-actually-paying-measuring-ai-agent-payments-onchain' },
+  { id: 'solana-x402-september-2026', label: 'Solana Foundation - Payments on Solana: September 2026 in Five Stories (76% of x402 transactions, Aug 22-Sep 19)', url: 'https://solana.com/news/payments-on-solana-september-2026-in-five-stories' },
+  { id: 'mcglynn-x402-frozen', label: 'Daniel McGlynn - the x402.org counter has shown the same four numbers since March 2026', url: 'https://www.danielmcglynn.com/the-x402-counter-has-shown-the-same-four-numbers-since-march/' },
+  { id: 'spotedcrypto-x402', label: 'SpotedCrypto - TRM x402 report synthesis and tracker divergence (2026)', url: 'https://www.spotedcrypto.com/trm-labs-x402-ai-agent-payments-report-2026/' },
+  { id: 'x402stats-methodology', label: 'x402stats.io - methodology: raw totals differ by window, dust truncation and facilitator coverage', url: 'https://x402stats.io/methodology' },
   { id: 'bitquery-x402', label: 'Bitquery - x402 AI agent payments on-chain audit', url: 'https://bitquery.io/investigations/x402-ai-agent-payments-audit' },
   { id: 'keyrock-agent', label: 'Keyrock - "Who Pays the Agent?" (median ticket size, $0.30 card-fee floor)', url: 'https://keyrock.com/who-pays-the-agent/' },
   { id: 'visa-artemis-agentic', label: 'Visa + Artemis Analytics - Agentic Payments from the Ground Up (PDF)', url: 'https://www.visa.com/vcom-assets/content/dam/visa/reimagine-visa/thought-leadership/documents/agentic-payments-report.pdf' },
