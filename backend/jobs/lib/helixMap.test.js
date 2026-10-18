@@ -209,11 +209,18 @@ describe('production shapes (verified live 2026-09-08)', () => {
     expect(eth.delta).toBe(100);
   });
 
-  it('computes 24h price change from the trends window', () => {
+  it('computes 24h price change as a percent, not a dollar delta', () => {
     const points = [trendPoint(0, 1000, 0.999), trendPoint(30 * 3600000, 1300, 1.001)];
     const row = mapPriceRow('USDT', selectNewestPoint(points), points);
-    expect(row.change).toBeCloseTo(0.002);
+    // 0.999 -> 1.001 is +0.2002%, the unit the UI prints with a percent sign.
+    expect(row.change).toBeCloseTo(0.2002, 3);
     expect(row.price).toBe(1.001);
+  });
+
+  it('keeps change null when the earlier price is zero', () => {
+    const points = [trendPoint(0, 1000, 0), trendPoint(30 * 3600000, 1300, 1.001)];
+    const row = mapPriceRow('USDT', selectNewestPoint(points), points);
+    expect(row.change).toBe(null);
   });
 
   it('keeps change null when the window is shorter than 24h', () => {

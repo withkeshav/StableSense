@@ -217,6 +217,12 @@ export function extractChainSeries(payload) {
 /**
  * Map one tracked coin's newest trends point to a prices row.
  * Keys match the fetch.js prepared statement params (@coin,@ts,@price,@change,@volume).
+ *
+ * `change` is a percent, matching the legacy CoinGecko path (`usd_24h_change`)
+ * and every consumer: the Home price meta, the coin tile and the AI narrative
+ * all print it with a `%`. Storing an absolute dollar delta here made a
+ * 0.999 -> 1.001 move render as "+0.00%". Null when either price is missing or
+ * the earlier price is zero.
  * @param {string} symbol
  * @param {object} point Newest trends point.
  * @param {Array<object>} [points] Full points array (enables the 24h change calc).
@@ -224,18 +230,20 @@ export function extractChainSeries(payload) {
  */
 export function mapPriceRow(symbol, point, points) {
   const newestMs = point ? toMs(point.timestamp) : null;
-  // 24h change: newest price minus the point closest to 24h ago, when both exist.
+  const price = point && typeof point.price === 'number' && Number.isFinite(point.price) ? point.price : null;
+  // 24h change percent: newest price versus the point closest to 24h ago.
   let change = null;
-  if (point && newestMs != null) {
+  if (price != null && newestMs != null) {
     const prev = findPointClosestTo24hAgo(points || [point], newestMs);
-    if (prev && typeof prev.price === 'number' && Number.isFinite(prev.price)) {
-      change = point.price - prev.price;
+    const prevPrice = prev && typeof prev.price === 'number' && Number.isFinite(prev.price) ? prev.price : null;
+    if (prevPrice != null && prevPrice !== 0) {
+      change = ((price - prevPrice) / prevPrice) * 100;
     }
   }
   return {
     coin: symbol,
     ts: newestMs,
-    price: point && typeof point.price === 'number' && Number.isFinite(point.price) ? point.price : null,
+    price,
     change,
     volume: null,
   };

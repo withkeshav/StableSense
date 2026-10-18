@@ -192,9 +192,9 @@ export default function HomeTab({ data, alerts, setActiveTab, refreshIntervalSec
         <article class="metric-chip">
           <div class="metric-icon blue" aria-hidden="true" />
           <div>
-            <p>Global stablecoin market cap</p>
+            <p>Combined market cap (tracked)</p>
             <strong>{fmtB(totalMC)}</strong>
-            <span>All issuers · not only tracked coins</span>
+            <span>{coins.length} coins on this dashboard · not all issuers</span>
           </div>
         </article>
         <article class="metric-chip">
