@@ -7,8 +7,9 @@ const publicFiles = new Set([
   'NOTICE', 'README.md', 'RESEARCH-LICENSE', 'SECURITY.md', 'index.html',
   'package.json', 'package-lock.json', 'vite.config.js',
   'vite.config.research.mjs', 'vitest.config.js',
-  'docs/api-protocol.md', 'docs/architecture.md', 'docs/data-sources.md',
-  'docs/scaling.md', 'docs/research-methodology.md', 'docs/research/README.md',
+  'docs/adapting-data-sources.md', 'docs/api-protocol.md', 'docs/architecture.md',
+  'docs/data-sources.md', 'docs/scaling.md', 'docs/research-methodology.md',
+  'docs/research/README.md',
   'docs/research/public/claim-template.md',
   'docs/research/public/publication-checklist.md',
 ])
