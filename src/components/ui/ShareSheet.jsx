@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
+import { createPortal } from 'preact/compat';
 import { BrandWordmark } from '../BrandMark.jsx';
 import { SHARE_FORMATS, shareSignalCard, shareTextIssues } from '../../utils/shareChart.js';
 
@@ -94,7 +95,10 @@ export default function ShareSheet({
     }, format);
   };
 
-  return (
+  // Portal to body: the chart lives inside a glass panel whose backdrop-filter
+  // makes it a containing block for position:fixed, which trapped this overlay
+  // to the panel width and squeezed the preview card.
+  return createPortal(
     <div
       class="share-overlay"
       role="dialog"
@@ -202,6 +206,7 @@ export default function ShareSheet({
           <p class="share-note">Includes date, source context, and StableSense branding.</p>
         </div>
       </section>
-    </div>
+    </div>,
+    document.body
   );
 }

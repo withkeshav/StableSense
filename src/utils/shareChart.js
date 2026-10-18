@@ -162,9 +162,9 @@ export function shareSignalCard(chartInstance, meta, formatKey) {
   const titleSize = Math.round(fmt.w * (formatKey === 'story' ? 0.052 : 0.038));
   ctx.fillStyle = ink;
   ctx.font = `800 ${titleSize}px Manrope, Arial, sans-serif`;
-  wrapText(ctx, meta.interpretation, pad, y, fmt.w - pad * 2, Math.round(titleSize * 1.15), 3);
+  const interpLines = wrapText(ctx, meta.interpretation, pad, y, fmt.w - pad * 2, Math.round(titleSize * 1.15), 4);
 
-  y += Math.round(titleSize * 1.15 * 3) + 8;
+  y += Math.round(titleSize * 1.15) * interpLines + 8;
   if (meta.highlight) {
     ctx.fillStyle = soft;
     ctx.font = `700 ${Math.round(fmt.w * 0.016)}px Manrope, Arial, sans-serif`;
@@ -210,7 +210,7 @@ export function shareSignalCard(chartInstance, meta, formatKey) {
   ctx.textAlign = 'left';
   ctx.font = `600 ${Math.round(fmt.w * 0.013)}px Manrope, Arial, sans-serif`;
   ctx.fillStyle = soft;
-  wrapText(ctx, meta.definition, pad, metaY + Math.round(fmt.h * 0.022), fmt.w * 0.48, Math.round(fmt.h * 0.018), 2);
+  wrapText(ctx, meta.definition, pad, metaY + Math.round(fmt.h * 0.022), fmt.w * 0.48, Math.round(fmt.h * 0.018), 3);
   ctx.textAlign = 'right';
   ctx.fillText(meta.timestamp || new Date().toISOString(), fmt.w - pad, metaY + Math.round(fmt.h * 0.022));
 
@@ -231,8 +231,15 @@ export function shareSignalCard(chartInstance, meta, formatKey) {
   download(off, `StableSense-${safeTitle}-${formatKey}.png`);
 }
 
+/**
+ * Wrap text and return the number of lines drawn, so the caller can place the
+ * next block without guessing. A truncated line drops its trailing punctuation
+ * before the ellipsis, so a sentence ending in "." does not render as "..…".
+ * @returns {number} Lines drawn, at least 1.
+ */
 function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
-  const words = String(text).split(/\s+/);
+  const words = String(text).split(/\s+/).filter(Boolean);
+  if (!words.length) return 1;
   let line = '';
   let lines = 0;
   for (let i = 0; i < words.length; i += 1) {
@@ -242,18 +249,22 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
       lines += 1;
       line = words[i];
       if (lines >= maxLines - 1) {
-        let rest = words.slice(i).join(' ');
+        let rest = words.slice(i).join(' ').replace(/[.,;:!?\s]+$/, '');
         while (ctx.measureText(`${rest}…`).width > maxWidth && rest.length > 1) {
-          rest = rest.slice(0, -1);
+          rest = rest.slice(0, -1).replace(/[.,;:!?\s]+$/, '');
         }
-        ctx.fillText(`${rest}${rest.endsWith('…') ? '' : '…'}`, x, y + lines * lineHeight);
-        return;
+        ctx.fillText(`${rest}…`, x, y + lines * lineHeight);
+        return lines + 1;
       }
     } else {
       line = test;
     }
   }
-  if (line) ctx.fillText(line, x, y + lines * lineHeight);
+  if (line) {
+    ctx.fillText(line, x, y + lines * lineHeight);
+    return lines + 1;
+  }
+  return Math.max(1, lines);
 }
 
 function download(canvas, filename) {
