@@ -23,51 +23,167 @@
   <meta name="twitter:image" content="https://stablesense.withkeshav.com/research/og.png?v=2026-10-18c">
   <meta name="twitter:image:alt" content="The State of Stablecoins, a dated and sourced report from StableSense.">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./od.css">
+  <script>(function(){try{var m=localStorage.getItem("stablesense:theme")||localStorage.getItem("stablepulse:theme")||"light";var d=m==="system"?(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):m;document.documentElement.setAttribute("data-theme",d);}catch(e){}})();</script>
 </head>
-<body>
+<body class="od-page">
 
 <a href="#main" class="skip-link" style="position:absolute;left:-9999px;">Skip to content</a>
 
-<header class="hub-header">
-  <div id="toc-progress" style="position:fixed;top:0;left:0;height:2px;background:var(--hub-gold);width:0;z-index:200;transition:width 0.1s"></div>
-  <div class="hub-header-inner">
-    <a href="/research/" class="hub-mark">StableSense<span class="gold-dot">.</span> Research</a>
-    <nav class="hub-nav" aria-label="Hub sections">
-      <a href="#taxonomy">Taxonomy</a>
-      <a href="#scale">Scale</a>
-      <a href="#treasury">Treasury</a>
-      <a href="#banks">Banks</a>
-      <a href="#remittances">Payments</a>
-      <a href="#depegs">Depegs</a>
-      <a href="#regulation">Regulation</a>
-      <a href="#float">The float</a>
-      <a href="#agentic">Agent economy</a>
-      <a href="#players">Who else</a>
-      <a href="#open-questions">Open questions</a>
-      <a href="#contributors">Contributors</a>
-      <a href="./changelog/">Changelog</a>
-      <a href="/" class="to-dashboard" target="_blank" rel="noopener noreferrer">Open the live dashboard &rsaquo;</a>
-      <button id="hub-theme-toggle" class="hub-chip" style="cursor:pointer" title="Toggle theme">Theme</button>
+<div id="toc-progress" aria-hidden="true"></div>
+
+<header class="masthead">
+  <div class="masthead-inner wrap">
+    <a class="brand" href="#top" aria-label="StableSense research, back to the top">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="8.4" stroke="var(--blue-deep)" stroke-width="1.6"/>
+          <path d="M6.6 12h10.8" stroke="var(--blue-deep)" stroke-width="1.6" stroke-linecap="round"/>
+          <circle cx="12" cy="12" r="2.1" fill="var(--blue)"/>
+        </svg>
+      </span>
+      <span class="brand-word">stable<em>sense</em></span>
+      <span class="brand-tail">Research</span>
+    </a>
+    <nav class="mast-nav hub-nav" aria-label="Research sections">
+      <a class="nav-link" href="#ledger">Ledger</a>
+      <a class="nav-link" href="#method">Method</a>
+      <a class="nav-link" href="./changelog/">Changelog</a>
+      <a class="nav-link dash" href="/" target="_blank" rel="noopener noreferrer">Live dashboard</a>
     </nav>
+    <span class="nav-sep" aria-hidden="true"></span>
+    <div class="theme-switch" role="group" aria-label="Color theme">
+      <button type="button" data-theme-btn="light" aria-label="Light theme" aria-pressed="true">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+      <button type="button" data-theme-btn="dark" aria-label="Dark theme" aria-pressed="false">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg>
+      </button>
+    </div>
   </div>
 </header>
 
-<main id="main">
+<main class="main" id="main">
+<section class="hero wrap" aria-labelledby="hero-title" id="top">
+  <div class="hero-copy">
+    <p class="kicker">Research</p>
+    <h1 id="hero-title">The State of<br>Stablecoins</h1>
+    <p class="thesis">Stablecoins are not just dollar tokens. They are becoming a layer of the financial system - a buyer of short-term US debt, a payments rail, and a dollarization force. This report tracks the wider landscape and the macro impact, sourced and dated. Where the evidence disagrees with itself or does not reach, that is shown too: a source that disagrees with itself is a finding, not a gap to be smoothed over.</p>
+
+    <div class="hero-live">
+      <span class="hero-live-label">Live from the dashboard</span>
+      <div class="hero-counter" id="hero-counter" aria-live="polite">-</div>
+      <div class="hero-counter-label" id="hero-counter-label">Combined market cap of the 5 stablecoins tracked by the live dashboard, updated live. This is not the total global market cap: it excludes every coin the dashboard does not track.</div>
+    </div>
+
+    <div class="pills" role="group" aria-label="Edition details">
+      <span class="pill" style="--c:var(--gold)"><span class="dot" aria-hidden="true"></span>Last updated 2026-10-02</span>
+      <span class="pill"><b class="count">13</b> sections</span>
+      <span class="pill">Sources in the margin</span>
+      <span class="pill" style="--c:var(--violet)"><span class="dot" aria-hidden="true"></span>Reserve band is a composition, not live data</span>
+    </div>
+
+    <p class="hero-note">Informational research, not financial advice. Every figure carries its own source and as-of date; the review date above is not a measurement date for the whole page. The reserve band beside this text is a static composition with no amounts asserted. The live peg band, measured from prices, is on the dashboard.</p>
+  </div>
+
+  <figure class="reserve" aria-labelledby="reserve-title">
+    <div class="reserve-head">
+      <div>
+        <h2 id="reserve-title">Reserve band</h2>
+        <p class="reserve-sub">Reserve composition with a tide line. Read it as a shape, not as a measurement.</p>
+      </div>
+      <span class="chip-composition"><span class="dot" aria-hidden="true"></span>Composition</span>
+    </div>
+    <div class="reserve-plot">
+      <svg class="reserve-svg" viewBox="0 0 520 320" role="img" aria-labelledby="reserve-title reserve-desc">
+        <title id="reserve-title">Reserve composition</title>
+        <desc id="reserve-desc">Seven stacked bars show treasuries, cash and repo, and other reserves. A coral tide line crosses the bars. No reserve amounts are asserted.</desc>
+        <rect class="plane" x="24" y="24" width="472" height="260" rx="8" aria-hidden="true"/>
+        <line class="baseline" x1="38" y1="268" x2="486" y2="268" aria-hidden="true"/>
+        <g class="reserve-bar" style="--d:.12s" aria-hidden="true">
+          <rect class="seg seg-other" x="62" y="231" width="34" height="37" rx="2"/>
+          <rect class="seg seg-cash" x="62" y="181" width="34" height="47" rx="2"/>
+          <rect class="seg seg-treasury" x="62" y="120" width="34" height="58" rx="3"/>
+        </g>
+        <g class="reserve-bar" style="--d:.20s" aria-hidden="true">
+          <rect class="seg seg-other" x="123" y="226" width="34" height="42" rx="2"/>
+          <rect class="seg seg-cash" x="123" y="170" width="34" height="53" rx="2"/>
+          <rect class="seg seg-treasury" x="123" y="102" width="34" height="65" rx="3"/>
+        </g>
+        <g class="reserve-bar" style="--d:.28s" aria-hidden="true">
+          <rect class="seg seg-other" x="184" y="232" width="34" height="36" rx="2"/>
+          <rect class="seg seg-cash" x="184" y="184" width="34" height="45" rx="2"/>
+          <rect class="seg seg-treasury" x="184" y="126" width="34" height="55" rx="3"/>
+        </g>
+        <g class="reserve-bar" style="--d:.36s" aria-hidden="true">
+          <rect class="seg seg-other" x="245" y="224" width="34" height="44" rx="2"/>
+          <rect class="seg seg-cash" x="245" y="164" width="34" height="57" rx="2"/>
+          <rect class="seg seg-treasury" x="245" y="90" width="34" height="71" rx="3"/>
+        </g>
+        <g class="reserve-bar" style="--d:.44s" aria-hidden="true">
+          <rect class="seg seg-other" x="306" y="229" width="34" height="39" rx="2"/>
+          <rect class="seg seg-cash" x="306" y="176" width="34" height="50" rx="2"/>
+          <rect class="seg seg-treasury" x="306" y="112" width="34" height="61" rx="3"/>
+        </g>
+        <g class="reserve-bar" style="--d:.52s" aria-hidden="true">
+          <rect class="seg seg-other" x="367" y="225" width="34" height="43" rx="2"/>
+          <rect class="seg seg-cash" x="367" y="167" width="34" height="55" rx="2"/>
+          <rect class="seg seg-treasury" x="367" y="96" width="34" height="68" rx="3"/>
+        </g>
+        <g class="reserve-bar" style="--d:.60s" aria-hidden="true">
+          <rect class="seg seg-other" x="428" y="230" width="34" height="38" rx="2"/>
+          <rect class="seg seg-cash" x="428" y="179" width="34" height="48" rx="2"/>
+          <rect class="seg seg-treasury" x="428" y="118" width="34" height="58" rx="3"/>
+        </g>
+        <path class="tide-halo" pathLength="100" d="M 38 150 C 44.83 147.00 62.00 136.33 79 132 C 96.00 127.67 119.67 122.67 140 124 C 160.33 125.33 180.67 141.00 201 140 C 221.33 139.00 241.67 119.33 262 118 C 282.33 116.67 302.67 133.00 323 132 C 343.33 131.00 363.67 112.67 384 112 C 404.33 111.33 428.00 127.00 445 128 C 462.00 129.00 479.17 119.67 486 118" aria-hidden="true"/>
+        <path class="tide-line" pathLength="100" d="M 38 150 C 44.83 147.00 62.00 136.33 79 132 C 96.00 127.67 119.67 122.67 140 124 C 160.33 125.33 180.67 141.00 201 140 C 221.33 139.00 241.67 119.33 262 118 C 282.33 116.67 302.67 133.00 323 132 C 343.33 131.00 363.67 112.67 384 112 C 404.33 111.33 428.00 127.00 445 128 C 462.00 129.00 479.17 119.67 486 118" aria-hidden="true"/>
+        <circle class="tide-end" cx="486" cy="118" r="3.4" aria-hidden="true"/>
+        <text class="tide-label" x="486" y="103" text-anchor="end" aria-hidden="true">Tide line</text>
+      </svg>
+    </div>
+    <div class="exhibit-legend" role="group" aria-label="Reserve exhibit legend">
+      <span class="legend-item" style="--c:var(--gold)"><span class="sw" aria-hidden="true"></span>Treasuries</span>
+      <span class="legend-item" style="--c:var(--blue)"><span class="sw" aria-hidden="true"></span>Cash and repo</span>
+      <span class="legend-item" style="--c:var(--violet)"><span class="sw" aria-hidden="true"></span>Other reserves</span>
+      <span class="legend-item" style="--c:var(--coral)"><span class="sw line" aria-hidden="true"></span>Tide line</span>
+    </div>
+    <div class="reserve-note"><span>Composition band. No amounts are asserted.</span><span>Static exhibit</span></div>
+  </figure>
+</section>
+
+  <section class="workspace wrap" aria-label="Ledger, report body and evidence margin">
+  <aside class="ledger" id="ledger" aria-labelledby="ledger-label">
+    <p class="side-kicker" id="ledger-label">Ledger index <span>13 sections</span></p>
+    <ol class="ledger-list">
+      <li><a class="ledger-row active" href="#taxonomy" id="ledger-01" aria-current="true"><span class="num">01</span><span>Taxonomy</span><span class="now" aria-hidden="true"></span><span class="sr-only">Current section</span></a></li>
+      <li><a class="ledger-row" href="#scale" id="ledger-02"><span class="num">02</span><span>Scale</span><span class="now stub" aria-hidden="true"></span><span class="sr-only">Section</span></a></li>
+      <li><a class="ledger-row" href="#treasury" id="ledger-03"><span class="num">03</span><span>Treasury</span><span class="now stub" aria-hidden="true"></span><span class="sr-only">Section</span></a></li>
+      <li><a class="ledger-row" href="#banks" id="ledger-04"><span class="num">04</span><span>Banks</span><span class="now stub" aria-hidden="true"></span><span class="sr-only">Section</span></a></li>
+      <li><a class="ledger-row" href="#remittances" id="ledger-05"><span class="num">05</span><span>Payments</span><span class="now stub" aria-hidden="true"></span><span class="sr-only">Section</span></a></li>
+      <li><a class="ledger-row" href="#dollarization" id="ledger-06"><span class="num">06</span><span>Dollarization</span><span class="now stub" aria-hidden="true"></span><span class="sr-only">Section</span></a></li>
+      <li><a class="ledger-row" href="#depegs" id="ledger-07"><span class="num">07</span><span>Depegs</span><span class="now stub" aria-hidden="true"></span><span class="sr-only">Section</span></a></li>
+      <li><a class="ledger-row" href="#regulation" id="ledger-08"><span class="num">08</span><span>Regulation</span><span class="now stub" aria-hidden="true"></span><span class="sr-only">Section</span></a></li>
+      <li><a class="ledger-row" href="#float" id="ledger-09"><span class="num">09</span><span>The float</span><span class="now stub" aria-hidden="true"></span><span class="sr-only">Section</span></a></li>
+      <li><a class="ledger-row" href="#agentic" id="ledger-10"><span class="num">10</span><span>Agent economy</span><span class="now stub" aria-hidden="true"></span><span class="sr-only">Section</span></a></li>
+      <li><a class="ledger-row" href="#players" id="ledger-11"><span class="num">11</span><span>Who else</span><span class="now stub" aria-hidden="true"></span><span class="sr-only">Section</span></a></li>
+      <li><a class="ledger-row" href="#reality-check" id="ledger-12"><span class="num">12</span><span>Reality check</span><span class="now stub" aria-hidden="true"></span><span class="sr-only">Section</span></a></li>
+      <li><a class="ledger-row" href="#open-questions" id="ledger-13"><span class="num">13</span><span>Open questions</span><span class="now stub" aria-hidden="true"></span><span class="sr-only">Section</span></a></li>
+      <li><a class="ledger-row" href="#contributors" id="ledger-14"><span class="num">&mdash;</span><span>Contributors</span><span class="now stub" aria-hidden="true"></span><span class="sr-only">Appendix</span></a></li>
+    </ol>
+    <p class="ledger-legend">
+      <span><span class="keynow" aria-hidden="true"></span>Filled dot: current section</span>
+      <span><span class="keystub" aria-hidden="true"></span>Outline dot: other sections</span>
+    </p>
+  </aside>
+    <article class="article" aria-label="Report body">
+
 
 <!-- HERO -->
-<section class="hero">
-  <div class="hero-inner">
-    <div class="kicker">StableSense Research - State of Stablecoins</div>
-    <h1>The State of Stablecoins</h1>
-    <p class="hub-updated">Last updated <time datetime="2026-10-02">2026-10-02</time> &middot; <a href="./changelog/">What changed in this edition</a></p>
-    <p class="thesis">Stablecoins are not just dollar tokens. They are becoming a layer of the financial system - a buyer of short-term US debt, a payments rail, and a dollarization force. This report tracks the wider landscape and the macro impact, sourced and dated. Where the evidence disagrees with itself or does not reach, that is shown too: a source that disagrees with itself is a finding, not a gap to be smoothed over.</p>
-    <div class="hero-counter num" id="hero-counter" aria-live="polite">-</div>
-    <div class="hero-counter-label" id="hero-counter-label">Combined market cap of the 5 stablecoins tracked by the live dashboard, updated live. This is not the total global market cap: it excludes every coin the dashboard does not track.</div>
-    <p class="short-disclaimer">Informational research, not financial advice. Every figure carries its own source and as-of date; the update date above is a review date, not a measurement date for the whole page.</p>
-    <div class="scroll-cue">Scroll to read &darr;</div>
-  </div>
-</section>
+
 
 <!-- SECTION 1: TAXONOMY -->
 <section class="section" id="taxonomy">
@@ -833,12 +949,45 @@
     <p class="as-of">The linked contribution entry is the official record. Images can be copied or cached; check that entry for the current status.</p>
   </div>
 </section>
+
+    </article>
+
+  <aside class="evidence" id="evidence" aria-labelledby="evidence-label">
+    <div class="evidence-group">
+      <p class="side-kicker" id="evidence-label">Evidence margin</p>
+      <p class="evidence-intro">Each section states its sources inline. The consolidated source list, the verified claims and the methodology live in <a href="#method">Method</a> at the foot of this page.</p>
+      <ul class="read-list">
+        <li><a class="read-item" href="#method"><span class="num">A</span><span>Sources and method</span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a></li>
+        <li><a class="read-item" href="./changelog/"><span class="num">B</span><span>What changed</span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a></li>
+      </ul>
+    </div>
+
+    <div class="evidence-group">
+      <h3>Read this with</h3>
+      <ul class="read-list">
+        <li><a class="read-item" href="#reality-check"><span class="num">12</span><span>Reality check</span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a></li>
+        <li><a class="read-item" href="#open-questions"><span class="num">13</span><span>Open questions</span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a></li>
+      </ul>
+      <p class="read-note">Two sections that qualify the claims above.</p>
+    </div>
+
+    <div class="evidence-group">
+      <h3>Edition notes</h3>
+      <ul class="unresolved">
+        <li><span class="q">01</span><span>Review date 2026-10-02. It is not a measurement date for the whole page; each figure carries its own as-of.</span></li>
+        <li><span class="q">02</span><span>Where sources disagree, the disagreement is shown with each source and its date rather than one number chosen silently.</span></li>
+        <li><span class="q">03</span><span>The reserve band on this page is a composition and asserts no reserve amounts. The measured peg band is on the dashboard.</span></li>
+      </ul>
+    </div>
+  </aside>
+  </section>
+
 </main>
 
 <!-- FOOTER -->
-<footer class="hub-footer">
+<footer class="hub-footer" id="method">
   <div class="hub-footer-inner">
-    <div class="badge" id="hub-freshness-badge">Last updated 2026-10-02 &middot; Hub build v3.9.0 &middot; source observation dates vary</div>
+    <div class="badge" id="hub-freshness-badge">Last updated 2026-10-02 &middot; source observation dates vary</div>
 
     <p class="as-of" style="margin-top:0.75rem">The review date is not a measurement date for the whole dataset. The reconciled findings state their source observation dates, including the 2026-08-13 market-cap observation and 2026-10-01 Open USD snapshot. Older teaching material and historical series retain their original dates and were not all newly verified for this edition.</p>
 

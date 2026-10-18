@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [3.13.0] - 2026-10-18
+
+### Added
+- The research portal now uses the approved OpenDesign shell: masthead, ledger index, evidence margin and the reserve composition band.
+- A visible light and dark switch in the research masthead, and the same shell on the research changelog.
+- Per-section ledger with a live current-section marker that follows the reader.
+
+### Changed
+- The research hero carries the live tracked-market-cap counter as a labelled box, next to the static composition band, so the two are never confused.
+- The report keeps every section, chart, table and calculator; only the header, hero and page furniture changed.
+- The legacy research stylesheet is wrapped in a cascade layer, so the current theme wins wherever the two disagree, whatever order the bundler emits.
+- The research footer sources and verified claims now sit in a 1040px reading column.
+
+### Notes
+- The reserve band is a composition and asserts no reserve amounts. The measured peg band remains on the dashboard.
+
+
 ## [3.12.0] - 2026-10-18
 
 ### Added

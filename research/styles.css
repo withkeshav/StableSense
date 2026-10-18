@@ -1,3 +1,7 @@
+/* Wrapped in a cascade layer. od.css (unlayered) is the current theme
+   and must win wherever the two disagree, whatever order the bundler
+   emits them in. Layer order is fixed here, not by file order. */
+@layer legacy {
 /* State of Stablecoins hub - engraved-ledger design system.
    Self-contained: does not import src/styles.css. The hub connects to the
    dashboard app through one deliberate bridge element (the "open the live
@@ -386,3 +390,4 @@ hr.rule { border: 0; border-top: 1px solid var(--hub-line); margin: 0; }
 
 /* noscript fallback: ensure reveals are visible without JS */
 noscript .reveal { opacity: 1; transform: none; }
+}

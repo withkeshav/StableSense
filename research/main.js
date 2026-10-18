@@ -18,7 +18,7 @@ try {
   document.documentElement.setAttribute('data-theme', effective);
 } catch { /* private mode */ }
 
-// hub theme toggle
+// hub theme toggle (legacy single button, kept for older shells)
 const hubToggle = document.getElementById('hub-theme-toggle');
 if (hubToggle) {
   hubToggle.addEventListener('click', () => {
@@ -31,6 +31,30 @@ if (hubToggle) {
       setTimeout(() => Object.values(Chart.instances || {}).forEach((inst) => inst.resize()), 50);
     });
   });
+}
+
+// Explicit light/dark controls in the OpenDesign masthead. Two buttons, so the
+// pressed state has to be mirrored onto both on every change.
+const themeButtons = document.querySelectorAll('[data-theme-btn]');
+if (themeButtons.length) {
+  const syncThemeButtons = () => {
+    const current = document.documentElement.getAttribute('data-theme') || 'light';
+    themeButtons.forEach((btn) => {
+      btn.setAttribute('aria-pressed', String(btn.getAttribute('data-theme-btn') === current));
+    });
+  };
+  themeButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const next = btn.getAttribute('data-theme-btn');
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('stablesense:theme', next); } catch { /* private mode */ }
+      syncThemeButtons();
+      loadChartJs().then((Chart) => {
+        setTimeout(() => Object.values(Chart.instances || {}).forEach((inst) => inst.resize()), 50);
+      });
+    });
+  });
+  syncThemeButtons();
 }
 
 // --- category color helper -------------------------------------------------
@@ -921,7 +945,9 @@ function buildFooterLists() {
 function stickyToc() {
   const sections = document.querySelectorAll('.section[id]');
   const progress = document.getElementById('toc-progress');
-  const tocLinks = document.querySelectorAll('.hub-nav a[href^="#"]');
+  // Both the masthead links and the ledger rows point at section ids; the
+  // ledger is the visible index, so it carries the active state.
+  const tocLinks = document.querySelectorAll('.hub-nav a[href^="#"], .ledger-row[href^="#"]');
   if (!sections.length || !tocLinks.length) return;
   const io = new IntersectionObserver((entries) => {
     entries.forEach((e) => {
