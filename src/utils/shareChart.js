@@ -43,31 +43,23 @@ function requireShareText(meta) {
 // in that theme, so the card surface, type and plot panel must match it.
 const CARD_THEMES = {
   light: {
-    bg0: '#fbfcfd',
-    bg1: '#ecf4fb',
-    ink: '#1b2d41',
-    soft: '#5d7289',
-    faint: '#7590aa',
+    bg0: '#F7F5F2',
+    ink: '#172535',
+    soft: '#5E6C79',
     line: '#d5e3ef',
-    accent: '#2e79dd',
+    accent: '#468BF0',
     plotBg: '#ffffff',
-    plotLine: '#dbe7f2',
-    wash: 'rgba(116,178,255,0.32)',
     markOuter: '#5B9CFF',
     markInner: '#286FCF',
     markDot: '#5B9CFF',
   },
   dark: {
     bg0: '#141e28',
-    bg1: '#101821',
     ink: '#edf4fb',
     soft: '#b7c5d4',
-    faint: '#9aabbc',
     line: '#263645',
     accent: '#72afff',
     plotBg: '#141e28',
-    plotLine: '#29465f',
-    wash: 'rgba(114,175,255,0.16)',
     markOuter: '#72afff',
     markInner: '#9bc6ff',
     markDot: '#72afff',
@@ -135,164 +127,100 @@ export function renderSignalCard(chartInstance, meta, formatKey, theme = 'light'
   requireShareText(meta);
   const fmt = SHARE_FORMATS[formatKey] || SHARE_FORMATS.landscape;
   const palette = CARD_THEMES[theme] || CARD_THEMES.light;
-  const pad = Math.round(fmt.w * 0.055);
-  const bg0 = palette.bg0;
-  const bg1 = palette.bg1;
-  const ink = palette.ink;
-  const soft = palette.soft;
-  const faint = palette.faint;
-  const line = palette.line;
-  const accent = palette.accent;
-
+  const wide = formatKey === 'landscape';
+  const tall = formatKey === 'story';
+  const pad = 60;
+  const width = fmt.w - 2 * pad;
   const off = document.createElement('canvas');
   off.width = fmt.w;
   off.height = fmt.h;
   const ctx = off.getContext('2d');
-
-  const grad = ctx.createLinearGradient(0, 0, fmt.w, fmt.h);
-  grad.addColorStop(0, bg0);
-  grad.addColorStop(1, bg1);
-  ctx.fillStyle = grad;
+  ctx.fillStyle = palette.bg0;
   ctx.fillRect(0, 0, fmt.w, fmt.h);
+  ctx.fillStyle = palette.accent;
+  ctx.fillRect(pad, 0, 88, 6);
 
-  const wash = ctx.createRadialGradient(fmt.w * 0.94, 0, 0, fmt.w * 0.94, 0, fmt.w * 0.45);
-  wash.addColorStop(0, palette.wash);
-  wash.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = wash;
-  ctx.fillRect(0, 0, fmt.w, fmt.h);
-
-  ctx.strokeStyle = line;
-  ctx.lineWidth = 2;
-  drawRoundedRect(ctx, 18, 18, fmt.w - 36, fmt.h - 36, 28);
-  ctx.stroke();
-
-  const markSize = Math.round(fmt.w * 0.042);
-  drawBrandMark(ctx, pad, pad * 0.85, markSize, palette);
-  ctx.fillStyle = ink;
-  ctx.font = `800 ${Math.round(fmt.w * 0.028)}px Manrope, Arial, sans-serif`;
-  ctx.textAlign = 'left';
-  ctx.fillText('stable', pad + markSize + 12, pad + markSize * 0.62);
-  const senseW = ctx.measureText('stable').width;
-  ctx.fillStyle = accent;
-  ctx.fillText('sense', pad + markSize + 12 + senseW, pad + markSize * 0.62);
-
-  ctx.fillStyle = faint;
-  ctx.font = `800 ${Math.round(fmt.w * 0.014)}px Manrope, Arial, sans-serif`;
-  ctx.textAlign = 'right';
-  ctx.fillText(String(meta.rangeLabel).toUpperCase(), fmt.w - pad, pad + markSize * 0.55);
-
-  let y = pad + markSize + Math.round(fmt.h * 0.04);
-  ctx.textAlign = 'left';
-  ctx.fillStyle = faint;
-  ctx.font = `800 ${Math.round(fmt.w * 0.012)}px Manrope, Arial, sans-serif`;
-  ctx.fillText(String(meta.title).toUpperCase(), pad, y);
-
-  let titleSize = Math.round(Math.min(fmt.w, fmt.h) * (formatKey === 'story' ? 0.052 : formatKey === 'landscape' ? 0.034 : 0.038));
-  ctx.fillStyle = ink;
-  ctx.font = `800 ${titleSize}px Manrope, Arial, sans-serif`;
-  // Story and landscape have more vertical or horizontal room; do not truncate
-  // the read to the square card's four lines.
-  const maxInterpLines = formatKey === 'landscape' ? 3 : formatKey === 'square' ? 4 : 5;
-  // Keep the complete factual sentence in every format, including its caveat.
-  while (titleSize > 20 && textLineCount(ctx, meta.interpretation, fmt.w - pad * 2) > maxInterpLines) {
-    titleSize -= 1;
-    ctx.font = `800 ${titleSize}px Manrope, Arial, sans-serif`;
-  }
-  y += titleSize + 16;
-  const interpLines = wrapText(ctx, meta.interpretation, pad, y, fmt.w - pad * 2, Math.round(titleSize * 1.15), maxInterpLines);
-
-  y += Math.round(titleSize * 1.15) * interpLines + 8;
-  if (meta.highlight) {
-    ctx.fillStyle = soft;
-    ctx.font = `700 ${Math.round(fmt.w * 0.016)}px Manrope, Arial, sans-serif`;
-    ctx.fillText(meta.highlight, pad, y);
-    y += Math.round(fmt.h * 0.025);
-  }
-
-  const chartCanvas = chartInstance?.canvas;
-  const footerH = Math.round(fmt.h * 0.10);
-  // Two meta rows: measure and as-of, then range and source. A card without
-  // these is not self-sufficient, so the space is reserved, not squeezed.
-  const metaH = Math.round(fmt.h * 0.19);
-  const chartTop = y + 8;
-  const chartBottom = fmt.h - footerH - metaH - pad;
-  const chartBoxH = Math.max(120, chartBottom - chartTop);
-  const chartBoxW = fmt.w - pad * 2;
-
-  // A fixed white plot panel keeps the chart legible on a light card even when
-  // the viewer's dashboard is in dark mode.
-  ctx.fillStyle = palette.plotBg;
-  drawRoundedRect(ctx, pad, chartTop, chartBoxW, chartBoxH, 14);
-  ctx.fill();
-  ctx.strokeStyle = palette.plotLine;
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  if (chartCanvas) {
-    const plotInset = 8;
-    const innerW = chartBoxW - plotInset * 2;
-    const innerH = chartBoxH - plotInset * 2;
-    const ratio = Math.min(innerW / chartCanvas.width, innerH / chartCanvas.height);
-    const dw = chartCanvas.width * ratio;
-    const dh = chartCanvas.height * ratio;
-    const dx = pad + plotInset + (innerW - dw) / 2;
-    const dy = chartTop + plotInset + (innerH - dh) / 2;
-    ctx.drawImage(chartCanvas, dx, dy, dw, dh);
-  }
-
-  const labelFont = Math.round(fmt.w * 0.0105);
-  const bodyFont = Math.round(fmt.w * 0.0125);
-  const bodyLine = Math.round(bodyFont * 1.35);
-  const metaY = fmt.h - footerH - metaH + 6;
-  const rowH = Math.round(metaH * 0.46);
-  const leftW = Math.round((fmt.w - pad * 2) * 0.54);
-  const rightW = Math.round((fmt.w - pad * 2) * 0.38);
-  const rightX = fmt.w - pad;
-
-  const drawLabel = (text, x, y, align = 'left') => {
-    ctx.textAlign = align;
-    ctx.fillStyle = faint;
-    ctx.font = `800 ${labelFont}px Manrope, Arial, sans-serif`;
-    ctx.fillText(text, x, y);
-  };
-  const drawBody = (text, x, y, width, maxLines, align = 'left') => {
-    ctx.textAlign = align;
-    ctx.fillStyle = soft;
-    ctx.font = `600 ${bodyFont}px Manrope, Arial, sans-serif`;
-    if (align === 'right') {
-      ctx.fillText(fitText(ctx, text, width), x, y);
-      return;
+  const text = (value, x, y, w, size, color = palette.ink, weight = 600, maxLines = 8) => {
+    let fontSize = size;
+    ctx.textAlign = 'left';
+    ctx.fillStyle = color;
+    ctx.font = `${weight} ${fontSize}px Manrope, Arial, sans-serif`;
+    while (fontSize > 16 && textLineCount(ctx, value, w) > maxLines) {
+      fontSize -= 1;
+      ctx.font = `${weight} ${fontSize}px Manrope, Arial, sans-serif`;
     }
-    wrapText(ctx, text, x, y, width, bodyLine, maxLines);
+    // Do not silently cut source credits, dates, or factual caveats.
+    const count = textLineCount(ctx, value, w);
+    if (count > maxLines) throw new Error('Signal card text exceeds available space');
+    return wrapText(ctx, value, x, y, w, fontSize * 1.4, maxLines) * fontSize * 1.4;
   };
+  drawBrandMark(ctx, pad - 8, 48, 48, palette);
+  ctx.font = '800 32px Manrope, Arial, sans-serif';
+  ctx.fillStyle = palette.ink;
+  ctx.fillText('stable', pad + 46, 84);
+  const brandWidth = ctx.measureText('stable').width;
+  ctx.fillStyle = palette.accent;
+  ctx.fillText('sense', pad + 46 + brandWidth, 84);
+  ctx.fillStyle = palette.line;
+  ctx.fillRect(pad, 116, width, 1);
 
-  // Row one: what it measures and when it was observed.
-  drawLabel('WHAT THIS MEASURES', pad, metaY);
-  drawLabel('AS OF', rightX, metaY, 'right');
-  drawBody(meta.definition, pad, metaY + labelFont + 6, leftW, 3);
-  drawBody(meta.timestamp || 'as of unavailable', rightX, metaY + labelFont + 6, rightW, 1, 'right');
+  const copyW = wide ? 540 : width;
+  let y = 170;
+  y += text(meta.title, pad, y, copyW, wide ? 38 : 32, palette.accent, 700, 2) + 18;
+  y += text(meta.interpretation, pad, y, copyW, wide ? 42 : tall ? 52 : 38, palette.ink, 800, wide ? 8 : tall ? 6 : 4);
+  if (meta.highlight) {
+    y += 16;
+    y += text(meta.highlight, pad, y, copyW, 22, palette.soft, 500, 2);
+  }
 
-  // Row two: the exact range and the source.
-  const row2 = metaY + rowH;
-  drawLabel('RANGE', pad, row2);
-  drawLabel('SOURCE', rightX, row2, 'right');
-  drawBody(meta.rangeDetail, pad, row2 + labelFont + 6, leftW, 2);
-  drawBody(meta.sourceLabel, rightX, row2 + labelFont + 6, rightW, 1, 'right');
-
-  ctx.strokeStyle = line;
-  ctx.beginPath();
-  ctx.moveTo(pad, fmt.h - footerH);
-  ctx.lineTo(fmt.w - pad, fmt.h - footerH);
+  const plotX = wide ? 680 : pad;
+  const plotY = wide ? 156 : y + 24;
+  const plotW = wide ? fmt.w - plotX - pad : width;
+  const plotBottom = tall ? 1260 : wide ? 740 : 720;
+  const plotH = plotBottom - plotY;
+  if (plotH < 160) throw new Error('Signal card has insufficient chart space');
+  ctx.fillStyle = palette.plotBg;
+  drawRoundedRect(ctx, plotX, plotY, plotW, plotH, 12);
+  ctx.fill();
+  ctx.strokeStyle = palette.line;
+  ctx.lineWidth = 1;
   ctx.stroke();
+  const canvas = chartInstance?.canvas;
+  if (canvas?.width && canvas?.height) {
+    const ratio = Math.min((plotW - 32) / canvas.width, (plotH - 32) / canvas.height);
+    const w = canvas.width * ratio, h = canvas.height * ratio;
+    ctx.drawImage(canvas, plotX + (plotW - w) / 2, plotY + (plotH - h) / 2, w, h);
+  }
 
-  ctx.fillStyle = faint;
-  ctx.font = `600 ${Math.round(fmt.w * 0.014)}px Manrope, Arial, sans-serif`;
-  ctx.textAlign = 'left';
-  ctx.fillText(meta.sourceUrl || 'stablesense.withkeshav.com', pad, fmt.h - pad * 0.75);
+  const detailY = tall ? 1320 : 774;
+  const detailW = wide ? width * 0.48 : width;
+  text(meta.definition, pad, detailY, detailW, 22, palette.soft, 500, 3);
+  const datesX = wide ? 1040 : pad;
+  const datesY = wide ? detailY : tall ? 1470 : 868;
+  const datesW = wide ? fmt.w - datesX - pad : width;
+  text(meta.rangeDetail, datesX, datesY, datesW, 20, palette.soft, 500, 2);
+  text(`Observed: ${meta.timestamp || 'unavailable'}`, datesX, datesY + 58, datesW, 20, palette.soft, 500, 1);
+
+  const footerY = fmt.h - 124;
+  ctx.fillStyle = palette.line;
+  ctx.fillRect(pad, footerY, width, 1);
+  text(shareAttribution(meta), pad, footerY + 38, width, 24, palette.ink, 700, 1);
+  text(meta.sourceLabel, pad, footerY + 68, width, 18, palette.soft, 500, 1);
+  const bottomY = fmt.h - 24;
+  text(meta.sourceUrl || 'stablesense.withkeshav.com', pad, bottomY, width * 0.65, 18, palette.soft, 500, 1);
   ctx.textAlign = 'right';
-  ctx.fillText('Research, not advice', fmt.w - pad, fmt.h - pad * 0.75);
+  ctx.font = '500 18px Manrope, Arial, sans-serif';
+  ctx.fillStyle = palette.soft;
+  ctx.fillText('Research, not advice', fmt.w - pad, bottomY);
 
   return off;
+}
+
+/** Platform credit stays separate from the original chart data source. */
+export function shareAttribution(meta = {}) {
+  return meta.sourceLabel?.startsWith('CoinGecko ')
+    ? 'Powered by Helix · Powered by CoinGecko'
+    : 'Powered by Helix';
 }
 
 export function downloadSignalCard(canvas, meta, formatKey, theme) {

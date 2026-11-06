@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { createPortal } from 'preact/compat';
-import { SHARE_FORMATS, renderSignalCard, downloadSignalCard } from '../../utils/shareChart.js';
+import { SHARE_FORMATS, renderSignalCard, downloadSignalCard, shareAttribution } from '../../utils/shareChart.js';
 
 const FORMAT_LIST = Object.entries(SHARE_FORMATS).map(([id, f]) => ({
   id,
@@ -19,10 +19,18 @@ export default function ShareSheet({ snapshot, onClose }) {
   const scrollerRef = useRef(null);
   const [previewSrc, setPreviewSrc] = useState(null);
   const exportRef = useRef(null);
+  const [previewError, setPreviewError] = useState(false);
   useEffect(() => {
-    const card = renderSignalCard({ canvas }, meta, format, cardTheme);
-    exportRef.current = card;
-    setPreviewSrc(card.toDataURL('image/png'));
+    try {
+      const card = renderSignalCard({ canvas }, meta, format, cardTheme);
+      exportRef.current = card;
+      setPreviewSrc(card.toDataURL('image/png'));
+      setPreviewError(false);
+    } catch {
+      exportRef.current = null;
+      setPreviewSrc(null);
+      setPreviewError(true);
+    }
   }, [canvas, meta, format, cardTheme]);
 
   useEffect(() => {
@@ -82,8 +90,8 @@ export default function ShareSheet({ snapshot, onClose }) {
         <header>
           <div>
             <p class="panel-kicker">SHARE AS SIGNAL CARD</p>
-            <h2>Make the chart make sense.</h2>
-            <p>A ready-to-share chart with the context a reader needs.</p>
+            <h2>Share this observation.</h2>
+            <p>Your chart, its measured context, and a clear source credit.</p>
           </div>
           <button
             type="button"
@@ -101,6 +109,7 @@ export default function ShareSheet({ snapshot, onClose }) {
             <button type="button" class="share-preview-toggle" aria-expanded={previewOpen ? 'true' : 'false'} onClick={() => setPreviewOpen((v) => !v)}>
               {previewOpen ? 'Hide card preview' : 'Preview card'}
             </button>
+            {previewError ? <p role="alert">This observation does not fit this format. Choose another size to keep all its context.</p> : null}
             {previewSrc ? <img class="signal-card-export-preview" src={previewSrc} alt={`${title}. ${read}`} /> : null}
           </div>
           <aside class="share-controls">
@@ -122,6 +131,7 @@ export default function ShareSheet({ snapshot, onClose }) {
                   </button>
                 ))}
               </div>
+              <p class="share-theme-note">{shareAttribution(meta)}</p>
               <p class="share-theme-note">Card theme: <b>{cardTheme === 'dark' ? 'Dark' : 'Light'}</b> (matches the dashboard)</p>
             </div>
             <div class="share-read">
