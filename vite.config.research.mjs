@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import pkg from './package.json' assert { type: 'json' };
+import { publicAnalyticsPlugin } from './scripts/public-analytics-plugin.mjs';
 import { contributorsPlugin } from './scripts/research-contributors-plugin.mjs';
 
 // Separate build for the /research hub. The hub is a standalone static page
@@ -10,7 +11,7 @@ export default defineConfig({
   root: 'research',
   base: '/research/',
   publicDir: 'public',
-  plugins: [contributorsPlugin()],
+  plugins: [contributorsPlugin(), publicAnalyticsPlugin()],
   // Derive the hub build marker from package.json rather than hand-editing it.
   // It previously lived as a literal in data.js and silently drifted two
   // releases behind the app version, so the footer badge lied about which

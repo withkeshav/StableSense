@@ -32,6 +32,11 @@ sha256sum "$backup_dir/stablesense.db" > "$backup_dir/database.sha256"
 umask 022
 release_dir=$(mktemp -d /opt/stablesense-release.XXXXXX)
 git archive "$release_sha" | tar -x -C "$release_dir"
+# Keep deployment-owned analytics outside Git and include it in each fresh build.
+if [[ -f .analytics-head.local.html ]]; then
+  cp -p .analytics-head.local.html "$backup_dir/analytics-head.local.html"
+  cp -p .analytics-head.local.html "$release_dir/.analytics-head.local.html"
+fi
 (
   cd "$release_dir"
   npm ci

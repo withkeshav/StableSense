@@ -55,6 +55,25 @@ npm run preview   # preview the production build
 npm test          # run unit tests
 ```
 
+## Optional deployment analytics
+
+An unconfigured checkout includes no analytics tracker. To enable InsightFlare on
+public production pages, the deployment owner places its one deferred script tag
+in `.analytics-head.local.html` at the repository root. This file is gitignored;
+do not commit the deployment's tag or site ID. The tag and ID are still visible
+in the deployed page source and are not authentication credentials.
+
+Both production builds use `scripts/public-analytics-plugin.mjs` to add the tag
+once to each public document head. Development mode does not inject it. The
+release script preserves the host's local file in the backup and copies it into
+the fresh build directory, so a later release keeps the setting. Forks remain
+untracked unless their operator provides their own local file. Remove the file
+and rebuild to disable tracking. Keep analytics login and API keys server-side.
+
+The nginx page policy allows the tracker host in `script-src` and `connect-src`.
+Deploy that policy along with the built pages when enabling analytics. No custom
+navigation calls or consent banner are added by this integration.
+
 ## How it works
 
 ```

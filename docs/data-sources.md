@@ -47,3 +47,5 @@ The current paths are Helix v1 by default, Helix v2 with `HELIX_V2=1`, and the l
 
 - Browser-direct fetches come from the visitor's own IP (no central aggregator, no API keys exposed).
 - Optional backend reads (`/api/healthz`, `/api/ai`, `/api/alerts`, `/api/history`) contain no PII.
+
+- Deployment owners may enable InsightFlare page analytics through the ignored `.analytics-head.local.html` file. Unconfigured builds contain no tracker. See README for configuration and removal.

@@ -65,3 +65,6 @@ agent-transcripts/
 !/docs/research/public/
 /docs/legal-readiness/
 /.hermes/
+
+# Deployment-owned public analytics tag; injected only into production HTML.
+.analytics-head.local.html
