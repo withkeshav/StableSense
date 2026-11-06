@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>The State of Stablecoins - StableSense Research</title>
   <meta name="theme-color" content="#FAFAF8">
-  <meta name="description" content="A dated, sourced report on the stablecoin market: what is measured, what is claimed, and what remains unresolved. Every figure carries its source and as-of date.">
+  <meta name="description" content="A dated, sourced report on the stablecoin market: what is measured, what is claimed, and what remains unresolved. Source dates and evidence limits are stated with the findings.">
   <link rel="canonical" href="https://stablesense.withkeshav.com/research/">
   <meta property="og:title" content="The State of Stablecoins - StableSense Research">
   <meta property="og:description" content="A dated, sourced report on the stablecoin market: what is measured, what is claimed, and what remains unresolved. Research, not advice.">
@@ -81,13 +81,13 @@
     </div>
 
     <div class="pills" role="group" aria-label="Edition details">
-      <span class="pill" style="--c:var(--gold)"><span class="dot" aria-hidden="true"></span>Last updated 2026-10-02</span>
+      <span class="pill" style="--c:var(--gold)"><span class="dot" aria-hidden="true"></span>Reviewed 2026-11-05</span>
       <span class="pill"><b class="count">13</b> sections</span>
       <span class="pill">Sources in the margin</span>
       <span class="pill" style="--c:var(--violet)"><span class="dot" aria-hidden="true"></span>Reserve band is a composition, not live data</span>
     </div>
 
-    <p class="hero-note">Informational research, not financial advice. Every figure carries its own source and as-of date; the review date above is not a measurement date for the whole page. The reserve band beside this text is a static composition with no amounts asserted. The live peg band, measured from prices, is on the dashboard.</p>
+    <p class="hero-note">Informational research, not financial advice. Newly checked findings retain their source dates; older observations are identified separately. The review date above is not a measurement date for the whole page. The reserve band beside this text is a static composition with no amounts asserted. The live peg band, measured from prices, is on the dashboard.</p>
   </div>
 
   <figure class="reserve" aria-labelledby="reserve-title">
@@ -190,7 +190,7 @@
   <div class="section-inner">
     <div class="kicker">01 - The taxonomy</div>
     <h2>Stable relative to what</h2>
-    <p class="section-thesis">A stablecoin is a token engineered to hold steady value against some reference. The reference is usually the US dollar but not always. The chart below shows the relative scale of all six categories. Dollar-pegged coins dominate, but the taxonomy runs wider than the common case this dashboard tracks.</p>
+    <p class="section-thesis">A stablecoin is a token engineered to hold steady value against some reference. The reference is usually the US dollar but not always. The chart below retains dated scale comparisons across six categories. Dollar-pegged coins dominate, but the taxonomy runs wider than the common case this dashboard tracks.</p>
 
     <div class="chart-wrap reveal">
       <div class="chart-canvas-box" style="height:220px">
@@ -251,16 +251,16 @@
   <div class="section-inner">
     <div class="kicker">02 - Scale and trajectory</div>
     <h2>From crypto plumbing to financial infrastructure</h2>
-    <p class="section-thesis">One dated measurement puts total stablecoin market cap at $308.0B as of 13 August 2026, up 14.3% year over year, about 99.5% dollar-denominated and 4.5% below its May 2026 peak. That is one aggregator's number for one date. No second independent measurement of the same date and universe is verified in this report's research record, so no cross-source range is quoted and the absence is stated rather than filled. The projections below are scenarios from different forecasters, not a consensus or a guarantee of multi-trillion scale.</p>
+    <p class="section-thesis"><a href="https://defillama.com/stablecoins">DefiLlama's November 5, 2026 snapshot</a> reports $292.503B across its tracked stablecoin universe. That universe includes non-USD tokens and tokenized fund products; it is not fiat-backed USD supply alone or the dashboard's five-coin total. No second matched-date, matched-universe measurement is established here, so no cross-source range is asserted. The historical chart retains its original dated observations; projections are attributed scenarios, not measurements.</p>
 
     <div id="market-cap-measure-wrap"></div>
     <noscript>
       <div class="callout">
         <div class="callout-label">Total stablecoin market cap, one dated measurement</div>
-        <p class="stat md">$308.0B</p>
-        <p class="as-of">As of 2026-08-13</p>
-        <p><strong>What it measures:</strong> total stablecoin market capitalisation across all issuers and all tracked chains, one aggregator measurement.</p>
-        <p><strong>Movement:</strong> +14.3% year over year, about 99.5% dollar-denominated, and 4.5% below its May 2026 peak.</p>
+        <p class="stat md">$292.503B</p>
+        <p class="as-of">As of 2026-11-05</p>
+        <p><strong>What it measures:</strong> DefiLlama's tracked stablecoin universe, including non-USD and tokenized fund products. Not a fiat-USD-only total or an all-provider census.</p>
+        <p><strong>Comparability:</strong> current year-to-date and peak-change figures were not independently rechecked on a consistent universe; older chart observations are retained separately.</p>
         <p><strong>Why no range:</strong> no second independent measurement for the same date and universe is verified in this report's research record, so none is quoted.</p>
         <p class="as-of">This is a different measure from the hero counter, which sums only the 5 coins tracked by the live dashboard.</p>
       </div>
@@ -276,17 +276,13 @@
     <h3 style="margin-top:2.5rem">Forward projections to 2030</h3>
     <div class="chart-wrap reveal">
       <div class="chart-canvas-box" style="height:280px">
-        <canvas id="forecast-chart" height="280" role="img" aria-label="Fan/band chart of stablecoin market cap projections from 2026 to 2030, showing IMF, Citi, Bain, Standard Chartered, and JPMorgan forecasts as separate labeled ranges."></canvas>
+        <canvas id="forecast-chart" height="280" role="img" aria-label="Citi September 2025 scenarios for stablecoin issuance in 2030: $1.9 trillion base case and $4 trillion bull case. Not a consensus or confidence interval."></canvas>
       </div>
-      <p class="chart-caption">Named projections to 2030, not a consensus forecast. Toggle forecasters with the chips below the chart. Single-point forecasts are shown with small visual padding so the bar is visible; see tooltip for the exact stated figure.</p>
+      <p class="chart-caption">Attributed 2030 scenarios, not a consensus forecast. Citi's September 2025 report gives a $1.9T base case and $4T bull case. These are scenario endpoints, not a statistical confidence range; a November review does not turn them into a new forecast.</p>
     </div>
     <div class="chip-row" id="forecast-chips" role="group" aria-label="Isolate a forecaster">
       <button class="hub-chip active" data-forecaster="all">All</button>
-      <button class="hub-chip" data-forecaster="IMF">IMF ($0.5-3.7T)</button>
       <button class="hub-chip" data-forecaster="Citi">Citi ($1.9-4T)</button>
-      <button class="hub-chip" data-forecaster="Bain">Bain (up to $3.8T)</button>
-      <button class="hub-chip" data-forecaster="Standard Chartered">Std Chartered ($2T)</button>
-      <button class="hub-chip" data-forecaster="JPMorgan">JPMorgan (~$500B)</button>
     </div>
   </div>
 </section>
@@ -296,13 +292,13 @@
   <div class="section-inner">
     <div class="kicker">03 - Who holds the world's dollars</div>
     <h2>A quiet buyer of government debt</h2>
-    <p class="section-thesis">Stablecoin issuers hold well over $150B in US Treasuries, mostly short-dated T-bills. Tether's reported ~$141B (Q1 2026 attestation, exposure as of 2026-03-31) exceeds the holdings of Germany ($91.3B) and Norway ($104.4B) per the US Treasury TIC Jan 2023 table; combined issuers' ~$182B exceeds Norway. The comparison is duration-mismatched: issuers hold short-dated bills, while TIC ranks total foreign holdings. And the figure above is gross exposure, not incremental demand: an issuer buying bills only adds to Treasury demand if nobody else sold them to fund the purchase. The section below separates the two.</p>
+    <p class="section-thesis">Tether reported $132.4B of direct and indirect US Treasury bill exposure as of September 30, 2026, in its October 30 release. That is gross exposure, not net additional demand created by stablecoins. Its outright Treasury bill holdings, indirect exposure and total reserve assets are different measures. A comparison with sovereign holders also needs matching dates and instruments: the US Treasury TIC tables measure total foreign Treasury holdings, not just short-dated bills.</p>
 
     <div class="chart-wrap reveal">
       <div class="chart-canvas-box" style="height:420px">
-        <canvas id="treasury-chart" height="420" role="img" aria-label="Horizontal bar chart ranking sovereign nations and stablecoin issuers as holders of US Treasury debt. Issuer bars highlighted in gold. Tether (~$141B) ranks between Luxembourg and Norway; combined issuers (~$182B) exceed Norway."></canvas>
+        <canvas id="treasury-chart" height="420" role="img" aria-label="Dated Treasury holdings comparison. Sovereign total holdings and issuer short-dated exposure use different measures and observation dates; this is not a current like-for-like ranking."></canvas>
       </div>
-      <p class="chart-caption">Largest holders of US Treasury securities, USD billions. Sovereign top 3 per US Treasury TIC Jun 2026; remaining sovereign rows per TIC Jan 2023 pending refresh; stablecoin issuers per their own reserve attestations (Tether Q1 2026, combined 4 issuers ~$182B). The comparison is duration-mismatched - issuers hold short-dated T-bills, TIC ranks total (long+short) holdings.</p>
+      <p class="chart-caption">Dated Treasury holdings comparison, USD billions. Each row retains its observation date. Sovereign total Treasury holdings and issuer short-dated exposure are not like-for-like; the older combined-issuer estimate is not a current total. <a href="https://tether.io/news/tether-generates-1-5-billion-in-q3-net-operating-profit-as-reserve-buffer-doubles-to-almost-8-billion/">Tether Q3 release, October 30, 2026</a>, reports $132.4B direct and indirect bill exposure as of September 30. Do not interpret the chart order as a current global ranking.</p>
     </div>
 
     <div class="hub-accordion" style="margin-top:2rem">
@@ -310,7 +306,7 @@
         <button class="hub-accordion-trigger" aria-expanded="true">What the GENIUS Act actually requires, and when<span class="hub-accordion-mark">&rsaquo;</span></button>
         <div class="hub-accordion-panel">
           <p>The GENIUS Act was enacted July 18, 2025 (the House passed it July 17, so "July 17-18" appears in coverage). Section 4 requires payment-stablecoin reserves to be at least 1:1, and the permitted assets are a <em>list of eight classes</em>, not Treasury bills alone: coins and currency; insured deposits; Treasury bills, notes or bonds of 93 days or less (the statute says 93, not 90); overnight repo backed by such securities; overnight reverse repo against Treasuries; shares of a registered Government money market fund invested solely in the preceding classes; other similarly liquid Federal Government-issued assets approved by the regulator; and tokenized forms of those classes. Section 4 also requires monthly published reserve composition including average tenor and custody location per category, and bars pledging or rehypothecating reserves outside its exceptions. The full list is reproduced in <a href="#regulation">Section 8</a>.</p>
-          <p><strong>Commencement is not settled.</strong> Section 20 sets general commencement at the earlier of 18 months after enactment or 120 days after the primary federal payment stablecoin regulators issue any final implementing regulations. January 18, 2027 is therefore an outer limit, not a fixed date, and whether a final rule has already triggered the earlier date is <strong>UNRESOLVED</strong> in this report's research record. Section 3(b)(1) separately places the offer-and-sale prohibition three years after enactment. This report therefore does not describe any GENIUS duty as locked, operative or currently in force. Re-verify commencement before relying on these statutory duties.</p>
+          <p><strong>Final OCC rule issued; effective January 18, 2027.</strong> The OCC announced its final implementing rule on October 21, 2026. <a href="https://www.occ.gov/news-issuances/bulletins/2026/bulletin-2026-50.html">OCC Bulletin 2026-50</a> and the <a href="https://www.govinfo.gov/content/pkg/FR-2026-10-23/pdf/2026-21706.pdf">October 23 official Federal Register rule</a> state January 18, 2027 as the effective date. This supersedes the earlier unresolved final-rule finding; it does not make the rule operative on November 5. Section 20 contains the earlier-of statutory mechanism, and Section 3(b)(1) separately places its offer-and-sale prohibition three years after enactment. The OCC rule covers its own jurisdiction; BSA/AML and sanctions requirements are addressed separately.</p>
           <p>See the full regulatory comparison in <a href="#regulation">Section 8</a>.</p>
         </div>
       </div>
@@ -336,7 +332,7 @@
         <p><strong>Disclosure duty:</strong> Sec. 4 requires monthly publication of reserve composition, including average tenor and the geographic location of custody per category.</p>
         <p><strong>Encumbrance:</strong> Sec. 4 prohibits pledging or rehypothecating reserves outside the statute's stated exceptions.</p>
         <p><strong>Accounting treatment:</strong> Sec. 3(g) denies non-permitted stablecoins the treatment of cash or cash equivalent for accounting purposes, cash-equivalent margin and collateral eligibility, and acceptable wholesale settlement asset status.</p>
-        <p class="as-of">Statutory requirement. It binds once the Act commences, and commencement is UNRESOLVED.</p>
+        <p class="as-of">Statutory requirement. The OCC final rule specifies January 18, 2027 effectiveness; it is not yet operative at the November 5 review.</p>
       </div>
     </noscript>
 
@@ -346,7 +342,7 @@
     <noscript>
       <div class="callout">
         <div class="callout-label">Gross holdings are not net new demand</div>
-        <p><strong>The measurement:</strong> Tether reports about $141B of direct and indirect US Treasury bill exposure against about $183B of token liabilities as of 2026-03-31. That is gross exposure, not incremental demand. Where the money came from decides whether issuer purchases add to, replace or reduce Treasury demand.</p>
+        <p><strong>The measurement:</strong> Tether reports $132.4B of direct and indirect US Treasury bill exposure and $183.4698B of digital-token liabilities as of September 30, 2026. The October 30 issuer release reports $191.4511B total assets and $183.4965B total liabilities, leaving $7.9546B excess assets. These are different accounting measures. Where funding came from determines whether purchases add to, replace or reduce Treasury demand.</p>
         <p><strong>The conditional example:</strong> under an explicitly strong assumption that bank and issuer asset mixes hold, the Kansas City Fed Bulletin models an extra $1 of stablecoins raising Treasury holdings by $0.50 and $1 less in bank deposits lowering them by $0.08, and states a $0.30 net effect.</p>
         <p><strong>Why no number is published:</strong> its own components give $0.42, not $0.30; the $0.12 gap is unreconciled. Two versions of the note also disagree: the later publisher-corrected HTML (2026-09-22) uses an 8 percent bank Treasury share, a $0.08 reduction and 2.5 percent loan contraction, while the linked PDF gives 20 percent, $0.20 and 1 percent. Both retain the $0.30 net, and the PDF reader's cache freshness is unknown.</p>
         <p class="as-of"><strong>Status:</strong> UNRESOLVED. The intended net-demand coefficient is not established, and this report does not publish a corrected one.</p>
@@ -359,7 +355,7 @@
     <h3 style="margin-top:2.5rem" id="maturity-bands">T-bill maturity bands: why issuers stay short</h3>
     <p class="as-of">Reserve composition by maturity, from issuer attestations. Short-term bills (93 days or less, the statutory cap) dominate because redemptions can arrive any day; long-dated holdings would force a fire sale.</p>
     <div id="maturity-bands-wrap" class="maturity-bands-wrap"></div>
-    <p class="as-of">Sources: Tether Q1 2026 attestation; Circle Q1 2026 reserve report. Yadav and Malone (JIEL 2025) flag the interdependence: mass redemptions of stablecoins could strain short-term Treasury liquidity.</p>
+    <p class="as-of">Current reserve checks: <a href="https://tether.io/news/tether-generates-1-5-billion-in-q3-net-operating-profit-as-reserve-buffer-doubles-to-almost-8-billion/">Tether Q3 release</a>, published October 30 with September 30 data; Circle September reserve assurance, dated October 26 with September 30 data. Reserve backing and gross holdings do not establish net additional Treasury demand.</p>
   </div>
 </section>
 
@@ -404,7 +400,7 @@
     <p class="as-of">Both sides are politically situated. The honest answer right now: early evidence, no consensus number.</p>
 
     <h3 style="margin-top:2.5rem" id="yield-debate">The yield debate</h3>
-    <p class="as-of">Should stablecoins pay interest? The GENIUS Act says no for payment stablecoins; the research on yield-bearing variants is contested.</p>
+    <p class="as-of">The GENIUS Act contains an issuer yield prohibition. The OCC final rule is effective January 18, 2027, not yet operative at this November 5 review. The treatment of particular rewards and intermediaries requires the relevant rule and arrangement, not a blanket claim that every yield-bearing product is banned.</p>
     <div class="callout-row" id="yield-callouts"></div>
     <p class="as-of">Sources: CRS IF13173/IF13174; State Street (Apr 2026); BPI (2026, citing Cong, Chiu et al.); Federal Reserve FEDS Notes (Dec 2025).</p>
   </div>
@@ -591,7 +587,7 @@
     </div>
 
     <h3 style="margin-top:2rem" id="holder-recovery">Holder recovery after issuer insolvency</h3>
-    <p class="section-thesis">A reserve requirement is not the same as a holder recovery path. This table states what each jurisdiction makes enforceable, and what it leaves unresolved, as of 2026-10-18.</p>
+    <p class="section-thesis">A reserve requirement is not the same as a holder recovery path. This table states what each jurisdiction makes enforceable, and what it leaves unresolved, with each row retaining its own status and instrument dates. This edition was reviewed on 2026-11-05.</p>
     <div class="hub-table-wrap">
       <table class="hub-table" id="recovery-table">
         <thead>
@@ -608,23 +604,23 @@
     </div>
     <p class="as-of" style="margin-top:0.8rem">MiCA Article 36(2) legal segregation and the Article 39 right against reserve assets apply to <a href="#regulation">asset-referenced tokens</a>, not to the USD payment stablecoins tracked here. USDT and USDC are e-money tokens under MiCA Title IV. A reserve rule is not a recovery waterfall.</p>
     <p class="as-of" id="recovery-unresolved"></p>
-    <p class="as-of">Realized case check: no fiat-reserve-backed stablecoin issuer insolvency in these four jurisdictions was found. Terraform Labs (UST) is a realized issuer insolvency with an impaired crypto-loss class, but it was algorithmic and had no reserve pool, so it does not test the reserve-pool path. The USDC/SVB event was a reserve-custodian failure, not an issuer insolvency. The absence of a case is UNRESOLVED, not proof that these paths work.</p>
+    <p class="as-of">Historical case search, last checked October 18: no fiat-reserve-backed stablecoin issuer insolvency in these four jurisdictions was found in that review. This November update did not establish a new exhaustive case search. Terraform Labs (UST) is a realized issuer insolvency with an impaired crypto-loss class, but it was algorithmic and had no reserve pool, so it does not test the reserve-pool path. The USDC/SVB event was a reserve-custodian failure, not an issuer insolvency. The absence of a case is UNRESOLVED, not proof that these paths work.</p>
 
     <div id="reg-news"></div>
-    <p class="as-of" style="margin-top:0.8rem">Regulatory status is the most stale-fast category in this report. MiCA enforcement dates, GENIUS rulemaking, UK Oct 2027 go-live, Hong Kong license counts all change monthly. Always timestamp.</p>
+    <p class="as-of" style="margin-top:0.8rem">Regulatory dates describe different events: enactment, consultation, authorization and commencement. Use each row's dated source; a November review does not make every framework operative.</p>
 
-    <h3 style="margin-top:2rem" id="genius-status">GENIUS Act rulemaking status (as of Sep 2026)</h3>
+    <h3 style="margin-top:2rem" id="genius-status">GENIUS Act rulemaking status (reviewed November 5, 2026)</h3>
     <div class="genius-status-block" id="genius-status-block"></div>
     <p class="as-of" id="genius-source"></p>
     <noscript>
       <div class="genius-status-block">
-        <p>Enacted <strong>July 18, 2025</strong>. Historical tracker snapshot (Sep 2026): <strong>26</strong> total rulemakings across <strong>6</strong> agencies; <strong>10</strong> Notices of Proposed Rulemaking issued. Final rules completed: <strong>UNKNOWN</strong>.</p>
+        <p>Enacted <strong>July 18, 2025</strong>. The OCC issued its final rule on <strong>October 21, 2026</strong>, with an effective date of <strong>January 18, 2027</strong>. This review does not establish a completed-rule count across every agency.</p>
         <p><strong>Commencement mechanics:</strong> Section 20 sets general commencement at the earlier of 18 months after enactment (an outer limit of January 18, 2027) or 120 days after the primary federal payment stablecoin regulators issue any final implementing regulations. Section 3(b)(1) separately places its offer-and-sale prohibition three years after enactment.</p>
-        <p><strong>Commencement status:</strong> UNRESOLVED. This report does not establish whether a qualifying final implementing rule has been issued. January 18, 2027 is an outer limit rather than a settled commencement date.</p>
+        <p><strong>Commencement status:</strong> the OCC identifies January 18, 2027 as the Act and rule effective date. The rule is not operative on November 5, 2026.</p>
         <p><strong>Reserves:</strong> eight eligible reserve classes under Sec. 4(a)(1)(A), not Treasury bills alone. See <a href="#genius-reserves-heading">Section 3</a> for the full list.</p>
-        <p>NPRMs from OCC (bulletin 2026-3), FDIC, NCUA and Treasury were in comment periods at the last check. Because commencement is unconfirmed, this report does not describe any GENIUS duty as currently in force; it describes what the statute requires once commenced.</p>
+        <p>The OCC rule covers entities under OCC jurisdiction. BSA/AML and sanctions provisions are reserved for separate rulemaking; one final rule does not establish that every agency has completed implementation.</p>
       </div>
-      <p class="as-of">Source: GENIUS Act enacted text (Sec. 4 and Sec. 20); Paradigm GENIUS Act Rulemaking Tracker; OCC bulletin 2026-3; FDIC proposal. A dated snapshot, not a live tracker, and no statement above asserts that any GENIUS duty is currently operative.</p>
+      <p class="as-of">Sources: GENIUS Act enacted text; <a href="https://www.occ.gov/news-issuances/bulletins/2026/bulletin-2026-50.html">OCC Bulletin 2026-50</a>; <a href="https://www.govinfo.gov/content/pkg/FR-2026-10-23/pdf/2026-21706.pdf">Federal Register final rule, October 23, 2026</a>. Reviewed November 5, 2026.</p>
     </noscript>
   </div>
 </section>
@@ -634,7 +630,7 @@
   <div class="section-inner">
     <div class="kicker">09 - Who earns the float</div>
     <h2>The interest on your dollar, and who keeps it</h2>
-    <p class="section-thesis">A stablecoin issuer holds reserves that earn interest and pays the holder nothing. The gap between what the reserves earn and what the holder receives is the entire business. It is large, and the two biggest issuers report it in ways that are not comparable to each other.</p>
+    <p class="section-thesis">Reserve income is a major revenue source for payment-stablecoin issuers, but it is not their entire business or their net profit. Distribution payments, operating expenses and other revenue matter. Compare the same period and accounting measure before comparing issuers.</p>
 
     <div id="float-economics-wrap" class="float-economics-wrap"></div>
     <noscript>
@@ -642,16 +638,16 @@
         <table class="hub-table">
           <thead><tr><th>Issuer</th><th>Measure</th><th class="num">Value</th><th>As of</th></tr></thead>
           <tbody>
-            <tr><td>Tether</td><td>Net operating profit, as the release names it</td><td class="num">+$1.50B</td><td>Q2 2026</td></tr>
-            <tr><td>Tether</td><td>Change in net equity, Q2 standalone (derived from its own table)</td><td class="num">about -$4.21B</td><td>Q2 2026</td></tr>
-            <tr><td>Tether</td><td>FY2025 financial result</td><td class="num">+$10.11B</td><td>FY2025</td></tr>
-            <tr><td>Circle</td><td>Reserve income</td><td class="num">$667.7M</td><td>Q2 2026</td></tr>
-            <tr><td>Circle</td><td>Coinbase-only distribution</td><td class="num">$324.6M</td><td>Q2 2026</td></tr>
-            <tr><td>Circle</td><td>Net loss from continuing operations</td><td class="num">-$69.5M</td><td>FY2025</td></tr>
+            <tr><td>Tether</td><td>Net operating profit, issuer release measure</td><td class="num">$1.50B</td><td>Q3 2026</td></tr>
+            <tr><td>Tether</td><td>Assets in excess of total liabilities</td><td class="num">$7.955B</td><td>2026-09-30</td></tr>
+            <tr><td>Tether</td><td>Direct and indirect US Treasury bill exposure</td><td class="num">$132.4B</td><td>2026-09-30</td></tr>
+            <tr><td>Circle</td><td>Reserve income</td><td class="num">$657.624M</td><td>Q3 2026</td></tr>
+            <tr><td>Circle</td><td>Distribution and transaction costs</td><td class="num">$409.169M</td><td>Q3 2026</td></tr>
+            <tr><td>Circle</td><td>Net income from continuing operations</td><td class="num">$226.012M</td><td>Q3 2026</td></tr>
           </tbody>
         </table>
       </div>
-      <p class="as-of">Tether publishes no line called "reserve income"; its only net measure is "Financial result" in its change-in-net-equity table, and it publishes no reconciliation between that and the release headline above. Circle publishes an explicit reserve income figure. The two are not the same measure. Sources: Tether Q2 2026 attestation and release; Circle 10-Q and FY2025 results.</p>
+      <p class="as-of">Sources: <a href="https://tether.io/news/tether-generates-1-5-billion-in-q3-net-operating-profit-as-reserve-buffer-doubles-to-almost-8-billion/">Tether October 30 Q3 release</a> and <a href="https://www.circle.com/pressroom/circle-reports-third-quarter-2026-results">Circle November 4 Q3 results</a>. Profit, reserve income, costs, liabilities and reserve exposure are different measures. Circle's distribution and transaction costs are 62.22% of its reserve income for the same quarter; this is not a net-profit margin.</p>
     </noscript>
 
     <h3 style="margin-top:2.5rem" id="distribution-economics-heading">Who gets paid, and whether that is new</h3>
@@ -673,9 +669,9 @@
       <div class="hub-accordion-item open">
         <button class="hub-accordion-trigger" aria-expanded="true">Why the two issuers' numbers are not comparable<span class="hub-accordion-mark">&rsaquo;</span></button>
         <div class="hub-accordion-panel">
-          <p>Tether publishes no line item called "reserve income". Its only net measure is a single line labelled "Financial result" inside the change-in-net-equity table of its attestation. Circle publishes an explicit "reserve income" figure. These are different measures, and treating them as the same number is the most common error in coverage of this market.</p>
-          <p>Tether's own documents disagree with each other on its headline. Its Q2 2026 news release leads with a positive "$1.5 billion net operating profit". Its own attestation, for the same period, reports a change in net equity of minus $3,171 million for the first half, and Q1 2026 was plus $1,040 million. That makes Q2 standalone about minus $4.21 billion. Both figures come from Tether; Tether publishes no reconciliation between them, and no Tether document defines the term "net operating profit" or states that unrealised mark-to-market is excluded. This is the single most load-bearing fact in this section, and it is invisible from either the press coverage or the release alone.</p>
-          <p>Circle, by contrast, is the simpler case and the more surprising one. Its reserve income is genuine and large, $2.64 billion for FY2025 (96.0% of its revenue), but it recorded a <strong>net loss</strong> of $69.5 million that year. Compensation expense of $844.9 million drove that, of which $424 million was stock-based compensation tied to its IPO. Almost the whole business is the float, and the pay bill took it below zero.</p>
+          <p>Tether's October 30 Q3 release names $1.5B of net operating profit; Circle separately reports reserve income and net income. These are different measures and cannot be used as a like-for-like profitability ranking.</p>
+          <p><strong>Historical Q2 reconciliation remains open:</strong> the earlier review recorded a positive $1.5B net-operating-profit headline alongside an approximately $4.21B decline in standalone Q2 net equity derived from the first-half and Q1 figures. Net operating profit and change in equity measure different things. The current Q3 release does not supply a bridge reconciling those historical measures, so the difference should not be presented as proof that either number is false.</p>
+          <p><strong>A newer quarter changes the picture:</strong> Circle's <a href="https://www.circle.com/pressroom/circle-reports-third-quarter-2026-results">November 4 Q3 release</a> reports about $865M of revenue and reserve income, including about $658M reserve income and $182M ARC token-presale revenue, and about $226M net income. Presale revenue is distinct from recurring reserve earnings. Its FY2025 net loss remains a historical annual result, not a description of the latest quarter.</p>
         </div>
       </div>
       <div class="hub-accordion-item">
@@ -687,10 +683,10 @@
           <p id="yield-ban-reserve"></p>
           <noscript>
             <p><strong>GENIUS Act Sec. 4(a)(11), 12 U.S.C. 5903(a)(11):</strong> No permitted payment stablecoin issuer or foreign payment stablecoin issuer shall pay the holder of any payment stablecoin any form of interest or yield (whether in cash, tokens, or other consideration) solely in connection with the holding, use, or retention of such payment stablecoin.</p>
-            <p><strong>Who it binds:</strong> the issuers only. No de minimis, no safe harbour, no exception; the only qualifier is the word "solely".</p>
-            <p><strong>What it does not say:</strong> the Act contains no "economically equivalent to interest" test. The statute is silent on rewards and loyalty programmes, and the silence is total.</p>
-            <p><strong>The reserve side:</strong> reserve assets must be interest-bearing by construction. The Act nowhere requires or forbids passing that income on, so retaining it is unregulated rather than permitted. Note that eligible reserves are a list of eight classes under Sec. 4(a)(1)(A), not Treasury bills alone.</p>
-            <p><strong>Commencement:</strong> the ban binds once the Act commences. Commencement is the earlier of 18 months after enactment (an outer limit of January 18, 2027) or 120 days after final implementing regulations, and whether an earlier trigger has occurred is UNRESOLVED in this report's research record.</p>
+            <p><strong>Scope:</strong> the statutory prohibition addresses issuer payments solely connected with holding, using or retaining the payment stablecoin. Particular intermediary and reward arrangements also require review of the implementing rule.</p>
+            <p><strong>Limit:</strong> this provision alone does not settle the treatment of every third-party reward or loyalty arrangement.</p>
+            <p><strong>The reserve side:</strong> the eight eligible reserve classes include cash and deposits as well as short-dated Treasuries. A reserve requirement does not mean every permitted asset earns interest.</p>
+            <p><strong>Commencement:</strong> the OCC final rule states January 18, 2027 as its effective date. This is a future date at the November 5 review.</p>
           </noscript>
         </div>
       </div>
@@ -725,8 +721,9 @@
     </noscript>
 
     <h3 style="margin-top:2.5rem" id="agentic-volume">What a headline number actually counts</h3>
-    <p class="as-of">Every published figure for the same activity, with its publisher and what it measures. These are not one quantity measured more or less precisely. They are different quantities, counted over different windows with different inclusion rules and different chain sets, and the spread runs from thousands of dollars to billions. Do not average them and do not subtract one from another.</p>
+    <p class="as-of">Selected published figures, with its publisher and what it measures. These are not one quantity measured more or less precisely. They are different quantities, counted over different windows with different inclusion rules and different chain sets, and the spread runs from thousands of dollars to billions. Do not average them and do not subtract one from another.</p>
     <div id="agentic-volume-wrap" class="agentic-volume-wrap"></div>
+    <p><strong>New Q3 estimate, a separate window:</strong> <a href="https://www.allium.so/reports/state-of-stablecoins-and-payments-q3-2026">Allium's report, revised October 19, 2026</a>, estimates 68.3M agent-payment transactions worth $3.7M in July-September 2026. Its x402 screen removes self-dealing, circular and incentivized transfers; its MPP measure counts every charge. Those different screens and the quarterly window prevent direct comparison with the August authorization-event counts or April cumulative totals below. Classified activity is an estimate, not confirmed buyer identity or purpose.</p>
     <noscript>
       <div class="hub-table-wrap">
         <table class="hub-table">
@@ -792,7 +789,7 @@
       </div>
     </noscript>
 
-    <p class="as-of">What this pass could not establish, and is therefore reported as unknown rather than estimated: any named deployment with disclosed recurring commercial scale; any first-party all-time x402 transaction count with a published methodology; any reconciliation between the headline panels, whose window, chain and inclusion rules differ (a tracker documents comparable 30-day raw totals of about $0.8M to $1.1M across dashboards); the true commerce-only share, which no source estimates on a common denominator; any production deployment of AP2; any 2026 Visa TAP or Mastercard Agent Pay transaction count; and a named publisher serving paid content over x402 in production. The x402.org "Last 30 Days" counter has shown the same four values since March 2026, so it is not a current measurement. TRM's 0.6% to 7.5% is a bound on its $25.62M screened commerce, not a census of agent identity. What the measured samples do establish is that bridge traffic and automated loops dominate: one bridging contract holds about 88% of Bitquery's August value, two loops account for 83% of the payments it found, and Chainalysis attributes growth substantially to meme-coin farming.</p>
+    <p class="as-of">Unresolved at this review: a common commerce-only total across these studies, comparable first-party all-time counts, and a reliable count of autonomous buyers. The old x402.org counter was an October observation; the Foundation homepage retrieved November 5 no longer exposed that panel in the extracted content. x402scan then displayed 4.22M transactions and $1.65M volume without a clear measurement window, so it is not appended to an assumed cumulative series. TRM's 0.6% to 7.5% is a model bound on its $25.62M screened subset, not a census of agent identity. Bitquery's August authorization-event sample includes uses beyond x402, including bridging; removing them does not prove the remainder is commerce.</p>
   </div>
 </section>
 
@@ -801,7 +798,7 @@
   <div class="section-inner">
     <div class="kicker">11 - Who else is building it</div>
     <h2>The chains, the consortiums, and the funds beside them</h2>
-    <p class="section-thesis">Three things sit just outside the stablecoin market and get described as though they were inside it: Circle's own blockchain, a consortium token with more than a hundred named members, and the tokenized funds that hold the same Treasuries under a different legal wrapper. Each is reported here at the level it actually exists on, which for one of them is a press release and no supply.</p>
+    <p class="section-thesis">Payment networks, issuer-backed payment tokens and tokenized investment funds are different products. A live network is not proof of adoption, a reserve snapshot is not payment volume, and a fund share is not direct title to every asset in its portfolio.</p>
 
     <div id="arc-status" class="arc-status"></div>
     <div id="ousd-status" class="ousd-status" style="margin-top:1.5rem"></div>
@@ -809,16 +806,16 @@
       <div class="callout">
         <div class="callout-label">Arc - Circle Internet Group</div>
         <p class="stat md">MAINNET LIVE</p>
-        <p>Launched 2026-09-16 in New York. Mainnet chain ID 5042 (0x13b2); testnet chain ID 5042002. Gas is paid in USDC, with no volatile native token. Read from Circle's own release and probed against the RPC endpoint, which answered with the mainnet chain ID and an advancing block height. A live testnet also exists, and Arc's own docs page serves the testnet tab by default, which is why some coverage says testnet only.</p>
+        <p>Circle announced public mainnet launch on September 16, 2026, with fees paid in USDC. Its <a href="https://www.circle.com/pressroom/circle-launches-arc-mainnet-an-economic-operating-system-for-the-internet">launch release</a> describes a permissioned validator set, phased validator participation and privacy still in development. It also reports the genesis mint of ARC, which is distinct from public token availability; network fees remain payable in USDC. These are issuer statements about infrastructure, not measured economic adoption.</p>
       </div>
       <div class="callout" style="margin-top:1.5rem">
         <div class="callout-label">Open USD (OUSD) - issuer-reported live</div>
         <p class="stat md">LIVE, issuer-reported. Launched 2026-09-30.</p>
         <p>Issued by Bridge Building Inc., a Stripe company. Open Standard, a consortium founded by Coinbase, Mastercard, Shopify, Stripe and Visa, describes itself as independent; that claim is about the company, not the issuer. Launch chains named by the issuer at launch: Base, Ethereum, Solana and Tempo, with free 1:1 mint and burn reported on Solana the same day.</p>
-        <p><strong>Reserve snapshot:</strong> the issuer's own reserve page reported total supply in circulation of $468,445,399 at 11:30 UTC on 2026-10-01, described as fully collateralised: $257,214,691 cash (54.91%) and $211,230,708 Treasuries (45.09%), which sum exactly to total supply. That is one issuer self-report at one timestamp, and it is not adoption, velocity or payment volume. A single snapshot is not a series.</p>
+        <p><strong>November 5 reserve panel does not reconcile:</strong> <a href="https://reserves.bridge.xyz/ousd">Bridge's issuer page</a>, labelled 16:00 UTC, reports 907,987,949 OUSD in circulation and $909,988,067 reserve assets. Its displayed cash of $113,626,625 plus Treasuries of $794,609,125 totals $908,235,750, leaving a $1,752,317 gap against the reserve headline. The displayed excess also differs by $1 from headline reserves minus supply. The cause is unresolved; do not infer insolvency or publish the component percentages as a reconciled reserve mix. This is an issuer snapshot, not adoption or payment volume.</p>
         <p><strong>Partner economics are not holder yield:</strong> Open Standard states that partners earn rewards proportional to supply and activity driven, with an opportunity to earn equity. These are company statements, not evidence of realized payouts or the allocation of all reserve income. Nothing verified here gives holders direct title to reserve assets or a right to instruct reserve managers.</p>
-        <p><strong>Charter:</strong> Bridge states it received conditional OCC approval to establish Bridge National Trust Bank. Conditional approval is not a final charter, and no primary OCC order is verified in this report's research record, so current charter status is UNRESOLVED.</p>
-        <p class="as-of">An earlier version of this report described OUSD as announced-only with no circulating supply, and carried an unsourced single-day price-move attribution for another issuer. Both are corrected here. DefiLlama lists a ticker "OUSD" that is Origin Dollar, an unrelated project, and it must not be read as this one.</p>
+        <p><strong>Charter:</strong> the OCC's February 12, 2026 order grants preliminary conditional approval for Bridge National Trust Bank. That is distinct from final permission to commence business. A current final authorization remains unresolved in this review.</p>
+        <p class="as-of">The October 1 historical snapshot reconciled at $468,445,399 supply and reserves; it is not the November balance. The November 5 DefiLlama page names Open USD separately. Check the issuer and contract, not the ticker alone: other projects also use OUSD.</p>
       </div>
     </noscript>
 
@@ -876,11 +873,12 @@
     <p class="as-of">The forecast chart in Section 2 points up. This is the same market measured backwards from one aggregator series, and it is the counterweight to that chart.</p>
     <div id="growth-honest-wrap" class="growth-honest-wrap"></div>
     <p class="as-of" id="growth-honest-note"></p>
+    <p><strong>Newer payments study, January-September 2026:</strong> <a href="https://www.allium.so/reports/state-of-stablecoins-and-payments-q3-2026">Allium</a> reports $97.9T raw transfers, $2.4T adjusted transfers and $482B classified payments through September 30. These are three different measures. Its rules infer use from observed behavior; the blockchain does not reveal ownership or intent. The study's classifications are estimates. The January 2026 BCG/Allium report below covers full-year 2025 and uses its own definitions, so the two studies are not combined into a single payment-share estimate.</p>
     <noscript>
       <div class="callout-row">
         <div class="callout">
           <div class="callout-label">Issuance growth by year</div>
-          <p class="stat md">+58.4% (2024), +49.0% (2025), +1.5% (2026 to date)</p>
+          <p class="stat md">+58.4% (2024), +49.0% (2025), +1.5% (2026 through September 26)</p>
           <p>DefiLlama series at year-end marks: $130.35B (2023-12-31), $206.47B (2024-12-31), $307.54B (2025-12-31), $311.30B (2026-09-26).</p>
         </div>
         <div class="callout">
@@ -889,12 +887,12 @@
           <p>Peak $321.09B on 2026-05-20 against $311.30B on 2026-09-26.</p>
         </div>
         <div class="callout">
-          <div class="callout-label">Real economic activity versus gross stablecoin transfers</div>
-          <p class="stat md">about 7% broad, under 1% narrow</p>
-          <p>BCG and Allium Labs (2026-09-30) report more than $62T of annual stablecoin transfers, with real economic activity of $4.2T, about 7% of the total. Separately, roughly $350B to $550B of observable bilateral goods-and-services payments in 2025, which is 0.565% to 0.887% of the gross figure and which the authors label a directionally robust lower bound. The two definitions are not interchangeable, and no single commerce share is established.</p>
+          <div class="callout-label">Adjusted transfers and classified payments, 2025</div>
+          <p class="stat md">about 6.8% adjusted, about 0.6%-0.9% classified payments</p>
+          <p><a href="https://www.bcg.com/assets/2026/white-paper-stablecoin-payments-truth-behind-numbers.pdf">BCG and Allium's January 2026 report</a> describes approximately $62T gross transfers in 2025 and $4.2T remaining after its activity filters. That adjusted total includes activity beyond payments. Its separate $350B-$550B estimate classifies goods-and-services payments between economically distinct parties, roughly 0.56%-0.89% of the rounded gross figure. Classification is inferred, and the authors describe the payment estimate as a lower bound with exclusions. Adjusted transfers and classified payments are not interchangeable.</p>
         </div>
       </div>
-      <p class="as-of">Issuance roughly tripled across 2024 and 2025 and then went flat. The multi-trillion forecasts to 2030 are unchanged by that. A 1.5% year does not disprove them, but it is evidence the current trajectory and the forecast trajectory are not the same line. An earlier version of this report claimed 95% to 99% of stablecoin volume was non-payment; no source contains that figure and it is withdrawn.</p>
+      <p class="as-of">This historical series ends September 26, 2026 and is not a November year-to-date growth calculation. Its dates and inclusion rules must match before calculating an updated change. Forecast scenarios are not realized growth. An earlier version of this report claimed 95% to 99% of stablecoin volume was non-payment; no source contains that figure and it is withdrawn.</p>
     </noscript>
   </div>
 </section>
@@ -926,7 +924,7 @@
       <ul>
         <li><strong>Net Treasury demand:</strong> needs holder origin assets, issuance flows, reserve allocations and displaced assets under a stated counterfactual. Gross issuer holdings do not supply it.</li>
         <li><strong>The Kansas City Fed coefficient:</strong> needs a publisher reconciliation of the 0.30 against its own 0.42 components and its two disagreeing versions.</li>
-        <li><strong>GENIUS commencement:</strong> needs an authoritative final implementing rule and its issuance date.</li>
+        <li><strong>GENIUS implementation:</strong> OCC's final rule now specifies January 18, 2027 effectiveness. Track remaining agency rules and separate provision dates; do not describe future duties as already operative.</li>
         <li><strong>Current trust-bank authorizations:</strong> needs the primary final OCC orders for Circle and Bridge, and reconciliation of the entity names.</li>
         <li><strong>Comparable distribution terms:</strong> needs like-for-like net-of-fee contracts and realized payouts on both sides.</li>
         <li><strong>Commerce-only x402 volume:</strong> needs merchant or service attribution with bridge, bot, test and self-payment exclusions on one consistent basis.</li>
@@ -974,7 +972,7 @@
     <div class="evidence-group">
       <h3>Edition notes</h3>
       <ul class="unresolved">
-        <li><span class="q">01</span><span>Review date 2026-10-02. It is not a measurement date for the whole page; each figure carries its own as-of.</span></li>
+        <li><span class="q">01</span><span>Review date 2026-11-05. It is not a measurement date for the whole page; each figure carries its own as-of.</span></li>
         <li><span class="q">02</span><span>Where sources disagree, the disagreement is shown with each source and its date rather than one number chosen silently.</span></li>
         <li><span class="q">03</span><span>The reserve band on this page is a composition and asserts no reserve amounts. The measured peg band is on the dashboard.</span></li>
       </ul>
@@ -987,9 +985,9 @@
 <!-- FOOTER -->
 <footer class="hub-footer" id="method">
   <div class="hub-footer-inner">
-    <div class="badge" id="hub-freshness-badge">Last updated 2026-10-02 &middot; source observation dates vary</div>
+    <div class="badge" id="hub-freshness-badge">Reviewed 2026-11-05 &middot; source observation dates vary</div>
 
-    <p class="as-of" style="margin-top:0.75rem">The review date is not a measurement date for the whole dataset. The reconciled findings state their source observation dates, including the 2026-08-13 market-cap observation and 2026-10-01 Open USD snapshot. Older teaching material and historical series retain their original dates and were not all newly verified for this edition.</p>
+    <p class="as-of" style="margin-top:0.75rem">Reviewed November 5, 2026. New checks cover selected reserve disclosures, issuer results, OCC rulemaking and payment studies. Measurements retain their own dates, including September 30 reserves and the November 5 OUSD panel. Historical events, older comparison rows and unresolved claims are not silently re-dated or certified as current.</p>
 
     <p class="attribution">Research and maintained by <a href="https://www.withkeshav.com" target="_blank" rel="noopener noreferrer">Keshav Maheshwari</a>.</p>
 
@@ -998,18 +996,18 @@
     <p class="disclaimer">This report is provided for informational and educational purposes only. It is not financial, investment, legal, or tax advice, and nothing here should be read as a recommendation to buy, sell, or hold any asset. Headline figures such as market capitalization represent one measure among several relevant ones, they do not by themselves capture trading volume, tokenized real-world-asset value, or every issuer's reserves, and different sources measure and report them differently. Where that is the case, this report states what a figure specifically measures rather than leaving it ambiguous. Figures are sourced and dated as noted throughout; markets and regulation move quickly, verify any figure against the cited primary source before relying on it for a decision.</p>
 
     <h3 style="font-size:1.1rem;margin-top:2rem">Methodology</h3>
-    <p class="methodology">Every figure in this report was checked against multiple sources and cross-referenced against primary data. Where sources disagree on a figure, the disagreement is shown with each source and its date rather than a single silently-chosen number, and where no source establishes a figure the item is marked unresolved instead of being given a range or an estimate. A range is only shown when the disagreeing figures share a date and a measurement definition; otherwise presenting them as a range would imply a currency and a basis that neither has. Four claims were separately verified against primary sources on 2026-08-12 and are unchanged by the 2026-10-02 review: Treasury TIC data (Jan 2023), the GENIUS Act commencement mechanics (now stated with an unresolved trigger), CoinGecko Research on the USDC low ($0.8789), and CoinMarketCap/Reuters/ScienceDirect on UST (about $18B supply, about $60B combined loss). The rest of this page was re-derived from the stored primary sources on 2026-10-02, which changed several conclusions now recorded in the changelog. Where a primary source was unreachable or ambiguous, that is recorded as unresolved rather than silently defaulting to an unverified figure.</p>
+    <p class="methodology">This edition reconciles three independent reviews and retains claim-level sources, dates, calculations and unresolved disagreements. Agreement between reviewers is not independent source corroboration. Issuer statements, regulatory records and modeled estimates are identified separately. New evidence supersedes selected findings; the review does not certify every older claim or every source as current. Figures with different dates, definitions or inclusion rules are shown separately, not averaged into a range. The OUSD reserve-panel discrepancy remains unresolved. Historical depeg cases retain their event dates. See the <a href="https://github.com/withkeshav/StableSense/blob/main/docs/research-methodology.md">published research method</a> for evidence and update principles.</p>
 
-    <h3 style="font-size:1.1rem">Verified claims (resolved 2026-08-12)</h3>
+    <h3 style="font-size:1.1rem">Claim findings and evidence limits</h3>
     <div id="verified-claims-list"></div>
     <noscript>
       <ol>
-        <li><strong>Treasury-holder ranking:</strong> Tether ~$141B exceeds Germany ($91.3B) and Norway ($104.4B); combined issuers ~$182B exceeds Norway. Duration-mismatched comparison. Sources: US Treasury TIC, Tether/Circle attestations.</li>
-        <li><strong>GENIUS commencement mechanics:</strong> the earlier of 18 months after enactment or 120 days after final implementing regulations. 2027-01-18 is an outer limit, not a fixed date, and no final rule is verified, so commencement is UNRESOLVED. Sources: govinfo Public Law 119-27 (Section 20), Morgan Lewis.</li>
+        <li><strong>Treasury comparison:</strong> Tether reports $132.4B direct and indirect bill exposure as of September 30, 2026. Older sovereign and combined-issuer rows use different dates and instruments; no current like-for-like ranking is established here.</li>
+        <li><strong>GENIUS status:</strong> OCC issued a final implementing rule October 21, 2026, effective January 18, 2027. The official Federal Register publication confirms that date. It is not operative at the November 5 review.</li>
         <li><strong>SVB/USDC low (historical):</strong> $0.8789 on 2023-03-11 (CoinGecko Research); $3.3B at SVB. A dated past event, not re-measured. Sources: CoinGecko Research, CNBC.</li>
         <li><strong>UST collapse (historical):</strong> about $18B UST supply peak; about $60B combined UST+LUNA loss. A dated past event, not re-measured. Sources: ScienceDirect, Reuters, CoinMarketCap via Binance.</li>
       </ol>
-      <p class="as-of">These historical corrections retain their original review dates. The 2026-10-02 edition revises the GENIUS commencement claim to show its unresolved trigger and reconciles the findings recorded in the research changelog. It does not re-date or newly verify every historical observation on this page.</p>
+      <p class="as-of">Historical corrections retain their original review and event dates. The November 5 edition updates selected current findings and preserves unresolved questions; it does not newly verify every historical observation.</p>
     </noscript>
 
     <h3 style="font-size:1.1rem">Sources</h3>

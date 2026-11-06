@@ -6,6 +6,16 @@ import { fileURLToPath } from 'node:url';
 const here = path.dirname(fileURLToPath(import.meta.url));
 
 const SCHEMA = `
+-- Current chain membership is published separately from append-only history.
+-- Replacing this record never deletes a historical snapshot.
+CREATE TABLE IF NOT EXISTS chain_batches (
+  coin TEXT PRIMARY KEY,
+  source TEXT NOT NULL,
+  fetched_at INTEGER NOT NULL,
+  complete INTEGER NOT NULL,
+  rows_json TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS snapshots (
   coin              TEXT    NOT NULL,
   chain             TEXT    NOT NULL,

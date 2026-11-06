@@ -87,46 +87,6 @@ export function classifySupplyFreshness(tsMs, now = Date.now()) {
   return FRESHNESS_STATES.STALE;
 }
 
-/**
- * Latest upstream supply point date (unix seconds or ms) across coin details.
- * @param {object} data Dashboard payload.
- * @returns {number|null} Epoch ms.
- */
-export function extractSupplyObservedAt(data) {
-  let max = null;
-  for (const [key, detail] of Object.entries(data || {})) {
-    if (!key.endsWith('Detail')) continue;
-    for (const chainData of Object.values(detail?.chainBalances || {})) {
-      const tokens = chainData?.tokens || [];
-      const last = tokens[tokens.length - 1];
-      const ts = toMs(last?.date);
-      if (ts != null && (max == null || ts > max)) max = ts;
-    }
-  }
-  return max;
-}
-
-export function extractSpotObservedAt(data) {
-  let max = null;
-  for (const row of Object.values(data?.cgSimple || {})) {
-    const ts = toMs(row?.last_updated_at);
-    if (ts != null && (max == null || ts > max)) max = ts;
-  }
-  return max;
-}
-
-/**
- * Prefer live spot timestamps; fall back to supply observation timestamps.
- */
-export function extractMarketObservedAt(data) {
-  return extractSpotObservedAt(data) ?? extractSupplyObservedAt(data);
-}
-
-/**
- * Build the three-clock freshness contract for the UI.
- * @param {{checkedAt?:number|null, marketObservedAt?:number|null, snapshotAt?:number|null}} clocks
- * @param {number} [now]
- */
 export function buildFreshness(clocks = {}, now = Date.now()) {
   const checkedAt = toMs(clocks.checkedAt);
   const spotObservedAt = toMs(clocks.spotObservedAt);
@@ -151,9 +111,14 @@ export function buildFreshness(clocks = {}, now = Date.now()) {
 
   // Headline state follows the data used in the dashboard. A missing optional
   // backend snapshot must not mark a successful live fetch as Unavailable.
-  const overallState = marketState !== FRESHNESS_STATES.UNAVAILABLE
-    ? marketState
-    : checkedState;
+  const measureStates = [
+    spotObservedAt == null ? null : classifyFreshness(spotObservedAt, now),
+    supplyObservedAt == null ? null : classifySupplyFreshness(supplyObservedAt, now),
+  ].filter(Boolean);
+  const overallState = clocks.complete === false ? FRESHNESS_STATES.UNAVAILABLE
+    : measureStates.includes(FRESHNESS_STATES.STALE) ? FRESHNESS_STATES.STALE
+    : measureStates.includes(FRESHNESS_STATES.DELAYED) ? FRESHNESS_STATES.DELAYED
+    : measureStates.length ? FRESHNESS_STATES.CURRENT : marketState;
 
   return {
     checkedAt,

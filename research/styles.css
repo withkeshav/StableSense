@@ -391,3 +391,14 @@ hr.rule { border: 0; border-top: 1px solid var(--hub-line); margin: 0; }
 /* noscript fallback: ensure reveals are visible without JS */
 noscript .reveal { opacity: 1; transform: none; }
 }
+
+/* At phone widths, each source row becomes a labeled card. */
+@media (max-width: 480px) {
+  .hub-table-wrap { overflow: visible; border: 0; }
+  .hub-table { min-width: 0; display: block; }
+  .hub-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .hub-table tbody, .hub-table tr { display: block; }
+  .hub-table tr { border: 1px solid var(--hub-line); margin: 0 0 12px; }
+  .hub-table td, .hub-table td.num { display: block; text-align: left; overflow-wrap: anywhere; }
+  .hub-table td[data-label]::before { content: attr(data-label); display: block; font-family: var(--hub-mono); font-size: 0.68rem; color: var(--hub-ink2); margin-bottom: 4px; }
+}

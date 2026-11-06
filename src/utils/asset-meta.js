@@ -12,7 +12,7 @@ export const ASSET_META = {
     thesis: 'The largest circulating dollar stablecoin, used widely for trading and settlement liquidity.',
     watchDefault: 'Watch supply concentration and peg tightness during high-volume sessions.',
     learnQuestion: 'Why does the largest stablecoin still matter for peg interpretation?',
-    learnId: 'lesson-peg-basics',
+    learnId: 'lesson-peg-mechanics',
   },
   USDC: {
     name: 'USD Coin',
@@ -30,7 +30,7 @@ export const ASSET_META = {
     thesis: 'A decentralized dollar reference maintained by crypto collateral and liquidation mechanics.',
     watchDefault: 'Watch collateral stress and peg bands when crypto markets move sharply.',
     learnQuestion: 'How does crypto collateral enforce a dollar peg without a bank account?',
-    learnId: 'lesson-backing-types',
+    learnId: 'lesson-collateral-types',
   },
   USDE: {
     name: 'Ethena USDe',
@@ -48,7 +48,7 @@ export const ASSET_META = {
     thesis: 'A regulated payments-oriented dollar token issued for commerce and transfers.',
     watchDefault: 'Watch supply growth and chain expansion as payment rails adopt the token.',
     learnQuestion: 'How do payments-focused stablecoins differ from trading liquidity coins?',
-    learnId: 'lesson-peg-basics',
+    learnId: 'lesson-peg-mechanics',
   },
 };
 

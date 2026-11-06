@@ -14,21 +14,6 @@ function readToken(name, fallback) {
   return value || fallback;
 }
 
-/** "24h window ending 18 Oct 2026", with an honest note when the clock is missing. */
-function shareRangeDetail(observedAt) {
-  const missing = '24h window, as-of unavailable';
-  if (observedAt == null) return missing;
-  const ms = observedAt instanceof Date ? observedAt.getTime() : Number(observedAt);
-  if (!Number.isFinite(ms) || ms <= 0) return missing;
-  const stamp = new Date(ms < 1e12 ? ms * 1000 : ms).toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    timeZone: 'UTC',
-  });
-  return `24h window ending ${stamp}`;
-}
-
 /** Largest gain and largest loss among the measured bars, or null when absent. */
 function strongestMoves(bars) {
   let gain = null;
@@ -46,7 +31,7 @@ export default function ChainFlowChart({ chainFlows, coins = [], observedAt = nu
   const bars = useMemo(() => buildChainFlowBars(chainFlows, selected, 8), [chainFlows, selected]);
   const hasRows = bars.values.length > 0;
 
-  const { gain, loss } = useMemo(() => strongestMoves(bars), [bars]);
+  const { gain, loss } = useMemo(() => strongestMoves(buildChainFlowBars(chainFlows, selected, Infinity)), [chainFlows, selected]);
 
   const chartData = useMemo(() => {
     const activeCoin = coins.find((c) => c.symbol === selected);
@@ -96,10 +81,6 @@ export default function ChainFlowChart({ chainFlows, coins = [], observedAt = nu
     return 'No net change measured across the tracked chains in this window.';
   }, [bars.complete, gain, loss]);
 
-  const shareInterpretation = bars.complete && gain && loss
-    ? `${gain.chain} gained the most tracked supply (${fmtB(gain.value)}) while ${loss.chain} lost the most (${fmtB(loss.value)}) over the last 24h.`
-    : 'Net 24h circulating-supply change by chain. Some tracked chains are unmeasured for this filter, so the bars show measured values only.';
-
   return (
     <article class="card mb-4">
       <div class="card-header">
@@ -140,14 +121,8 @@ export default function ChainFlowChart({ chainFlows, coins = [], observedAt = nu
               options={options}
               height={260}
               ariaLabel="Net 24h supply change by chain"
-              shareTitle="Where supply moved, 24h"
-              shareRange="24h"
-              shareRangeDetail={shareRangeDetail(observedAt)}
-              shareInterpretation={shareInterpretation}
-              shareDefinition="Net change in circulating stablecoin supply on each chain over 24h. Chain-level snapshots, not directed transfers."
-              shareSource="Helix chain snapshots"
-              shareAsOf={observedAt}
-            />
+              shareSpec={{ kind: 'flow', scope: selected === 'all' ? 'All tracked coins' : selected, asOf: observedAt, complete: bars.complete }}
+              />
           </div>
         ) : (
           <div class="info-empty">No measured chain flow in the current window.</div>

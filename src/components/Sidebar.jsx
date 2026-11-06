@@ -1,3 +1,4 @@
+import { alertSummary } from '../lib/alert-policy.js';
 ﻿import { BrandWordmark } from './BrandMark.jsx';
 import { ACTIVE_STABLECOINS, coinTabId, STABLECOIN_REGISTRY } from '../utils/coin-config.js';
 import { fmtPrice } from '../utils/formatters.js';
@@ -17,6 +18,7 @@ export default function Sidebar({
   activeTab,
   setActiveTab,
   alertCount,
+  alertTone = 'neutral',
   alerts,
   priceByCoin = {},
   data = null,
@@ -27,7 +29,7 @@ export default function Sidebar({
   onOpenMethodology,
 }) {
   const coinAlertCounts = {};
-  for (const a of alerts || []) {
+  for (const a of (alerts || []).filter((a) => a.severity !== 'INFO')) {
     if (a.coin) coinAlertCounts[a.coin] = (coinAlertCounts[a.coin] || 0) + 1;
   }
 
@@ -68,7 +70,7 @@ export default function Sidebar({
             >
               <span class="nav-label">{tab.label}</span>
               {tab.id === 'alerts' ? <i class="new-pill tag-alpha">ALPHA</i> : null}
-              {tab.id === 'alerts' && alertCount > 0 ? <span class="nav-badge">{alertCount}</span> : null}
+              {tab.id === 'alerts' && alertCount > 0 ? <span class={`nav-badge tone-${alertTone}`}>{alertCount}</span> : null}
               {tab.id === 'research' ? <i class="new-pill">NEW</i> : null}
               {tab.id === 'learn' ? <i class="new-pill">GUIDE</i> : null}
             </button>
@@ -91,7 +93,7 @@ export default function Sidebar({
                 <i class={`asset-disc ${DISC[idx % DISC.length]}`} style={STABLECOIN_REGISTRY[symbol]?.color ? { background: STABLECOIN_REGISTRY[symbol].color } : undefined} />
                 {symbol}
                 <span>{price != null ? fmtPrice(price) : '-'}</span>
-                {coinAlertCounts[symbol] ? <span class="nav-badge">{coinAlertCounts[symbol]}</span> : null}
+                {coinAlertCounts[symbol] ? <span class={`nav-badge tone-${alertSummary((alerts || []).filter((a) => a.coin === symbol)).tone}`}>{alertSummary((alerts || []).filter((a) => a.coin === symbol)).count}</span> : null}
               </button>
             );
           })}

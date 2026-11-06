@@ -283,6 +283,7 @@ export function mapChainRows(symbol, chainsPayload, price) {
       ts: newest.tsMs,
       circulating: newest.supply * price,
       delta: prev ? (newest.supply - prev.supply) * price : null,
+      prevTs: prev?.tsMs ?? null,
     });
   }
   return rows;

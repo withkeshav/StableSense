@@ -46,3 +46,14 @@ export function upsertMarketRow(db, row) {
   ).run(row.ts, row.total, row.delta);
   return true;
 }
+
+/** Publish one explicitly enumerated chain set; history is retained separately. */
+export function writeChainBatch(db, { coin, rows = [], complete = false, source, fetchedAt = Date.now() }) {
+  db.prepare(`INSERT INTO chain_batches (coin, source, fetched_at, complete, rows_json)
+    VALUES (?, ?, ?, ?, ?)
+    ON CONFLICT(coin) DO UPDATE SET source=excluded.source, fetched_at=excluded.fetched_at,
+      complete=excluded.complete, rows_json=excluded.rows_json`).run(
+    coin, source, fetchedAt, complete ? 1 : 0,
+    JSON.stringify(rows.map((r) => ({ ...r, chain: String(r.chain).trim().toLowerCase() })))
+  );
+}

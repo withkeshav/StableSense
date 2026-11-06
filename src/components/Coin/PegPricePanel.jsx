@@ -1,10 +1,10 @@
-import { fmtPrice, rangeWithYear } from '../../utils/formatters.js';
+import { fmtPrice } from '../../utils/formatters.js';
 import ChartWrapper from '../ui/ChartWrapper.jsx';
 
 /**
  * Price-discipline panel: secondary-market price against the $1.00 reference line.
  */
-export default function PegPricePanel({ symbol, price, pegBps, priceLineData, priceChartOpts, goLearn, asOf = null }) {
+export default function PegPricePanel({ symbol, price, pegBps, priceLineData, priceChartOpts, goLearn }) {
   return (
     <article class="panel glass asset-price-panel signal-lens">
       <header class="panel-head">
@@ -21,15 +21,8 @@ export default function PegPricePanel({ symbol, price, pegBps, priceLineData, pr
           height={260}
           options={priceChartOpts}
           ariaLabel={`${symbol} price versus one dollar peg`}
-          shareTitle={`${symbol} price vs $1.00`}
-          shareRange="~90D"
-          shareRangeDetail={rangeWithYear(priceLineData?.labels?.length ? `${priceLineData.labels[0]} to ${priceLineData.labels[priceLineData.labels.length - 1]}` : '90 days', asOf)}
-          shareInterpretation={`${symbol} secondary-market price against the $1.00 reference. A price picture, not a reserve-quality assessment.`}
-          shareDefinition={`${symbol} market price versus a $1.00 reference line over the last 90 days, for the tracked asset on this dashboard.`}
-          shareSource="CoinGecko price history"
-          shareHighlight={pegBps == null ? `${fmtPrice(price)} now · price unavailable` : `${fmtPrice(price)} now · ${pegBps > 0 ? '+' : ''}${pegBps} bp from peg`}
-          shareAsOf={asOf}
-        />
+          shareSpec={{ kind: 'price', scope: symbol }}
+              />
       </div>
       <footer class="chart-footer">
         <span><i class="legend-dot cobalt-dot" />{pegBps == null ? `${fmtPrice(price)} now · price unavailable` : `${fmtPrice(price)} now · ${pegBps > 0 ? '+' : ''}${pegBps} bp from peg`}</span>

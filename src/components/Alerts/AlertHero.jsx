@@ -1,6 +1,6 @@
 import AiTicker from '../ui/AiTicker.jsx';
 
-export default function AlertHero({ intelligence, alertCount }) {
+export default function AlertHero({ intelligence, alertCount, activityCount = 0 }) {
   return (
     <div class="alert-hero card mb-4">
       <div class="card-body">
@@ -9,7 +9,7 @@ export default function AlertHero({ intelligence, alertCount }) {
         <p class="alert-hero-copy">{intelligence?.narrative || 'No AI narrative available in this cycle.'}</p>
         <p class="alert-hero-copy muted">{intelligence?.implications || 'Watch chain-level shifts and peg movements for follow-through.'}</p>
         <AiTicker intelligence={intelligence} />
-        <div class="alert-hero-meta">Active alerts: {alertCount} · Alpha: alert rules and thresholds may change between releases</div>
+        <div class="alert-hero-meta">Current warnings: {alertCount} · Activity observations: {activityCount} · Alpha: alert rules and thresholds may change between releases</div>
       </div>
     </div>
   );

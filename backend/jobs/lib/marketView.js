@@ -1,144 +1,56 @@
-/**
- * Pure data assembly for GET /api/market (see backend/server.js).
- *
- * No database code here: rows in, payload out. server.js stays a thin
- * wrapper that runs three newest-row SELECTs and calls buildMarketView().
- *
- * Duplicated from src/utils/coin-config.js (ACTIVE_STABLECOINS) and
- * src/utils/asset-meta.js (ASSET_META names): backend/server.js has no src
- * imports, so the five tracked coins and their display names live here too.
- * Keep in sync when adding coins.
- */
+import { ASSET_META } from '../../../src/utils/asset-meta.js';
+import { getActiveCoins } from '../../../src/utils/coin-config.js';
+import { intervalHours, isNominal24h } from '../../../src/lib/freshness.js';
 
-export const TRACKED_COINS = ['USDT', 'USDC', 'DAI', 'USDE', 'PYUSD'];
+export const TRACKED_COINS = getActiveCoins().map((coin) => coin.symbol);
+export const COIN_NAMES = Object.fromEntries(getActiveCoins().map((coin) => [coin.symbol, ASSET_META[coin.symbol]?.name ?? coin.symbol]));
+const finite = (n) => typeof n === 'number' && Number.isFinite(n);
+const oldest = (values) => values.length && values.every((v) => finite(v) && v > 0) ? Math.min(...values) : null;
+const sum = (values) => values.length && values.every(finite) && finite(values.reduce((a, b) => a + b, 0)) ? values.reduce((a, b) => a + b, 0) : null;
+const MAX_CHAIN_AGE_MS = 48 * 3600_000;
 
-export const COIN_NAMES = {
-  USDT: 'Tether USD',
-  USDC: 'USD Coin',
-  DAI: 'Dai',
-  USDE: 'Ethena USDe',
-  PYUSD: 'PayPal USD',
-};
-
-function isFiniteNumber(v) {
-  return typeof v === 'number' && Number.isFinite(v);
-}
-
-/**
- * Assemble the /api/market payload from local SQLite rows only.
- * @param {object} args
- * @param {Array<{coin:string,ts:number|null,price:number|null,change24h:number|null}>} [args.priceRows]
- * @param {Array<{coin:string,chain:string,ts:number|null,circulatingUsd:number|null,delta24h:number|null}>} [args.snapshotRows]
- * @param {{ts:number|null,total:number|null,delta:number|null}|null} [args.marketRow] Newest market_snapshots row.
- * @param {number} [args.nowMs] Response generatedAt clock.
- * @param {string|null} [args.symbol] Optional single-coin filter (e.g. "USDT").
- * @returns {{generatedAt:number,source:string,observedAt:number|null,market:{totalCirculatingUsd:number|null,delta24hUsd:number|null,ts:number|null},coins:Array<object>,dataQuality:Array<{coin:string,reason:string}>}}
- */
-export function buildMarketView({ priceRows = [], snapshotRows = [], marketRow = null, nowMs = Date.now(), symbol = null, historyRows = [], supplySeriesDays = 30 } = {}) {
+/** Current totals use only explicit ingestion membership, never latest-ever history rows. */
+export function buildMarketView({ priceRows = [], chainBatches = [], nowMs = Date.now(), symbol = null, historyRows = [], supplySeriesDays = 30 } = {}) {
   const wanted = symbol ? String(symbol).toUpperCase() : null;
-  const tracked = wanted && TRACKED_COINS.includes(wanted) ? [wanted] : TRACKED_COINS;
-
-  const priceByCoin = {};
-  for (const r of priceRows || []) {
-    if (!r || typeof r.coin !== 'string') continue;
-    const prev = priceByCoin[r.coin];
-    if (!prev || (r.ts ?? -Infinity) > (prev.ts ?? -Infinity)) priceByCoin[r.coin] = r;
-  }
-
-  const chainsByCoin = {};
-  const chainNorm = (name) => String(name || '').trim().toLowerCase();
-  for (const r of snapshotRows || []) {
-    if (!r || typeof r.coin !== 'string' || typeof r.chain !== 'string') continue;
-    // Helix casing is inconsistent across its snapshot tables ("Tron" vs
-    // "tron"); normalize so the same rail cannot double-count.
-    const normKey = `${r.coin}||${chainNorm(r.chain)}`;
-    const bucket = chainsByCoin[normKey] || null;
-    if (!bucket || (r.ts ?? -Infinity) > (bucket.ts ?? -Infinity)) {
-      chainsByCoin[normKey] = {
-        chain: chainNorm(r.chain),
-        supply: r.circulatingUsd ?? null,
-        delta24h: r.delta24h ?? null,
-        ts: r.ts ?? null,
-      };
-    }
-  }
-  const chainsFor = (coin) => Object.entries(chainsByCoin)
-    .filter(([key]) => key.startsWith(`${coin}||`))
-    .map(([, v]) => v)
-    .sort((a, b) => (b.supply || 0) - (a.supply || 0));
-
-  let observedAt = null;
-  const consider = (ts) => {
-    if (isFiniteNumber(ts) && (observedAt == null || ts > observedAt)) observedAt = ts;
-  };
-  for (const r of Object.values(priceByCoin)) consider(r.ts);
-  for (const c of Object.values(chainsByCoin)) consider(c.ts);
-
-  const history = buildSupplyHistory(historyRows, supplySeriesDays);
-
-  const hasAnyRows = Object.keys(priceByCoin).length > 0 || Object.keys(chainsByCoin).length > 0;
+  const tracked = wanted ? TRACKED_COINS.filter((c) => c === wanted) : TRACKED_COINS;
   const dataQuality = [];
-  let coins = [];
-
-  if (!hasAnyRows) {
-    for (const coin of tracked) {
-      dataQuality.push({ coin, reason: 'no cached market data' });
-    }
-  } else {
-    for (const coin of tracked) {
-      const price = priceByCoin[coin] || null;
-      const chains = chainsFor(coin);
-      // Current supply: prefer the era-consistent daily series (newest point)
-      // over the chains map, whose per-chain latest timestamps mix the two
-      // Helix layers and double-count across eras.
-      const series = history[coin] || [];
-      const seriesNewest = series.length ? series[series.length - 1] : null;
-      const chainSupplies = chains.map((c) => c.supply).filter(isFiniteNumber);
-      const supply = seriesNewest ? seriesNewest.value : (chainSupplies.length ? chainSupplies.reduce((a, b) => a + b, 0) : null);
-      const supplyDelta = seriesNewest && series.length >= 2
-        ? seriesNewest.value - series[series.length - 2].value
-        : (chains.map((c) => c.delta24h).filter(isFiniteNumber).reduce((a, b) => a + b, 0) || null);
-      if (!price) dataQuality.push({ coin, reason: 'no prices row' });
-      if (!chains.length && !seriesNewest) dataQuality.push({ coin, reason: 'no snapshot rows' });
-      coins.push({
-        symbol: coin,
-        name: COIN_NAMES[coin] || coin,
-        price: price?.price ?? null,
-        change24h: price?.change24h ?? null,
-        ts: price?.ts ?? null,
-        supply,
-        supplyDelta24h: supplyDelta,
-        depegIndex: null,
-        chains,
-      });
-    }
-  }
-
-  const seriesTotal = coins.reduce((acc, c) => acc + (Number.isFinite(c.supply) ? c.supply : 0), 0);
-  const seriesDelta = coins.reduce((acc, c) => acc + (Number.isFinite(c.supplyDelta24h) ? c.supplyDelta24h : 0), 0);
-  // The series is the preferred measure only when it actually measured
-  // something and its sum is finite. A truthy test (`seriesDelta || ...`)
-  // substituted a legitimate 0 with a stale market_snapshots value from a
-  // different day, and an overflowed sum (>=1e308 scale) leaked Infinity.
-  const measuredSeriesTotal = coins.some((c) => Number.isFinite(c.supply)) && Number.isFinite(seriesTotal);
-  const measuredSeriesDelta = coins.some((c) => Number.isFinite(c.supplyDelta24h)) && Number.isFinite(seriesDelta);
-  return {
-    generatedAt: nowMs,
-    source: 'helix-via-cron',
-    observedAt,
-    market: {
-      // Prefer the sum of era-consistent per-coin supplies: Helix's trends
-      // total_supply layer understates vs its own chains layer, so a stored
-      // market_snapshots total is only a fallback when the series measured
-      // nothing (or its sum overflowed to a non-finite value).
-      totalCirculatingUsd: measuredSeriesTotal ? seriesTotal : (marketRow?.total ?? null),
-      delta24hUsd: measuredSeriesDelta ? seriesDelta : (marketRow?.delta ?? null),
-      ts: marketRow?.ts ?? null,
-    },
-    coins,
-    dataQuality,
-    supplyHistory: buildSupplyHistory(historyRows, supplySeriesDays),
-  };
+  const coins = tracked.map((coin) => {
+    const price = priceRows.filter((r) => r.coin === coin).sort((a, b) => b.ts - a.ts)[0];
+    const priceValid = finite(price?.price) && price.price > 0 && finite(price.ts) && price.ts > 0 && price.ts <= nowMs;
+    const batch = chainBatches.find((b) => b.coin === coin);
+    const rows = Array.isArray(batch?.rows) ? batch.rows : [];
+    const seen = new Set();
+    const chains = rows.map((row) => {
+      const key = String(row.chain || '').trim().toLowerCase();
+      const usable = key && !seen.has(key) && finite(row.circulating) && row.circulating >= 0 && finite(row.ts) && row.ts > 0 && row.ts <= nowMs && nowMs - row.ts <= MAX_CHAIN_AGE_MS;
+      seen.add(key);
+      if (!usable) return null;
+      const hours = intervalHours(row.prevTs, row.ts);
+      return { chain: key, supply: row.circulating, ts: row.ts,
+        previousTs: row.prevTs ?? null, intervalHours: hours,
+        // A sparse source comparison is retained as a comparison, never relabeled 24h.
+        delta: finite(row.delta) && hours != null ? row.delta : null,
+        delta24h: finite(row.delta) && isNominal24h(hours) ? row.delta : null };
+    }).filter(Boolean).sort((a, b) => b.supply - a.supply);
+    const complete = Boolean(batch?.complete) && chains.length > 0 && chains.length === rows.length;
+    if (!priceValid) dataQuality.push({ coin, reason: 'price unavailable' });
+    if (!complete) dataQuality.push({ coin, reason: batch ? 'chain coverage incomplete or stale' : 'chain membership unavailable; waiting for a fetch' });
+    const supply = complete ? sum(chains.map((c) => c.supply)) : null;
+    const supplyDelta24h = complete ? sum(chains.map((c) => c.delta24h)) : null;
+    if (supplyDelta24h == null) dataQuality.push({ coin, reason: '24h supply comparison unavailable' });
+    return { symbol: coin, name: COIN_NAMES[coin] || coin,
+      price: priceValid ? price.price : null, change24h: price?.change24h ?? null,
+      ts: priceValid ? price.ts : null, supply, supplyDelta24h,
+      supplyObservedAt: complete ? oldest(chains.map((c) => c.ts)) : null,
+      depegIndex: null, chains: complete ? chains : [], coverage: { complete, reported: rows.length, usable: chains.length, source: batch?.source ?? null, fetchedAt: batch?.fetchedAt ?? null } };
+  });
+  const spotObservedAt = oldest(coins.map((c) => c.ts));
+  const supplyObservedAt = oldest(coins.map((c) => c.supplyObservedAt));
+  const observedAt = oldest([spotObservedAt, supplyObservedAt]);
+  return { generatedAt: nowMs, source: 'helix-via-cron', observedAt, spotObservedAt, supplyObservedAt,
+    market: { totalCirculatingUsd: sum(coins.map((c) => c.supply)), delta24hUsd: sum(coins.map((c) => c.supplyDelta24h)), ts: supplyObservedAt },
+    coverage: { requested: tracked.length, included: coins.filter((c) => c.supply != null).length, complete: coins.length > 0 && coins.every((c) => c.supply != null && c.price != null) },
+    coins, dataQuality, supplyHistory: buildSupplyHistory(historyRows, supplySeriesDays, nowMs) };
 }
 
 /**

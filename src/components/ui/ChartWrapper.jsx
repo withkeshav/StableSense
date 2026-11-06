@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import ShareSheet from './ShareSheet.jsx';
-import { shareTextIssues } from '../../utils/shareChart.js';
+import { buildChartStory } from '../../lib/chart-story.js';
 
 let chartPromise;
 function getChart() {
@@ -91,42 +91,17 @@ export default function ChartWrapper({
   height = 220,
   aspectRatio = null,
   ariaLabel = null,
-  shareTitle,
-  shareRange,
-  shareRangeDetail,
-  shareInterpretation,
-  shareDefinition,
-  shareSource,
-  shareHighlight = '',
-  shareAsOf = null,
+  shareSpec,
   enableShare = true,
   sharePlacement = 'toolbar',
 }) {
-  // No generic fallbacks. A card with a placeholder title or an empty read is
-  // a claim the chart does not support, so the share control is withheld and
-  // the omission is logged instead of exported. The exact range and source are
-  // required: the image must stand alone.
-  const shareIssues = enableShare
-    ? shareTextIssues({
-      title: shareTitle,
-      rangeLabel: shareRange,
-      rangeDetail: shareRangeDetail,
-      interpretation: shareInterpretation,
-      definition: shareDefinition,
-      sourceLabel: shareSource,
-    })
-    : [];
-  const shareReady = enableShare && shareIssues.length === 0;
-  if (enableShare && shareIssues.length) {
-    console.error(
-      `ChartWrapper: share disabled for "${ariaLabel || `${type} chart`}"; missing ${shareIssues.join(', ')}`
-    );
-  }
+  const shareMeta = buildChartStory(data, shareSpec);
+  const shareReady = enableShare && Boolean(shareMeta);
   const canvasRef = useRef(null);
   const chartRef = useRef(null);
   const lastRef = useRef({ type: null, data: null, options: null, aspectRatio: null, height: null, themeEpoch: -1 });
   const [themeEpoch, setThemeEpoch] = useState(0);
-  const [shareOpen, setShareOpen] = useState(false);
+  const [shareSnapshot, setShareSnapshot] = useState(null);
 
   const resolvedOptions = Object.keys(options).length === 0 ? EMPTY_OPTIONS : options;
 
@@ -228,7 +203,16 @@ export default function ChartWrapper({
 
   const openShare = (e) => {
     e?.stopPropagation?.();
-    if (chartRef.current) setShareOpen(true);
+    const chart = chartRef.current;
+    if (!chart || !shareMeta || lastRef.current.data !== data || !areOptionsEqual(lastRef.current.options, resolvedOptions)) return;
+    const visibleMeta = buildChartStory({ ...data, datasets: data.datasets.map((d, i) => ({ ...d, hidden: !chart.isDatasetVisible(i) })) }, shareSpec);
+    if (!visibleMeta) return;
+    // Freeze pixels and words together; a refresh cannot change an open card.
+    const canvas = document.createElement('canvas');
+    canvas.width = chart.canvas.width;
+    canvas.height = chart.canvas.height;
+    canvas.getContext('2d').drawImage(chart.canvas, 0, 0);
+    setShareSnapshot({ canvas, meta: visibleMeta, theme: document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light' });
   };
 
   const shareControl = shareReady ? (
@@ -255,21 +239,7 @@ export default function ChartWrapper({
       {shareReady && sharePlacement === 'footer' ? (
         <div class="chart-share-footer">{shareControl}</div>
       ) : null}
-      {shareReady ? (
-        <ShareSheet
-          open={shareOpen}
-          onClose={() => setShareOpen(false)}
-          chartInstance={chartRef.current}
-          title={shareTitle}
-          rangeLabel={shareRange}
-          rangeDetail={shareRangeDetail}
-          interpretation={shareInterpretation}
-          definition={shareDefinition}
-          sourceLabel={shareSource}
-          highlight={shareHighlight}
-          asOf={shareAsOf}
-        />
-      ) : null}
+      {shareSnapshot ? <ShareSheet snapshot={shareSnapshot} onClose={() => setShareSnapshot(null)} /> : null}
     </div>
   );
 }

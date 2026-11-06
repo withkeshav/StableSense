@@ -97,13 +97,13 @@ test('no stack trace reaches stdout when the checker cannot measure', () => {
   }
 })
 
-test('a flipped Tether negative figure fails the named check and exits 1', () => {
+test('an incorrect Tether buffer fails the arithmetic check and exits 1', () => {
   const root = makeCopy()
   try {
-    edit(root, 'research/data.js', "about -$4.21B", 'about $4.21B')
+    edit(root, 'research/data.js', '"value": "$7.955B"', '"value": "$7.956B"')
     const copy = run(root)
     assert.equal(copy.status, 1, copy.stdout + copy.stderr)
-    assert.ok(failLines(copy.stdout).some((line) => line.includes('Tether negative-equity row is signed as negative')))
+    assert.ok(failLines(copy.stdout).some((line) => line.includes('Tether reserve buffer reconciles assets less liabilities')))
     assert.equal(copy.stdout.includes('ALL CHECKS PASSED'), false)
     assert.equal(copy.stdout.includes('CANNOT MEASURE'), false, 'this is a measured failure, not an unmeasurable one')
   } finally {
@@ -118,14 +118,14 @@ test('a flipped Tether negative figure fails the named check and exits 1', () =>
 // parsing.
 const tamperCases = [
   { name: 'U+2014 em dash, inside a data.js value', file: 'research/data.js',
-    from: 'Growth in 2026 has stalled while the forecasts have not.',
-    to: 'Growth in 2026\u2014has stalled while the forecasts have not.' },
+    from: 'Supply, adjusted transfers and classified payments answer different questions.',
+    to: 'Supply\u2014adjusted transfers and classified payments answer different questions.' },
   { name: 'U+2013 en dash, inside a data.js comment', file: 'research/data.js',
-    from: "value: '+$1.50B',", to: "value: '+$1.50B', // tamper \u2013 note" },
+    from: "export const floatEconomics =", to: "// tamper \u2013 note\nexport const floatEconomics =" },
   { name: 'U+FFFD replacement char, inside a data.js value', file: 'research/data.js',
-    from: "value: '+$10.11B',", to: "value: '+$10.11B\uFFFD'," },
+    from: '"value": "+$1.50B"', to: '"value": "+$1.50B\uFFFD"' },
   { name: 'U+2014 em dash, inside research/index.html', file: 'research/index.html',
-    from: 'Last updated', to: 'Last updated\u2014' },
+    from: 'Reviewed 2026-11-05', to: 'Reviewed 2026-11-05\u2014' },
   { name: 'U+FFFD replacement char, inside the changelog page', file: 'research/changelog/index.html',
     from: 'Research changelog', to: 'Research changelog\uFFFD' },
   { name: 'U+2014 written as an escape sequence (only visible after parsing)', file: 'research/data.js',
@@ -152,8 +152,8 @@ for (const tamper of tamperCases) {
 test('the checker never prints a flagged codepoint as itself, only as its codepoint', () => {
   const root = makeCopy()
   try {
-    edit(root, 'research/data.js', 'Growth in 2026 has stalled while the forecasts have not.',
-      'Growth in 2026\u2014has stalled while the forecasts have not.')
+    edit(root, 'research/data.js', 'Supply, adjusted transfers and classified payments answer different questions.',
+      'Supply\u2014adjusted transfers and classified payments answer different questions.')
     const copy = run(root)
     assert.equal(copy.status, 1, copy.stdout + copy.stderr)
     assert.equal(copy.stdout.includes('\u2014'), false)
@@ -170,3 +170,27 @@ test('a bad root argument exits 2 rather than throwing', () => {
   assert.ok(copy.stdout.includes('CANNOT MEASURE'))
   assert.equal(/\n\s+at\s/.test(copy.stdout), false)
 })
+
+// Plant independently meaningful regressions in a throwaway module, rather
+// than asserting only that the current prose repeats itself.
+const evidenceRegressions = [
+  ['OUSD component mismatch', 'openUsdStatus.supplySnapshot = openUsdStatus.supplySnapshot.replace("$1,752,317", "$1,752,318");', 'OUSD reserve components and gap reconcile'],
+  ['Circle cost denominator', 'floatEconomics.find(r => /Reserve income/.test(r.measure)).value = "$865M";', 'Circle cost ratio recomputes'],
+  ['GENIUS invented zero count', 'geniusStatus.finalRules = 0;', 'unmeasured final-rule count'],
+  ['current source date erased', 'marketCapMeasure.asOf = RESEARCH_REVIEWED.slice(0, 4);', 'marketCapMeasure carries its own'],
+  ['missing projection source', 'projections[0].source = "";', 'forecast scenarios carry'],
+  ['adjusted transfers recast as payments', 'growthHonest.points[2].value = "$4.2T payments";', 'historical BCG values retain'],
+  ['unresolved reserve inference removed', 'openUsdStatus.supplySnapshot = openUsdStatus.supplySnapshot.replace("UNRESOLVED", "fully reconciled");', 'OUSD mismatch remains unresolved'],
+];
+for (const [name, mutation, expectedCheck] of evidenceRegressions) {
+  test(`${name} is rejected as measured failure`, () => {
+    const root = makeCopy();
+    try {
+      const path = join(root, 'research/data.js');
+      writeFileSync(path, readFileSync(path, 'utf8') + '\n' + mutation + '\n');
+      const copy = run(root);
+      assert.equal(copy.status, 1, copy.stdout + copy.stderr);
+      assert.ok(failLines(copy.stdout).some(line => line.includes(expectedCheck)), copy.stdout);
+    } finally { rmSync(root, { recursive: true, force: true }); }
+  });
+}

@@ -168,10 +168,10 @@ export function mapHelixEventToRow(ev, nowMs) {
   return {
     event_id: `helix-${String(ev.id)}`,
     rule: ev.event_type ?? 'unknown',
-    classification: 'canonical',
+    classification: 'event-history',
     symbol: ev.asset_symbol,
-    severity: ev.severity ?? 'info',
-    state: 'open',
+    severity: normalizeSeverity(ev.severity),
+    state: 'recorded',
     headline: String(headline),
     explanation: String(explanation),
     magnitude: parseMagnitude(ev.delta),
@@ -204,8 +204,13 @@ export function mapHelixEventToLabel(ev) {
     ts: eventObservedMs(ev),
     symbol: ev.asset_symbol,
     type: ev.event_type ?? 'unknown',
-    severity: ev.severity ?? 'info',
+    severity: normalizeSeverity(ev.severity),
     explanation: String(ev.summary ?? ev.title ?? ev.event_type ?? 'Helix event'),
     magnitude: parseMagnitude(ev.delta),
   };
+}
+
+export function normalizeSeverity(value) {
+  const severity = String(value || 'INFO').toUpperCase();
+  return ['CRITICAL', 'HIGH', 'WARNING', 'INFO'].includes(severity) ? severity : severity === 'WARN' ? 'WARNING' : 'INFO';
 }

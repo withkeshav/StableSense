@@ -99,15 +99,15 @@ describe('event row mapping', () => {
     const row = mapHelixEventToRow(helixEvent(), now);
     expect(row.event_id).toBe('helix-evt-1');
     expect(row.rule).toBe('depeg');
-    expect(row.classification).toBe('canonical');
+    expect(row.classification).toBe('event-history');
     expect(row.symbol).toBe('USDT');
-    expect(row.severity).toBe('warn');
+    expect(row.severity).toBe('WARNING');
     expect(row.headline).toBe('USDT slipped');
     expect(row.explanation).toBe('USDT moved off peg');
     expect(row.magnitude).toBeCloseTo(0.002, 6);
     expect(row.observed_at).toBe(T0 + 50 * MIN10);
     expect(row.detected_at).toBe(T0 + 50 * MIN10);
-    expect(row.state).toBe('open');
+    expect(row.state).toBe('recorded');
     expect(row.published_at).toBe(now);
     expect(row.updated_at).toBe(now);
     expect(JSON.parse(row.involved_chains)).toEqual(['ethereum']);
@@ -134,7 +134,7 @@ describe('event row mapping', () => {
     expect(label).toMatchObject({
       symbol: 'USDT',
       type: 'depeg',
-      severity: 'warn',
+      severity: 'WARNING',
       explanation: 'USDT moved off peg',
     });
     expect(label.ts).toBe(T0 + 50 * MIN10);

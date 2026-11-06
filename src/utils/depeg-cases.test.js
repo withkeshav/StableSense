@@ -6,7 +6,7 @@ describe('research publication date discipline', () => {
   it('does not re-date the historical cases when publishing a new review', () => {
     expect(AS_OF).toBe('2026-09-26');
     expect(REVIEW_AS_OF).toBe(RESEARCH_REVIEWED);
-    expect(REVIEW_AS_OF).toBe('2026-10-02');
+    expect(REVIEW_AS_OF).toBe('2026-11-05');
     expect(REVIEW_AS_OF).not.toBe(AS_OF);
   });
 
@@ -16,8 +16,11 @@ describe('research publication date discipline', () => {
     expect(DEPEG_CASES.usde.date).toBe('October 2025');
   });
 
-  it('does not turn unverified final-rule issuance into a zero count', () => {
+  it('separates a verified OCC rule from an unknown all-agency count', () => {
     expect(geniusStatus.finalRules).toBeNull();
-    expect(geniusStatus.commencementStatus).toContain('UNRESOLVED');
+    expect(geniusStatus.commencementStatus).toContain('January 18, 2027');
+    expect(geniusStatus.url).toContain('bulletin-2026-50');
+    expect(geniusStatus.totalRulemakings).toBeNull();
+    expect(geniusStatus.note).toContain('No current-effect claim');
   });
 });

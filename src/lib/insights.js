@@ -142,7 +142,7 @@ export function collateralMixObservation(data) {
  * @returns {{id:string,tone:string,text:string}|null}
  */
 export function alertCountObservation(alerts) {
-  const list = Array.isArray(alerts) ? alerts : [];
+  const list = Array.isArray(alerts) ? alerts.filter((a) => a.severity !== 'INFO') : [];
   const coins = new Set(list.map((a) => a.coin).filter(Boolean));
   if (!list.length) {
     return { id: 'alert-count', tone: 'neutral', text: 'No alerts are open right now across the tracked coins.' };

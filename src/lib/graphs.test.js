@@ -130,6 +130,13 @@ describe('buildDominanceSeries', () => {
     expect(sum).toBeCloseTo(100, 6);
   });
 
+  it('rejects negative supplies and all-zero denominators', () => {
+    const zero = { USDT: [{ ts: D1, value: 0 }, { ts: D2, value: 0 }], USDC: [{ ts: D1, value: 0 }, { ts: D2, value: 0 }] };
+    expect(buildDominanceSeries(zero, coins)).toBeNull();
+    zero.USDT[0].value = -1;
+    expect(buildDominanceSeries(zero, coins)).toBeNull();
+  });
+
   it('normalizes second-resolution timestamps to milliseconds', () => {
     const supplyByCoin = {
       USDT: [{ date: D1 / 1000, value: 60 }, { date: D2 / 1000, value: 70 }],

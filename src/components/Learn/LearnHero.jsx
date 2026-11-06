@@ -37,7 +37,7 @@ export default function LearnHero() {
         <p class="learn-terms">
           Key terms:
           <a href="#term-peg">peg</a>
-          <a href="#term-basis-point">bps</a>
+          <a href="#term-basis-point-bps">bps</a>
           <a href="#term-redemption">redemption</a>
           <a href="#term-collateral">collateral</a>
           <a href="#term-depeg">depeg</a>

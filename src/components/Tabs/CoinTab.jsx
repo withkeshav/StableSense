@@ -1,8 +1,10 @@
-import { useMemo, useState } from 'preact/hooks';
+import { useEffect, useMemo, useState } from 'preact/hooks';
+import { loadCoinChart } from '../../lib/api.js';
+import { buildDominanceSeries } from '../../lib/graphs.js';
 import { fmtB, fmtPct, fmtPrice, pctChange, bps } from '../../utils/formatters.js';
 import { STABLECOIN_REGISTRY, getActiveCoins } from '../../utils/coin-config.js';
 import { getAssetMeta } from '../../utils/asset-meta.js';
-import { annotateWhaleRows, buildShareSeries, buildSupplySeries, buildWhaleWatchRows, coinStabilityScore, dedupeTickers, pegChartOptions, pegRefLine, toPercentFromFirst } from '../../lib/derive.js';
+import { annotateWhaleRows, buildSupplySeries, buildWhaleWatchRows, coinStabilityScore, dedupeTickers, pegChartOptions, pegRefLine, toPercentFromFirst } from '../../lib/derive.js';
 import AssetHero from '../Coin/AssetHero.jsx';
 import AssetMetrics from '../Coin/AssetMetrics.jsx';
 import PegPricePanel from '../Coin/PegPricePanel.jsx';
@@ -18,6 +20,12 @@ import WhaleAnomaliesCard from '../Coin/WhaleAnomaliesCard.jsx';
 
 export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
   const symbol = (coin || '').toUpperCase();
+  const [, redraw] = useState(0);
+  useEffect(() => {
+    let alive = true;
+    loadCoinChart(symbol, data).then(() => { if (alive) redraw((value) => value + 1); });
+    return () => { alive = false; };
+  }, [symbol, data?.fetchedAt]);
   const cfg = STABLECOIN_REGISTRY[symbol];
   const meta = getAssetMeta(symbol);
   const cgKey = cfg?.coingeckoId;
@@ -76,22 +84,18 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
   }, [data, symbol, detail]);
   const [supplyLog, setSupplyLog] = useState(false);
   const [supplyPct, setSupplyPct] = useState(false);
-  // Coin-tab price charts are CoinGecko history; their as-of is the newest
-  // price point, not the Helix supply clock. Tickers carry their own fetch time.
-  const priceAsOf = chartData?.prices?.length
-    ? chartData.prices[chartData.prices.length - 1][0]
-    : null;
   const tickersAsOf = data?.[`cg${symbol}TickersAt`] ?? null;
 
   const priceLineData = useMemo(() => {
     const series = (chartData?.prices || []).slice(-90);
-    const labels = series.map((p) => new Date(p[0]).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+    const labels = series.map((p) => new Date(p[0]).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }));
     const refColor = typeof document !== 'undefined'
       ? getComputedStyle(document.documentElement).getPropertyValue('--ink-faint').trim()
         || getComputedStyle(document.documentElement).getPropertyValue('--text2').trim()
         || '#8b98a5'
       : '#8b98a5';
     return {
+      dates: series.map((p) => p[0]),
       labels,
       datasets: [
         { label: `${symbol} Price`, data: series.map((p) => p[1]), borderColor: color, tension: 0.2, fill: false },
@@ -105,6 +109,7 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
       const labels = supplySeries.map((p) => new Date(p.ts ?? p.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }));
       const values = supplyPct ? toPercentFromFirst(supplySeries).map((p) => p.value) : supplySeries.map((p) => p.value);
       return {
+        dates: supplySeries.map((p) => p.ts ?? p.date),
         labels,
         datasets: [{ label: supplyPct ? `${symbol} %` : `${symbol} Supply`, data: values, borderColor: color, tension: 0.2 }],
       };
@@ -183,15 +188,13 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
     const supplyByCoin = {};
     for (const c of coins) {
       const d = data?.[`${c.symbol.toLowerCase()}Detail`];
-      const s = buildSupplySeries(d);
-      if (s.length >= 8) supplyByCoin[c.symbol] = s;
+      supplyByCoin[c.symbol] = data?.supplyHistory?.[c.symbol] || buildSupplySeries(d);
     }
-    if (!supplyByCoin[symbol] || supplyByCoin[symbol].length < 2) return null;
-    const share = buildShareSeries(supplyByCoin, symbol);
-    return {
-      labels: share.map((p) => new Date(p.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })),
-      datasets: [{ label: `${symbol} share of tracked supply`, data: share.map((p) => p.share), borderColor: color, tension: 0.2 }],
-    };
+    const aligned = buildDominanceSeries(supplyByCoin, coins);
+    if (!aligned) return null;
+    return { labels: aligned.labels, dates: aligned.dates,
+      datasets: [aligned.datasets.find((d) => d.label === symbol)] };
+
   }, [data, symbol, color]);
 
   const dominanceOpts = useMemo(() => ({
@@ -207,11 +210,12 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
   const bpsData = useMemo(() => {
     const series = (chartData?.prices || []).slice(-90);
     if (!series.length) return null;
-    const labels = series.map((p) => new Date(p[0]).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+    const labels = series.map((p) => new Date(p[0]).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }));
     const refColor = typeof document !== 'undefined'
       ? getComputedStyle(document.documentElement).getPropertyValue('--ink-faint').trim() || '#8b98a5'
       : '#8b98a5';
     return {
+      dates: series.map((p) => p[0]),
       labels,
       datasets: [
         { label: `${symbol} deviation (bps)`, data: series.map((p) => bps(p[1])), borderColor: color, tension: 0.2 },
@@ -224,7 +228,7 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
     responsive: true,
     maintainAspectRatio: false,
     scales: {
-      y: { min: -50, max: 50, ticks: { callback: (v) => (v > 0 ? '+' : '') + v + ' bps' } },
+      y: { suggestedMin: -50, suggestedMax: 50, ticks: { callback: (v) => (v > 0 ? '+' : '') + v + ' bps' } },
       x: { ticks: { autoSkip: true, maxTicksLimit: 8, maxRotation: 0 } },
     },
     plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y > 0 ? '+' : ''}${ctx.parsed.y} bps` } } },
@@ -276,7 +280,6 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
           priceLineData={priceLineData}
           priceChartOpts={priceChartOpts}
           goLearn={goLearn}
-          asOf={priceAsOf}
         />
 
         <StabilityPanel score={score} pegBps={pegBps} warnBps={warnBps} critBps={critBps} />
@@ -285,7 +288,6 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
       <section class="asset-grid lower-asset">
         <SupplyPanel
           symbol={symbol}
-          data={data}
           supplyLineData={supplyLineData}
           supplyLineOptions={supplyLineOptions}
           supplyPct={supplyPct}
@@ -301,22 +303,22 @@ export default function CoinTab({ coin, data, setActiveTab, alerts = [] }) {
 
       {dominanceData && bpsData ? (
         <div class="grid-2 mb-4">
-          <DominanceChart symbol={symbol} data={data} dominanceData={dominanceData} dominanceOpts={dominanceOpts} />
-          <PegDeviationChart symbol={symbol} data={data} bpsData={bpsData} bpsOpts={bpsOpts} asOf={priceAsOf} />
+          <DominanceChart symbol={symbol} dominanceData={dominanceData} dominanceOpts={dominanceOpts} />
+          <PegDeviationChart symbol={symbol} bpsData={bpsData} bpsOpts={bpsOpts} />
         </div>
       ) : (
         <>
           {dominanceData ? (
-            <DominanceChart symbol={symbol} data={data} dominanceData={dominanceData} dominanceOpts={dominanceOpts} />
+            <DominanceChart symbol={symbol} dominanceData={dominanceData} dominanceOpts={dominanceOpts} />
           ) : null}
           {bpsData ? (
-            <PegDeviationChart symbol={symbol} data={data} bpsData={bpsData} bpsOpts={bpsOpts} asOf={priceAsOf} />
+            <PegDeviationChart symbol={symbol} bpsData={bpsData} bpsOpts={bpsOpts} />
           ) : null}
         </>
       )}
 
       <div class="grid-2 mb-4">
-        <ExchangeVolumeChart symbol={symbol} data={data} exchBars={exchBars} chartOptions={chartOptions} asOf={tickersAsOf} />
+        <ExchangeVolumeChart symbol={symbol} exchBars={exchBars} chartOptions={chartOptions} asOf={tickersAsOf} />
         <ChainSupplyTable symbol={symbol} rows={rows} />
       </div>
 

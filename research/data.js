@@ -1,7 +1,6 @@
-// All sourced figures for the State of Stablecoins hub. Every number carries
-// its own source and its own as-of date. Where aggregators disagree, the range
-// is given rather than a single silently-chosen number; where the evidence
-// does not reach, the value is marked UNRESOLVED rather than estimated.
+// Dated research observations. The November 5 review supersedes selected
+// claims with primary evidence; historical material retains its earlier dates.
+// Incompatible observations are not merged into ranges or growth series.
 //
 // Date discipline, three separate kinds that must never be merged:
 //   * RESEARCH_REVIEWED is when this edition's research record was reconciled.
@@ -19,33 +18,35 @@
 // `verifiedClaims` export and the methodology note in the footer.
 
 export const AS_OF = '2026-09-26';          // legacy historical-case dataset review date
-export const RESEARCH_REVIEWED = '2026-10-02';
+export const RESEARCH_REVIEWED = "2026-11-05";
 export const MEASURE_AS_OF = {
-  totalMarketCap: '2026-08-13',
-  totalMarketCapSeries: '2026-09-26',
-  treasuryHolderRanking: 'TIC Jun 2026 (sovereign top 3) and TIC Jan 2023 (older anchors)',
-  tetherReserveExposure: '2026-03-31',
-  openUsdReserveSnapshot: '2026-10-01',
-  circleDistributionCosts: '2026-06-30',
-  x402CumulativeTotal: '2026-10-01',
-  x402ScanPanel: '2026-10-18',
-  x402CounterFrozen: '2026-10-18',
-  x402AgenticShare: '2026-09-09',
-  x402SolanaShare: '2026-08-22 to 2026-09-19',
-  x402FiveChainMonth: 'August 2026',
-  x402WashAdjusted: '2026-04-21',
-  tokenizedRwaReported: 'early July 2026',
-  tokenizedRwaTransferActivity: '2026-07-02',
-  tokenizedRwaLandingPage: '2026-05-31',
-  kansasCityFedBulletin: '2025-08-08, updated 2026-09-22',
-  geniusCommencement: 'statute as enacted 2025-07-18; final-rule trigger UNRESOLVED',
-  stablecoinPaymentsShare: '2025 data, published 2026',
+  "totalMarketCap": "2026-11-05, DefiLlama page observation; source universe differs from fiat-only series",
+  "totalMarketCapSeries": "2026-09-26",
+  "treasuryHolderRanking": "TIC Jun 2026 (sovereign top 3) and TIC Jan 2023 (older anchors)",
+  "tetherReserveExposure": "2026-09-30",
+  "openUsdReserveSnapshot": "2026-11-05 16:00 UTC; component reconciliation UNRESOLVED",
+  "circleDistributionCosts": "2026-09-30, quarter ended",
+  "x402CumulativeTotal": "2026-10-01",
+  "x402ScanPanel": "2026-11-05; observation window unpublished",
+  "x402CounterFrozen": "Historical October observation only; current counter status UNRESOLVED",
+  "x402AgenticShare": "2026-09-09",
+  "x402SolanaShare": "2026-08-22 to 2026-09-19",
+  "x402FiveChainMonth": "August 2026",
+  "x402WashAdjusted": "2026-04-21",
+  "tokenizedRwaReported": "early July 2026",
+  "tokenizedRwaTransferActivity": "2026-07-02",
+  "tokenizedRwaLandingPage": "2026-05-31",
+  "kansasCityFedBulletin": "2025-08-08, updated 2026-09-22",
+  "geniusCommencement": "OCC final rule announced 2026-10-21; effective 2027-01-18 per OCC",
+  "stablecoinPaymentsShare": "2025 data, BCG January 2026 paper; separate Allium Jan-Sep 2026 estimates",
+  "circleReserveSnapshot": "2026-09-30 23:59 UTC",
+  "alliumAgentPayments": "Q3 2026; report revised 2026-10-19"
 };
 export const HISTORICAL_DATASETS = {
-  depegs: 'Events dated May 2022, March 2023 and October 2025. Each case carries its own event and price date; a review pass does not re-date a historical event.',
-  marketCapHistory: 'Year-end marks 2017 to 2025 from one aggregator series, plus a dated 2026 observation. The 2026 point is not a year-end mark.',
-  regulationTable: 'Per-jurisdiction status dates, carried per row.',
-  recoveryTable: 'Per-jurisdiction instrument and status dates, carried per row; section as-of 2026-10-18.',
+  "depegs": "Events dated May 2022, March 2023 and October 2025. Each case carries its own event and price date; a review pass does not re-date a historical event.",
+  "marketCapHistory": "Year-end marks 2017 to 2025 from one aggregator series, plus a dated 2026 observation. The 2026 point is not a year-end mark.",
+  "regulationTable": "Per-jurisdiction status dates, carried per row.",
+  "recoveryTable": "Legal recovery paths reviewed 2026-10-18; US rulemaking and Singapore consultation status rechecked 2026-11-05. Other legal details retain their earlier review."
 };
 
 // Hub build marker rendered in the footer freshness badge. Derived from
@@ -56,106 +57,26 @@ export const HUB_BUILD = typeof __HUB_BUILD__ === 'string' ? __HUB_BUILD__ : 'de
 
 // --- manually-verified claims (see the methodology note in the footer) ---------
 export const verifiedClaims = [
-  {
-    id: 'treasury-ranking',
-    claim: 'Stablecoin-issuer Treasury-holder ranking',
-    resolution: "Tether's reported ~$141B in T-bill holdings (Q1 2026 attestation) would rank among the top foreign holders on the June 2026 TIC table (Japan $1,116.7B, United Kingdom $939.9B, China Mainland $633.4B) and exceeds Germany ($91.3B) and Norway ($104.4B) as of the Jan 2023 TIC table the original comparison used. Sovereign rows are mixed-vintage: top-3 are TIC Jun 2026; the Germany/Norway anchors remain Jan 2023 pending the next data refresh. The comparison is duration-mismatched: issuers hold short-dated T-bills, while TIC ranks total (long+short) foreign holdings.",
-    sources: [
-      { label: 'US Treasury TIC - Major Foreign Holders', url: 'https://ticdata.treasury.gov/Publish/mfhhis01.txt' },
-      { label: 'Tether transparency / reserves attestation', url: 'https://tether.to/en/transparency/' },
-      { label: 'Circle reserve report', url: 'https://www.circle.com/en/transparency' },
-    ],
-  },
-  {
-    id: 'genius-effective-date',
-    claim: 'GENIUS Act commencement mechanics (statute text verified; commencement UNRESOLVED)',
-    resolution: "Enacted July 18, 2025. Section 20 sets general commencement at the earlier of 18 months after enactment or 120 days after the primary federal payment stablecoin regulators issue any final implementing regulations, so January 18, 2027 is the outer limit rather than a settled date. Section 3(b)(1) separately places its offer-and-sale prohibition three years after enactment. Whether a qualifying final rule has triggered the earlier date is UNRESOLVED: this edition does not establish whether such a rule has been issued. Statutory mechanics are established and current commencement is not, so this report does not describe any GENIUS duty as locked, operative or in force. Proposed rules are not final rules. Re-verify commencement before relying on these statutory duties.",
-    sources: [
-      { label: 'GENIUS Act enacted text, Sec. 20 (12 U.S.C. 5901 note)', url: 'https://www.congress.gov/bill/119th-congress/senate-bill/1582/text' },
-      { label: 'OCC bulletin 2026-3 - GENIUS Act NPRM', url: 'https://www.occ.gov/news-issuances/bulletins/2026/bulletin-2026-3.html' },
-      { label: 'FDIC - GENIUS Act proposed rulemaking', url: 'https://www.fdic.gov/news/financial-institution-letters/2026/notice-proposed-rulemaking-establish-genius-act' },
-    ],
-  },
-  {
-    id: 'holder-recovery-waterfall',
-    claim: 'Stablecoin holder recovery after issuer insolvency in Singapore, Hong Kong, the EU and the US',
-    resolution: 'As of 2026-10-18: Hong Kong has an effective Ordinance (2025-08-01) whose Schedule 2 s 6(4) gives holders a right to direct disposal of the segregated reserve pool pro rata, with an unsecured claim for any shortfall; the HKMA requires an effective trust and an independent legal opinion. The EU treats USD payment stablecoins as e-money tokens under MiCA Title IV (applies 2024-06-30): a statutory claim against the issuer, redemption at par at any time, and funds safeguarded under EMD Article 7, but no Title IV no-recourse or priority rule. The US GENIUS Act is enacted but not operative: Section 20 sets commencement at the earlier of 2027-01-18 or 120 days after final rules, and no final rule is verified. Singapore is proposed only: P015-2026 closed 2026-10-16 with no outcome, and the draft Bill delegates insolvency safeguarding to regulations. No realized fiat-reserve-backed stablecoin issuer insolvency in these four jurisdictions was found. Terraform Labs (UST) is a realized issuer insolvency with an impaired crypto-loss class, but it was algorithmic and had no reserve pool, so it does not test the reserve-pool path. The USDC/SVB event was a reserve-custodian failure, not an issuer insolvency. The absence of a case is UNRESOLVED, not proof that the paths work.',
-    sources: [
-      { label: 'HK e-Legislation - Cap. 656 Stablecoins Ordinance', url: 'https://www.elegislation.gov.hk/hk/cap656' },
-      { label: 'HKMA - Guideline on Supervision of Licensed Stablecoin Issuers (Aug 2025)', url: 'https://www.hkma.gov.hk/media/eng/doc/key-functions/ifc/stablecoin-issuers/Guideline_on_supervision_of_licensed_stablecoin_issuers_eng.pdf' },
-      { label: 'ESMA - MiCA Article 49, issuance and redeemability of e-money tokens', url: 'https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-49-issuance-and-redeemability-e' },
-      { label: 'ESMA - MiCA Article 54, investment of funds received for e-money tokens', url: 'https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-54-investment-funds-received' },
-      { label: 'Directive 2009/110/EC Article 7, safeguarding requirements', url: 'https://www.legislation.gov.uk/eudr/2009/110/article/7' },
-      { label: 'Public Law 119-27, GENIUS Act, Section 11 and Section 20', url: 'https://www.congress.gov/119/plaws/publ27/PLAW-119publ27.pdf' },
-      { label: 'MAS - Consultation P015-2026, proposed amendments for stablecoin regulation', url: 'https://www.mas.gov.sg/publications/consultations/2026/consultation-on-proposed-amendments-to-the-payment-services-act-for-stablecoin-regulation' },
-    ],
-  },
-  {
-    id: 'svb-usdc-low',
-    claim: 'SVB / USDC low',
-    resolution: "USDC's secondary-market low was $0.8789 on the morning of March 11, 2023, per CoinGecko Research; specific Curve liquidity pools dropped below $0.82. Circle disclosed $3.3B (~8% of $40B reserves) stranded at Silicon Valley Bank. The peg recovered after the US government backstopped all SVB depositors.",
-    sources: [
-      { label: 'CoinGecko Research - Stablecoin Supply Impacted by SVB', url: 'https://www.coingecko.com/research/publications/stablecoins-supply-svb-impact' },
-      { label: 'CNBC - USDC breaks dollar peg', url: 'https://www.cnbc.com/2023/03/11/stablecoin-usdc-breaks-dollar-peg-after-firm-reveals-it-has-3point3-billion-in-svb-exposure.html' },
-    ],
-  },
-  {
-    id: 'ust-collapse',
-    claim: 'UST / Terra collapse figure',
-    resolution: "UST's stablecoin supply peaked near $18B market cap before the depeg (Reuters, ScienceDirect); the combined UST + LUNA market-cap loss over the collapse was roughly $60B (CoinMarketCap data via Binance). The often-cited '$40B' is an ambiguous partial figure and is not used here unqualified.",
-    sources: [
-      { label: 'ScienceDirect - Anatomy of a Stablecoin failure', url: 'https://www.sciencedirect.com/science/article/abs/pii/S1544612322005359' },
-      { label: 'Reuters - TerraUSD falls to 30 cents', url: 'https://www.reuters.com/technology/dollar-pegged-stablecoin-terrausd-falls-30-cents-2022-05-11/' },
-      { label: 'Binance - The Collapse of LUNA and UST', url: 'https://www.binance.com/en/square/post/22931497315953' },
-    ],
-  },
-  {
-    id: 'aug-2026-contraction',
-    claim: 'August 2026 stablecoin supply contraction',
-    resolution: "On August 2, 2026 stablecoin supply dropped roughly $15B within days (USDT fell from about $189B to $183B), the sharpest monthly contraction since the Terra collapse by some measures. Critically for learners, this was a redemption story, not a depeg: USDT and USDC continued trading within roughly 0.1% of $1 throughout. Supply shrinking is a volume story; depeg is a price story.",
-    sources: [
-      { label: 'Bitsgap - Stablecoin supply vs depeg, 2026 data', url: 'https://bitsgap.com/blog/stablecoin-supply-a-leading-market-signal' },
-      { label: 'Stablecoin Beat - Total market capitalization series', url: 'https://stablecoinbeat.com/charts/market-cap' },
-      { label: 'DefiLlama - Stablecoins dashboard', url: 'https://defillama.com/stablecoins' },
-    ],
-  },
-  {
-    id: 'kansascityfed-discrepancy',
-    claim: 'Kansas City Fed conditional Treasury-demand example (source disagrees with itself; coefficient UNRESOLVED)',
-    resolution: "The Bulletin states that an extra $1 of stablecoins raises total Treasury holdings by $0.50 while $1 less in bank deposits lowers them by $0.08, then states a net effect of $0.30. Its own components give $0.42, a gap of $0.12 with no reconciliation offered. Two versions of the note disagree with each other as well: the later HTML (which identifies a September 22, 2026 publisher correction) uses an 8 percent bank Treasury share, a $0.08 reduction and 2.5 percent loan contraction, while the linked PDF gives 20 percent, $0.20 and 1 percent; both retain the $0.30 net, and the PDF reader's cache freshness is unknown. The intended net-demand coefficient is therefore UNRESOLVED and no headline rests on either version. What survives both versions is the source's own hedge: if the sellers of the shifted funds sell Treasuries at the same rate issuers buy them, a larger stablecoin market has no net effect on Treasury demand, and households forgoing Treasury purchases would reduce it. Gross issuer Treasury holdings are not net new demand.",
-    sources: [
-      { label: 'Kansas City Fed Economic Bulletin, HTML, corrected 2026-09-22', url: 'https://www.kansascityfed.org/research/economic-bulletin/stablecoins-could-increase-treasury-demand-but-only-by-reducing-demand-for-other-assets/' },
-      { label: 'Federal Reserve FEDS Note, Banks in the Age of Stablecoins (2025-12-17)', url: 'https://www.federalreserve.gov/econres/notes/feds-notes/banks-in-the-age-of-stablecoins-implications-for-deposits-credit-and-financial-intermediation-20251217.html' },
-    ],
-  },
-  {
-    id: 'stablecoin-payments-share',
-    claim: 'Share of stablecoin transfer value that is real economic activity (two different definitions, both stated)',
-    resolution: "BCG and Allium report more than $62 trillion of annual stablecoin transfers with real economic activity of $4.2 trillion, about 7 percent of the total, and separately about $350 to $550 billion of observable bilateral goods-and-services payments in 2025, which is 0.565 to 0.887 percent of the gross figure and which the authors label a directionally robust lower bound with named exclusions. An earlier version of this report asserted that 95 to 99 percent of stablecoin volume is non-payment. No source contains that figure and it is withdrawn; the correct framing is about 7 percent under the broad definition and under 1 percent under the narrow goods-and-services definition. No single commerce share is established because the two definitions are not interchangeable.",
-    sources: [
-      { label: 'BCG and Allium Labs, Stablecoin payments: the truth behind the numbers (2026-09-30)', url: 'https://www.bcg.com/assets/2026/white-paper-stablecoin-payments-truth-behind-numbers.pdf' },
-    ],
-  },
-  {
-    id: 'open-usd-live',
-    claim: 'Open USD (OUSD) is issuer-reported live, not announced-only (supply snapshot is not adoption)',
-    resolution: "Bridge reported OUSD launched by Bridge Building Inc., a Stripe company, on Base, Ethereum, Solana and Tempo on September 30, 2026, with free 1:1 mint and burn reported on Solana that day. Bridge reports conditional OCC approval to establish Bridge National Trust Bank; conditional approval is not a final charter and no primary OCC order is verified here, so current charter status is UNRESOLVED. The issuer's own reserve page reported total supply in circulation of $468,445,399 at 11:30 UTC on October 1, 2026, backed by $257,214,691 cash and $211,230,708 Treasuries, which sum exactly to total supply (54.91 percent cash, 45.09 percent Treasuries). That is one dated issuer-reported snapshot, not adoption, velocity or payment volume. Open Standard describes partner rewards proportional to supply and activity, with an opportunity to earn equity. These company statements do not establish realized payouts, holder yield, direct holder title to reserve assets or an instruction right over their investment.",
-    sources: [
-      { label: 'Open Standard, Open USD is live (2026-09-30)', url: 'https://joinopenstandard.com/blog/open-usd-is-live' },
-      { label: 'Bridge, OUSD issued by Bridge (2026-09-30)', url: 'https://www.bridge.xyz/blog/ousd-is-live-issued-by-bridge' },
-      { label: 'Bridge, OUSD reserve page (snapshot 2026-10-01 11:30 UTC)', url: 'https://reserves.bridge.xyz/ousd' },
-    ],
-  },
+  {"id": "treasury-ranking", "claim": "Historical Treasury comparison and newer issuer exposure are different observations", "resolution": "The ranking chart retains its explicitly dated Q1 2026 issuer observation and mixed 2023/2026 TIC rows; it is not a current ranking. Tether now reports $132.4B direct and indirect Treasury bill exposure as of 2026-09-30, published 2026-10-30. Its linked reserve table separately reports $122.840B outright US Treasury bills. These are different measures, and neither is net new Treasury demand. Current like-for-like sovereign ranking remains UNRESOLVED.", "sources": [{"label": "US Treasury TIC - Major Foreign Holders", "url": "https://ticdata.treasury.gov/Publish/mfhhis01.txt"}, {"label": "Tether transparency / reserves attestation", "url": "https://tether.to/en/transparency/"}, {"label": "Circle reserve report", "url": "https://www.circle.com/en/transparency"}, {"label": "Tether Q3 2026 issuer release, reserves as of September 30", "url": "https://tether.io/news/tether-generates-1-5-billion-in-q3-net-operating-profit-as-reserve-buffer-doubles-to-almost-8-billion/"}]},
+  {"id": "genius-effective-date", "claim": "GENIUS OCC final rule and stated effective date", "resolution": "OCC Bulletin 2026-50, published 2026-10-21, announces a final GENIUS rule and states 2027-01-18 as the effective date of both its rule and the Act. This supersedes the earlier no-final-rule-verified finding. BSA, AML and sanctions rules are addressed separately. This is an OCC-jurisdiction rule, not evidence every agency rule is complete or every duty applies on 2026-11-05. Section 3(b)(1) retains its separate offer-and-sale timing.", "sources": [{"label": "OCC Bulletin 2026-50, final rule, October 21, 2026", "url": "https://www.occ.gov/news-issuances/bulletins/2026/bulletin-2026-50.html"}, {"label": "GENIUS Act enacted text, Sec. 20 (12 U.S.C. 5901 note)", "url": "https://www.congress.gov/bill/119th-congress/senate-bill/1582/text"}]},
+  {"id": "holder-recovery-waterfall", "claim": "Stablecoin holder recovery after issuer insolvency in Singapore, Hong Kong, the EU and the US", "resolution": "As of 2026-10-18: Hong Kong has an effective Ordinance (2025-08-01) whose Schedule 2 s 6(4) gives holders a right to direct disposal of the segregated reserve pool pro rata, with an unsecured claim for any shortfall; the HKMA requires an effective trust and an independent legal opinion. The EU treats USD payment stablecoins as e-money tokens under MiCA Title IV (applies 2024-06-30): a statutory claim against the issuer, redemption at par at any time, and funds safeguarded under EMD Article 7, but no Title IV no-recourse or priority rule. Update reviewed 2026-11-05: OCC announced its final GENIUS rule on 2026-10-21 and states the Act and rule are effective 2027-01-18. Singapore is proposed only: P015-2026 closed 2026-10-16; no outcome was established in the 2026-11-05 retrieval, and the draft Bill delegates insolvency safeguarding to regulations. No realized fiat-reserve-backed stablecoin issuer insolvency in these four jurisdictions was found. Terraform Labs (UST) is a realized issuer insolvency with an impaired crypto-loss class, but it was algorithmic and had no reserve pool, so it does not test the reserve-pool path. The USDC/SVB event was a reserve-custodian failure, not an issuer insolvency. The absence of a case is UNRESOLVED, not proof that the paths work.", "sources": [{"label": "HK e-Legislation - Cap. 656 Stablecoins Ordinance", "url": "https://www.elegislation.gov.hk/hk/cap656"}, {"label": "HKMA - Guideline on Supervision of Licensed Stablecoin Issuers (Aug 2025)", "url": "https://www.hkma.gov.hk/media/eng/doc/key-functions/ifc/stablecoin-issuers/Guideline_on_supervision_of_licensed_stablecoin_issuers_eng.pdf"}, {"label": "ESMA - MiCA Article 49, issuance and redeemability of e-money tokens", "url": "https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-49-issuance-and-redeemability-e"}, {"label": "ESMA - MiCA Article 54, investment of funds received for e-money tokens", "url": "https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-54-investment-funds-received"}, {"label": "Directive 2009/110/EC Article 7, safeguarding requirements", "url": "https://www.legislation.gov.uk/eudr/2009/110/article/7"}, {"label": "Public Law 119-27, GENIUS Act, Section 11 and Section 20", "url": "https://www.congress.gov/119/plaws/publ27/PLAW-119publ27.pdf"}, {"label": "MAS - Consultation P015-2026, proposed amendments for stablecoin regulation", "url": "https://www.mas.gov.sg/publications/consultations/2026/consultation-on-proposed-amendments-to-the-payment-services-act-for-stablecoin-regulation"}, {"label": "OCC final rule update, October 21, 2026", "url": "https://www.occ.gov/news-issuances/bulletins/2026/bulletin-2026-50.html"}]},
+  {"id": "svb-usdc-low", "claim": "SVB / USDC low", "resolution": "USDC's secondary-market low was $0.8789 on the morning of March 11, 2023, per CoinGecko Research; specific Curve liquidity pools dropped below $0.82. Circle disclosed $3.3B (~8% of $40B reserves) stranded at Silicon Valley Bank. The peg recovered after the US government backstopped all SVB depositors.", "sources": [{"label": "CoinGecko Research - Stablecoin Supply Impacted by SVB", "url": "https://www.coingecko.com/research/publications/stablecoins-supply-svb-impact"}, {"label": "CNBC - USDC breaks dollar peg", "url": "https://www.cnbc.com/2023/03/11/stablecoin-usdc-breaks-dollar-peg-after-firm-reveals-it-has-3point3-billion-in-svb-exposure.html"}]},
+  {"id": "ust-collapse", "claim": "UST / Terra collapse figure", "resolution": "UST's stablecoin supply peaked near $18B market cap before the depeg (Reuters, ScienceDirect); the combined UST + LUNA market-cap loss over the collapse was roughly $60B (CoinMarketCap data via Binance). The often-cited '$40B' is an ambiguous partial figure and is not used here unqualified.", "sources": [{"label": "ScienceDirect - Anatomy of a Stablecoin failure", "url": "https://www.sciencedirect.com/science/article/abs/pii/S1544612322005359"}, {"label": "Reuters - TerraUSD falls to 30 cents", "url": "https://www.reuters.com/technology/dollar-pegged-stablecoin-terrausd-falls-30-cents-2022-05-11/"}, {"label": "Binance - The Collapse of LUNA and UST", "url": "https://www.binance.com/en/square/post/22931497315953"}]},
+  {"id": "aug-2026-contraction", "claim": "August 2026 stablecoin supply contraction", "resolution": "On August 2, 2026 stablecoin supply dropped roughly $15B within days (USDT fell from about $189B to $183B), the sharpest monthly contraction since the Terra collapse by some measures. Critically for learners, this was a redemption story, not a depeg: USDT and USDC continued trading within roughly 0.1% of $1 throughout. Supply shrinking is a volume story; depeg is a price story.", "sources": [{"label": "Bitsgap - Stablecoin supply vs depeg, 2026 data", "url": "https://bitsgap.com/blog/stablecoin-supply-a-leading-market-signal"}, {"label": "Stablecoin Beat - Total market capitalization series", "url": "https://stablecoinbeat.com/charts/market-cap"}, {"label": "DefiLlama - Stablecoins dashboard", "url": "https://defillama.com/stablecoins"}]},
+  {"id": "kansascityfed-discrepancy", "claim": "Kansas City Fed conditional Treasury-demand example (source disagrees with itself; coefficient UNRESOLVED)", "resolution": "The Bulletin states that an extra $1 of stablecoins raises total Treasury holdings by $0.50 while $1 less in bank deposits lowers them by $0.08, then states a net effect of $0.30. Its own components give $0.42, a gap of $0.12 with no reconciliation offered. Two versions of the note disagree with each other as well: the later HTML (which identifies a September 22, 2026 publisher correction) uses an 8 percent bank Treasury share, a $0.08 reduction and 2.5 percent loan contraction, while the linked PDF gives 20 percent, $0.20 and 1 percent; both retain the $0.30 net, and the PDF reader's cache freshness is unknown. The intended net-demand coefficient is therefore UNRESOLVED and no headline rests on either version. What survives both versions is the source's own hedge: if the sellers of the shifted funds sell Treasuries at the same rate issuers buy them, a larger stablecoin market has no net effect on Treasury demand, and households forgoing Treasury purchases would reduce it. Gross issuer Treasury holdings are not net new demand.", "sources": [{"label": "Kansas City Fed Economic Bulletin, HTML, corrected 2026-09-22", "url": "https://www.kansascityfed.org/research/economic-bulletin/stablecoins-could-increase-treasury-demand-but-only-by-reducing-demand-for-other-assets/"}, {"label": "Federal Reserve FEDS Note, Banks in the Age of Stablecoins (2025-12-17)", "url": "https://www.federalreserve.gov/econres/notes/feds-notes/banks-in-the-age-of-stablecoins-implications-for-deposits-credit-and-financial-intermediation-20251217.html"}]},
+  {"id": "stablecoin-payments-share", "claim": "Adjusted transfers and classified payments use different definitions", "resolution": "BCG and Allium's January 2026 paper examines 2025: more than $62T gross transfers, $4.2T after removing non-economic activity, and separately $350B-$550B of classified goods-and-services payments between economically distinct parties. The $4.2T includes categories beyond payments and must not be called commerce. Rounded inputs give about 6.77% adjusted and 0.565%-0.887% classified payments against $62T. The payment estimate is a lower bound with off-chain exclusions; the residual is not proven non-payment activity. Separately, Allium's report revised 2026-10-19 estimates $97.9T raw, $2.4T adjusted and $482B classified payments for January-September 2026. Classification is inferred from behavior, not confirmed purpose; the different periods must not be merged.", "sources": [{"label": "BCG and Allium, January 2026 paper, 2025 data", "url": "https://www.bcg.com/assets/2026/white-paper-stablecoin-payments-truth-behind-numbers.pdf"}, {"label": "Allium Q3 2026 report, revised October 19", "url": "https://www.allium.so/reports/state-of-stablecoins-and-payments-q3-2026"}]},
+  {"id": "open-usd-live", "claim": "Open USD (OUSD) is issuer-reported live, not announced-only (supply snapshot is not adoption)", "resolution": "Bridge identifies Bridge Building Inc. as OUSD issuer following its 2026-09-30 launch. OCC Decision 1365 grants Bridge National Trust Bank preliminary conditional approval dated 2026-02-12, not final permission to commence business; Bridge's retrieved release says the separate trust bank is not operational and does not issue OUSD. The reserve page updated 2026-11-05 16:00 UTC reports 907,987,949 OUSD and $909,988,067 reserves. Displayed cash $113,626,625 plus Treasuries $794,609,125 sum to $908,235,750, leaving a $1,752,317 gap against the reserve headline. Reconciliation is UNRESOLVED, not evidence of insolvency. Issuer supply is not payment volume or adoption. Partner rewards are not holder yield.", "sources": [{"label": "Open Standard, Open USD is live (2026-09-30)", "url": "https://joinopenstandard.com/blog/open-usd-is-live"}, {"label": "Bridge, OUSD issued by Bridge (2026-09-30)", "url": "https://www.bridge.xyz/blog/ousd-is-live-issued-by-bridge"}, {"label": "Bridge OUSD reserve panel, November 5, 2026 16:00 UTC; mismatch unresolved", "url": "https://reserves.bridge.xyz/ousd"}, {"label": "OCC Bridge preliminary conditional order, February 12, 2026", "url": "https://www.occ.gov/topics/charters-and-licensing/interpretations-and-actions/2026/cd1365.pdf"}]},
+  {"id": "issuer-reserves-september-2026", "claim": "September 30 issuer reserve snapshots, not live market capitalizations", "resolution": "Tether reports assets $191,451,091,374, total liabilities $183,496,460,904 and excess $7,954,630,470 at 2026-09-30 23:59 UTC. Token liabilities are a separate $183,469,787,261. Its linked BDO reasonable-assurance report is limited to that reporting point and is not a full financial-statement audit. Circle's September report, dated 2026-10-26, gives 73,878,861,314 USDC in circulation and $73,956,687,701 reserve fair value at the same date/time. Circle's definition excludes allowed-but-unissued and access-denied tokens and pending Gateway burns. These issuer measures do not establish November 5 balances.", "sources": [{"label": "Tether Q3 2026 release", "url": "https://tether.io/news/tether-generates-1-5-billion-in-q3-net-operating-profit-as-reserve-buffer-doubles-to-almost-8-billion/"}, {"label": "Circle September 2026 reserve examination report", "url": "https://6778953.fs1.hubspotusercontent-na1.net/hubfs/6778953/USDCAttestationReports/2026/2026%20USDC_Examination%20Report%20September%2026.pdf"}]}
 ];
 
 // --- Section 1: taxonomy scale (mid-2026, ranges per research files) -----
 export const taxonomy = [
-  { id: 'fiat-usd', label: 'Fiat-USD', scale: '~$303B', asOf: 'Sep 2026', examples: 'USDT, USDC', mechanism: 'Full reserve in cash + short-term US Treasuries; redemption at par for approved institutions (retail exits through exchanges, not the issuer); arbitrage enforces the peg. The dominant case the dashboard tracks. Supply contracted ~$15B in Aug 2026 on redemptions while prices held within ~0.1% of $1.', why: 'Macro-relevant: the issuers are now structural buyers of US T-bills, tying crypto health to Treasury market liquidity. Tether has pre-launched a US-compliance token (USAT) ahead of final GENIUS rules.' },
-  { id: 'fiat-non-usd', label: 'Fiat non-USD', scale: '~$2B', asOf: 'Aug 2026', examples: 'EURC, JPYC, XSGD', mechanism: 'Mechanically similar to USDT/USDC but referenced to EUR, JPY, GBP or SGD. MiCA daily caps apply to non-euro-currency EMTs, not euro-pegged tokens.', why: 'Infrastructure for a 24/7 on-chain FX market; different reference currencies create different regulatory and liquidity questions.' },
-  { id: 'commodity', label: 'Commodity-backed', scale: '~$4.6-6B', asOf: 'early-mid 2026', examples: 'PAXG, XAUT, KAG', mechanism: 'Token = allocated physical gold in vaults (London, Switzerland). Price tracks gold spot, not $1. No peg-break risk in the dollar sense; takes on gold volatility and redemption friction.', why: 'Digitizes the oldest safe-haven asset; ~96% of the category is gold. Silver and oil remain economically marginal.' },
-  { id: 'crypto-synth', label: 'Crypto-collateralized / synthetic', scale: '~$13B', asOf: 'Aug 2026', examples: 'USDS/DAI, USDe, LUSD', mechanism: 'DAI/USDS: over-collateralized crypto vaults with liquidations. USDe: delta-neutral basis trade (spot long + short perp), funding rate pays yield. Peg enforced by code, not a bank promise.', why: 'Censorship-resistant dollar with no bank dependency; risk migrates to smart-contract bugs, liquidation cascades, and (USDe) funding-rate inversion.' },
-  { id: 'algorithmic', label: 'Algorithmic', scale: 'near zero as a pure category', asOf: 'May 2026', examples: 'UST (dead), Frax v2 (re-collateralized)', mechanism: 'No direct backing; a sister token absorbs sell pressure via mint/burn. UST May 2022 is the case study: the death spiral erased ~$60B combined in roughly a week.', why: 'Banned or excluded from regulated payment-stablecoin status everywhere (MiCA, GENIUS, HK, UAE). A cautionary tale, not a live design.' },
-  { id: 'rwa', label: 'RWA / tokenized funds', scale: '~$33.5B reported, excluding stablecoins', asOf: 'early July 2026, CryptoRank citing RWA.xyz; secondary report, not current primary fund AUM', examples: 'BUIDL, BENJI, OUSG', mechanism: 'Tokenized fund shares holding Treasuries or private credit are interests in a fund, not direct title to every security. Access, transfer restrictions and redemption timing are product-specific, not a universal T+1 rule. Payment tokens and fund shares may interact or substitute in some uses.', why: 'Legal wrappers, yield and access rules matter as well as the underlying asset. Low weekly public transfers do not prove economically idle capital; reported value, represented value and fund AUM are different measures.' },
+  {"id": "fiat-usd", "label": "Fiat-USD", "scale": "~$303B", "asOf": "Sep 2026", "examples": "USDT, USDC", "mechanism": "Full reserve in cash + short-term US Treasuries; redemption at par for approved institutions (retail exits through exchanges, not the issuer); arbitrage enforces the peg. The dominant case the dashboard tracks. Supply contracted ~$15B in Aug 2026 on redemptions while prices held within ~0.1% of $1.", "why": "Issuer reserves connect stablecoin redemptions with banks and short-term securities. Gross issuer holdings do not establish net new Treasury demand."},
+  {"id": "fiat-non-usd", "label": "Fiat non-USD", "scale": "~$2B", "asOf": "Aug 2026", "examples": "EURC, JPYC, XSGD", "mechanism": "Mechanically similar to USDT/USDC but referenced to EUR, JPY, GBP or SGD. MiCA daily caps apply to non-euro-currency EMTs, not euro-pegged tokens.", "why": "Infrastructure for a 24/7 on-chain FX market; different reference currencies create different regulatory and liquidity questions."},
+  {"id": "commodity", "label": "Commodity-backed", "scale": "~$4.6-6B", "asOf": "early-mid 2026", "examples": "PAXG, XAUT, KAG", "mechanism": "Token = allocated physical gold in vaults (London, Switzerland). Price tracks gold spot, not $1. No peg-break risk in the dollar sense; takes on gold volatility and redemption friction.", "why": "Digitizes the oldest safe-haven asset; ~96% of the category is gold. Silver and oil remain economically marginal."},
+  {"id": "crypto-synth", "label": "Crypto-collateralized / synthetic", "scale": "~$13B", "asOf": "Aug 2026", "examples": "USDS/DAI, USDe, LUSD", "mechanism": "Sky supports DAI and USDS through a mix of collateral and USDC conversion facilities. Ethena describes a dynamic USDe portfolio including basis trades, lending, tokenized assets and stablecoin rewards. These are issuer design descriptions retrieved 2026-11-05, not current allocation measurements.", "why": "Crypto collateral does not remove banks, stablecoins or counterparties from the dependency chain. Risks include contracts, liquidations, funding rates, custody and redemption access. Sources: Sky LitePSM documentation and Ethena documentation."},
+  {"id": "algorithmic", "label": "Algorithmic", "scale": "near zero as a pure category", "asOf": "May 2026", "examples": "UST (dead), Frax v2 (re-collateralized)", "mechanism": "No direct backing; a sister token absorbs sell pressure via mint/burn. UST May 2022 is the case study: the death spiral erased ~$60B combined in roughly a week.", "why": "Banned or excluded from regulated payment-stablecoin status everywhere (MiCA, GENIUS, HK, UAE). A cautionary tale, not a live design."},
+  {"id": "rwa", "label": "RWA / tokenized funds", "scale": "~$33.5B reported, excluding stablecoins", "asOf": "early July 2026, CryptoRank citing RWA.xyz; secondary report, not current primary fund AUM", "examples": "BUIDL, BENJI, OUSG", "mechanism": "Tokenized fund shares holding Treasuries or private credit are interests in a fund, not direct title to every security. Access, transfer restrictions and redemption timing are product-specific, not a universal T+1 rule. Payment tokens and fund shares may interact or substitute in some uses.", "why": "Legal wrappers, yield and access rules matter as well as the underlying asset. Low weekly public transfers do not prove economically idle capital; reported value, represented value and fund AUM are different measures."}
 ];
 
 // token comparison table rows
@@ -193,7 +114,7 @@ export const marketCapHistory = [
 export const scaleMarkers = [
   { year: 2022, month: 5, label: 'UST collapse', desc: '~$60B combined UST+LUNA erased in ~1 week' },
   { year: 2023, month: 3, label: 'SVB / USDC', desc: 'USDC low $0.8789; $3.3B stranded at SVB' },
-  { year: 2025, month: 7, label: 'GENIUS Act enacted', desc: 'Signed July 17-18, 2025. Section 20 commencement is the earlier of 18 months or 120 days after final regulations; no final rule is verified, so commencement is UNRESOLVED' },
+  { year: 2025, month: 7, label: 'GENIUS Act enacted', desc: 'Enacted July 18, 2025. Later update: OCC announced its final rule October 21, 2026 and states January 18, 2027 effectiveness.' },
   { year: 2026, month: 8, label: 'Aug 2 contraction', desc: '~$15B redeemed within days; pegs held within ~0.1%' },
   { year: 2026, month: 9, label: 'Open USD live', desc: 'OUSD issued by Bridge Building Inc. on Base, Ethereum, Solana and Tempo, 2026-09-30; issuer-reported supply snapshot $468.4M on 2026-10-01' },
 ];
@@ -203,42 +124,38 @@ export const scaleMarkers = [
 // same-date, same-universe measurement is the falsifier and does not exist
 // here, so no cross-source range is asserted (UNRESOLVED).
 export const marketCapMeasure = {
-  headline: '$308.0B',
-  measures: 'Total stablecoin market capitalisation across all issuers and all tracked chains, one aggregator measurement',
-  asOf: '2026-08-13',
-  changeYoy: '+14.3% year over year',
-  dollarShare: 'about 99.5% dollar-denominated',
-  distanceFromPeak: '4.5% below its May 2026 peak',
-  crossSourceRange: 'UNRESOLVED. No second independent measurement for the same date and universe is verified in this report\'s research record, so none is quoted.',
-  source: 'One aggregator, reported by a secondary compilation',
-  url: 'https://reap.global/blog/stablecoin-statistics-2026',
+  "headline": "$292.503B",
+  "measures": "Market capitalization of assets included by DefiLlama in its stablecoins table; includes non-USD tokens and fund tokens, not only the five dashboard coins",
+  "asOf": "2026-11-05",
+  "changeYoy": "Not recomputed on a matched source universe",
+  "dollarShare": "Not established for this snapshot",
+  "distanceFromPeak": "Not recomputed on a matched source universe",
+  "crossSourceRange": "UNRESOLVED. No independent same-date, same-universe measurement was established. Different snapshots from the same aggregator are not independent sources.",
+  "source": "DefiLlama stablecoins page, direct page observation",
+  "url": "https://defillama.com/stablecoins"
 };
 
 export const projections = [
-  { name: 'IMF', range: '$0.5-3.7T', low: 500, high: 3700, by: '2030', note: 'Wide, official; base case ~$1.5-2T' },
-  { name: 'Citi', range: '$1.9-4T', low: 1900, high: 4000, by: '2030', note: 'Base $1.9T, bull $4T' },
-  { name: 'Bain', range: 'up to $3.8T', low: 1900, high: 3800, by: '2030', note: '~12x current' },
-  { name: 'Standard Chartered', range: '$2T', low: 2000, high: 2000, by: '2028', note: 'Aggressive near-term slope' },
-  { name: 'JPMorgan', range: '~$500B', low: 500, high: 500, by: '2028', note: 'Conservative' },
+  {"name": "Citi", "range": "$1.9T base / $4T bull", "low": 1900, "high": 4000, "by": "2030", "published": "2025-09-25", "note": "Two named scenarios, not a confidence interval. Original forecast rechecked November 5, 2026; not established as latest forecast.", "source": "https://www.citigroup.com/global/insights/stablecoins-2030"}
 ];
 
 // --- Section 3: Treasury holdings (verified) ----------------------------
 export const treasuryHolders = [
-  { name: 'Japan', type: 'sovereign', value: 1116.7, note: 'TIC Jun 2026' },
-  { name: 'United Kingdom', type: 'sovereign', value: 939.9, note: 'TIC Jun 2026' },
-  { name: 'China', type: 'sovereign', value: 633.4, note: 'TIC Jun 2026' },
-  { name: 'Luxembourg', type: 'sovereign', value: 318.2, note: 'TIC Jan 2023 (pre-refresh)' },
-  { name: 'Switzerland', type: 'sovereign', value: 290.5, note: 'TIC Jan 2023 (pre-refresh)' },
-  { name: 'Cayman Islands', type: 'sovereign', value: 285.3, note: 'TIC Jan 2023 (pre-refresh)' },
-  { name: 'Canada', type: 'sovereign', value: 254.1, note: 'TIC Jan 2023 (pre-refresh)' },
-  { name: 'Ireland', type: 'sovereign', value: 253.4, note: 'TIC Jan 2023 (pre-refresh)' },
-  { name: 'Taiwan', type: 'sovereign', value: 234.6, note: 'TIC Jan 2023 (pre-refresh)' },
-  { name: 'India', type: 'sovereign', value: 232.0, note: 'TIC Jan 2023 (pre-refresh)' },
-  { name: 'Tether (issuer)', type: 'issuer', value: 141, note: 'Q1 2026 attestation' },
-  { name: 'Norway', type: 'sovereign', value: 104.4 },
-  { name: 'Germany', type: 'sovereign', value: 91.3 },
-  { name: 'UAE', type: 'sovereign', value: 64.9 },
-  { name: 'Combined issuers (4)', type: 'issuer', value: 182.4, note: 'Tether+Circle+First Digital+Paxos', benchmark: true },
+  {"name": "Japan", "type": "sovereign", "value": 1116.7, "note": "TIC Jun 2026"},
+  {"name": "United Kingdom", "type": "sovereign", "value": 939.9, "note": "TIC Jun 2026"},
+  {"name": "China", "type": "sovereign", "value": 633.4, "note": "TIC Jun 2026"},
+  {"name": "Luxembourg", "type": "sovereign", "value": 318.2, "note": "TIC Jan 2023 (pre-refresh)"},
+  {"name": "Switzerland", "type": "sovereign", "value": 290.5, "note": "TIC Jan 2023 (pre-refresh)"},
+  {"name": "Cayman Islands", "type": "sovereign", "value": 285.3, "note": "TIC Jan 2023 (pre-refresh)"},
+  {"name": "Canada", "type": "sovereign", "value": 254.1, "note": "TIC Jan 2023 (pre-refresh)"},
+  {"name": "Ireland", "type": "sovereign", "value": 253.4, "note": "TIC Jan 2023 (pre-refresh)"},
+  {"name": "Taiwan", "type": "sovereign", "value": 234.6, "note": "TIC Jan 2023 (pre-refresh)"},
+  {"name": "India", "type": "sovereign", "value": 232, "note": "TIC Jan 2023 (pre-refresh)"},
+  {"name": "Tether (issuer)", "type": "issuer", "value": 141, "note": "Q1 2026 attestation"},
+  {"name": "Norway", "type": "sovereign", "value": 104.4, "note": "TIC Jan 2023 historical comparison"},
+  {"name": "Germany", "type": "sovereign", "value": 91.3, "note": "TIC Jan 2023 historical comparison"},
+  {"name": "UAE", "type": "sovereign", "value": 64.9, "note": "TIC Jan 2023 historical comparison"},
+  {"name": "Combined issuers (4)", "type": "issuer", "value": 182.4, "note": "Historical aggregate from earlier edition; mixed issuer dates, not refreshed for November 2026", "benchmark": true}
 ];
 
 // --- Section 4: banks ----------------------------------------------------
@@ -276,44 +193,43 @@ export const tBillMaturities = [
 ];
 
 // GENIUS Act rulemaking status (dated paragraph, not a live tracker).
-// Commencement mechanics are known from the enrolled text; whether a final
-// implementing rule has actually triggered the earlier date is UNRESOLVED, so
-// nothing here is described as locked or currently operative.
+// OCC final rule and stated effective date were rechecked November 5, 2026.
+// Separate statutory timing and other agency rules remain distinct.
 export const geniusStatus = {
-  enacted: 'July 18, 2025',
-  asOf: 'Sep 2026',
-  commencementMechanics: 'Section 20: general commencement is the earlier of 18 months after enactment (an outer limit of January 18, 2027) or 120 days after the primary federal payment stablecoin regulators issue any final implementing regulations. Section 3(b)(1) separately places its offer-and-sale prohibition three years after enactment.',
-  commencementStatus: 'UNRESOLVED. This report does not establish whether a qualifying final implementing rule has been issued. January 18, 2027 is an outer limit rather than a settled commencement date.',
-  totalRulemakings: 26,
-  agencies: 6,
-  nprmsIssued: 10,
-  finalRules: null,
-  reserveClasses: 'Eight eligible reserve classes under Sec. 4(a)(1)(A), not Treasury bills alone. See the reserve note below for the list.',
-  note: 'NPRMs from OCC (bulletin 2026-3), FDIC, NCUA and Treasury were in comment periods at the last check. Because commencement is unconfirmed, this report does not describe any GENIUS duty as currently in force; it describes what the statute requires once commenced. Earlier estimates of a 2026 commencement date are obsolete.',
-  source: 'GENIUS Act enacted text (Sec. 4 and Sec. 20); Paradigm GENIUS Act Rulemaking Tracker; OCC bulletin 2026-3; FDIC proposal',
-  url: 'https://www.congress.gov/bill/119th-congress/senate-bill/1582/text',
+  "enacted": "July 18, 2025",
+  "asOf": "2026-11-05 review; OCC announcement 2026-10-21",
+  "commencementMechanics": "Section 20: general commencement is the earlier of 18 months after enactment (an outer limit of January 18, 2027) or 120 days after the primary federal payment stablecoin regulators issue any final implementing regulations. Section 3(b)(1) separately places its offer-and-sale prohibition three years after enactment.",
+  "commencementStatus": "OCC Bulletin 2026-50 states the Act and its final rule are effective January 18, 2027. This supersedes the earlier unverified-final-rule status.",
+  "totalRulemakings": null,
+  "agencies": null,
+  "nprmsIssued": null,
+  "finalRules": null,
+  "reserveClasses": "Eight eligible reserve classes under Sec. 4(a)(1)(A), not Treasury bills alone. See the reserve note below for the list.",
+  "note": "One OCC final rule is verified. A complete all-agency count was not established. BSA, AML and sanctions rules are separate. No current-effect claim is implied for November 5, 2026.",
+  "source": "OCC Bulletin 2026-50, October 21, 2026; enacted statute for separate timing provisions",
+  "url": "https://www.occ.gov/news-issuances/bulletins/2026/bulletin-2026-50.html"
 };
 
 // GENIUS reserves are a statutory list, not "T-bills only". Quoted from the
 // enrolled text's structure rather than paraphrased into a single asset class.
 export const geniusReserves = {
-  citation: 'GENIUS Act Sec. 4(a)(1)(A), 12 U.S.C. 5903(a)(1)(A)',
-  headline: 'Reserves must be at least 1:1 and comprise a list of eight eligible classes. Treasury bills are one of them, not the whole of it.',
-  classes: [
-    'Coins and currency.',
-    'Insured deposits.',
-    'Treasury bills, notes or bonds of 93 days or less, measured by remaining or original maturity.',
-    'Overnight repo backed by such Treasury securities.',
-    'Overnight reverse repo against Treasury notes, bills or bonds: tri-party, centrally cleared, or bilateral with a creditworthy counterparty.',
-    'Shares of a registered Government money market fund invested solely in the preceding classes.',
-    'Other similarly liquid Federal Government-issued assets approved by the regulator.',
-    'Tokenized forms of the eligible classes.',
+  "citation": "GENIUS Act Sec. 4(a)(1)(A), 12 U.S.C. 5903(a)(1)(A)",
+  "headline": "Reserves must be at least 1:1 and comprise a list of eight eligible classes. Treasury bills are one of them, not the whole of it.",
+  "classes": [
+    "Coins and currency.",
+    "Insured deposits.",
+    "Treasury bills, notes or bonds of 93 days or less, measured by remaining or original maturity.",
+    "Overnight repo backed by such Treasury securities.",
+    "Overnight reverse repo against Treasury notes, bills or bonds: tri-party, centrally cleared, or bilateral with a creditworthy counterparty.",
+    "Shares of a registered Government money market fund invested solely in the preceding classes.",
+    "Other similarly liquid Federal Government-issued assets approved by the regulator.",
+    "Tokenized forms of the eligible classes."
   ],
-  disclosure: 'Sec. 4 also requires monthly publication of reserve composition, including average tenor and the geographic location of custody per category.',
-  pledgeBan: 'Sec. 4 prohibits pledging or rehypothecating reserves outside the statute\'s stated exceptions.',
-  accounting: 'Sec. 3(g) denies non-permitted stablecoins the treatment of cash or cash equivalent for accounting purposes, cash-equivalent margin and collateral eligibility, and acceptable wholesale settlement asset status.',
-  scope: 'Statutory requirement. It binds once the Act commences, and commencement is itself UNRESOLVED.',
-  url: 'https://www.congress.gov/bill/119th-congress/senate-bill/1582/text',
+  "disclosure": "Sec. 4 also requires monthly publication of reserve composition, including average tenor and the geographic location of custody per category.",
+  "pledgeBan": "Sec. 4 prohibits pledging or rehypothecating reserves outside the statute's stated exceptions.",
+  "accounting": "Sec. 3(g) denies non-permitted stablecoins the treatment of cash or cash equivalent for accounting purposes, cash-equivalent margin and collateral eligibility, and acceptable wholesale settlement asset status.",
+  "scope": "Enacted statutory requirements. OCC Bulletin 2026-50 states the Act effective date is 2027-01-18; separate statutory timing and rulemaking scope still matter.",
+  "url": "https://www.congress.gov/bill/119th-congress/senate-bill/1582/text"
 };
 
 // Gross issuer Treasury exposure is not net new Treasury demand. The Kansas
@@ -321,14 +237,14 @@ export const geniusReserves = {
 // disagrees with itself, so the coefficient is UNRESOLVED and no headline
 // rests on it.
 export const treasuryDemandMechanism = {
-  title: 'Gross holdings are not net new demand',
-  lead: 'Tether reports about $141B of direct and indirect US Treasury bill exposure against about $183B of token liabilities as of 2026-03-31. That is gross exposure, not incremental demand. Where the money came from decides whether issuer purchases add to, replace or reduce Treasury demand.',
-  kcFed: 'Under an explicitly strong assumption that bank and issuer asset mixes hold, the Kansas City Fed Bulletin models an extra $1 of stablecoins raising Treasury holdings by $0.50 and $1 less in bank deposits lowering them by $0.08, and states a $0.30 net effect.',
-  discrepancy: 'Its own components give $0.42, not $0.30; the $0.12 gap is unreconciled. Two versions of the note also disagree: the later publisher-corrected HTML uses an 8 percent bank Treasury share, a $0.08 reduction and 2.5 percent loan contraction, while the linked PDF gives 20 percent, $0.20 and 1 percent. Both retain the $0.30 net, and the PDF reader\'s cache freshness is unknown.',
-  status: 'UNRESOLVED. The intended net-demand coefficient is not established, and this report does not publish a corrected one.',
-  hedge: 'What survives both versions is the source\'s own hedge: if the sellers of the shifted funds sell Treasuries at the same rate issuers buy them, a larger stablecoin market has no net effect on Treasury demand at all. Where households forgo or sell Treasury purchases the effect reverses sign, because $1 less household buying creates only $0.50 of issuer buying.',
-  implication: 'Stablecoin growth can redirect short-term safe-asset demand. It cannot be used to measure net new Treasury demand, debt relief or lending contraction market-wide.',
-  url: 'https://www.kansascityfed.org/research/economic-bulletin/stablecoins-could-increase-treasury-demand-but-only-by-reducing-demand-for-other-assets/',
+  "title": "Gross holdings are not net new demand",
+  "lead": "Tether reports $132.4B direct and indirect US Treasury bill exposure and $183.470B token liabilities as of 2026-09-30, published 2026-10-30. Its outright Treasury-bill line is a different $122.840B. Gross exposure does not establish incremental demand; the funding source and displaced holdings matter.",
+  "kcFed": "Under an explicitly strong assumption that bank and issuer asset mixes hold, the Kansas City Fed Bulletin models an extra $1 of stablecoins raising Treasury holdings by $0.50 and $1 less in bank deposits lowering them by $0.08, and states a $0.30 net effect.",
+  "discrepancy": "Its own components give $0.42, not $0.30; the $0.12 gap is unreconciled. Two versions of the note also disagree: the later publisher-corrected HTML uses an 8 percent bank Treasury share, a $0.08 reduction and 2.5 percent loan contraction, while the linked PDF gives 20 percent, $0.20 and 1 percent. Both retain the $0.30 net, and the PDF reader's cache freshness is unknown.",
+  "status": "UNRESOLVED. The intended net-demand coefficient is not established, and this report does not publish a corrected one.",
+  "hedge": "What survives both versions is the source's own hedge: if the sellers of the shifted funds sell Treasuries at the same rate issuers buy them, a larger stablecoin market has no net effect on Treasury demand at all. Where households forgo or sell Treasury purchases the effect reverses sign, because $1 less household buying creates only $0.50 of issuer buying.",
+  "implication": "Stablecoin growth can redirect short-term safe-asset demand. It cannot be used to measure net new Treasury demand, debt relief or lending contraction market-wide.",
+  "url": "https://www.kansascityfed.org/research/economic-bulletin/stablecoins-could-increase-treasury-demand-but-only-by-reducing-demand-for-other-assets/"
 };
 
 // BPI full-journey finding (callout next to the remittance calculator).
@@ -532,21 +448,22 @@ export const depegTakeaways = [
 
 // --- Section 8: regulation ----------------------------------------------
 export const regulation = [
-  { jurisdiction: 'United States', framework: 'GENIUS Act', status: 'Enacted Jul 2025. Commencement UNRESOLVED: section 20 sets it at the earlier of 18 months (outer limit Jan 18, 2027) or 120 days after final regulations, and no final rule is verified', pegs: 'USD', algorithmic: 'Banned', rules: '1:1 against eight eligible reserve classes, not T-bills alone; monthly composition disclosure; no pledge or rehypothecation outside statutory exceptions; no yield to holders; bank + nonbank PPSI; <$10B state path' },
-  { jurisdiction: 'European Union', framework: 'MiCA', status: 'Token rules live Jun 30, 2024; CASP grandfathering ended Jul 1, 2026; EC review consultation closes Sep 30, 2026', pegs: 'EUR focus; other currencies capped', algorithmic: 'Banned in practice', rules: 'EMTs (single fiat) + ARTs (basket); 30/60% bank deposit quota; non-euro daily caps (euro-pegged EMTs are not subject to the cap)' },
-  { jurisdiction: 'United Kingdom', framework: 'FSMA / FCA', status: 'FCA authorisation opens Sep 30, 2026; regime commences Oct 25, 2027; BoE systemic-issuer consultation closes Sep 22, 2026', pegs: 'GBP focus', algorithmic: 'Banned in practice', rules: '100% HQLA; 1% capital (diluted from 2%); no yield; BoE oversight for systemic' },
-  { jurisdiction: 'Japan', framework: 'Payment Services Act', status: 'Live (2023, updated Jun 2025); foreign coins via licensed distributors from Jun 1 2026', pegs: 'JPY; USD via distributor', algorithmic: 'Banned', rules: 'Issuers limited to banks/trust/transfer providers; up to 50% gov bonds' },
-  { jurisdiction: 'Singapore', framework: 'MAS Stablecoin Framework', status: 'Framework announced 2023; implementing amendments consulted Sep-Oct 2026 (P015-2026, closed 2026-10-16); no outcome or enacted text verified as of 2026-10-18', pegs: 'SGD + G10', algorithmic: 'Banned in practice', rules: '100% segregated reserves; monthly independent checks; MPI license' },
-  { jurisdiction: 'Hong Kong', framework: 'Stablecoins Ordinance', status: 'Effective Aug 1, 2025; first licenses Apr 2026 (HSBC/StanChart tipped)', pegs: 'HKD + foreign', algorithmic: 'Explicitly banned', rules: 'HK$25M capital min; 100% reserve at market value' },
-  { jurisdiction: 'UAE', framework: 'CBUAE Payment Token Reg', status: 'Live (Aug 2024)', pegs: 'AED focus; fiat', algorithmic: 'Banned in practice', rules: '100% fiat backing; first licensed AED token late 2024' },
-  { jurisdiction: 'India', framework: 'Pending / ambiguous', status: 'Debated 2025-2026', pegs: 'n/a', algorithmic: 'n/a', rules: 'No explicit law; 30% tax; RBI favors CBDC; FEMA classification uncertain' },
+  {"jurisdiction": "United States", "framework": "GENIUS Act", "status": "OCC final rule announced Oct 21, 2026; OCC states Act and rule effective Jan 18, 2027. Rechecked Nov 5; other agencies and separate timing are not collapsed into this date.", "pegs": "USD", "algorithmic": "Banned", "rules": "1:1 against eight eligible reserve classes, not T-bills alone; monthly composition disclosure; no pledge or rehypothecation outside statutory exceptions; no yield to holders; bank + nonbank PPSI; <$10B state path"},
+  {"jurisdiction": "European Union", "framework": "MiCA", "status": "Token rules live Jun 30, 2024; CASP grandfathering ended Jul 1, 2026; EC review consultation closes Sep 30, 2026", "pegs": "EUR focus; other currencies capped", "algorithmic": "Banned in practice", "rules": "EMTs (single fiat) + ARTs (basket); 30/60% bank deposit quota; non-euro daily caps (euro-pegged EMTs are not subject to the cap)"},
+  {"jurisdiction": "United Kingdom", "framework": "FSMA / FCA", "status": "FCA authorisation opens Sep 30, 2026; regime commences Oct 25, 2027; BoE systemic-issuer consultation closes Sep 22, 2026", "pegs": "GBP focus", "algorithmic": "Banned in practice", "rules": "100% HQLA; 1% capital (diluted from 2%); no yield; BoE oversight for systemic"},
+  {"jurisdiction": "Japan", "framework": "Payment Services Act", "status": "Live (2023, updated Jun 2025); foreign coins via licensed distributors from Jun 1 2026", "pegs": "JPY; USD via distributor", "algorithmic": "Banned", "rules": "Issuers limited to banks/trust/transfer providers; up to 50% gov bonds"},
+  {"jurisdiction": "Singapore", "framework": "MAS Stablecoin Framework", "status": "Framework announced 2023; P015-2026 consultation closed Oct 16. Outcome or enacted implementation not established in Nov 5 retrieval.", "pegs": "SGD + G10", "algorithmic": "Banned in practice", "rules": "100% segregated reserves; monthly independent checks; MPI license"},
+  {"jurisdiction": "Hong Kong", "framework": "Stablecoins Ordinance", "status": "Ordinance effective Aug 1, 2025. Register retrieved Nov 5, 2026 lists Anchorpoint Financial Limited and HSBC, both effective Apr 10, 2026; register last revision Apr 23.", "pegs": "HKD + foreign", "algorithmic": "Explicitly banned", "rules": "HK$25M capital min; 100% reserve at market value"},
+  {"jurisdiction": "UAE", "framework": "CBUAE Payment Token Reg", "status": "Live (Aug 2024)", "pegs": "AED focus; fiat", "algorithmic": "Banned in practice", "rules": "100% fiat backing; first licensed AED token late 2024"},
+  {"jurisdiction": "India", "framework": "Pending / ambiguous", "status": "Debated 2025-2026", "pegs": "n/a", "algorithmic": "n/a", "rules": "No explicit law; 30% tax; RBI favors CBDC; FEMA classification uncertain"}
 ];
 
 // --- Section 8b: recent regulatory movement (dated, re-verify before citing) ---
 export const regulationNews = [
-  { date: 'Sep 2026', label: 'US: CLARITY Act Senate vote due Sep 15', detail: 'Market-structure bill that would narrow the SEC/CFTC gap for stablecoin-adjacent activity; a separate bill from the GENIUS Act (S.1582).', source: 'https://www.congress.gov/bill/119th-congress/house-bill/3633' },
-  { date: 'Aug 26, 2026', label: 'Korea: Shinhan-Visa stablecoin pilot', detail: 'Strategic agreement to test stablecoin issuance, remittance, and redemption for the Korean market.', source: 'https://reports.tiger-research.com/p/2026-asia-stablecoin-market-overview-eng' },
-  { date: 'Jul 14, 2026', label: 'Japan: JCB-Circle MOU', detail: 'Card network exploring USDC payments and cross-border settlement in Japan; travel-rule data requirements live from Aug 3, 2026.', source: 'https://cointelegraph.com/news/japans-jcb-signs-mou-with-circle-to-explore-usdc-payments-and-cross-border-settlements' },
+  {"date": "Oct 21, 2026", "label": "US: OCC final GENIUS rule", "detail": "OCC states Act and rule effective January 18, 2027; separate BSA, AML and sanctions rulemaking.", "source": "https://www.occ.gov/news-issuances/bulletins/2026/bulletin-2026-50.html"},
+  {"date": "Sep 2026", "label": "US: CLARITY Act Senate vote due Sep 15", "detail": "Market-structure bill that would narrow the SEC/CFTC gap for stablecoin-adjacent activity; a separate bill from the GENIUS Act (S.1582).", "source": "https://www.congress.gov/bill/119th-congress/house-bill/3633"},
+  {"date": "Aug 26, 2026", "label": "Korea: Shinhan-Visa stablecoin pilot", "detail": "Strategic agreement to test stablecoin issuance, remittance, and redemption for the Korean market.", "source": "https://reports.tiger-research.com/p/2026-asia-stablecoin-market-overview-eng"},
+  {"date": "Jul 14, 2026", "label": "Japan: JCB-Circle MOU", "detail": "Card network exploring USDC payments and cross-border settlement in Japan; travel-rule data requirements live from Aug 3, 2026.", "source": "https://cointelegraph.com/news/japans-jcb-signs-mou-with-circle-to-explore-usdc-payments-and-cross-border-settlements"}
 ];
 
 // --- Section 8c: holder recovery after issuer insolvency -----------------
@@ -557,46 +474,10 @@ export const regulationNews = [
 export const RECOVERY_AS_OF = '2026-10-18';
 
 export const recoveryMatrix = [
-  {
-    jurisdiction: 'Hong Kong',
-    instrument: 'Stablecoins Ordinance (Cap. 656), Schedule 2 s 6',
-    status: 'Effective 2025-08-01',
-    reserve: "A separate pool per stablecoin type, segregated and protected from the licensee's other creditors. HKMA requires an effective trust arrangement, an independent trustee or declaration of trust, and an independent legal opinion.",
-    holderPath: "On the licensee's insolvency, holders may direct disposal of the reserve pool to redeem all outstanding stablecoins of that type pro rata.",
-    shortfall: 'A claim against the licensee. The Ordinance states no priority, so on its face it is a personal claim that appears to rank as unsecured; this report did not verify the HK winding-up ranking.',
-    unresolved: 'Enforcement in a realized winding-up is untested. The Ordinance text is a licensee duty; the trust is a supervisory requirement, not a statutory trust.',
-    sourceIds: ['hk-cap656', 'hkma-stablecoin-guideline'],
-  },
-  {
-    jurisdiction: 'European Union (e-money token)',
-    instrument: 'MiCA Title IV, Articles 48-49 and 54-55',
-    status: 'Applies 2024-06-30',
-    reserve: 'Funds safeguarded under E-Money Directive 2009/110/EC Article 7(1); at least 30% in separate accounts, the rest in secure low-risk assets. The safeguarding method is left to national law.',
-    holderPath: 'A statutory claim against the issuer; redeem at any time at par value in funds other than e-money, with no fee.',
-    shortfall: 'Title IV has no no-recourse or priority rule. The shortfall and its ranking are left to national insolvency law.',
-    unresolved: 'National transposition of EMD Article 7 and the shortfall ranking differ by member state.',
-    sourceIds: ['mica-art-3', 'mica-art-48', 'mica-art-49', 'mica-art-54', 'mica-art-55', 'mica-art-149', 'emd-art-7'],
-  },
-  {
-    jurisdiction: 'United States',
-    instrument: 'GENIUS Act, Section 11 and 11 U.S.C. 507(e)',
-    status: 'Enacted 2025-07-18; not operative until the earlier of 2027-01-18 or 120 days after final implementing rules',
-    reserve: 'Required payment stablecoin reserves are excluded from the estate; the automatic stay applies to them.',
-    holderPath: 'Holders have priority over required reserves, ratable with other holders.',
-    shortfall: 'First priority only to the extent additional reserves were required under Section 4. Any loss above that is an ordinary claim.',
-    unresolved: 'No final implementing rule is verified, and no permitted payment stablecoin issuer exists yet.',
-    sourceIds: ['genius-plaw-119-27'],
-  },
-  {
-    jurisdiction: 'Singapore',
-    instrument: 'Draft Payment Services Act amendments, P015-2026',
-    status: 'Proposed; consultation closed 2026-10-16, no outcome published',
-    reserve: 'Proposed trust segregation of reserve assets. Not enacted.',
-    holderPath: 'The draft Bill gives a redemption right and a separate reserve pool, but no holder insolvency right. Insolvency safeguarding is delegated to future regulations.',
-    shortfall: 'Proposed; unresolved.',
-    unresolved: 'No published consultation outcome and no enacted text as of 2026-10-18.',
-    sourceIds: ['mas-p015-2026', 'mas-p015-paper', 'mas-annex-c'],
-  },
+  {"jurisdiction": "Hong Kong", "instrument": "Stablecoins Ordinance (Cap. 656), Schedule 2 s 6", "status": "Effective 2025-08-01", "reserve": "A separate pool per stablecoin type, segregated and protected from the licensee's other creditors. HKMA requires an effective trust arrangement, an independent trustee or declaration of trust, and an independent legal opinion.", "holderPath": "On the licensee's insolvency, holders may direct disposal of the reserve pool to redeem all outstanding stablecoins of that type pro rata.", "shortfall": "A claim against the licensee. The Ordinance states no priority, so on its face it is a personal claim that appears to rank as unsecured; this report did not verify the HK winding-up ranking.", "unresolved": "Enforcement in a realized winding-up is untested. The Ordinance text is a licensee duty; the trust is a supervisory requirement, not a statutory trust.", "sourceIds": ["hk-cap656", "hkma-stablecoin-guideline"]},
+  {"jurisdiction": "European Union (e-money token)", "instrument": "MiCA Title IV, Articles 48-49 and 54-55", "status": "Applies 2024-06-30", "reserve": "Funds safeguarded under E-Money Directive 2009/110/EC Article 7(1); at least 30% in separate accounts, the rest in secure low-risk assets. The safeguarding method is left to national law.", "holderPath": "A statutory claim against the issuer; redeem at any time at par value in funds other than e-money, with no fee.", "shortfall": "Title IV has no no-recourse or priority rule. The shortfall and its ranking are left to national insolvency law.", "unresolved": "National transposition of EMD Article 7 and the shortfall ranking differ by member state.", "sourceIds": ["mica-art-3", "mica-art-48", "mica-art-49", "mica-art-54", "mica-art-55", "mica-art-149", "emd-art-7"]},
+  {"jurisdiction": "United States", "instrument": "GENIUS Act, Section 11 and 11 U.S.C. 507(e)", "status": "Update reviewed 2026-11-05: OCC announced final rule 2026-10-21 and states Act and rule effective 2027-01-18.", "reserve": "Required payment stablecoin reserves are excluded from the estate; the automatic stay applies to them.", "holderPath": "Holders have priority over required reserves, ratable with other holders.", "shortfall": "First priority only to the extent additional reserves were required under Section 4. Any loss above that is an ordinary claim.", "unresolved": "Realized enforcement and recovery remain untested in this record. Final OCC rule does not establish that every agency rule is complete.", "sourceIds": ["genius-plaw-119-27", "occ-final-2026-50"]},
+  {"jurisdiction": "Singapore", "instrument": "Draft Payment Services Act amendments, P015-2026", "status": "Proposed; consultation closed 2026-10-16; outcome not established in 2026-11-05 retrieval.", "reserve": "Proposed trust segregation of reserve assets. Not enacted.", "holderPath": "The draft Bill gives a redemption right and a separate reserve pool, but no holder insolvency right. Insolvency safeguarding is delegated to future regulations.", "shortfall": "Proposed; unresolved.", "unresolved": "No implementation outcome established by the retrieved consultation page; this is not proof no later instrument exists.", "sourceIds": ["mas-p015-2026", "mas-p015-paper", "mas-annex-c"]}
 ];
 
 // --- Section 9: reality check -------------------------------------------
@@ -620,48 +501,12 @@ export const realityCheck = [
  * as if they were.
  */
 export const floatEconomics = [
-  {
-    issuer: 'Tether',
-    measure: 'Net operating profit, Q2 2026',
-    value: '+$1.50B',
-    asOf: 'Q2 2026 (pub. 2026-07-31)',
-    note: 'Tether\'s own release headline. The term is not defined in any Tether document; Tether does not state that mark-to-market is excluded.',
-  },
-  {
-    issuer: 'Tether',
-    measure: 'Change in net equity, Q2 2026 standalone',
-    value: 'about -$4.21B',
-    asOf: 'Q2 2026 (2026-06-30)',
-    note: 'Derived from Tether\'s own change-in-net-equity table: H1 2026 is -$3,171m and Q1 2026 was +$1,040m. Tether publishes no reconciliation between this and the headline above.',
-  },
-  {
-    issuer: 'Tether',
-    measure: 'FY2025 financial result',
-    value: '+$10.11B',
-    asOf: 'FY2025 (2025-12-31)',
-    note: 'Exact figure, 10,106 USD millions. Dividends of 10,855 were distributed, so equity fell year on year.',
-  },
-  {
-    issuer: 'Circle',
-    measure: 'Reserve income, Q2 2026',
-    value: '$667.7M',
-    asOf: 'Q2 2026 (2026-06-30)',
-    note: 'From the 10-Q. 95.2% of Circle\'s Q2 2026 total revenue (96.0% for FY2025). This is the income on reserves, before the distribution split.',
-  },
-  {
-    issuer: 'Circle',
-    measure: 'Coinbase-only distribution, Q2 2026',
-    value: '$324.6M',
-    asOf: 'Q2 2026 (2026-06-30)',
-    note: '46.3% of the $701.3M revenue line. Do not confuse with the $412.5M total distribution, transaction and other costs, which is a different, larger figure.',
-  },
-  {
-    issuer: 'Circle',
-    measure: 'Net loss from continuing operations, FY2025',
-    value: '-$69.5M',
-    asOf: 'FY2025 (2025-12-31)',
-    note: 'A net loss despite reserve income of $2.64B, driven by $844.9M of compensation expense. Reserve income grew 58.7% year on year.',
-  },
+  {"issuer": "Tether", "measure": "Net operating profit, Q3 2026", "value": "+$1.50B", "asOf": "quarter ended 2026-09-30; release 2026-10-30", "note": "Issuer release measure, not reserve income or the report's financial-result line."},
+  {"issuer": "Tether", "measure": "Reserve assets less total liabilities", "value": "$7.955B", "asOf": "2026-09-30 23:59 UTC", "note": "$191,451,091,374 less $183,496,460,904 equals $7,954,630,470. A balance-sheet difference, not profit."},
+  {"issuer": "Tether", "measure": "Direct and indirect Treasury bill exposure", "value": "$132.4B", "asOf": "2026-09-30; release 2026-10-30", "note": "Issuer-reported gross exposure. Outright bills are a separate $122.840B. Neither measures net new Treasury demand."},
+  {"issuer": "Circle", "measure": "Reserve income, Q3 2026", "value": "$657.624M", "asOf": "quarter ended 2026-09-30; release 2026-11-04", "note": "Unaudited issuer financial statements; excludes $207.264M other revenue, including token-presale revenue."},
+  {"issuer": "Circle", "measure": "Distribution and transaction costs, Q3 2026", "value": "$409.169M", "asOf": "quarter ended 2026-09-30; release 2026-11-04", "note": "62.2193% of $657.624M reserve income. Excludes $2.465M other costs. This cost line is not entirely partner payouts."},
+  {"issuer": "Circle", "measure": "Net income from continuing operations, Q3 2026", "value": "+$226.012M", "asOf": "quarter ended 2026-09-30; release 2026-11-04", "note": "Unaudited quarter result, not FY2025 or pure reserve profit. Other revenue includes $182M ARC token presale per issuer release."}
 ];
 
 /**
@@ -674,7 +519,7 @@ export const yieldBan = {
   payor: 'The issuers only. There is no de minimis, no safe harbour, and no exception; the only qualifier is the word "solely".',
   silence: 'The Act contains no "economically equivalent to interest" test. A whole-Act keyword sweep of the 142,949-character statute text returns "yield" exactly once (in the ban) and zero hits for reward, incentive, loyalty, dividend, bonus, rebate, cash back, cashback, points, airdrop, distributor, proceeds, surplus, income, revenue, retain, or economically. What it permits for rewards and loyalty programmes is therefore UNKNOWN: the statute is silent, and the silence is total.',
   reserveIncome: 'Reserve assets must be interest-bearing by construction. The Act nowhere requires or forbids passing that income on, so retaining it is unregulated rather than permitted or prohibited. Note that eligible reserves are a list of eight classes under Sec. 4(a)(1)(A), not Treasury bills alone; the 93-day Treasury provision sits inside that list.',
-  effective: 'Section 20 sets commencement at the earlier of 18 months after enactment (an outer limit of January 18, 2027) or 120 days after the primary federal regulators issue final implementing regulations, so a final rule issued mid-2026 would bring it into force sooner. January 18, 2027 is the outer limit, not a fixed date, and whether an earlier trigger has occurred is UNRESOLVED in this report\'s research record.',
+  effective: "OCC Bulletin 2026-50, published October 21, 2026, states that the Act and OCC final rule are effective January 18, 2027. This is not a current-effect claim on November 5; separate statutory timing still applies.",
 };
 
 /**
@@ -698,16 +543,17 @@ export const agenticRails = [
  * quantity measured more or less precisely, they are different quantities.
  */
 export const agenticVolume = [
-  { figure: '2.99M transactions and $1.13M, 36.54K buyers, 39K sellers', window: '"Overall Stats", window and inclusion rules not stated', publisher: 'x402scan (operator: Naven / Merit Systems), fetched 2026-10-18', label: 'Window unstated, per the operator docs. A prior pass recorded 12,293,450 transactions and $974,215.14 on 2026-10-01 without an archived page, so the two readings are not a verified time series.' },
-  { figure: '12,293,450 transactions and $974,215.14 at six decimals, 27,467 unique buyers, 38,519 unique sellers', window: 'dashboard cumulative total, window and inclusion rules not stated in the page', publisher: 'x402scan (operator: Merit Systems), prior observation 2026-10-01', label: 'PRIOR OBSERVATION, no archived page in the record; the window and inclusion rules were not published, so it cannot be placed on the same axis as an August-only count or the 2026-10-18 reading' },
-  { figure: '$24.24M across 75.41M transactions', window: '"Last 30 Days" label, but the counter has not moved since March 2026', publisher: 'x402.org (the Foundation)', label: 'FROZEN COUNTER, not a current 30-day measurement. Independent observers recorded the same four values on 2026-08-27, 08-31, 09-03, 09-04 and 09-06; CoinDesk reported the same values on 2026-07-15. No methodology and no last-updated stamp.' },
-  { figure: 'comparable 30-day raw totals ranged from roughly $0.8M to $1.1M across public dashboards', window: '30 days, at the time of writing (captured 2026-10-18)', publisher: 'x402stats.io methodology', label: 'INDEPENDENT TRACKER documenting why totals differ: window boundaries, dust truncation and facilitator coverage. This is a range across dashboards, not a market total.' },
-  { figure: 'more than 100 million x402 payments across Base and Solana', window: 'cumulative, window unbounded', publisher: 'Coinbase CDP docs', label: 'SELF-REPORT, a vendor counting its own facilitator' },
-  { figure: '$52.7M across 198.9M settlement transactions', window: 'cumulative since May 2025, as of 2026-09-09', publisher: 'TRM Labs', label: 'MEASURED, independent third party' },
-  { figure: '$2.59bn across 18.3M payments, five countably comparable EVM chains; about 88% of that value in one bridging contract on Arbitrum', window: 'August 2026', publisher: 'Bitquery', label: 'MEASURED by a publisher-operated indexer; dominated by bridge transfers, not commerce' },
-  { figure: '$317M residual after removing that one Arbitrum bridging contract from the five-chain total (rounded inputs give $318.25M)', window: 'August 2026', publisher: 'Bitquery', label: 'SCOPE-LIMITED subset residual: includes the other four chains, is not Arbitrum-only and is not commerce-only. The commerce-only share of x402 volume is UNRESOLVED: no source estimates it on a common denominator.' },
-  { figure: 'about $15.0M across 109.6M transactions, wash and test activity excluded', window: 'cumulative to 2026-04-21', publisher: 'Visa + Artemis Analytics', label: 'MEASURED by Artemis, co-published by a Tempo validator; wash-adjusted, single ecosystem, earlier data date' },
-  { figure: '$38,000 across ~184,600 transactions', window: 'cumulative to 2026-04-21', publisher: 'Visa + Artemis Analytics', label: 'MEASURED by Artemis, unadjusted companion to the row above' },
+  {"figure": "68.3M agent payments worth $3.7M", "window": "Q3 2026; report revised 2026-10-19", "publisher": "Allium Q3 stablecoin and payments report", "label": "Behavior-based estimate. x402 excludes self-dealing, circular and incentivized transfers; MPP counts every charge. Not comparable with Bitquery instruction-shaped transfers or a census of delivered goods/services."},
+  {"figure": "4.22M transactions, $1.65M, 33.99K buyers and 14K sellers", "window": "Overall Stats; window and inclusion rules not established", "publisher": "x402scan, retrieved 2026-11-05", "label": "Source panel observation, not a comparable cumulative series. Different earlier readings do not establish adoption growth or decline."},
+  {"figure": "12,293,450 transactions and $974,215.14 at six decimals, 27,467 unique buyers, 38,519 unique sellers", "window": "dashboard cumulative total, window and inclusion rules not stated in the page", "publisher": "x402scan (operator: Merit Systems), prior observation 2026-10-01", "label": "PRIOR OBSERVATION, no archived page in the record; the window and inclusion rules were not published, so it cannot be placed on the same axis as an August-only count or the 2026-10-18 reading"},
+  {"figure": "Historical panel: $24.24M across 75.41M transactions", "window": "October 2026 historical observation; not a current measurement", "publisher": "Earlier x402.org panel and secondary observations", "label": "Current November 5 extraction did not expose this panel. The old frozen-counter assertion does not describe the current homepage; current panel status is UNRESOLVED."},
+  {"figure": "comparable 30-day raw totals ranged from roughly $0.8M to $1.1M across public dashboards", "window": "30 days, at the time of writing (captured 2026-10-18)", "publisher": "x402stats.io methodology", "label": "INDEPENDENT TRACKER documenting why totals differ: window boundaries, dust truncation and facilitator coverage. This is a range across dashboards, not a market total."},
+  {"figure": "more than 100 million x402 payments across Base and Solana", "window": "cumulative, window unbounded", "publisher": "Coinbase CDP docs", "label": "SELF-REPORT, a vendor counting its own facilitator"},
+  {"figure": "$52.7M across 198.9M settlement transactions", "window": "cumulative since May 2025, as of 2026-09-09", "publisher": "TRM Labs", "label": "MEASURED, independent third party"},
+  {"figure": "$2.59bn across 18.3M payments, five countably comparable EVM chains; about 88% of that value in one bridging contract on Arbitrum", "window": "August 2026", "publisher": "Bitquery", "label": "MEASURED by a publisher-operated indexer; dominated by bridge transfers, not commerce"},
+  {"figure": "$317M residual after removing that one Arbitrum bridging contract from the five-chain total (rounded inputs give $318.25M)", "window": "August 2026", "publisher": "Bitquery", "label": "SCOPE-LIMITED subset residual: includes the other four chains, is not Arbitrum-only and is not commerce-only. The commerce-only share of x402 volume is UNRESOLVED: no source estimates it on a common denominator."},
+  {"figure": "about $15.0M across 109.6M transactions, wash and test activity excluded", "window": "cumulative to 2026-04-21", "publisher": "Visa + Artemis Analytics", "label": "MEASURED by Artemis, co-published by a Tempo validator; wash-adjusted, single ecosystem, earlier data date"},
+  {"figure": "$38,000 across ~184,600 transactions", "window": "cumulative to 2026-04-21", "publisher": "Visa + Artemis Analytics", "label": "MEASURED by Artemis, unadjusted companion to the row above"}
 ];
 
 /**
@@ -733,25 +579,25 @@ export const agenticAttribution = [
 ];
 
 export const growthHonest = {
-  thesis: 'Growth in 2026 has stalled while the forecasts have not.',
-  points: [
+  "thesis": "Supply, adjusted transfers and classified payments answer different questions.",
+  "points": [
     {
-      label: 'Issuance growth by year, from one aggregator series',
-      value: '+58.4% (2024), +49.0% (2025), +1.5% (2026 to date)',
-      source: 'DefiLlama stablecoin series, computed at year-end marks (2023-12-31 $130.35B, 2024-12-31 $206.47B, 2025-12-31 $307.54B, and $311.30B on 2026-09-26). Recompute, do not carry forward.',
+      "label": "Current source-defined market-cap snapshot",
+      "value": "$292.503B",
+      "source": "DefiLlama stablecoins page, 2026-11-05; broad source universe includes non-USD and fund tokens. No matched-universe current YTD growth or peak gap was established."
     },
     {
-      label: 'Distance below the 2026 peak',
-      value: '-3.05%',
-      source: 'Peak $321.09B on 2026-05-20 against $311.30B on 2026-09-26.',
+      "label": "Classified payments versus adjusted transfers, Jan-Sep 2026",
+      "value": "$482B classified payments; $2.4T adjusted; $97.9T raw",
+      "source": "Allium report revised 2026-10-19, data January-September 2026. Categories are estimates inferred from behavior, not confirmed identities or economic purpose."
     },
     {
-      label: 'Real economic activity versus gross stablecoin transfers',
-      value: 'about 7% broad, under 1% narrow',
-      source: 'BCG and Allium Labs (2026-09-30): more than $62T of annual stablecoin transfers, with real economic activity of $4.2T, which the authors put at about 7% of the total. Separately, roughly $350B to $550B of observable bilateral goods-and-services payments in 2025, which is 0.565% to 0.887% of the gross figure and which the authors label a directionally robust lower bound. The two definitions are not interchangeable. An earlier version of this report claimed 95% to 99% was non-payment; no source contains that figure and it is withdrawn.',
-    },
+      "label": "Historical 2025 adjusted transfers versus classified payments",
+      "value": "$4.2T adjusted; $350B-$550B classified payments",
+      "source": "BCG/Allium January 2026 paper; gross 2025 transfers above $62T. Adjusted activity is not all commerce. Classified payments are a lower bound with off-chain exclusions."
+    }
   ],
-  note: 'The distinction that matters is between growth in issuance and growth in real payments. Issuance roughly tripled across 2024 and 2025 and then went flat; the multi-trillion forecasts to 2030 are unchanged by that. A 1.5% year is not evidence the forecasts are wrong, but it is evidence the current trajectory and the forecast trajectory are not the same line. On the other side, the payment share is a definition, not a measurement anyone has agreed on: about 7% under the broad definition and under 1% under the narrow goods-and-services one. The commercial share of stablecoin volume is UNRESOLVED.',
+  "note": "The 2025 BCG and 2026 Allium observations use different periods and methods. Do not average them, interpret the residual as proven non-payment activity, or compare a quarter's annualized rate with realized annual volume. Historical market series elsewhere retain their original dates."
 };
 
 /**
@@ -760,15 +606,15 @@ export const growthHonest = {
  * come from a docs page that serves the testnet tab by default.
  */
 export const arcStatus = {
-  name: 'Arc',
-  operator: 'Circle Internet Group (NYSE: CRCL)',
-  status: 'MAINNET LIVE',
-  launched: '2026-09-16 (New York)',
-  chainId: '5042 (0x13b2)',
-  testnetChainId: '5042002 (0x4cef52)',
-  gas: 'USDC, with no volatile native token required',
-  verification: 'Read from Circle\'s own release and probed directly against the RPC endpoint. The chain answered eth_chainId with 0x13b2 and returned an advancing block height, so the claim is chain-level, not a press claim.',
-  caveat: 'A live testnet also exists (chain ID 5042002). Arc\'s "Connect to Arc" docs page serves the testnet tab by default, which is why some coverage describes Arc as testnet only. Both are live.',
+  "name": "Arc",
+  "operator": "Circle Internet Group (NYSE: CRCL)",
+  "status": "MAINNET LIVE",
+  "launched": "2026-09-16 (New York)",
+  "chainId": "5042 (0x13b2)",
+  "testnetChainId": "5042002 (0x4cef52)",
+  "gas": "USDC, with no volatile native token required",
+  "verification": "Circle's November 4, 2026 Q3 release reports public mainnet launch on September 16. Earlier chain probes are historical; no fresh chain probe is claimed for this review.",
+  "caveat": "A network launch does not establish recurring commercial use. Circle describes proof of stake, privacy and scalability as roadmap items. ARC genesis mint is not proof of public tradability."
 };
 
 /**
@@ -778,19 +624,19 @@ export const arcStatus = {
  * than to holders.
  */
 export const openUsdStatus = {
-  name: 'Open USD (OUSD)',
-  issuer: 'Issued by Bridge Building Inc., a Stripe company. Open Standard, a consortium founded by Coinbase, Mastercard, Shopify, Stripe and Visa, states it is an independent company; the independence claim is about the company, not the issuer.',
-  announced: 'Announced 2026-06-30 with "over 140 businesses" named on the consortium\'s own site; founding CEO Zach Abrams',
-  status: 'LIVE, issuer-reported. Launched 2026-09-30.',
-  chains: 'Base, Ethereum, Solana and Tempo, named by the issuer at launch. Solana went live the same day with free 1:1 mint and burn, per third-party reporting.',
-  supplySnapshot: 'The issuer\'s own reserve page reported total supply in circulation of $468,445,399 at 11:30 UTC on 2026-10-01, described as fully collateralised: $257,214,691 cash (54.91%) and $211,230,708 Treasuries (45.09%), which sum exactly to total supply. Treasuries include money market funds holding T-bill ladders under three months.',
-  supplyScope: 'Issuer self-report at one timestamp, and that is all it is. Supply is not adoption, velocity or payment volume. A single snapshot is not a series, so no trend, share or growth rate is derived from it here. Note also that DefiLlama lists a ticker "OUSD" that is Origin Dollar, an unrelated project, and it must not be read as this one.',
-  reserveEarnings: 'Open Standard states that partners earn rewards proportional to the supply and activity they drive, with an opportunity to earn equity. These are company statements about partner economics, not token-holder yield or proof of realized payouts.',
-  holderRights: 'A holder has a claim against the issuer. Nothing verified here gives a holder direct legal title to the reserve assets or any right to instruct how they are invested, and the reserve assets are not Treasuries alone.',
-  charter: 'Bridge states it received conditional OCC approval to establish Bridge National Trust Bank. Conditional approval is not a final charter. No primary OCC order is verified in this report\'s research record, so the conditions and current status are UNRESOLVED.',
-  preGuardClaim: 'A claim circulating in secondary coverage, that holding OUSD confers direct legal title to the reserve securities and the right to instruct how they are traded, is not supported by any source used here and is contradicted by the partner-not-holder structure. It is not repeated as fact.',
-  marketReaction: 'UNRESOLVED. The earlier version of this report attributed a single-day price move at a specific issuer to the announcement as "plausible, not proven". No verified price series supports any attribution here, so none is asserted.',
-  members: 'Confirmed from the consortium\'s own partner list: Visa, Mastercard, American Express, Discover, Stripe, BlackRock, BNY, Standard Chartered, DBS, Google, Samsung, IBM, Shopify, Coinbase, Ripple, MetaMask, Fireblocks. Circle and Tether are absent from the list.',
+  "name": "Open USD (OUSD)",
+  "issuer": "Issued by Bridge Building Inc., a Stripe company. Open Standard, a consortium founded by Coinbase, Mastercard, Shopify, Stripe and Visa, states it is an independent company; the independence claim is about the company, not the issuer.",
+  "announced": "Announced 2026-06-30 with \"over 140 businesses\" named on the consortium's own site; founding CEO Zach Abrams",
+  "status": "LIVE, issuer-reported. Launched 2026-09-30.",
+  "chains": "Base, Ethereum, Solana and Tempo, named by the issuer at launch. Solana went live the same day with free 1:1 mint and burn, per third-party reporting.",
+  "supplySnapshot": "Issuer page updated 2026-11-05 16:00 UTC: 907,987,949 OUSD circulating and $909,988,067 headline reserves. Displayed cash $113,626,625 plus Treasury assets $794,609,125 sum to $908,235,750, $1,752,317 below the reserve headline. Reconciliation is UNRESOLVED. The reported excess also differs by $1 from headline reserves minus supply.",
+  "supplyScope": "Issuer self-report with an unresolved panel mismatch, not a reconciled reserve composition or independent attestation check. No insolvency inference follows. Supply is not adoption or payment volume. The unrelated Origin Dollar also uses OUSD.",
+  "reserveEarnings": "Open Standard states that partners earn rewards proportional to the supply and activity they drive, with an opportunity to earn equity. These are company statements about partner economics, not token-holder yield or proof of realized payouts.",
+  "holderRights": "A holder has a claim against the issuer. Nothing verified here gives a holder direct legal title to the reserve assets or any right to instruct how they are invested, and the reserve assets are not Treasuries alone.",
+  "charter": "OCC Decision 1365 dated 2026-02-12 grants preliminary conditional approval, not final authorization to commence business. Bridge's release retrieved 2026-11-05 identifies Bridge Building Inc. as issuer and says Bridge National Trust Bank is not operational and does not issue OUSD. Final authorization remains UNRESOLVED here.",
+  "preGuardClaim": "A claim circulating in secondary coverage, that holding OUSD confers direct legal title to the reserve securities and the right to instruct how they are traded, is not supported by any source used here and is contradicted by the partner-not-holder structure. It is not repeated as fact.",
+  "marketReaction": "UNRESOLVED. The earlier version of this report attributed a single-day price move at a specific issuer to the announcement as \"plausible, not proven\". No verified price series supports any attribution here, so none is asserted.",
+  "members": "Confirmed from the consortium's own partner list: Visa, Mastercard, American Express, Discover, Stripe, BlackRock, BNY, Standard Chartered, DBS, Google, Samsung, IBM, Shopify, Coinbase, Ripple, MetaMask, Fireblocks. Circle and Tether are absent from the list."
 };
 
 /**
@@ -843,204 +689,166 @@ export const rwaDepth = {
  * cannot be compared is generosity, because like-for-like terms are missing.
  */
 export const distributionEconomics = {
-  headline: 'Paying distributors is not new, and the comparison is not available',
-  incumbent: 'Circle\'s Q2 2026 Form 10-Q states that distribution costs payable to key distributors such as Coinbase and Binance are directly impacted by the amount of USDC held on their respective platforms. Circle reported reserve income of $667,733 thousand against distribution and transaction costs of $410,414 thousand for the three months to 2026-06-30, a ratio of 0.6146, and $1,320,241 thousand against $815,816 thousand for the six months, a ratio of 0.6179. Accrued distribution costs stood at $105,799 thousand at 2026-06-30, down from $119,038 thousand at 2025-12-31.',
-  namedTerms: 'The same filing discloses Coinbase distribution costs of $324.6 million for the quarter and $655.3 million for the half year, and states that Coinbase receives allocations based on USDC held on its platform after issuer retention, plus half the remaining amount tied to broader ecosystem growth after approved third-party participants are paid. The issuer-retention amount is not disclosed.',
-  caveat: 'The headline cost line combines distribution and transaction costs, so the distribution-only portion cannot be isolated from it. The named Coinbase figures come from a separate disclosure and are a named arrangement, not a universal distributor rate.',
-  challenger: 'Open Standard states that reserve earnings go to partners, and that founders and participating partners can earn equity based on the supply and activity they drive. Bridge reports over $1 billion issued across stablecoins including OUSD; none of that is a partner payout figure.',
-  conclusion: 'Routing reserve earnings to partners is a redistribution of an existing industry practice, not its introduction. The novelty claim is not established by this evidence. Whether Open Standard is more or less generous is UNRESOLVED: partial Circle terms are now evidenced, but a comparable Open Standard contract and realized payments are still missing, and one disclosed rate does not settle a comparison.',
-  unresolved: 'UNRESOLVED: like-for-like net-of-fee contracts, issuer retention amounts and realized payouts on both sides.',
-  circleUrl: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001876042',
+  "headline": "Paying distributors is not new, and the comparison is not available",
+  "incumbent": "Circle's November 4, 2026 Q3 release reports $657.624M reserve income and $409.169M distribution and transaction costs for the quarter ended September 30: 62.2193%. The separate $2.465M other costs are excluded from this ratio. The historical Q2 filing describes balance-linked arrangements with Coinbase and Binance.",
+  "namedTerms": "The historical Q2 2026 filing, rechecked November 5, discloses Coinbase distribution costs of $324.6M for the quarter and $655.3M for the first half. Its arrangement allocates amounts after issuer retention and approved third-party allocations. The issuer-retention amount is undisclosed. Those are historical named terms, not a current universal distributor rate.",
+  "caveat": "The headline cost line combines distribution and transaction costs, so the distribution-only portion cannot be isolated from it. The named Coinbase figures come from a separate disclosure and are a named arrangement, not a universal distributor rate.",
+  "challenger": "Open Standard states that reserve earnings go to partners, and that founders and participating partners can earn equity based on the supply and activity they drive. Bridge reports over $1 billion issued across stablecoins including OUSD; none of that is a partner payout figure.",
+  "conclusion": "Routing reserve earnings to partners is a redistribution of an existing industry practice, not its introduction. The novelty claim is not established by this evidence. Whether Open Standard is more or less generous is UNRESOLVED: partial Circle terms are now evidenced, but a comparable Open Standard contract and realized payments are still missing, and one disclosed rate does not settle a comparison.",
+  "unresolved": "UNRESOLVED: like-for-like net-of-fee contracts, issuer retention amounts and realized payouts on both sides.",
+  "circleUrl": "https://s206.q4cdn.com/265218871/files/doc_earnings/2026/q3/earnings-result/3Q26-Earnings-Release.pdf"
 };
 
 export const sources = [
-  { id: 'tether-q2-2026', label: 'Tether - Q2 2026 attestation release ($1.5B net operating profit claim)', url: 'https://tether.io/news/tether-posts-strong-q2-performance-generates-1-5b-net-operating-profit-maintains-4-11b-reserve-buffer-and-expands-gold-holdings-to-more-than-146-tons/' },
-  { id: 'genius-pl119-27', label: 'US Code - 12 U.S.C. 5903 (GENIUS Act Sec. 4), yield prohibition and 93-day reserve cap', url: 'https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title12-section5903&num=0&edition=prelim' },
-  { id: 'x402-foundation', label: 'x402 Foundation - protocol homepage and 30-day network panel', url: 'https://x402.org/' },
-  { id: 'x402scan', label: 'x402scan (Merit Systems) - live x402 transaction index', url: 'https://www.x402scan.com/' },
-  { id: 'trm-x402', label: 'TRM Labs - "Who\'s actually paying? Measuring AI agent payments on-chain"', url: 'https://www.trmlabs.com/trm-tech-blog/whos-actually-paying-measuring-ai-agent-payments-onchain' },
-  { id: 'solana-x402-september-2026', label: 'Solana Foundation - Payments on Solana: September 2026 in Five Stories (76% of x402 transactions, Aug 22-Sep 19)', url: 'https://solana.com/news/payments-on-solana-september-2026-in-five-stories' },
-  { id: 'mcglynn-x402-frozen', label: 'Daniel McGlynn - the x402.org counter has shown the same four numbers since March 2026', url: 'https://www.danielmcglynn.com/the-x402-counter-has-shown-the-same-four-numbers-since-march/' },
-  { id: 'spotedcrypto-x402', label: 'SpotedCrypto - TRM x402 report synthesis and tracker divergence (2026)', url: 'https://www.spotedcrypto.com/trm-labs-x402-ai-agent-payments-report-2026/' },
-  { id: 'x402stats-methodology', label: 'x402stats.io - methodology: raw totals differ by window, dust truncation and facilitator coverage', url: 'https://x402stats.io/methodology' },
-  { id: 'bitquery-x402', label: 'Bitquery - x402 AI agent payments on-chain audit', url: 'https://bitquery.io/investigations/x402-ai-agent-payments-audit' },
-  { id: 'keyrock-agent', label: 'Keyrock - "Who Pays the Agent?" (median ticket size, $0.30 card-fee floor)', url: 'https://keyrock.com/who-pays-the-agent/' },
-  { id: 'visa-artemis-agentic', label: 'Visa + Artemis Analytics - Agentic Payments from the Ground Up (PDF)', url: 'https://www.visa.com/vcom-assets/content/dam/visa/reimagine-visa/thought-leadership/documents/agentic-payments-report.pdf' },
-  { id: 'stripe-mpp', label: 'Stripe - Machine Payments Protocol launch post', url: 'https://stripe.com/blog/machine-payments-protocol' },
-  { id: 'tempo-mainnet', label: 'Tempo - mainnet launch (MPP introduced alongside)', url: 'https://tempo.xyz/blog/mainnet' },
-  { id: 'mpp-overview', label: 'MPP - protocol overview (co-authored by Tempo and Stripe)', url: 'https://mpp.dev/overview' },
-  { id: 'acp-docs', label: 'Agentic Commerce Protocol (ACP) - documentation', url: 'https://www.agenticcommerce.dev/docs' },
-  { id: 'ap2-protocol', label: 'AP2 - Agent Payments Protocol homepage', url: 'https://ap2-protocol.org/' },
-  { id: 'fido-ap2', label: 'FIDO Alliance - trusted AI agent interactions standards', url: 'https://fidoalliance.org/fido-alliance-to-develop-standards-for-trusted-ai-agent-interactions/' },
-  { id: 'visa-tap-dev', label: 'Visa - Trusted Agent Protocol (TAP) capability page', url: 'https://developer.visa.com/capabilities/trusted-agent-protocol' },
-  { id: 'visa-tap-pr', label: 'Visa - press release: "hundreds" of agent-initiated transactions (Dec 2025)', url: 'https://usa.visa.com/about-visa/newsroom/press-releases.releaseId.21961.html' },
-  { id: 'cdp-x402', label: 'Coinbase CDP - x402 (vendor self-report on payment count)', url: 'https://docs.cdp.coinbase.com/x402/welcome' },
-  { id: 'erc8004', label: 'ERC-8004 - Trustless Agents (draft; payments explicitly out of scope)', url: 'https://eips.ethereum.org/EIPS/eip-8004' },
-  { id: 'circle-arc-mainnet', label: 'Circle - press release: Arc mainnet launch (2026-09-16)', url: 'https://www.circle.com/pressroom/circle-launches-arc-mainnet-an-economic-operating-system-for-the-internet' },
-  { id: 'arc-rpc', label: 'Arc mainnet JSON-RPC endpoint (chain ID probe)', url: 'https://rpc.mainnet.arc.io' },
-  { id: 'open-standard', label: 'Open Standard / Open USD - consortium site and partner list', url: 'https://joinopenstandard.com/' },
-  { id: 'open-standard-intro', label: 'Open Standard - "Introducing Open USD" announcement (2026-06-30)', url: 'https://joinopenstandard.com/blog/introducing-open-usd' },
-  { id: 'ondo-usdy', label: 'Ondo Finance - USDY product page (size and backing)', url: 'https://ondo.finance/usdy' },
-  { id: 'ondo-ousg', label: 'Ondo Finance - OUSG product page (size and sleeve composition)', url: 'https://ondo.finance/ousg' },
-  { id: 'buidl-formd', label: 'SEC EDGAR - BUIDL Form D/A (cumulative gross sales, not AUM)', url: 'https://www.sec.gov/Archives/edgar/data/2013810/000201381026000002/primary_doc.xml' },
-  { id: 'securitize-buidl', label: 'Securitize - BUIDL fund page (no issuer-published AUM)', url: 'https://securitize.io/blackrock/buidl' },
-  { id: 'defillama-stablecoincharts', label: 'DefiLlama - total stablecoin market cap series (growth computation)', url: 'https://stablecoins.llama.fi/stablecoincharts/all' },
-  { id: 'tic', label: 'US Treasury TIC - Major Foreign Holders of Treasuries', url: 'https://ticdata.treasury.gov/Publish/mfh.txt' },
-  { id: 'tether-transp', label: 'Tether transparency / reserves attestation', url: 'https://tether.to/en/transparency/' },
-  { id: 'circle-transp', label: 'Circle reserve report', url: 'https://www.circle.com/en/transparency' },
-  { id: 'congress-genius', label: 'Congress.gov - GENIUS Act (S.1582)', url: 'https://www.congress.gov/bill/119th-congress/senate-bill/1582' },
-  { id: 'morganlewis-genius', label: 'Morgan Lewis - GENIUS Act breakdown', url: 'https://www.morganlewis.com/pubs/2025/07/genius-act-passes-in-us-congress-a-breakdown-of-the-landmark-stablecoin-law' },
-  { id: 'coingecko-svb', label: 'CoinGecko Research - Stablecoin Supply Impacted by SVB', url: 'https://www.coingecko.com/research/publications/stablecoins-supply-svb-impact' },
-  { id: 'cnbc-svb', label: 'CNBC - USDC breaks dollar peg', url: 'https://www.cnbc.com/2023/03/11/stablecoin-usdc-breaks-dollar-peg-after-firm-reveals-it-has-3point3-billion-in-svb-exposure.html' },
-  { id: 'sd-terra', label: 'ScienceDirect - Anatomy of a Stablecoin failure (Terra-Luna)', url: 'https://www.sciencedirect.com/science/article/abs/pii/S1544612322005359' },
-  { id: 'reuters-terra', label: 'Reuters - TerraUSD falls to 30 cents', url: 'https://www.reuters.com/technology/dollar-pegged-stablecoin-terrausd-falls-30-cents-2022-05-11/' },
-  { id: 'binance-terra', label: 'Binance - The Collapse of LUNA and UST', url: 'https://www.binance.com/en/square/post/22931497315953' },
-  { id: 'ecb-mpb', label: 'ECB Macroprudential Bulletin - euro stablecoins and sovereign bonds', url: 'https://www.ecb.europa.eu/press/financial-stability-publications/macroprudential-bulletin/html/ecb.mpbu202604_05.en.html' },
-  { id: 'fed-feds', label: 'Federal Reserve FEDS Note - Banks in the Age of Stablecoins', url: 'https://www.federalreserve.gov/econres/notes/feds-notes/banks-in-the-age-of-stablecoins-implications-for-deposits-credit-and-financial-intermediation-20251217.html' },
-  { id: 'bis-wp1370', label: 'BIS Working Paper 1370 - Dollarisation and monetary control', url: 'https://bis.org/publ/work1370.pdf' },
-  { id: 'bis-aer', label: 'BIS Annual Economic Report - Anchoring trust in money', url: 'https://www.bis.org/publications/iii-anchoring-trust-money-innovation-beyond-stablecoins_2.pdf' },
-  { id: 'imf-par-to-pressure', label: 'IMF WP 2026/005 - From Par to Pressure', url: 'https://www.imf.org/en/publications/wp/issues/2026/01/16/from-par-to-pressure-liquidity-redemptions-and-fire-sales-with-a-systemic-stablecoin-573271' },
-  { id: 'coingecko-rwa', label: 'CoinGecko Research - RWA Report 2026', url: 'https://www.coingecko.com/research/publications/rwa-report-2026' },
-  { id: 'rwa-xyz', label: 'rwa.xyz - RWA tokenization market data', url: 'https://rwa.xyz' },
-  { id: 'defillama-stables', label: 'DefiLlama - Stablecoins dashboard', url: 'https://defillama.com/stablecoins' },
-  { id: 'coindesk-tether-q1', label: 'CoinDesk - Tether Q1 2026 attestation results', url: 'https://www.coindesk.com/business/2026/05/01/tether-posts-usd1-04-billion-q1-profit-reaches-usd8-23-billion-reserve-buffer' },
-  { id: 'worldbank-remittance', label: 'World Bank Remittance Prices Worldwide Issue 53 Q1 2025', url: 'https://remittanceprices.worldbank.org/sites/default/files/rpw_main_report_and_annex_q125_1_0.pdf' },
-  { id: 'chainalysis-geo', label: 'Chainalysis Geography of Cryptocurrency 2025', url: 'https://www.chainalysis.com/reports/2025-geography-of-cryptocurrency-report/' },
-  { id: 'visa-stablecoins', label: 'Visa - Stablecoin settlement live in the US', url: 'https://usa.visa.com/about-visa/newsroom/press-releases.releaseId.21951.html' },
-  { id: 'reuters-uk', label: 'Reuters - UK dilutes stablecoin capital requirement', url: 'https://www.reuters.com/business/finance/uk-dilutes-stablecoin-capital-requirement-final-crypto-rulebook-2026-06-29/' },
-  { id: 'hkma-ord', label: 'HKMA - Stablecoin issuers regulatory regime (Hong Kong)', url: 'https://www.hkma.gov.hk/eng/key-functions/international-financial-centre/stablecoin-issuers/' },
-  { id: 'cbuae-reg', label: 'CBUAE Payment Token Services Regulation', url: 'https://rulebook.centralbank.ae/en/rulebook/payment-token-services-regulation' },
-  { id: 'tiger-research-asia', label: 'Tiger Research - 2026 Asia Stablecoin Market Outlook', url: 'https://reports.tiger-research.com/p/2026-asia-stablecoin-market-overview-eng' },
-  { id: 'scorechain-mica', label: 'Scorechain - EU Stablecoin Regulation under MiCA', url: 'https://www.scorechain.com/blog/eu-stablecoin-regulation-mica' },
-  { id: 'nyfed-sr1185', label: 'NY Fed Staff Report 1185 - Stablecoin Disintermediation', url: 'https://www.newyorkfed.org/research/staff_reports/sr1185' },
-  { id: 'whitehouse-cea', label: 'White House CEA - Effects of stablecoin yield prohibition on bank lending', url: 'https://www.whitehouse.gov/research/2026/04/effects-of-stablecoin-yield-prohibition-on-bank-lending/' },
-  { id: 'occ-nprm', label: 'OCC Bulletin 2026-3 - GENIUS Act NPRM', url: 'https://www.occ.gov/news-issuances/bulletins/2026/bulletin-2026-3.html' },
-  { id: 'fdic-nprm', label: 'FDIC - GENIUS Act proposed rulemaking (FIL 2026)', url: 'https://www.fdic.gov/news/financial-institution-letters/2026/notice-proposed-rulemaking-establish-genius-act' },
-  { id: 'stablecoinbeat-mc', label: 'Stablecoin Beat - Total market capitalization series (Sep 2026)', url: 'https://stablecoinbeat.com/charts/market-cap' },
-  { id: 'bitsgap-supply', label: 'Bitsgap - Stablecoin supply vs depeg, 2026 data', url: 'https://bitsgap.com/blog/stablecoin-supply-a-leading-market-signal' },
-  { id: 'netcoins-usde', label: 'Netcoins - Ethena USDe depeg during the Oct 11, 2025 crash', url: 'https://www.netcoins.com/blog/ethenas-usde-depeg-an-overview-and-its-relation-to-the-ena-token' },
-  { id: 'messari-usde', label: 'Messari - Ethena USDe (Oct 2025 Binance $0.65 print)', url: 'https://messari.io/project/ethena-usde' },
-  { id: 'coinbase-usd1', label: 'Coinbase - USD1 (World Liberty Financial) market data', url: 'https://www.coinbase.com/price/usd1-wlfi' },
-  { id: 'stablecoinbeat-reg', label: 'Stablecoin Beat - Global stablecoin regulation tracker (Sep 2026)', url: 'https://stablecoinbeat.com/regulation/' },
-  { id: 'stablecoin-insider', label: 'Stablecoin Insider - depeg insurance', url: 'https://stablecoininsider.org/stablecoin-depeg-insurance/' },
-  { id: 'stablecoin-insider-clarity', label: 'Stablecoin Insider - CLARITY Act Treasury stablecoin circuit breaker', url: 'https://stablecoininsider.org/clarity-act-treasury-stablecoin-circuit-breaker/' },
-  { id: 'cointelegraph-jcb', label: 'Cointelegraph - JCB signs Circle MOU for Japan stablecoin payments', url: 'https://cointelegraph.com/news/japans-jcb-signs-mou-with-circle-to-explore-usdc-payments-and-cross-border-settlements' },
-  { id: 'cointelegraph-uk', label: 'Cointelegraph - Bank of England innovation mandate covers stablecoins', url: 'https://cointelegraph.com/news/uk-boe-innovation-mandate-stablecoins' },
-  // --- sources added by the 2026-10-02 reconciliation pass ---
-  { id: 'genius-text', label: 'GENIUS Act enacted text (Sec. 4 reserve classes, Sec. 20 commencement trigger)', url: 'https://www.congress.gov/bill/119th-congress/senate-bill/1582/text' },
-  { id: 'genius-reserve-classes', label: 'GENIUS Act Sec. 4(a)(1)(A) eligible reserve classes (eight, not T-bills only)', url: 'https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title12-section5903&num=0&edition=prelim' },
-  { id: 'kansascityfed-bulletin', label: 'Kansas City Fed Economic Bulletin - stablecoins and Treasury demand (HTML corrected 2026-09-22; internal arithmetic unreconciled)', url: 'https://www.kansascityfed.org/research/economic-bulletin/stablecoins-could-increase-treasury-demand-but-only-by-reducing-demand-for-other-assets/' },
-  { id: 'kansascityfed-pdf', label: 'Kansas City Fed Economic Bulletin PDF (reader-cache freshness unknown; differing component figures)', url: 'https://www.kansascityfed.org/documents/11132/EconomicBulletin25Jacewitz0808.pdf' },
-  { id: 'fed-banks-stablecoins', label: 'Federal Reserve FEDS Note (2025-12-17) - Banks in the Age of Stablecoins', url: 'https://www.federalreserve.gov/econres/notes/feds-notes/banks-in-the-age-of-stablecoins-implications-for-deposits-credit-and-financial-intermediation-20251217.html' },
-  { id: 'tether-q1-2026', label: 'Tether - Q1 2026 attestation: about $183B token liabilities and about $141B direct and indirect T-bill exposure (2026-03-31)', url: 'https://tether.io/news/tether-posts-1-04b-q1-2026-profit-despite-highly-volatile-global-markets-reaches-all-time-highs-8-23b-reserve-buffer-and-maintains-u-s-treasury-heavy-backing/' },
-  { id: 'market-cap-2026-08', label: 'Total stablecoin market cap measurement, 2026-08-13, one aggregator via secondary compilation', url: 'https://reap.global/blog/stablecoin-statistics-2026' },
-  { id: 'circle-10q-q2-2026', label: 'Circle - Form 10-Q for the quarter ended 2026-06-30 (balance-linked distribution costs, named Coinbase terms)', url: 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001876042' },
-  { id: 'bcg-allium-payments', label: 'BCG and Allium Labs - Stablecoin payments: the truth behind the numbers (about 7% broad, under 1% narrow goods-and-services)', url: 'https://www.bcg.com/assets/2026/white-paper-stablecoin-payments-truth-behind-numbers.pdf' },
-  { id: 'open-usd-live-os', label: 'Open Standard - Open USD is live (issued by Bridge, a Stripe company; reserves at BlackRock, Lead Bank and BNY)', url: 'https://joinopenstandard.com/blog/open-usd-is-live' },
-  { id: 'bridge-ousd-live', label: 'Bridge - OUSD issued by Bridge (launch chains, conditional OCC approval for Bridge National Trust Bank)', url: 'https://www.bridge.xyz/blog/ousd-is-live-issued-by-bridge' },
-  { id: 'bridge-ousd-reserves', label: 'Bridge - OUSD reserve page (supply snapshot 2026-10-01 11:30 UTC: $468,445,399 supply, 54.91% cash, 45.09% Treasuries)', url: 'https://reserves.bridge.xyz/ousd' },
-  { id: 'open-standard-structure', label: 'Open Standard - company structure and leadership (partner equity tied to supply and activity; shareholder board)', url: 'https://joinopenstandard.com/blog/company-structure-and-leadership' },
-  { id: 'solana-compass-ousd', label: 'Solana Compass - Open USD goes live on Solana with free 1:1 mint and burn (2026-09-30)', url: 'https://solanacompass.com/news/open-standards-ousd-stablecoin-goes-live-on-solana' },
-  { id: 'occ-circle-conditional', label: 'OCC - conditional approval, Circle trust bank application (2025-12-12; preliminary and conditional, not final authorization)', url: 'https://www.occ.gov/news-issuances/news-releases/2025/nr-occ-2025-125a.pdf' },
-  { id: 'occ-five-charters', label: 'OCC release 2025-125 - five conditional trust-bank charter approvals (not an exhaustive current register)', url: 'https://www.occ.gov/news-issuances/news-releases/2025/nr-occ-2025-125.html' },
-  { id: 'cnbc-circle-charter', label: 'CNBC (2026-07-10) - secondary report of later Circle trust-bank approval under the name Circle National Trust', url: 'https://www.cnbc.com/2026/07/10/circle-gets-an-occ-bank-charter-as-stablecoin-competition-heats-up-shares-surge-14percent.html' },
-  { id: 'bitquery-x402-bots', label: 'Bitquery - two automated loops are 83% of the agent payments found (13.2M on Base, 5.7M one-cent on Polygon)', url: 'https://bitquery.io/investigations/x402-ai-agent-payments-audit' },
-  { id: 'chainalysis-x402-ping', label: 'Chainalysis (2026-06-03) - x402 growth driven substantially by meme-coin farming; PING pay-to-mint over 150,000 transactions in month one', url: 'https://www.chainalysis.com/blog/x402-agentic-payments-adoption/' },
-  { id: 'rwa-reports-value', label: 'CryptoRank (2026-07-15) - tokenized RWA about $33.5B reported versus about $345B represented (two different measures)', url: 'https://cryptorank.io/news/feed/d6bff-rwa-tokenization-news-today' },
-  { id: 'beincrypto-transfer-activity', label: 'BeInCrypto (2026-07-02) - 910 of 1,289 assets above $100,000 with zero weekly transfers (70.60% by count, 56% by value, different denominators)', url: 'https://beincrypto.com/reality-of-rwa-tokenization-2026/' },
-  { id: 'beincrypto-report-landing', label: 'BeInCrypto report landing page - data dated 2026-05-31, $60B market base (a different denominator again)', url: 'https://research.beincrypto.com/tokenization-2026-report-first-edition' },
-  { id: 'spark-buidl', label: 'Spark Money (May 2026) - BUIDL about $2.4B across eight named chains (secondary, not an issuer AUM disclosure)', url: 'https://www.spark.money/research/rwa-tokenization-bitcoin-blockchain' },
-  { id: 'securitize-q2-2026', label: 'Securitize - Q2 2026 results (2026-08-12): $4.3B platform tokenized AUM as of 2026-06-30, not BUIDL fund AUM', url: 'https://investors.securitize.io/news/news-details/2026/Securitize-Reports-Second-Quarter-2026-Results/default.aspx' },
-  { id: 'hk-cap656', label: 'HK e-Legislation - Cap. 656 Stablecoins Ordinance (Schedule 2 reserve and redemption criteria)', url: 'https://www.elegislation.gov.hk/hk/cap656' },
-  { id: 'hkma-stablecoin-guideline', label: 'HKMA - Guideline on Supervision of Licensed Stablecoin Issuers (Aug 2025), paras 2.5.2 and 3.3.2 on trust arrangements and legal opinions', url: 'https://www.hkma.gov.hk/media/eng/doc/key-functions/ifc/stablecoin-issuers/Guideline_on_supervision_of_licensed_stablecoin_issuers_eng.pdf' },
-  { id: 'mica-art-3', label: 'ESMA - MiCA Article 3 definitions (asset-referenced token is not an e-money token; e-money token references one official currency)', url: 'https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-3-definitions' },
-  { id: 'mica-art-36', label: 'ESMA - MiCA Article 36 reserve of assets (legal segregation and no creditor recourse; asset-referenced tokens only)', url: 'https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-36-obligation-have-reserve-assets' },
-  { id: 'mica-art-39', label: 'ESMA - MiCA Article 39 right of redemption (asset-referenced tokens, including reserve assets on issuer failure)', url: 'https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-39-right-redemption' },
-  { id: 'mica-art-48', label: 'ESMA - MiCA Article 48 e-money tokens deemed electronic money; EMD Titles II and III apply', url: 'https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-48-requirements-offer-public-or' },
-  { id: 'mica-art-49', label: 'ESMA - MiCA Article 49 e-money token holder claim, redemption at any time at par, no fee', url: 'https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-49-issuance-and-redeemability-e' },
-  { id: 'mica-art-54', label: 'ESMA - MiCA Article 54 safeguarding of funds for e-money tokens under EMD Article 7(1)', url: 'https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-54-investment-funds-received' },
-  { id: 'mica-art-55', label: 'ESMA - MiCA Article 55 recovery and redemption plans; Title III Chapter 6 applies to e-money tokens', url: 'https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-55-recovery-and-redemption-plans' },
-  { id: 'mica-art-149', label: 'ESMA - MiCA Article 149 application dates; Titles III and IV apply from 2024-06-30', url: 'https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-149-entry-force-and-application' },
-  { id: 'emd-art-7', label: 'Directive 2009/110/EC Article 7 safeguarding requirements; method left to national law', url: 'https://www.legislation.gov.uk/eudr/2009/110/article/7' },
-  { id: 'mas-p015-2026', label: 'MAS - Consultation P015-2026, proposed amendments to the Payment Services Act for stablecoin regulation (closed 2026-10-16)', url: 'https://www.mas.gov.sg/publications/consultations/2026/consultation-on-proposed-amendments-to-the-payment-services-act-for-stablecoin-regulation' },
-  { id: 'mas-p015-paper', label: 'MAS - P015-2026 consultation paper (Sep 2026), reserve trust and orderly redemption proposals', url: 'https://www.mas.gov.sg/-/media/mas-media-library/publications/consultations/pd/2026/sept-2026_consultation-paper-on-proposed-amendments-to-ps-act-for-stablecoins-regulation/consultation-paper-on-proposed-amendments-to-ps-act-for-stablecoins-regulation_vfinal.pdf' },
-  { id: 'mas-annex-c', label: 'MAS - P015-2026 Annex C, draft Payment Services Act amendments (clause 21B)', url: 'https://www.mas.gov.sg/-/media/mas-media-library/publications/consultations/pd/2026/sept-2026_consultation-paper-on-proposed-amendments-to-ps-act-for-stablecoins-regulation/annex-c_consolidated-ps-act-amendment_vfinal.pdf' },
-  { id: 'genius-plaw-119-27', label: 'Public Law 119-27, GENIUS Act, Section 11 insolvency priority and Section 20 effective date', url: 'https://www.congress.gov/119/plaws/publ27/PLAW-119publ27.pdf' },
-  { id: 'report-full-2026-10-02', label: 'StableSense Research - State of Stablecoins, full dated report (2026-10-02)', url: './state-of-stablecoins-2026-10-02.md' },
+  {"id": "tether-q2-2026", "label": "Tether - Q2 2026 attestation release ($1.5B net operating profit claim)", "url": "https://tether.io/news/tether-posts-strong-q2-performance-generates-1-5b-net-operating-profit-maintains-4-11b-reserve-buffer-and-expands-gold-holdings-to-more-than-146-tons/"},
+  {"id": "genius-pl119-27", "label": "US Code - 12 U.S.C. 5903 (GENIUS Act Sec. 4), yield prohibition and 93-day reserve cap", "url": "https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title12-section5903&num=0&edition=prelim"},
+  {"id": "x402-foundation", "label": "x402 Foundation homepage, retrieved November 5, 2026; current counter not established", "url": "https://x402.org/"},
+  {"id": "x402scan", "label": "x402scan (Merit Systems) - live x402 transaction index", "url": "https://www.x402scan.com/"},
+  {"id": "trm-x402", "label": "TRM Labs - \"Who's actually paying? Measuring AI agent payments on-chain\"", "url": "https://www.trmlabs.com/trm-tech-blog/whos-actually-paying-measuring-ai-agent-payments-onchain"},
+  {"id": "solana-x402-september-2026", "label": "Solana Foundation - Payments on Solana: September 2026 in Five Stories (76% of x402 transactions, Aug 22-Sep 19)", "url": "https://solana.com/news/payments-on-solana-september-2026-in-five-stories"},
+  {"id": "mcglynn-x402-frozen", "label": "Historical secondary observation of the former x402 counter; not current homepage status", "url": "https://www.danielmcglynn.com/the-x402-counter-has-shown-the-same-four-numbers-since-march/"},
+  {"id": "spotedcrypto-x402", "label": "SpotedCrypto - TRM x402 report synthesis and tracker divergence (2026)", "url": "https://www.spotedcrypto.com/trm-labs-x402-ai-agent-payments-report-2026/"},
+  {"id": "x402stats-methodology", "label": "x402stats.io - methodology: raw totals differ by window, dust truncation and facilitator coverage", "url": "https://x402stats.io/methodology"},
+  {"id": "bitquery-x402", "label": "Bitquery - x402 AI agent payments on-chain audit", "url": "https://bitquery.io/investigations/x402-ai-agent-payments-audit"},
+  {"id": "keyrock-agent", "label": "Keyrock - \"Who Pays the Agent?\" (median ticket size, $0.30 card-fee floor)", "url": "https://keyrock.com/who-pays-the-agent/"},
+  {"id": "visa-artemis-agentic", "label": "Visa + Artemis Analytics - Agentic Payments from the Ground Up (PDF)", "url": "https://www.visa.com/vcom-assets/content/dam/visa/reimagine-visa/thought-leadership/documents/agentic-payments-report.pdf"},
+  {"id": "stripe-mpp", "label": "Stripe - Machine Payments Protocol launch post", "url": "https://stripe.com/blog/machine-payments-protocol"},
+  {"id": "tempo-mainnet", "label": "Tempo - mainnet launch (MPP introduced alongside)", "url": "https://tempo.xyz/blog/mainnet"},
+  {"id": "mpp-overview", "label": "MPP - protocol overview (co-authored by Tempo and Stripe)", "url": "https://mpp.dev/overview"},
+  {"id": "acp-docs", "label": "Agentic Commerce Protocol (ACP) - documentation", "url": "https://www.agenticcommerce.dev/docs"},
+  {"id": "ap2-protocol", "label": "AP2 - Agent Payments Protocol homepage", "url": "https://ap2-protocol.org/"},
+  {"id": "fido-ap2", "label": "FIDO Alliance - trusted AI agent interactions standards", "url": "https://fidoalliance.org/fido-alliance-to-develop-standards-for-trusted-ai-agent-interactions/"},
+  {"id": "visa-tap-dev", "label": "Visa - Trusted Agent Protocol (TAP) capability page", "url": "https://developer.visa.com/capabilities/trusted-agent-protocol"},
+  {"id": "visa-tap-pr", "label": "Visa - press release: \"hundreds\" of agent-initiated transactions (Dec 2025)", "url": "https://usa.visa.com/about-visa/newsroom/press-releases.releaseId.21961.html"},
+  {"id": "cdp-x402", "label": "Coinbase CDP - x402 (vendor self-report on payment count)", "url": "https://docs.cdp.coinbase.com/x402/welcome"},
+  {"id": "erc8004", "label": "ERC-8004 - Trustless Agents (draft; payments explicitly out of scope)", "url": "https://eips.ethereum.org/EIPS/eip-8004"},
+  {"id": "circle-arc-mainnet", "label": "Circle - press release: Arc mainnet launch (2026-09-16)", "url": "https://www.circle.com/pressroom/circle-launches-arc-mainnet-an-economic-operating-system-for-the-internet"},
+  {"id": "arc-rpc", "label": "Arc mainnet JSON-RPC endpoint (chain ID probe)", "url": "https://rpc.mainnet.arc.io"},
+  {"id": "open-standard", "label": "Open Standard / Open USD - consortium site and partner list", "url": "https://joinopenstandard.com/"},
+  {"id": "open-standard-intro", "label": "Open Standard - \"Introducing Open USD\" announcement (2026-06-30)", "url": "https://joinopenstandard.com/blog/introducing-open-usd"},
+  {"id": "ondo-usdy", "label": "Ondo Finance - USDY product page (size and backing)", "url": "https://ondo.finance/usdy"},
+  {"id": "ondo-ousg", "label": "Ondo Finance - OUSG product page (size and sleeve composition)", "url": "https://ondo.finance/ousg"},
+  {"id": "buidl-formd", "label": "SEC EDGAR - BUIDL Form D/A (cumulative gross sales, not AUM)", "url": "https://www.sec.gov/Archives/edgar/data/2013810/000201381026000002/primary_doc.xml"},
+  {"id": "securitize-buidl", "label": "Securitize - BUIDL fund page (no issuer-published AUM)", "url": "https://securitize.io/blackrock/buidl"},
+  {"id": "defillama-stablecoincharts", "label": "DefiLlama - total stablecoin market cap series (growth computation)", "url": "https://stablecoins.llama.fi/stablecoincharts/all"},
+  {"id": "tic", "label": "US Treasury TIC - Major Foreign Holders of Treasuries", "url": "https://ticdata.treasury.gov/Publish/mfh.txt"},
+  {"id": "tether-transp", "label": "Tether transparency / reserves attestation", "url": "https://tether.to/en/transparency/"},
+  {"id": "circle-transp", "label": "Circle reserve report", "url": "https://www.circle.com/en/transparency"},
+  {"id": "congress-genius", "label": "Congress.gov - GENIUS Act (S.1582)", "url": "https://www.congress.gov/bill/119th-congress/senate-bill/1582"},
+  {"id": "morganlewis-genius", "label": "Morgan Lewis - GENIUS Act breakdown", "url": "https://www.morganlewis.com/pubs/2025/07/genius-act-passes-in-us-congress-a-breakdown-of-the-landmark-stablecoin-law"},
+  {"id": "coingecko-svb", "label": "CoinGecko Research - Stablecoin Supply Impacted by SVB", "url": "https://www.coingecko.com/research/publications/stablecoins-supply-svb-impact"},
+  {"id": "cnbc-svb", "label": "CNBC - USDC breaks dollar peg", "url": "https://www.cnbc.com/2023/03/11/stablecoin-usdc-breaks-dollar-peg-after-firm-reveals-it-has-3point3-billion-in-svb-exposure.html"},
+  {"id": "sd-terra", "label": "ScienceDirect - Anatomy of a Stablecoin failure (Terra-Luna)", "url": "https://www.sciencedirect.com/science/article/abs/pii/S1544612322005359"},
+  {"id": "reuters-terra", "label": "Reuters - TerraUSD falls to 30 cents", "url": "https://www.reuters.com/technology/dollar-pegged-stablecoin-terrausd-falls-30-cents-2022-05-11/"},
+  {"id": "binance-terra", "label": "Binance - The Collapse of LUNA and UST", "url": "https://www.binance.com/en/square/post/22931497315953"},
+  {"id": "ecb-mpb", "label": "ECB Macroprudential Bulletin - euro stablecoins and sovereign bonds", "url": "https://www.ecb.europa.eu/press/financial-stability-publications/macroprudential-bulletin/html/ecb.mpbu202604_05.en.html"},
+  {"id": "fed-feds", "label": "Federal Reserve FEDS Note - Banks in the Age of Stablecoins", "url": "https://www.federalreserve.gov/econres/notes/feds-notes/banks-in-the-age-of-stablecoins-implications-for-deposits-credit-and-financial-intermediation-20251217.html"},
+  {"id": "bis-wp1370", "label": "BIS Working Paper 1370 - Dollarisation and monetary control", "url": "https://bis.org/publ/work1370.pdf"},
+  {"id": "bis-aer", "label": "BIS Annual Economic Report - Anchoring trust in money", "url": "https://www.bis.org/publications/iii-anchoring-trust-money-innovation-beyond-stablecoins_2.pdf"},
+  {"id": "imf-par-to-pressure", "label": "IMF WP 2026/005 - From Par to Pressure", "url": "https://www.imf.org/en/publications/wp/issues/2026/01/16/from-par-to-pressure-liquidity-redemptions-and-fire-sales-with-a-systemic-stablecoin-573271"},
+  {"id": "coingecko-rwa", "label": "CoinGecko Research - RWA Report 2026", "url": "https://www.coingecko.com/research/publications/rwa-report-2026"},
+  {"id": "rwa-xyz", "label": "rwa.xyz - RWA tokenization market data", "url": "https://rwa.xyz"},
+  {"id": "defillama-stables", "label": "DefiLlama - Stablecoins dashboard", "url": "https://defillama.com/stablecoins"},
+  {"id": "coindesk-tether-q1", "label": "CoinDesk - Tether Q1 2026 attestation results", "url": "https://www.coindesk.com/business/2026/05/01/tether-posts-usd1-04-billion-q1-profit-reaches-usd8-23-billion-reserve-buffer"},
+  {"id": "worldbank-remittance", "label": "World Bank Remittance Prices Worldwide Issue 53 Q1 2025", "url": "https://remittanceprices.worldbank.org/sites/default/files/rpw_main_report_and_annex_q125_1_0.pdf"},
+  {"id": "chainalysis-geo", "label": "Chainalysis Geography of Cryptocurrency 2025", "url": "https://www.chainalysis.com/reports/2025-geography-of-cryptocurrency-report/"},
+  {"id": "visa-stablecoins", "label": "Visa - Stablecoin settlement live in the US", "url": "https://usa.visa.com/about-visa/newsroom/press-releases.releaseId.21951.html"},
+  {"id": "reuters-uk", "label": "Reuters - UK dilutes stablecoin capital requirement", "url": "https://www.reuters.com/business/finance/uk-dilutes-stablecoin-capital-requirement-final-crypto-rulebook-2026-06-29/"},
+  {"id": "hkma-ord", "label": "HKMA - Stablecoin issuers regulatory regime (Hong Kong)", "url": "https://www.hkma.gov.hk/eng/key-functions/international-financial-centre/stablecoin-issuers/"},
+  {"id": "cbuae-reg", "label": "CBUAE Payment Token Services Regulation", "url": "https://rulebook.centralbank.ae/en/rulebook/payment-token-services-regulation"},
+  {"id": "tiger-research-asia", "label": "Tiger Research - 2026 Asia Stablecoin Market Outlook", "url": "https://reports.tiger-research.com/p/2026-asia-stablecoin-market-overview-eng"},
+  {"id": "scorechain-mica", "label": "Scorechain - EU Stablecoin Regulation under MiCA", "url": "https://www.scorechain.com/blog/eu-stablecoin-regulation-mica"},
+  {"id": "nyfed-sr1185", "label": "NY Fed Staff Report 1185 - Stablecoin Disintermediation", "url": "https://www.newyorkfed.org/research/staff_reports/sr1185"},
+  {"id": "whitehouse-cea", "label": "White House CEA - Effects of stablecoin yield prohibition on bank lending", "url": "https://www.whitehouse.gov/research/2026/04/effects-of-stablecoin-yield-prohibition-on-bank-lending/"},
+  {"id": "occ-nprm", "label": "OCC Bulletin 2026-3 - GENIUS Act NPRM", "url": "https://www.occ.gov/news-issuances/bulletins/2026/bulletin-2026-3.html"},
+  {"id": "fdic-nprm", "label": "FDIC - GENIUS Act proposed rulemaking (FIL 2026)", "url": "https://www.fdic.gov/news/financial-institution-letters/2026/notice-proposed-rulemaking-establish-genius-act"},
+  {"id": "stablecoinbeat-mc", "label": "Stablecoin Beat - Total market capitalization series (Sep 2026)", "url": "https://stablecoinbeat.com/charts/market-cap"},
+  {"id": "bitsgap-supply", "label": "Bitsgap - Stablecoin supply vs depeg, 2026 data", "url": "https://bitsgap.com/blog/stablecoin-supply-a-leading-market-signal"},
+  {"id": "netcoins-usde", "label": "Netcoins - Ethena USDe depeg during the Oct 11, 2025 crash", "url": "https://www.netcoins.com/blog/ethenas-usde-depeg-an-overview-and-its-relation-to-the-ena-token"},
+  {"id": "messari-usde", "label": "Messari - Ethena USDe (Oct 2025 Binance $0.65 print)", "url": "https://messari.io/project/ethena-usde"},
+  {"id": "coinbase-usd1", "label": "Coinbase - USD1 (World Liberty Financial) market data", "url": "https://www.coinbase.com/price/usd1-wlfi"},
+  {"id": "stablecoinbeat-reg", "label": "Stablecoin Beat - Global stablecoin regulation tracker (Sep 2026)", "url": "https://stablecoinbeat.com/regulation/"},
+  {"id": "stablecoin-insider", "label": "Stablecoin Insider - depeg insurance", "url": "https://stablecoininsider.org/stablecoin-depeg-insurance/"},
+  {"id": "stablecoin-insider-clarity", "label": "Stablecoin Insider - CLARITY Act Treasury stablecoin circuit breaker", "url": "https://stablecoininsider.org/clarity-act-treasury-stablecoin-circuit-breaker/"},
+  {"id": "cointelegraph-jcb", "label": "Cointelegraph - JCB signs Circle MOU for Japan stablecoin payments", "url": "https://cointelegraph.com/news/japans-jcb-signs-mou-with-circle-to-explore-usdc-payments-and-cross-border-settlements"},
+  {"id": "cointelegraph-uk", "label": "Cointelegraph - Bank of England innovation mandate covers stablecoins", "url": "https://cointelegraph.com/news/uk-boe-innovation-mandate-stablecoins"},
+  {"id": "genius-text", "label": "GENIUS Act enacted text (Sec. 4 reserve classes, Sec. 20 commencement trigger)", "url": "https://www.congress.gov/bill/119th-congress/senate-bill/1582/text"},
+  {"id": "genius-reserve-classes", "label": "GENIUS Act Sec. 4(a)(1)(A) eligible reserve classes (eight, not T-bills only)", "url": "https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title12-section5903&num=0&edition=prelim"},
+  {"id": "kansascityfed-bulletin", "label": "Kansas City Fed Economic Bulletin - stablecoins and Treasury demand (HTML corrected 2026-09-22; internal arithmetic unreconciled)", "url": "https://www.kansascityfed.org/research/economic-bulletin/stablecoins-could-increase-treasury-demand-but-only-by-reducing-demand-for-other-assets/"},
+  {"id": "kansascityfed-pdf", "label": "Kansas City Fed Economic Bulletin PDF (reader-cache freshness unknown; differing component figures)", "url": "https://www.kansascityfed.org/documents/11132/EconomicBulletin25Jacewitz0808.pdf"},
+  {"id": "fed-banks-stablecoins", "label": "Federal Reserve FEDS Note (2025-12-17) - Banks in the Age of Stablecoins", "url": "https://www.federalreserve.gov/econres/notes/feds-notes/banks-in-the-age-of-stablecoins-implications-for-deposits-credit-and-financial-intermediation-20251217.html"},
+  {"id": "tether-q1-2026", "label": "Tether - Q1 2026 attestation: about $183B token liabilities and about $141B direct and indirect T-bill exposure (2026-03-31)", "url": "https://tether.io/news/tether-posts-1-04b-q1-2026-profit-despite-highly-volatile-global-markets-reaches-all-time-highs-8-23b-reserve-buffer-and-maintains-u-s-treasury-heavy-backing/"},
+  {"id": "market-cap-2026-08", "label": "Total stablecoin market cap measurement, 2026-08-13, one aggregator via secondary compilation", "url": "https://reap.global/blog/stablecoin-statistics-2026"},
+  {"id": "circle-10q-q2-2026", "label": "Circle - Form 10-Q for the quarter ended 2026-06-30 (balance-linked distribution costs, named Coinbase terms)", "url": "https://www.sec.gov/Archives/edgar/data/1876042/000187604226000248/crcl-20260630.htm"},
+  {"id": "bcg-allium-payments", "label": "BCG and Allium, January 2026 paper: 2025 adjusted transfers versus classified goods-and-services payments", "url": "https://www.bcg.com/assets/2026/white-paper-stablecoin-payments-truth-behind-numbers.pdf"},
+  {"id": "open-usd-live-os", "label": "Open Standard - Open USD is live (issued by Bridge, a Stripe company; reserves at BlackRock, Lead Bank and BNY)", "url": "https://joinopenstandard.com/blog/open-usd-is-live"},
+  {"id": "bridge-ousd-live", "label": "Bridge - OUSD issued by Bridge (launch chains, conditional OCC approval for Bridge National Trust Bank)", "url": "https://www.bridge.xyz/blog/ousd-is-live-issued-by-bridge"},
+  {"id": "bridge-ousd-reserves", "label": "Bridge OUSD reserve panel, 2026-11-05 16:00 UTC; reserve-component reconciliation unresolved", "url": "https://reserves.bridge.xyz/ousd"},
+  {"id": "open-standard-structure", "label": "Open Standard - company structure and leadership (partner equity tied to supply and activity; shareholder board)", "url": "https://joinopenstandard.com/blog/company-structure-and-leadership"},
+  {"id": "solana-compass-ousd", "label": "Solana Compass - Open USD goes live on Solana with free 1:1 mint and burn (2026-09-30)", "url": "https://solanacompass.com/news/open-standards-ousd-stablecoin-goes-live-on-solana"},
+  {"id": "occ-circle-conditional", "label": "OCC - conditional approval, Circle trust bank application (2025-12-12; preliminary and conditional, not final authorization)", "url": "https://www.occ.gov/news-issuances/news-releases/2025/nr-occ-2025-125a.pdf"},
+  {"id": "occ-five-charters", "label": "OCC release 2025-125 - five conditional trust-bank charter approvals (not an exhaustive current register)", "url": "https://www.occ.gov/news-issuances/news-releases/2025/nr-occ-2025-125.html"},
+  {"id": "cnbc-circle-charter", "label": "CNBC (2026-07-10) - secondary report of later Circle trust-bank approval under the name Circle National Trust", "url": "https://www.cnbc.com/2026/07/10/circle-gets-an-occ-bank-charter-as-stablecoin-competition-heats-up-shares-surge-14percent.html"},
+  {"id": "bitquery-x402-bots", "label": "Bitquery - two automated loops are 83% of the agent payments found (13.2M on Base, 5.7M one-cent on Polygon)", "url": "https://bitquery.io/investigations/x402-ai-agent-payments-audit"},
+  {"id": "chainalysis-x402-ping", "label": "Chainalysis (2026-06-03) - x402 growth driven substantially by meme-coin farming; PING pay-to-mint over 150,000 transactions in month one", "url": "https://www.chainalysis.com/blog/x402-agentic-payments-adoption/"},
+  {"id": "rwa-reports-value", "label": "CryptoRank (2026-07-15) - tokenized RWA about $33.5B reported versus about $345B represented (two different measures)", "url": "https://cryptorank.io/news/feed/d6bff-rwa-tokenization-news-today"},
+  {"id": "beincrypto-transfer-activity", "label": "BeInCrypto (2026-07-02) - 910 of 1,289 assets above $100,000 with zero weekly transfers (70.60% by count, 56% by value, different denominators)", "url": "https://beincrypto.com/reality-of-rwa-tokenization-2026/"},
+  {"id": "beincrypto-report-landing", "label": "BeInCrypto report landing page - data dated 2026-05-31, $60B market base (a different denominator again)", "url": "https://research.beincrypto.com/tokenization-2026-report-first-edition"},
+  {"id": "spark-buidl", "label": "Spark Money (May 2026) - BUIDL about $2.4B across eight named chains (secondary, not an issuer AUM disclosure)", "url": "https://www.spark.money/research/rwa-tokenization-bitcoin-blockchain"},
+  {"id": "securitize-q2-2026", "label": "Securitize - Q2 2026 results (2026-08-12): $4.3B platform tokenized AUM as of 2026-06-30, not BUIDL fund AUM", "url": "https://investors.securitize.io/news/news-details/2026/Securitize-Reports-Second-Quarter-2026-Results/default.aspx"},
+  {"id": "hk-cap656", "label": "HK e-Legislation - Cap. 656 Stablecoins Ordinance (Schedule 2 reserve and redemption criteria)", "url": "https://www.elegislation.gov.hk/hk/cap656"},
+  {"id": "hkma-stablecoin-guideline", "label": "HKMA - Guideline on Supervision of Licensed Stablecoin Issuers (Aug 2025), paras 2.5.2 and 3.3.2 on trust arrangements and legal opinions", "url": "https://www.hkma.gov.hk/media/eng/doc/key-functions/ifc/stablecoin-issuers/Guideline_on_supervision_of_licensed_stablecoin_issuers_eng.pdf"},
+  {"id": "mica-art-3", "label": "ESMA - MiCA Article 3 definitions (asset-referenced token is not an e-money token; e-money token references one official currency)", "url": "https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-3-definitions"},
+  {"id": "mica-art-36", "label": "ESMA - MiCA Article 36 reserve of assets (legal segregation and no creditor recourse; asset-referenced tokens only)", "url": "https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-36-obligation-have-reserve-assets"},
+  {"id": "mica-art-39", "label": "ESMA - MiCA Article 39 right of redemption (asset-referenced tokens, including reserve assets on issuer failure)", "url": "https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-39-right-redemption"},
+  {"id": "mica-art-48", "label": "ESMA - MiCA Article 48 e-money tokens deemed electronic money; EMD Titles II and III apply", "url": "https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-48-requirements-offer-public-or"},
+  {"id": "mica-art-49", "label": "ESMA - MiCA Article 49 e-money token holder claim, redemption at any time at par, no fee", "url": "https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-49-issuance-and-redeemability-e"},
+  {"id": "mica-art-54", "label": "ESMA - MiCA Article 54 safeguarding of funds for e-money tokens under EMD Article 7(1)", "url": "https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-54-investment-funds-received"},
+  {"id": "mica-art-55", "label": "ESMA - MiCA Article 55 recovery and redemption plans; Title III Chapter 6 applies to e-money tokens", "url": "https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-55-recovery-and-redemption-plans"},
+  {"id": "mica-art-149", "label": "ESMA - MiCA Article 149 application dates; Titles III and IV apply from 2024-06-30", "url": "https://www.esma.europa.eu/publications-and-data/interactive-single-rulebook/mica/article-149-entry-force-and-application"},
+  {"id": "emd-art-7", "label": "Directive 2009/110/EC Article 7 safeguarding requirements; method left to national law", "url": "https://www.legislation.gov.uk/eudr/2009/110/article/7"},
+  {"id": "mas-p015-2026", "label": "MAS - Consultation P015-2026, proposed amendments to the Payment Services Act for stablecoin regulation (closed 2026-10-16)", "url": "https://www.mas.gov.sg/publications/consultations/2026/consultation-on-proposed-amendments-to-the-payment-services-act-for-stablecoin-regulation"},
+  {"id": "mas-p015-paper", "label": "MAS - P015-2026 consultation paper (Sep 2026), reserve trust and orderly redemption proposals", "url": "https://www.mas.gov.sg/-/media/mas-media-library/publications/consultations/pd/2026/sept-2026_consultation-paper-on-proposed-amendments-to-ps-act-for-stablecoins-regulation/consultation-paper-on-proposed-amendments-to-ps-act-for-stablecoins-regulation_vfinal.pdf"},
+  {"id": "mas-annex-c", "label": "MAS - P015-2026 Annex C, draft Payment Services Act amendments (clause 21B)", "url": "https://www.mas.gov.sg/-/media/mas-media-library/publications/consultations/pd/2026/sept-2026_consultation-paper-on-proposed-amendments-to-ps-act-for-stablecoins-regulation/annex-c_consolidated-ps-act-amendment_vfinal.pdf"},
+  {"id": "genius-plaw-119-27", "label": "Public Law 119-27, GENIUS Act, Section 11 insolvency priority and Section 20 effective date", "url": "https://www.congress.gov/119/plaws/publ27/PLAW-119publ27.pdf"},
+  {"id": "report-full-2026-10-02", "label": "StableSense Research - State of Stablecoins, full dated report (2026-10-02)", "url": "./state-of-stablecoins-2026-10-02.md"},
+  {"id": "occ-final-2026-50", "label": "OCC final GENIUS rule, October 21, 2026; January 18, 2027 effective date", "url": "https://www.occ.gov/news-issuances/bulletins/2026/bulletin-2026-50.html"},
+  {"id": "tether-q3-2026", "label": "Tether Q3 issuer release, October 30; September 30 balances", "url": "https://tether.io/news/tether-generates-1-5-billion-in-q3-net-operating-profit-as-reserve-buffer-doubles-to-almost-8-billion/"},
+  {"id": "circle-q3-2026", "label": "Circle Q3 unaudited results, November 4, 2026", "url": "https://s206.q4cdn.com/265218871/files/doc_earnings/2026/q3/earnings-result/3Q26-Earnings-Release.pdf"},
+  {"id": "circle-reserves-september-2026", "label": "Circle September reserve examination report, October 26, 2026", "url": "https://6778953.fs1.hubspotusercontent-na1.net/hubfs/6778953/USDCAttestationReports/2026/2026%20USDC_Examination%20Report%20September%2026.pdf"},
+  {"id": "bridge-occ-conditional", "label": "OCC Bridge preliminary conditional order, February 12, 2026", "url": "https://www.occ.gov/topics/charters-and-licensing/interpretations-and-actions/2026/cd1365.pdf"},
+  {"id": "allium-q3-2026", "label": "Allium State of Stablecoins and Payments Q3 2026, revised October 19", "url": "https://www.allium.so/reports/state-of-stablecoins-and-payments-q3-2026"},
+  {"id": "citi-2030", "label": "Citi Stablecoins2030, September 25, 2025 forecast", "url": "https://www.citigroup.com/global/insights/stablecoins-2030"},
+  {"id": "hkma-register", "label": "HKMA licensee register, retrieved November 5, 2026; last revision April 23", "url": "https://www.hkma.gov.hk/eng/regulatory-resources/registers/register-of-licensed-stablecoin-issuers/"},
+  {"id": "sky-litepsm", "label": "Sky LitePSM documentation, retrieved November 5, 2026", "url": "https://developers.skyeco.com/protocol/liquidity/litepsm/"},
+  {"id": "ethena-design", "label": "Ethena documentation, retrieved November 5, 2026; design not current allocations", "url": "https://docs.ethena.fi/"},
+  {"id": "circle-bank-final-issuer", "label": "Circle July 10, 2026 issuer announcement of final bank approval", "url": "https://www.circle.com/pressroom/circle-receives-final-occ-approval-to-establish-national-trust-bank"}
 ];
 
-// --- latest-research edition (2026-10-02 reconciliation) -------------------
+// --- latest-research edition (2026-11-05 reconciliation) -------------------
 // The corrections below are changes made to this page's own text when the
 // stored primary sources were re-read on the review date. They are listed so a
 // reader who saw an earlier version can see what moved and why, not appended
 // quietly under the superseded claim. Each entry names the corrected state and
 // what the earlier text asserted, so neither is left standing alone.
 export const latestResearchCorrections = [
-  {
-    title: 'Open USD is live, not announced-only',
-    body: 'Earlier text said OUSD had no circulating supply and was "still later this year". It was issued by Bridge Building Inc., a Stripe company, and went live on Base, Ethereum, Solana and Tempo on 2026-09-30. The issuer\'s own reserve page reported $468,445,399 supply at 11:30 UTC on 2026-10-01, split $257,214,691 cash (54.91%) and $211,230,708 Treasuries (45.09%), summing exactly to total supply. One dated self-report is not an adoption series. Reserve earnings accrue to partners, not token holders. An unsourced single-day price-move attribution for another issuer was removed.',
-    asOf: 'launch 2026-09-30; reserve snapshot 2026-10-01 11:30 UTC',
-  },
-  {
-    title: 'GENIUS reserves are a list, not Treasury bills',
-    body: 'Earlier text implied reserves are bound to Treasury bills. Section 4(a)(1)(A) requires at least 1:1 reserves drawn from eight eligible classes, of which 93-day Treasuries are one. The full list is now on the page.',
-    asOf: 'statute as enacted 2025-07-18',
-  },
-  {
-    title: 'GENIUS commencement is unresolved, not locked',
-    body: 'Earlier text called the 18-month fallback a locked date. Section 20 sets general commencement at the earlier of 18 months after enactment or 120 days after the primary federal regulators issue any final implementing regulations. 2027-01-18 is an outer limit. No final rule is verified, so the current trigger is UNRESOLVED and no GENIUS duty is described on this page as currently operative.',
-    asOf: 'Historical Sep 2026 tracker counts; final-rule issuance UNKNOWN',
-  },
-  {
-    title: 'Gross Treasury holdings are not net demand',
-    body: 'The Kansas City Fed Bulletin states a $0.30 net effect whose own stated components give $0.42, a $0.12 gap it does not reconcile, and its HTML and PDF versions disagree on the inputs (8 percent bank Treasury share and $0.08 versus 20 percent and $0.20). The intended coefficient is UNRESOLVED and no corrected coefficient is published here. The source\'s own hedge, that the effect can be zero or negative depending on where the money came from, is the part that survives.',
-    asOf: 'Bulletin 2025-08-08, publisher-corrected HTML 2026-09-22',
-  },
-  {
-    title: 'Paying distributors is not a new practice',
-    body: 'Earlier framing treated partner-oriented reserve economics as a departure. Circle\'s Q2 2026 Form 10-Q states distribution costs payable to key distributors such as Coinbase and Binance are directly impacted by the amount of USDC held on their platforms, and discloses named Coinbase terms ($324.6M for the quarter, $655.3M for the half year, allocated after undisclosed issuer retention). Routing reserve earnings to partners is a redistribution of an existing practice, not its introduction. Whether Open Standard is more or less generous is UNRESOLVED.',
-    asOf: 'Circle 10-Q, quarter ended 2026-06-30',
-  },
-  {
-    title: 'The 95-to-99 percent non-payment claim is withdrawn',
-    body: 'Earlier text claimed 95% to 99% of stablecoin volume was non-payment. No source contains that figure and it is removed. The verified framing is BCG and Allium Labs (2026-09-30): more than $62T annual transfers, of which real economic activity is $4.2T (about 7%), and separately roughly $350B to $550B of observable bilateral goods-and-services payments in 2025 (0.565% to 0.887% of the gross figure), which the authors call a directionally robust lower bound. The two definitions are not interchangeable.',
-    asOf: '2025 payment data, published 2026-09-30',
-  },
-  {
-    title: 'x402 headline figures now carry their scopes',
-    body: 'An unsourced $996,474 floor across 18.1M transactions was withdrawn: it matches neither the volume nor the transaction count of the dashboard\'s own cumulative totals. Those totals (12,293,450 transactions, $974,215.14) are now quoted, with an unpublished window. The $317M figure is identified as a five-chain August 2026 residual after removing one bridging contract holding about 88% of the value, not an Arbitrum-only or commerce-only figure. The commerce-only share remains UNRESOLVED.',
-    asOf: 'dashboard cumulative, fetched 2026-10-01; Bitquery August 2026',
-  },
-  {
-    title: 'BUIDL has no verified current AUM',
-    body: 'Earlier text presented a $2.70-3.52B "sources disagree" range. A range implies a currency and a single valuation basis that none of the three underlying reports has, so they are now listed separately with their dates and no current AUM is asserted. The one cited aggregator capture contained no $2.7B BUIDL figure at all: its only 2.7 is a $2.7 trillion 2030 DeFi-deployment projection. Securitize\'s $4.3B is platform-wide tokenized AUM as of 2026-06-30, not BUIDL fund AUM, and is not substituted for it.',
-    asOf: 'reports dated May, early July and August 2026',
-  },
-  {
-    title: 'RWA count and value shares are separated',
-    body: '910 of 1,289 tested assets above $100,000 recorded zero weekly transfers, which is 70.60% by count. The publisher\'s 56% is a different statement about value against a value-measured base. Neither establishes economically idle capital: about $27B of the reported dormant value came from "represented" assets not necessarily designed for public secondary-market movement, and a ledger-style holding can still perform economic functions off-chain.',
-    asOf: 'article 2026-07-02; publisher landing page data 2026-05-31',
-  },
-  {
-    title: 'No fabricated fallback on the headline counter',
-    body: 'When the live fetch fails, the counter now shows a hyphen. It previously displayed a research range midpoint as global stablecoin market cap: a different measure from the five coins the counter actually tracks, and a point estimate no source published. Missing observations must not be presented as measured values.',
-    asOf: 'static fallback removed',
-  },
-  {
-    title: 'No single dataset-wide as-of date',
-    body: 'The footer badge distinguishes the review date from measurement dates. Sources have different observation dates, stated with the reconciled findings. Older historical observations retain their original dates and are not newly verified just because this edition was published.',
-    asOf: 'review date 2026-10-02',
-  },
+  {"title": "OCC final GENIUS rule is now verified", "body": "OCC announced a final rule on October 21 and states January 18, 2027 as the Act and rule effective date. This supersedes no-final-rule-verified; separate timing and other agency work remain distinct.", "asOf": "2026-10-21 source; reviewed 2026-11-05"},
+  {"title": "New issuer observations retain their actual dates", "body": "Tether Q3 and Circle September reserve observations are September 30 snapshots, not November balances. Circle Q3 financial results were published November 4. Reserve assets, liabilities, profit and distribution costs are separate measures.", "asOf": "2026-09-30 observations; October-November publications"},
+  {"title": "OUSD current reserve panel does not reconcile", "body": "Displayed cash and Treasury components sum to $908,235,750, $1,752,317 below the $909,988,067 reserve headline. The gap is unresolved. No composition percentage, coverage conclusion or adoption growth is inferred.", "asOf": "2026-11-05 16:00 UTC issuer page update"},
+  {"title": "Payment definitions and publication date corrected", "body": "BCG/Allium paper is January 2026 and measures 2025. Its $4.2T is adjusted activity, not all goods-and-services payments. Allium's separate Jan-Sep 2026 estimate is $482B classified payments from $2.4T adjusted and $97.9T raw transfers. Methods and periods are kept apart.", "asOf": "2025 and Jan-Sep 2026, separately"},
+  {"title": "x402 panels are not one cumulative series", "body": "November 5 x402scan panel reads 4.22M transactions and $1.65M with an unpublished observation window. Earlier panels cannot be joined into an adoption trend. The historical frozen-counter claim does not describe today's Foundation homepage.", "asOf": "retrieved 2026-11-05; window unresolved"},
+  {"title": "Forecasts show only rechecked scenarios", "body": "The numeric comparison retains Citi's original September 25 2025 base and bull scenarios for 2030. Unverified forecast amounts, Bain's unsupported dollar interval and mixed target-year rows are withheld. Scenarios are not confidence bounds.", "asOf": "forecast 2025-09-25; reviewed 2026-11-05"},
+  {"title": "Older observations are not redated", "body": "Historical market series, Treasury comparisons, depeg events and unrevalidated jurisdiction details keep their dates. The November 5 review does not certify every older figure as current.", "asOf": "review 2026-11-05"}
 ];
 
 export const latestResearchOpen = [
-  { label: 'Net Treasury demand', need: 'Holder origin assets, issuance flows, reserve allocations and displaced assets under a stated counterfactual. Gross issuer holdings do not supply it.' },
-  { label: 'The Kansas City Fed coefficient', need: 'A publisher reconciliation of the stated $0.30 against its own $0.42 components and its two disagreeing versions.' },
-  { label: 'GENIUS commencement trigger', need: 'An authoritative final implementing rule and its issuance date.' },
-  { label: 'Current trust-bank authorizations', need: 'The primary final OCC orders for Circle and Bridge, plus reconciliation of the differing entity names in circulation.' },
-  { label: 'Comparable distribution terms', need: 'Like-for-like net-of-fee contracts and realized payouts on both sides.' },
-  { label: 'Commerce-only x402 volume', need: 'Merchant or service attribution with bridge, bot, test and self-payment exclusions on one consistent basis.' },
-  { label: 'BUIDL AUM', need: 'A dated fund-specific issuer or administrator disclosure with chain aggregation and a stated valuation basis.' },
-  { label: 'Open USD adoption', need: 'A partner-level series of balances and qualifying payment volume, not a supply snapshot or an integration count.' },
-  { label: 'A second market-cap measurement', need: 'An independent same-date, same-universe figure. Forming a range from different dates or different stablecoin definitions would not be a range.' },
+  {"label": "Net Treasury demand", "need": "Holder origin assets, issuance flows, reserve allocations and displaced assets under a stated counterfactual. Gross issuer holdings do not supply it."},
+  {"label": "The Kansas City Fed coefficient", "need": "A publisher reconciliation of the stated $0.30 against its own $0.42 components and its two disagreeing versions."},
+  {"label": "Current trust-bank authorizations", "need": "Original final OCC orders for Circle and Bridge. Circle's issuer announcement now reconciles its entity names; Bridge's preliminary order is verified."},
+  {"label": "Comparable distribution terms", "need": "Like-for-like net-of-fee contracts and realized payouts on both sides."},
+  {"label": "Commerce-only x402 volume", "need": "Merchant or service attribution with bridge, bot, test and self-payment exclusions on one consistent basis."},
+  {"label": "BUIDL AUM", "need": "A dated fund-specific issuer or administrator disclosure with chain aggregation and a stated valuation basis."},
+  {"label": "Open USD adoption", "need": "A partner-level series of balances and qualifying payment volume, not a supply snapshot or an integration count."},
+  {"label": "A second market-cap measurement", "need": "An independent same-date, same-universe figure. Forming a range from different dates or different stablecoin definitions would not be a range."},
+  {"label": "OUSD reserve reconciliation", "need": "An issuer explanation or reconciled report for the November 5 headline/component gap and $1 excess discrepancy."}
 ];

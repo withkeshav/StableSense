@@ -1,129 +1,51 @@
 import { describe, expect, it } from 'vitest';
 import { buildMarketView } from './marketView.js';
-
-const T0 = 1_786_000_000_000;
-
-function price(coin, ts, value, change = null) {
-  return { coin, ts, price: value, change24h: change };
-}
-
-function snap(coin, chain, ts, supply, delta = null) {
-  return { coin, chain, ts, circulatingUsd: supply, delta24h: delta };
-}
-
-describe('buildMarketView', () => {
-  it('assembles per-coin payload with sums and newest rows', () => {
-    const out = buildMarketView({
-      priceRows: [price('USDT', T0, 1.0001, 0.01), price('USDC', T0, 0.9999, -0.01)],
-      snapshotRows: [
-        snap('USDT', 'ethereum', T0, 60_000, 100),
-        snap('USDT', 'tron', T0, 40_000, -50),
-        snap('USDC', 'ethereum', T0, 30_000, 10),
-      ],
-      marketRow: { ts: T0, total: 130_000, delta: 60 },
-      nowMs: T0 + 1000,
-    });
-    expect(out.generatedAt).toBe(T0 + 1000);
-    expect(out.source).toBe('helix-via-cron');
-    expect(out.observedAt).toBe(T0);
-    expect(out.market).toEqual({ totalCirculatingUsd: 130_000, delta24hUsd: 60, ts: T0 });
-    const usdt = out.coins.find((c) => c.symbol === 'USDT');
-    expect(usdt.name).toBe('Tether USD');
-    expect(usdt.price).toBe(1.0001);
-    expect(usdt.change24h).toBe(0.01);
-    expect(usdt.supply).toBe(100_000);
-    expect(usdt.supplyDelta24h).toBe(50);
-    expect(usdt.depegIndex).toBe(null);
-    expect(usdt.chains).toHaveLength(2);
-    expect(out.dataQuality).toContainEqual({ coin: 'DAI', reason: 'no prices row' });
-    expect(out.dataQuality).toContainEqual({ coin: 'DAI', reason: 'no snapshot rows' });
+const now = 1_786_000_000_000;
+const hour = 3600000;
+const row = (over = {}) => ({ chain: 'ethereum', ts: now, prevTs: now - 24 * hour, circulating: 100, delta: 0, ...over });
+const view = (rows = [row()], over = {}) => buildMarketView({
+  symbol: 'USDT', nowMs: now, priceRows: [{ coin: 'USDT', ts: now - 1000, price: 1 }],
+  chainBatches: [{ coin: 'USDT', complete: true, rows }], ...over,
+});
+describe('current market membership', () => {
+  it('uses only the explicit chain batch, never old history or a global fallback', () => {
+    const result = view([row()], { snapshotRows: [{ coin: 'USDT', chain: 'removed', circulatingUsd: 999 }], marketRow: { total: 999 } });
+    expect(result.market.totalCirculatingUsd).toBe(100);
+    expect(result.coins[0].name).toBe('Tether USD');
+    expect(result.market.delta24hUsd).toBe(0);
+    expect(result.coins[0].chains).toHaveLength(1);
   });
-
-  it('picks the newest row per coin, chain, and price', () => {
-    const out = buildMarketView({
-      priceRows: [price('USDT', T0 - 600_000, 0.5), price('USDT', T0, 1.0)],
-      snapshotRows: [
-        snap('USDT', 'ethereum', T0 - 600_000, 1, 1),
-        snap('USDT', 'ethereum', T0, 60_000, 100),
-      ],
-      marketRow: null,
-      nowMs: T0,
-    });
-    const usdt = out.coins.find((c) => c.symbol === 'USDT');
-    expect(usdt.price).toBe(1.0);
-    expect(usdt.supply).toBe(60_000);
-    expect(usdt.chains).toHaveLength(1);
+  it('keeps measurement clocks separate and uses the older clock overall', () => {
+    const result = view();
+    expect(result.spotObservedAt).toBe(now - 1000);
+    expect(result.supplyObservedAt).toBe(now);
+    expect(result.observedAt).toBe(now - 1000);
   });
-
-  it('supports ?symbol= single-coin mode', () => {
-    const out = buildMarketView({
-      priceRows: [price('USDT', T0, 1.0), price('USDC', T0, 1.0)],
-      snapshotRows: [snap('USDT', 'ethereum', T0, 10, 1), snap('USDC', 'ethereum', T0, 20, 2)],
-      marketRow: { ts: T0, total: 30, delta: 3 },
-      nowMs: T0,
-      symbol: 'usdt',
-    });
-    expect(out.coins.map((c) => c.symbol)).toEqual(['USDT']);
-    expect(out.dataQuality).toEqual([]);
+  it('retains a 72h comparison without calling it a 24h change', () => {
+    const result = view([row({ prevTs: now - 72 * hour, delta: 10 })]);
+    expect(result.coins[0].chains[0]).toMatchObject({ delta: 10, delta24h: null, intervalHours: 72 });
+    expect(result.market.delta24hUsd).toBeNull();
   });
-
-  it('returns coins [] with reasons when tables are empty', () => {
-    const out = buildMarketView({ priceRows: [], snapshotRows: [], marketRow: null, nowMs: T0 });
-    expect(out.coins).toEqual([]);
-    expect(out.dataQuality).toHaveLength(5);
-    expect(out.observedAt).toBe(null);
-    expect(out.market).toEqual({ totalCirculatingUsd: null, delta24hUsd: null, ts: null });
+  it.each([
+    [row({ ts: now - 49 * hour })],
+    [row(), row({ chain: 'Ethereum' })],
+    [row({ circulating: -1 })],
+    [row({ ts: now + hour })],
+  ])('withholds totals for invalid, stale, or duplicate membership: %j', (...rows) => {
+    expect(view(rows).market.totalCirculatingUsd).toBeNull();
   });
-
-  it('preserves nulls for missing price and delta fields', () => {
-    const out = buildMarketView({
-      priceRows: [price('USDT', T0, null)],
-      snapshotRows: [snap('USDT', 'ethereum', T0, 60_000, null)],
-      marketRow: { ts: T0, total: 60_000, delta: null },
-      nowMs: T0,
-      symbol: 'USDT',
-    });
-    const usdt = out.coins[0];
-    expect(usdt.price).toBe(null);
-    expect(usdt.supplyDelta24h).toBe(null);
-    expect(usdt.chains[0].delta24h).toBe(null);
-    expect(out.market.delta24hUsd).toBe(null);
+  it('withholds combined totals if any tracked coin is missing', () => {
+    const result = view([row()], { symbol: null });
+    expect(result.coins).toHaveLength(5);
+    expect(result.market.totalCirculatingUsd).toBeNull();
+    expect(result.coverage.complete).toBe(false);
   });
-
-  it('keeps a measured zero delta instead of substituting a stale market row', () => {
-    // buildSupplyHistory keys its 30-day window off the real clock (nowMs is
-    // not injectable through buildMarketView), so the history rows must be
-    // relative to Date.now(). Asserted values stay deterministic regardless
-    // of the date.
-    const base = Date.now();
-    const dayA = base - 2 * 86_400_000;
-    const dayB = base - 86_400_000;
-    const out = buildMarketView({
-      priceRows: [price('USDT', base, 1.0001)],
-      snapshotRows: [snap('USDT', 'ethereum', base, 60_000)],
-      historyRows: [
-        snap('USDT', 'ethereum', dayA, 60_000),
-        snap('USDT', 'ethereum', dayB, 60_000),
-      ],
-      marketRow: { ts: dayA, total: 999_999, delta: 777 },
-      nowMs: base + 1000,
-      supplySeriesDays: 30,
-    });
-    expect(out.market.totalCirculatingUsd).toBe(60_000);
-    expect(out.market.delta24hUsd).toBe(0);
+  it('shows unknown until a batch is fetched, without recycling historical rows', () => {
+    const result = view([], { chainBatches: [] });
+    expect(result.coins[0].supply).toBeNull();
+    expect(result.observedAt).toBeNull();
   });
-
-  it('falls back to the market row when the series sum overflows to Infinity', () => {
-    const out = buildMarketView({
-      priceRows: [price('USDT', T0, 1), price('USDC', T0, 1)],
-      snapshotRows: [
-        snap('USDT', 'ethereum', T0, 1e308),
-        snap('USDC', 'ethereum', T0, 1e308),
-      ],
-      marketRow: { ts: T0 - 3_600_000, total: 130_000, delta: 60 },
-      nowMs: T0 + 1000,
-    });
-    expect(out.market.totalCirculatingUsd).toBe(130_000);
-    expect(out.market.delta24hUsd).toBe(60);
+  it('does not replace overflow with unrelated market totals', () => {
+    expect(view([row({ circulating: 1e308 }), row({ chain: 'tron', circulating: 1e308 })]).market.totalCirculatingUsd).toBeNull();
   });
 });

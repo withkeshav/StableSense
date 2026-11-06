@@ -24,7 +24,7 @@ function AlertsEmptyState() {
   );
 }
 
-export default function AlertsTab({ alerts, intelligence, data, setActiveTab, alertSource = 'local', alertHistory = [] }) {
+export default function AlertsTab({ alerts, intelligence, data, setActiveTab, alertHistory = [], freshness = null }) {
   const [severity, setSeverity] = useState('all');
   const [coin, setCoin] = useState('all');
   const [sortBy, setSortBy] = useState('latest');
@@ -49,6 +49,7 @@ export default function AlertsTab({ alerts, intelligence, data, setActiveTab, al
     CRITICAL: (alerts || []).filter((a) => a.severity === 'CRITICAL').length,
     HIGH: (alerts || []).filter((a) => a.severity === 'HIGH').length,
     WARNING: (alerts || []).filter((a) => a.severity === 'WARNING').length,
+    INFO: (alerts || []).filter((a) => a.severity === 'INFO').length,
   }), [alerts]);
 
   const filtered = useMemo(() => {
@@ -95,17 +96,10 @@ export default function AlertsTab({ alerts, intelligence, data, setActiveTab, al
 
   return (
     <div class="tab-content active alerts-page">
-      <AlertHero intelligence={intelligence} alertCount={counts.all} />
+      <AlertHero intelligence={intelligence} alertCount={counts.all - counts.INFO} activityCount={counts.INFO} />
+      {freshness?.overallState !== 'Current' ? <p class="alert-source-note">Some readings are delayed or unavailable. Only fresh source observations can raise current warnings; an empty list does not mean all checks passed.</p> : null}
 
-      {alertSource === 'provisional' ? (
-        <p class="alert-source-note">The event log is empty until the first backend persistence run. Showing live derivation from the latest market snapshots, not stored history.</p>
-      ) : null}
-      {alertSource === 'canonical' ? (
-        <p class="alert-source-note">Current alerts and Learn history share the same stored event IDs. Timestamps are source observation time, not this page load.</p>
-      ) : null}
-      {alertSource === 'local' ? (
-        <p class="alert-source-note">Showing locally derived events from this browser's market snapshots. Persist them on the optional backend to keep a lifecycle history.</p>
-      ) : null}
+      <p class="alert-source-note">Counts are current warnings, not unread notifications. Amber means watch; red is reserved for critical price deviations. Matched chain changes and share shifts are activity, not proof of danger. Historical Helix events are listed separately.</p>
 
       {counts.all === 0 ? (
         <div class="card mb-4">
@@ -117,9 +111,9 @@ export default function AlertsTab({ alerts, intelligence, data, setActiveTab, al
 
       <div class={`card mb-4 ${counts.all === 0 ? 'is-muted-card' : ''}`}>
         <div class={`filter-bar ${counts.all === 0 ? 'is-muted' : ''}`} aria-hidden={counts.all === 0 ? 'true' : undefined}>
-          {['all', 'CRITICAL', 'HIGH', 'WARNING'].map((sev) => (
+          {['all', 'CRITICAL', 'HIGH', 'WARNING', 'INFO'].map((sev) => (
             <button key={sev} type="button" class={`filter-chip ${severity === sev ? 'active' : ''}`} onClick={() => setSeverity(sev)} disabled={counts.all === 0}>
-              {sev === 'all' ? `All ${counts.all}` : `${sev} ${counts[sev]}`}
+              {sev === 'all' ? `All ${counts.all}` : `${sev === 'INFO' ? 'Activity' : sev} ${counts[sev]}`}
             </button>
           ))}
           <span class="sep"></span>
@@ -159,7 +153,14 @@ export default function AlertsTab({ alerts, intelligence, data, setActiveTab, al
           )}
         </div>
       </div>
-      {alertSource === 'canonical' && (alertHistory || []).some((a) => a.state === 'resolved') ? (
+      {(alertHistory || []).some((a) => a.state === 'recorded') ? (
+        <section class="card mb-4">
+          <div class="card-header"><div class="card-title">Helix event history</div></div>
+          <p class="panel-sub">Past observations from Helix. These entries do not establish whether an incident is currently open or resolved.</p>
+          <div class="card-body p0">{alertHistory.filter((a) => a.state === 'recorded').slice(0, 8).map(renderCard)}</div>
+        </section>
+      ) : null}
+      {(alertHistory || []).some((a) => a.state === 'resolved') ? (
         <div class="card mb-4">
           <div class="card-header"><div class="card-title">Recently resolved</div></div>
           <div class="card-body p0">

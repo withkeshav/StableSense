@@ -28,7 +28,7 @@ export default function AlertCard({ alert, compact = false, spark = null, onLear
   const detail = useMemo(() => alertExplanation(alert), [alert]);
   const lessonId = alert?.rule ? RULE_LESSONS[alert.rule] : null;
 
-  const sevClass = alert?.severity === 'CRITICAL' ? 'crit' : alert?.severity === 'HIGH' ? 'high' : 'warn';
+  const sevClass = alert?.severity === 'CRITICAL' ? 'crit' : alert?.severity === 'HIGH' ? 'high' : alert?.severity === 'INFO' ? 'info' : 'warn';
   const sparkH = compact ? 44 : 52;
   const observed = alert?.observedAt || alert?.timestamp;
   const title = alert?.headline || alert?.rationale || 'Alert event';
@@ -54,7 +54,7 @@ export default function AlertCard({ alert, compact = false, spark = null, onLear
         <div class="alert-body-text">
           <div class="alert-title">{title}</div>
           <div class="alert-meta">
-            {alert?.rule || 'RULE'} · {alert?.coin || 'N/A'}{chainSummary}
+            {alert?.severity === 'INFO' ? 'Activity' : alert?.severity || 'Observation'} · {alert?.rule || 'RULE'} · {alert?.coin || 'N/A'}{chainSummary}
             {observed ? ` · Observed ${timeAgo(observed)}` : ''}
             {alert?.state && alert.state !== 'open' ? ` · ${alert.state}` : ''}
           </div>

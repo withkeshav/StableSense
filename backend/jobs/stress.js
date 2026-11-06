@@ -152,7 +152,7 @@ const insertLabelBatch = db.transaction((rows) => {
 });
 
 const insertEvent = db.prepare(
-  `INSERT OR REPLACE INTO alert_events (
+  `INSERT INTO alert_events (
      event_id, rule, classification, symbol, severity, state, headline, explanation,
      magnitude, gross_flow, net_supply_delta, source_ts_current, source_ts_previous,
      interval_hours, interval_label, observed_at, detected_at, published_at,
@@ -162,7 +162,9 @@ const insertEvent = db.prepare(
      @magnitude, @gross_flow, @net_supply_delta, @source_ts_current, @source_ts_previous,
      @interval_hours, @interval_label, @observed_at, @detected_at, @published_at,
      @involved_chains, @provenance, @confidence, @cadence_valid, @updated_at
-   )`
+   ) ON CONFLICT(event_id) DO UPDATE SET
+     severity=excluded.severity, state=excluded.state, classification=excluded.classification,
+     headline=excluded.headline, explanation=excluded.explanation, updated_at=excluded.updated_at`
 );
 
 const insertEventBatch = db.transaction((rows) => {
@@ -264,6 +266,8 @@ console.log('[stress] done');
   const sourceTs = alerts.reduce((max, a) => Math.max(max, a.observedAt || 0), 0) || now;
   finishJob(job, { ok: true, sourceTs });
 } else {
+// Older imports used incident states for history. Reclassify them without inventing a resolution time.
+db.prepare("UPDATE alert_events SET state = 'recorded', classification = 'event-history' WHERE event_id LIKE 'helix-%'").run();
 const helixBase = process.env.HELIX_API_BASE || 'https://helix.withkeshav.com';
 const coins = getActiveCoins();
 const now = Date.now();
@@ -288,7 +292,7 @@ const insertLabelBatch = db.transaction((rows) => {
 });
 
 const insertEvent = db.prepare(
-  `INSERT OR REPLACE INTO alert_events (
+  `INSERT INTO alert_events (
      event_id, rule, classification, symbol, severity, state, headline, explanation,
      magnitude, gross_flow, net_supply_delta, source_ts_current, source_ts_previous,
      interval_hours, interval_label, observed_at, detected_at, published_at,
@@ -298,7 +302,9 @@ const insertEvent = db.prepare(
      @magnitude, @gross_flow, @net_supply_delta, @source_ts_current, @source_ts_previous,
      @interval_hours, @interval_label, @observed_at, @detected_at, @published_at,
      @involved_chains, @provenance, @confidence, @cadence_valid, @updated_at
-   )`
+   ) ON CONFLICT(event_id) DO UPDATE SET
+     severity=excluded.severity, state=excluded.state, classification=excluded.classification,
+     headline=excluded.headline, explanation=excluded.explanation, updated_at=excluded.updated_at`
 );
 
 const insertEventBatch = db.transaction((rows) => {
@@ -323,14 +329,16 @@ for (const coin of coins) {
 if (stressRows.length) insertStressBatch(stressRows);
 console.log(`[stress] stress_series: ${stressRows.length} rows`);
 
-// 2) Canonical alerts from Helix events, fetched per tracked asset
+// 2) Recorded history from Helix events, fetched per tracked asset
 // (the global feed window contains mostly untracked coins; ?asset= filters).
 let tracked = [];
+let eventFailures = 0;
 for (const symbol of symbols) {
   let payload = null;
   try {
     payload = await helixGetJson(`${helixBase}/api/events?asset=${symbol}&limit=25`);
   } catch {
+    eventFailures += 1;
     payload = null;
   }
   const rows = payload ? filterTrackedEvents(normalizeEventsPayload(payload), [symbol]) : [];
@@ -355,20 +363,11 @@ if (labelRows.length) {
 }
 if (eventRows.length) insertEventBatch(eventRows);
 
-const openIds = new Set(eventRows.map((r) => r.event_id));
-const staleOpen = db.prepare(`SELECT event_id FROM alert_events WHERE state = 'open'`).all();
-const resolveStmt = db.prepare(`UPDATE alert_events SET state = 'resolved', updated_at = ? WHERE event_id = ?`);
-let resolved = 0;
-for (const row of staleOpen) {
-  if (!openIds.has(row.event_id)) {
-    resolveStmt.run(now, row.event_id);
-    resolved += 1;
-  }
-}
-console.log(`[alert_events] open=${eventRows.length} resolved=${resolved}`);
+// A bounded history feed cannot prove that an incident has resolved.
+console.log(`[alert_events] recorded=${eventRows.length}`);
 
 console.log('[stress] done');
-  finishJob(job, { ok: true, sourceTs: newestSourceTs || now });
+  finishJob(job, { ok: eventFailures === 0 && stressRows.length === coins.length, sourceTs: newestSourceTs || null, error: eventFailures ? 'Helix event fetch incomplete' : stressRows.length < coins.length ? 'Helix stress coverage incomplete' : null });
 }
 } catch (err) {
   finishJob(job, { ok: false, error: err });

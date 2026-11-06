@@ -90,7 +90,7 @@ export function buildDominanceSeries(supplyByCoin, coins) {
       const raw = point?.value;
       if (raw === null || raw === undefined || (typeof raw === 'string' && raw.trim() === '')) continue;
       const value = Number(raw);
-      if (!Number.isFinite(value)) continue;
+      if (!Number.isFinite(value) || value < 0) continue;
       let row = byDate.get(ms);
       if (!row) {
         row = {};
@@ -102,7 +102,7 @@ export function buildDominanceSeries(supplyByCoin, coins) {
 
   // Keep only dates where every coin has a real reading, ascending in time.
   const aligned = [...byDate.entries()]
-    .filter(([, row]) => list.every((coin) => Number.isFinite(row[coin.symbol])))
+    .filter(([, row]) => list.every((coin) => Number.isFinite(row[coin.symbol])) && list.reduce((sum, coin) => sum + row[coin.symbol], 0) > 0)
     .map(([ms, row]) => ({ ms, row }))
     .sort((a, b) => a.ms - b.ms);
   if (aligned.length < 2) return null;

@@ -17,7 +17,7 @@ const PRIMARY = [
   { id: 'more', label: 'More', kind: 'more' },
 ];
 
-export default function MobileNav({ activeTab, setActiveTab, alertCount, onOpenRail }) {
+export default function MobileNav({ activeTab, setActiveTab, alertCount, alertTone = 'neutral', onOpenRail }) {
   const [pickerOpen, setPickerOpen] = useState(false);
   const activeCoin = ACTIVE_STABLECOINS.find((s) => coinTabId(s) === activeTab);
   const assetsActive = Boolean(activeCoin) || pickerOpen;
@@ -65,7 +65,7 @@ export default function MobileNav({ activeTab, setActiveTab, alertCount, onOpenR
               >
                 <span dangerouslySetInnerHTML={{ __html: ICONS[item.id] }} />
                 <span>{label}</span>
-                {item.id === 'alerts' && alertCount > 0 ? <span class="mob-badge">{alertCount}</span> : null}
+                {item.id === 'alerts' && alertCount > 0 ? <span class={`mob-badge tone-${alertTone}`}>{alertCount}</span> : null}
               </button>
             );
           })}

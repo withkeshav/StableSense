@@ -71,7 +71,6 @@ All functions are pure and deterministic, which is what makes them unit-testable
 
 - `buildSupplySeries(detail)`: 90-day supply history series for a coin's chart.
 - `rankChainFlows(detailsByCoin)`: per-chain mint/burn deltas, ranked.
-- `buildMigrationPairs(flows)`: migration detector, which chains are bleeding into which.
 - `computePegStress({ pricesByCoin, alerts, topChainFlow })`: 0-100 stress index from peg drift, alerts, and flow pressure.
 - `buildWhaleWatchRows(detailsByCoin, limit)`: z-score based supply anomaly rows.
 - `buildShareSeries(supplyByCoin, targetCoin)`: target coin share of total supply over time.
@@ -121,3 +120,12 @@ The "State of Stablecoins" research hub is a separate static build, not a Preact
 - **Build:** `npm run build:research` uses a second Vite config (`vite.config.research.mjs`) with `root: 'research'`, emitting to `dist/research/`. Chart.js is the only shared dependency, lazy-loaded as a separate chunk. `npm run build:all` builds both the SPA and the hub.
 - **Serving:** nginx serves `dist/research/` at `/research/` via a dedicated `location` block. An exact `location = /research` 301s slashless URLs to `/research/` before the SPA fallback (see `backend/deploy/nginx.conf`). The hub is single-page-with-anchors (`#taxonomy`, `#treasury`, etc.); distinct per-section URLs are a flagged follow-up, not the current architecture.
 - **Progressive enhancement:** `main.js` (loaded with `defer`) adds the live hero counter, IntersectionObserver scroll reveals, charts, chip filters, the remittance calculator, and accordion behavior. All section content renders as real HTML without it. Respects `prefers-reduced-motion` throughout.
+
+## Shared presentation contracts
+
+- `src/lib/chart-story.js` owns the chart-description templates. Charts supply their kind, selected scope and the same value/date arrays used for plotting. Narratives are deterministic arithmetic, with no AI call.
+- `ChartWrapper` captures the rendered chart and description together when Share opens. `shareChart.js` renders one image for both preview and download. Reopening Share after a data refresh creates a new snapshot.
+- Supply and price cards use plotted observation dates, including both years when a range crosses New Year. Missing observations remain gaps. Supply-share charts require aligned, nonnegative readings and a positive denominator.
+- Learn uses `LearnTab` and reusable lesson components for layout, `Learn/modules.js` and `Learn/foundations.js` for reviewed content. Updating lesson data does not require editing the page layout.
+- `alert-policy.js` owns current-warning freshness and badge rules. Routine INFO activity does not increase warning badges. WARNING/HIGH use amber; CRITICAL price deviations use red. These are monitoring rules, not validated predictions of failure.
+- Dashboard and AI read the same current market view through `backend/lib/market-read.js`. The optional AI layer rejects incomplete or stale source inputs and cannot supply chart-card wording.

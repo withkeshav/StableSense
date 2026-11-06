@@ -247,7 +247,7 @@ export async function fetchDashboardData({ signal } = {}) {
  * Lazily add a coin's price history and top exchange tickers to `data`.
  * Called when a coin tab opens; results are cached for a short window.
  */
-export async function loadCoinChart(symbol, data, { signal } = {}) {
+export async function loadCoinChart(symbol, data, { signal, includeTickers = true } = {}) {
   const cfg = STABLECOIN_REGISTRY[symbol];
   if (!cfg || !data) return;
 
@@ -258,17 +258,20 @@ export async function loadCoinChart(symbol, data, { signal } = {}) {
   }).catch(() => null);
   if (chart && Array.isArray(chart?.prices)) data[`cg${symbol}Chart`] = chart;
 
+  if (!includeTickers) return;
+
   const tickers = await cachedRequest(`cgTickers:${symbol}`, cgTickersUrl(cfg.coingeckoId), {
     ttl: TTL.chart,
     swr: true,
     signal,
   }).catch(() => null);
   if (tickers && Array.isArray(tickers?.tickers)) {
-    data[`cg${symbol}`] = { tickers: tickers.tickers.slice(0, 8) };
+    data[`cg${symbol}`] = { tickers: tickers.tickers };
     // The ticker sample has its own clock, separate from the Helix market
     // clock. Share cards use this instead of pretending the market as-of is
     // the ticker as-of.
-    data[`cg${symbol}TickersAt`] = Date.now();
+    const clocks = tickers.tickers.map((t) => Date.parse(t.last_fetch_at || t.timestamp || '')).filter((ts) => Number.isFinite(ts) && ts > 0 && ts <= Date.now());
+    data[`cg${symbol}TickersAt`] = clocks.length === tickers.tickers.length && clocks.length ? Math.min(...clocks) : null;
   }
 }
 

@@ -1,9 +1,9 @@
-import { bps } from '../../utils/formatters.js';
+const driftBps = (price) => typeof price === 'number' && Number.isFinite(price) && price > 0 ? (price - 1) * 10000 : null;
 
 function bpsText(value) {
   if (value == null) return '-';
-  const abs = Math.abs(value);
-  return `${value > 0 ? '+' : ''}${value} ${abs === 1 ? 'bp' : 'bps'}`;
+  const display = Math.round(value * 10) / 10;
+  return `${display > 0 ? '+' : ''}${display} ${Math.abs(display) === 1 ? 'bp' : 'bps'}`;
 }
 
 function titleCase(value) {
@@ -23,14 +23,14 @@ function countWord(value) {
  * measured drift from $1.00, not a decorative sample.
  */
 export default function PegBandHero({ coins = [], priceByCoin = {}, stress, freshness, chainFlows = [] }) {
-  const state = freshness?.overallState || 'Current';
-  const measured = typeof stress?.score === 'number' && Number.isFinite(stress.score);
+  const state = freshness?.overallState || 'Unavailable';
+  const measured = state === 'Current' && typeof stress?.score === 'number' && Number.isFinite(stress.score);
   const stressScore = measured ? stress.score : null;
   const stability = measured ? Math.max(0, Math.min(100, 100 - stressScore)) : null;
   const steadyWord = stressScore == null ? null : stressScore >= 70 ? 'stressed' : stressScore >= 40 ? 'watchful' : 'steady';
 
   const drifts = coins
-    .map((coin) => ({ ...coin, drift: bps(priceByCoin[coin.symbol]) }))
+    .map((coin) => ({ ...coin, drift: driftBps(priceByCoin[coin.symbol]) }))
     .filter((coin) => coin.drift != null)
     .sort((a, b) => a.drift - b.drift);
 
@@ -42,13 +42,13 @@ export default function PegBandHero({ coins = [], priceByCoin = {}, stress, fres
     laneByDrift.set(coin.drift, lane + 1);
     return { ...coin, lane };
   });
-  const inside = drifts.filter((coin) => Math.abs(coin.drift) <= 10).length;
+  const inside = drifts.filter((coin) => Math.abs(coin.drift) <= 10 + 1e-9).length;
   const allInside = drifts.length === coins.length && coins.length > 0 && inside === coins.length;
   const gain = [...chainFlows].filter((flow) => flow.totalDelta > 0).sort((a, b) => b.totalDelta - a.totalDelta)[0];
   const loss = [...chainFlows].filter((flow) => flow.totalDelta < 0).sort((a, b) => a.totalDelta - b.totalDelta)[0];
 
-  const flowLine = gain && loss
-    ? `Supply is leaving ${titleCase(loss.chain)} and settling on ${titleCase(gain.chain)} today.`
+  const flowLine = state === 'Current' && gain && loss
+    ? `Largest measured supply loss: ${titleCase(loss.chain)}. Largest gain: ${titleCase(gain.chain)}. This does not prove a transfer between them.`
     : 'Peg drift, supply and cross-chain flow, in one calm view.';
   const coinCount = countWord(coins.length);
   const heroCount = coinCount.charAt(0).toUpperCase() + coinCount.slice(1);
@@ -65,7 +65,7 @@ export default function PegBandHero({ coins = [], priceByCoin = {}, stress, fres
       <div class="od-hero-copy">
         <p class="od-eyebrow">Market pulse</p>
         <h1 id="od-hero-title">
-          {steadyWord ? <>The stablecoin market is <em>{steadyWord}.</em></> : <>Market conditions are <em>unknown.</em></>}
+          {steadyWord ? <>The tracked market is <em>{steadyWord}.</em></> : <>Market conditions are <em>unknown.</em></>}
         </h1>
         <p class="od-hero-sub">{heroCount} tracked coins, one peg band. {flowLine}</p>
         <div class="od-pills">
@@ -83,7 +83,7 @@ export default function PegBandHero({ coins = [], priceByCoin = {}, stress, fres
         <div class="od-peg-head">
           <div>
             <h2>Peg band</h2>
-            <p>Deviation from $1.00 inside the 10 bps band.</p>
+            <p>Deviation from $1.00 against a 10 bps reference band.</p>
           </div>
           <span class="od-band-chip"><i aria-hidden="true" />10 bps band</span>
         </div>
@@ -114,7 +114,7 @@ export default function PegBandHero({ coins = [], priceByCoin = {}, stress, fres
 
         <div class="od-peg-legend" aria-hidden="true">
           {coins.map((coin) => {
-            const drift = bps(priceByCoin[coin.symbol]);
+            const drift = driftBps(priceByCoin[coin.symbol]);
             return (
               <span class="od-peg-legend-item" key={coin.symbol} style={{ '--c': coin.color }}>
                 <span class="od-dot" /><b>{coin.symbol}</b><span>{bpsText(drift)}</span>
@@ -124,7 +124,9 @@ export default function PegBandHero({ coins = [], priceByCoin = {}, stress, fres
         </div>
         <div class="od-peg-foot">
           <span class="od-dot" aria-hidden="true" />
-          {allInside
+          {drifts.length < coins.length
+            ? `Measured prices available for ${drifts.length} of ${coinCount} tracked coins; band coverage is incomplete.`
+            : allInside
             ? `All ${coinCount} coins sit inside the 10 bps band.`
             : `${inside} of ${coinCount} coins sit inside the 10 bps band.`}
         </div>

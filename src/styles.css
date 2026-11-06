@@ -377,11 +377,7 @@ body.compact .tab-content{padding:8px}
   .share-sheet>header{position:sticky;top:0}
   .share-content{display:flex;flex-direction:column;padding:16px;gap:16px;grid-template-columns:1fr;overflow:auto}
   .share-preview-toggle{display:flex;align-items:center;justify-content:center;min-height:44px;width:100%;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);font-size:12px;font-weight:700}
-  .share-preview .signal-card{display:none}
-  .share-preview.is-open .signal-card{display:flex}
   .share-sheet-actions{padding:12px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--surface)}
-  .signal-card{width:100%;max-width:100%}
-  .signal-card.story,.signal-card.landscape{max-width:100%;min-height:0}
   .close-share{width:auto;min-width:44px;padding:0 12px;gap:6px;display:inline-flex;align-items:center}
   .close-share-label{display:inline;font-size:12px;font-weight:700}
   .grid-2 > .card > .card-body > div[style*="aspect-ratio"]{aspect-ratio:auto !important;height:260px}
@@ -846,40 +842,6 @@ body.compact .tab-content{padding:8px}
 .share-preview-toggle{display:none}
 .share-sheet-actions{padding:0 26px 24px;flex-shrink:0}
 .share-sheet-actions .download-btn{justify-content:center;width:100%}
-.signal-card{margin:auto;min-width:0;max-width:550px;width:100%;padding:clamp(16px,3vw,28px);display:flex;flex-direction:column;background:radial-gradient(circle at 94% 0%,rgba(116,178,255,.32),transparent 30%),linear-gradient(145deg,#fbfcfd,#ecf4fb);border:1px solid #d3e2ef;color:#1b2d41;box-shadow:0 20px 44px rgba(29,65,103,.16);overflow:hidden;border-radius:18px}
-/* The shared card is a fixed light social asset: it must not inherit the
-   viewer's theme. The exported PNG uses the same light palette. */
-.signal-card-social{background:radial-gradient(circle at 94% 0%,rgba(116,178,255,.32),transparent 30%),linear-gradient(145deg,#fbfcfd,#ecf4fb);border-color:#d3e2ef;color:#1b2d41}
-.signal-card.is-dark{background:radial-gradient(circle at 94% 0%,rgba(114,175,255,.16),transparent 30%),linear-gradient(145deg,#141e28,#101821);border-color:#263645;color:#edf4fb;box-shadow:0 20px 44px rgba(0,0,0,.28)}
-.signal-card.is-dark .signal-card-top>span,.signal-card.is-dark .signal-card-copy>p{color:#9aabbc}
-.signal-card.is-dark .signal-card-copy h3{color:#edf4fb}
-.signal-card.is-dark .signal-card-meta{color:#b7c5d4}
-.signal-card.is-dark .signal-card-meta b{color:#9aabbc}
-.signal-card.is-dark .signal-card-chart{border-color:#29465f;background:#141e28}
-.signal-card.is-dark .signal-card-chart-note{border-color:#29465f;color:#b7c5d4}
-.signal-card.is-dark footer{border-top-color:#263645;color:#9aabbc}
-.signal-card.is-dark .brand{color:#edf4fb}
-.share-text-error{margin:auto;max-width:550px;width:100%;padding:24px;border:1px dashed #d08a8a;border-radius:16px;background:#fff6f6;color:#7a2e2e}
-.share-text-error p{margin:6px 0 0;font-size:13px;line-height:1.5}
-.signal-card.story{max-width:300px;min-height:480px}
-.signal-card.square{min-height:360px}
-.signal-card.landscape{min-height:280px;max-width:630px}
-.signal-card-top,.signal-card footer{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.signal-card .brand{font-size:14px;padding:0;color:inherit}
-.signal-card .brand:after{display:none}
-.signal-card-top>span,.signal-card-copy>p{font-size:8px;letter-spacing:.12em;font-weight:800;color:#7590aa}
-.signal-card-copy{margin-top:auto;padding-top:16px}
-.signal-card-copy h3{font-size:clamp(16px,2vw,24px);line-height:1.08;letter-spacing:-.05em;margin:5px 0 9px}
-.signal-card-chart{display:flex;align-items:center;justify-content:center;height:160px;margin:10px 0;border:1px solid #dbe7f2;border-radius:8px;background:#fff;overflow:hidden}
-.signal-card-chart-preview{display:block;width:100%;height:100%;object-fit:contain}
-.signal-card-chart .signal-card-chart-note{margin:0;padding:12px;border:0;background:transparent}
-.signal-card-chart-note{margin:12px 0;padding:12px;border:1px dashed #c7dcf3;border-radius:12px;font-size:10px;color:#5d7289;line-height:1.45}
-.signal-card-meta{display:flex;justify-content:space-between;gap:10px;font-size:8px;line-height:1.4;color:#677e93;margin-top:auto}
-.signal-card-meta b{display:block;font-size:8px;text-transform:uppercase;letter-spacing:.08em}
-.signal-card-meta-2{margin-top:8px}
-.signal-card footer{border-top:1px solid #d5e3ef;margin-top:13px;padding-top:10px;color:#7d92a4;font-size:8px}
-.signal-card footer span{white-space:nowrap}
-.signal-card.story footer{font-size:7px;gap:6px}
 .share-controls{display:flex;flex-direction:column;gap:17px}
 .format-list{display:grid;gap:6px}
 .format-list button{padding:10px;min-height:44px;border-radius:10px;border:1px solid transparent;background:var(--surface-2);display:flex;align-items:center;gap:9px;text-align:left;color:var(--ink-soft)}
@@ -923,8 +885,6 @@ body.sheet-open #mobile-nav{visibility:hidden;pointer-events:none}
   .share-sheet{width:100%;max-width:100%;max-height:min(92dvh,100dvh);border-radius:20px 20px 0 0;overflow:hidden;padding-bottom:0}
   .share-content{display:flex;flex-direction:column;padding:16px;gap:16px}
   .share-preview-toggle{display:flex}
-  .share-preview .signal-card{display:none}
-  .share-preview.is-open .signal-card{display:flex}
   .share-sheet-actions{padding:12px 16px calc(12px + env(safe-area-inset-bottom))}
   .signal-prices,.inline-prices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 10px}
   .failure-matrix-desktop{display:none!important}
@@ -1028,3 +988,16 @@ body.sheet-open #mobile-nav{visibility:hidden;pointer-events:none}
   .coin-table-card .cm-val{font-family:var(--mono);color:var(--text)}
   .coin-open{min-height:44px}
 }
+
+/* Alert counts express severity, not unread notifications. */
+.alert-pill.tone-warning, .nav-badge.tone-warning, .mob-badge.tone-warning { background:var(--warn); color:var(--bg); }
+.alert-pill.tone-critical, .nav-badge.tone-critical, .mob-badge.tone-critical { background:var(--crit); color:#fff; }
+.alert-pill.tone-neutral, .nav-badge.tone-neutral, .mob-badge.tone-neutral { background:var(--text3); color:var(--bg); }
+.info-bar { background:var(--text3); }
+.alert-card.info { border-left-color:var(--text3); }
+@media (max-width:767px) {
+  .alerts-page .filter-chip, .alerts-page .filter-select { min-height:44px; }
+}
+
+.signal-card-export-preview { display:block; width:100%; height:auto; border-radius:14px; }
+@media (max-width:767px) { .share-preview:not(.is-open) .signal-card-export-preview { display:none; } }

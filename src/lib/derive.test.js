@@ -5,7 +5,6 @@ import {
   alertEventId,
   alertExplanation,
   buildAlertSparkSeries,
-  buildMigrationPairs,
   buildShareSeries,
   buildSupplySeries,
   buildWhaleWatchRows,
@@ -152,8 +151,8 @@ describe('rankChainFlows', () => {
 
   it('computes per-coin deltas and total, sorted by absolute total', () => {
     const detailsByCoin = {
-      USDT: { chainBalances: { Ethereum: { tokens: [token(1, 100), token(2, 130)] }, Tron: { tokens: [token(1, 50), token(2, 20)] } } },
-      USDC: { chainBalances: { Ethereum: { tokens: [token(1, 10), token(2, 15)] } } },
+      USDT: { chainBalances: { Ethereum: { tokens: [token(T0, 100), token(T1, 130)] }, Tron: { tokens: [token(T0, 50), token(T1, 20)] } } },
+      USDC: { chainBalances: { Ethereum: { tokens: [token(T0, 10), token(T1, 15)] } } },
     };
     const flows = rankChainFlows(detailsByCoin);
     expect(flows).toHaveLength(2);
@@ -166,7 +165,7 @@ describe('rankChainFlows', () => {
   });
 
   it('leaves a single reading unmeasured instead of inventing a zero delta', () => {
-    const detailsByCoin = { USDT: { chainBalances: { Solana: { tokens: [token(1, 100)] } } } };
+    const detailsByCoin = { USDT: { chainBalances: { Solana: { tokens: [token(T0, 100)] } } } };
     const flows = rankChainFlows(detailsByCoin);
     expect(flows[0].deltas.USDT).toBe(null);
     expect(flows[0].totalDelta).toBe(null);
@@ -174,34 +173,9 @@ describe('rankChainFlows', () => {
   });
 
   it('handles zero-supply edge case properly', () => {
-    const detailsByCoin = { USDT: { chainBalances: { Solana: { tokens: [token(1, 100), token(2, 0)] } } } };
+    const detailsByCoin = { USDT: { chainBalances: { Solana: { tokens: [token(T0, 100), token(T1, 0)] } } } };
     const flows = rankChainFlows(detailsByCoin);
     expect(flows[0].totalDelta).toBe(-100);
-  });
-});
-
-describe('buildMigrationPairs', () => {
-  it('pairs top outflows with top inflows', () => {
-    const flows = [
-      { chain: 'A', totalDelta: -40 },
-      { chain: 'B', totalDelta: 50 },
-      { chain: 'C', totalDelta: -10 },
-      { chain: 'D', totalDelta: 20 },
-    ];
-    const pairs = buildMigrationPairs(flows);
-    expect(pairs).toHaveLength(2);
-    expect(pairs[0]).toEqual({ from: 'A', to: 'B', amount: 40 });
-    expect(pairs[1]).toEqual({ from: 'C', to: 'D', amount: 10 });
-  });
-
-  it('returns empty when there are no outflows', () => {
-    expect(buildMigrationPairs([{ chain: 'A', totalDelta: 5 }])).toEqual([]);
-  });
-
-  it('handles missing inflow counterpart', () => {
-    const pairs = buildMigrationPairs([{ chain: 'A', totalDelta: -5 }]);
-    expect(pairs[0].to).toBe('N/A');
-    expect(pairs[0].amount).toBe(0);
   });
 });
 
@@ -348,6 +322,15 @@ describe('buildShareSeries', () => {
 });
 
 describe('dedupeTickers', () => {
+  it('uses the largest measured ticker per venue and excludes missing or flagged readings', () => {
+    const venue = { identifier: 'v', name: 'Venue' };
+    expect(dedupeTickers([
+      { market: venue, converted_volume: { usd: 1 } },
+      { market: venue, converted_volume: { usd: 9 } },
+      { market: { identifier: 'missing' }, converted_volume: { usd: null } },
+      { market: { identifier: 'stale' }, converted_volume: { usd: 99 }, is_stale: true },
+    ])).toEqual([{ name: 'Venue', volume: 9 }]);
+  });
   it('returns an empty array for no tickers', () => {
     expect(dupeTickersSafe([])).toEqual([]);
     expect(dupeTickersSafe(undefined)).toEqual([]);
@@ -361,9 +344,9 @@ describe('dedupeTickers', () => {
     ];
     const rows = dedupeTickers(tickers);
     expect(rows).toHaveLength(2);
-    expect(rows[0].name).toBe('BTCC');
-    expect(rows[1].name).toBe('Binance');
-    expect(rows[0].volume).toBe(100);
+    expect(rows[0].name).toBe('Binance');
+    expect(rows[1].name).toBe('BTCC');
+    expect(rows[1].volume).toBe(100);
   });
 
   it('suffixes rows that share a display name but have distinct identifiers', () => {
@@ -504,7 +487,7 @@ describe('generateAlerts', () => {
     expect(migrations).toHaveLength(1);
     expect(flows).toHaveLength(0);
     expect(nets).toHaveLength(0);
-    expect(migrations[0].headline).toBe('DAI liquidity moved: Polygon → Ethereum');
+    expect(migrations[0].headline).toBe('DAI opposite supply changes: Polygon and Ethereum');
     expect(migrations[0].fromChain).toBe('Polygon');
     expect(migrations[0].toChain).toBe('Ethereum');
     expect(migrations[0].grossFlow).toBe(391e6);
@@ -591,7 +574,7 @@ describe('generateAlerts', () => {
     };
     const shift = generateAlerts(data).find((a) => a.rule === 'DOM_SHIFT' && a.coin === 'USDC');
     expect(shift).toBeDefined();
-    expect(shift.severity).toBe('HIGH');
+    expect(shift.severity).toBe('INFO');
     expect(shift.magnitude).toBeGreaterThan(3);
   });
 
@@ -736,5 +719,12 @@ describe('coinStabilityScore', () => {
   it('uses the coin-specific bands it is given', () => {
     expect(coinStabilityScore(0.9988, 12, 60)).toBe(85);
     expect(coinStabilityScore(0.9994, 12, 60)).toBe(95);
+  });
+});
+
+describe('percent chart source timestamps', () => {
+  it('preserves backend ts timestamps for date alignment', () => {
+    expect(toPercentFromFirst([{ ts: 100, value: 10 }, { ts: 200, value: 12 }]))
+      .toEqual([{ date: 100, value: 0 }, { date: 200, value: expect.closeTo(20) }]);
   });
 });

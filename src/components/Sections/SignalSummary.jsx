@@ -4,8 +4,8 @@ import AlertPrimer from './AlertPrimer.jsx';
 import { buildAlertSparkSeries } from '../../lib/derive.js';
 
 export default function SignalSummary({ data, alerts, freshness = null, onViewAll, onLearn }) {
-  const top = (alerts || []).slice(0, 3);
-  const stale = freshness?.overallState && !['Current', 'Delayed'].includes(freshness.overallState);
+  const top = (alerts || []).filter((a) => a.severity !== 'INFO').slice(0, 3);
+  const stale = freshness?.overallState && freshness.overallState !== 'Current';
   const sparks = useMemo(() => {
     const m = {};
     for (const alert of top) m[alert.id] = buildAlertSparkSeries(alert, data);

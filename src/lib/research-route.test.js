@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { researchHubLocation } from './research-route.js';
+import { runInNewContext } from 'node:vm';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const nginxPath = resolve(here, '../../backend/deploy/nginx.conf');
@@ -34,9 +34,14 @@ describe('research hub routing', () => {
   it('redirects slashless /research in the SPA HTML as a deploy fallback', () => {
     expect(indexHtml).toContain("location.pathname === '/research'");
     expect(indexHtml).toContain("location.replace('/research/'");
-    expect(researchHubLocation('/research')).toBe('/research/');
-    expect(researchHubLocation('/research', '?ref=1', '#taxonomy')).toBe('/research/?ref=1#taxonomy');
-    expect(researchHubLocation('/research/')).toBeNull();
-    expect(researchHubLocation('/')).toBeNull();
+    const script = indexHtml.match(/<script>([\s\S]*?)<\/script>/)[1];
+    for (const pathname of ['/research', '/research/', '/']) {
+      const redirects = [];
+      runInNewContext(script, {
+        location: { pathname, search: '?ref=1', hash: '#taxonomy', replace: (url) => redirects.push(url) },
+        localStorage: { getItem: () => null }, window: {}, document: { documentElement: { setAttribute() {} } },
+      });
+      expect(redirects).toEqual(pathname === '/research' ? ['/research/?ref=1#taxonomy'] : []);
+    }
   });
 });

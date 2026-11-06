@@ -55,18 +55,21 @@ function buildSupplySeriesByCoin(coins, detailsByCoin, data) {
   return m;
 }
 
-function buildSupplyLabels(coins, supplySeriesByCoin) {
-  const any = coins.map((c) => supplySeriesByCoin[c.symbol]).find((s) => s.length);
-  return (any || []).map((p) => new Date(p.ts ?? p.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }));
+function buildSupplyLabels(coins, series) {
+  return [...new Set(coins.flatMap((c) => (series[c.symbol] || []).map((p) => p.ts ?? p.date)))].sort((a, b) => a - b);
 }
 
 function buildPegLabels(coins, data) {
-  const any = coins.map((c) => data?.[`cg${c.symbol}Chart`]?.prices).find((p) => p?.length);
-  return (any || []).slice(-90).map((p) => new Date(p[0]).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+  return [...new Set(coins.flatMap((c) => (data?.[`cg${c.symbol}Chart`]?.prices || []).slice(-90).map((p) => p[0])))].sort((a, b) => a - b);
 }
+const dateLabel = (ts) => new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 
 function buildSupplyChartData({ coins, supplySeriesByCoin, supplyLabels, supplyPct, narrow, compareAll }) {
-  const transform = (series) => (supplyPct ? toPercentFromFirst(series).map((p) => p.value) : series.map((p) => p.value));
+  const transform = (series) => {
+    const points = supplyPct ? toPercentFromFirst(series) : series;
+    const values = new Map(points.map((p) => [p.ts ?? p.date, p.value]));
+    return supplyLabels.map((ts) => values.get(ts) ?? null);
+  };
   const ranked = [...coins].sort((a, b) => {
     const av = (supplySeriesByCoin[a.symbol] || []).slice(-1)[0]?.value || 0;
     const bv = (supplySeriesByCoin[b.symbol] || []).slice(-1)[0]?.value || 0;
@@ -74,7 +77,8 @@ function buildSupplyChartData({ coins, supplySeriesByCoin, supplyLabels, supplyP
   });
   const visible = narrow && !compareAll ? ranked.slice(0, 2) : ranked;
   return {
-    labels: supplyLabels,
+    dates: supplyLabels,
+    labels: supplyLabels.map(dateLabel),
     datasets: visible.map((c) => ({
       label: supplyPct ? `${c.symbol} %` : c.symbol,
       data: transform(supplySeriesByCoin[c.symbol]),
@@ -106,11 +110,11 @@ function buildPegChartData(coins, pegLabels, data) {
     : '#9CA3AF';
   const coinLines = coins.map((c) => ({
     label: c.symbol,
-    data: (data?.[`cg${c.symbol}Chart`]?.prices || []).slice(-90).map((p) => p[1]),
+    data: pegLabels.map((ts) => new Map((data?.[`cg${c.symbol}Chart`]?.prices || []).slice(-90)).get(ts) ?? null),
     borderColor: c.color,
     tension: 0.25,
   }));
-  return { labels: pegLabels, datasets: [...coinLines, pegRefLine(pegLabels, refColor)] };
+  return { dates: pegLabels, labels: pegLabels.map(dateLabel), datasets: [...coinLines, pegRefLine(pegLabels, refColor)] };
 }
 
 function buildPegChartOptions(pegChartData) {
@@ -179,15 +183,6 @@ export default function HomeTab({ data, alerts, setActiveTab, freshness = null }
   );
   const pegChartData = useMemo(() => buildPegChartData(coins, pegLabels, data), [coins, pegLabels, data]);
   const pegChartOpts = useMemo(() => buildPegChartOptions(pegChartData), [pegChartData]);
-  // The peg chart is CoinGecko 90-day price history, so its as-of is the newest
-  // price point, not the Helix market clock used for supply.
-  const pegAsOf = useMemo(() => {
-    const stamps = coins
-      .map((c) => data?.[`cg${c.symbol}Chart`]?.prices?.slice(-1)[0]?.[0])
-      .filter((v) => typeof v === 'number' && Number.isFinite(v));
-    return stamps.length ? Math.max(...stamps) : null;
-  }, [coins, data]);
-
   const totalMC = data?.allStables?.totalMarketCap?.peggedUSD ?? null;
   const totalPrev = data?.allStables?.totalMarketCap?.prevDay?.peggedUSD
     ?? data?.marketTotals?.prevDay?.peggedUSD
@@ -241,12 +236,10 @@ export default function HomeTab({ data, alerts, setActiveTab, freshness = null }
         onToggleCompare={() => setCompareAll((v) => !v)}
         narrow={narrow}
         onLearn={() => setActiveTab('learn')}
-        observedAt={data?.observedAt ?? null}
-        pegObservedAt={pegAsOf}
       />
       <section class="content-grid flow-grid" aria-label="Flow and dominance">
         <ChainFlowChart chainFlows={chainFlows} coins={coins} observedAt={data?.observedAt ?? null} />
-        <DominanceAreaChart data={data} observedAt={data?.observedAt ?? null} />
+        <DominanceAreaChart data={data} />
       </section>
       <SignalSummary
         data={data}

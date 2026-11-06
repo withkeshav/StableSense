@@ -19,6 +19,7 @@ export default function Header({
   theme,
   setTheme,
   alertCount,
+  alertTone = 'neutral',
   onJumpToAlerts,
   activeTab,
   onOpenRail,
@@ -57,8 +58,8 @@ export default function Header({
       </div>
       <div class="top-actions">
         <ThemeToggle theme={theme} setTheme={setTheme} compact />
-        <button type="button" class="alert-cta" onClick={onJumpToAlerts}>
-          Alerts {alertCount ? <span class="alert-pill">{alertCount}</span> : null}
+        <button type="button" class="alert-cta" title="Current warnings, not unread notifications" onClick={onJumpToAlerts}>
+          Alerts {alertCount ? <span class={`alert-pill tone-${alertTone}`}>{alertCount}</span> : null}
         </button>
         <a class="hdr-research-link" href="/research/" target="_blank" rel="noopener noreferrer" title="State of Stablecoins research">
           Research

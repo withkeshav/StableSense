@@ -92,6 +92,7 @@ export function mapBulkMarketPayload(payload) {
         ts: chainTs,
         circulating: latestSupply * price,
         delta: prevSupply == null ? null : (latestSupply - prevSupply) * price,
+        prevTs: toMs(chain?.prev_24h?.timestamp),
       });
     }
   }

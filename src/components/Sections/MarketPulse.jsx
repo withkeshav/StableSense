@@ -1,7 +1,6 @@
 ﻿import { useState } from 'preact/hooks';
 import ChartWrapper from '../ui/ChartWrapper.jsx';
 import Subtabs from '../ui/Subtabs.jsx';
-import { rangeWithYear } from '../../utils/formatters.js';
 
 const VIEWS = [
   { id: 'supply', label: 'Supply' },
@@ -30,17 +29,12 @@ export default function MarketPulse({
   onToggleCompare,
   narrow = false,
   onLearn,
-  observedAt = null,
-  pegObservedAt = null,
 }) {
   const [view, setView] = useState('supply');
   const supply = view === 'supply';
   const supplyReady = hasSeries(supplyChartData);
   const pegReady = hasSeries(pegChartData);
-  const rangeFromLabels = (labels, fallback) => {
-    const list = labels || [];
-    return list.length ? `${list[0]} to ${list[list.length - 1]}` : fallback;
-  };
+
 
   return (
     <section class="market-detail-block mb-4">
@@ -79,13 +73,7 @@ export default function MarketPulse({
                 options={supplyChartOptions}
                 height={300}
                 ariaLabel="Supply trend for tracked stablecoins"
-                shareTitle="Stablecoin supply, tracked coins"
-                shareRange="Tracked coins"
-                shareRangeDetail={rangeWithYear(rangeFromLabels(supplyChartData?.labels, '30 days'), observedAt)}
-                shareInterpretation="Combined circulating supply of the stablecoins tracked on this dashboard. Smaller coins stay comparable when Log or percent mode is on."
-                shareDefinition="Combined circulating value of the tracked stablecoins over time. Not total global stablecoin market cap and not all issuers."
-                shareSource="Helix daily supply history"
-                shareAsOf={observedAt}
+                shareSpec={{ kind: supplyPct ? 'supplyPct' : 'supply' }}
               />
             ) : (
               <div class="info-empty">No measured supply history yet. The chart waits for the next backend snapshot.</div>
@@ -99,14 +87,7 @@ export default function MarketPulse({
                 options={pegChartOptions}
                 height={300}
                 ariaLabel="Peg monitor with one dollar reference line"
-                shareTitle="Peg monitor, tracked coins"
-                shareRange="~90D"
-                shareRangeDetail={rangeWithYear(rangeFromLabels(pegChartData?.labels, '90 days'), pegObservedAt ?? observedAt)}
-                shareInterpretation="Market price of the tracked stablecoins against the $1.00 reference. A price picture, not a reserve-quality assessment."
-                shareDefinition="Secondary-market price versus a $1.00 reference line for the tracked stablecoins."
-                shareSource="CoinGecko price history"
-                shareHighlight="Dashed line marks the $1.00 peg"
-                shareAsOf={pegObservedAt ?? observedAt}
+                shareSpec={{ kind: 'price' }}
               />
             ) : (
               <div class="info-empty">No measured peg history yet. The chart waits for the next CoinGecko response.</div>

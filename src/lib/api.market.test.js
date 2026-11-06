@@ -9,6 +9,8 @@ function marketPayload(over = {}) {
     generatedAt: T0 + 1000,
     source: 'helix-via-cron',
     observedAt: T0,
+    spotObservedAt: T0,
+    supplyObservedAt: T0,
     market: { totalCirculatingUsd: 130_000, delta24hUsd: 60, ts: T0 },
     coins: [
       {
@@ -21,8 +23,8 @@ function marketPayload(over = {}) {
         supplyDelta24h: 50,
         depegIndex: null,
         chains: [
-          { chain: 'ethereum', supply: 60_000, delta24h: 100, ts: T0 },
-          { chain: 'tron', supply: 40_000, delta24h: -50, ts: T0 },
+          { chain: 'ethereum', supply: 60_000, delta24h: 100, ts: T0, previousTs: T0 - 86400000 },
+          { chain: 'tron', supply: 40_000, delta24h: -50, ts: T0, previousTs: T0 - 86400000 },
         ],
       },
       {
@@ -34,7 +36,7 @@ function marketPayload(over = {}) {
         supply: 30_000,
         supplyDelta24h: 10,
         depegIndex: null,
-        chains: [{ chain: 'ethereum', supply: 30_000, delta24h: 10, ts: T0 }],
+        chains: [{ chain: 'ethereum', supply: 30_000, delta24h: 10, ts: T0, previousTs: T0 - 86400000 }],
       },
     ],
     dataQuality: [{ coin: 'DAI', reason: 'no prices row' }],
@@ -115,7 +117,7 @@ describe('transformMarketPayload single-symbol mode', () => {
 
 describe('transformMarketPayload empty-coins payload', () => {
   it('produces dataQuality-only data without crashing', () => {
-    const payload = marketPayload({ coins: [], observedAt: null });
+    const payload = marketPayload({ coins: [], observedAt: null, spotObservedAt: null, supplyObservedAt: null });
     const data = transformMarketPayload(payload);
     expect(data.cgSimple).toEqual({});
     expect(data.usdtDetail).toBeUndefined();
@@ -347,5 +349,35 @@ describe('transformMarketPayload unknown deltas', () => {
     const usdt = data.allStables.peggedAssets.find((a) => a.symbol === 'USDT');
     expect(usdt.circulatingPrevDay).toEqual({ peggedUSD: null });
     expect(usdt.chainCirculating.ethereum.circulatingPrevDay).toEqual({ peggedUSD: null });
+  });
+});
+
+describe('honest comparison clocks', () => {
+  it('does not manufacture a previous day when the source timestamp is missing', () => {
+    const payload = marketPayload();
+    delete payload.coins[0].chains[0].previousTs;
+    expect(transformMarketPayload(payload).usdtDetail.chainBalances.ethereum.tokens).toHaveLength(1);
+  });
+  it('preserves a three-day source gap', () => {
+    const payload = marketPayload();
+    payload.coins[0].chains[0].previousTs = T0 - 3 * 86400000;
+    const points = transformMarketPayload(payload).usdtDetail.chainBalances.ethereum.tokens;
+    expect(points[1].date - points[0].date).toBe(3 * 86400);
+  });
+});
+
+describe('coin extras are loaded when needed', () => {
+  it('warms the shared price chart without fetching tickers, then loads tickers for the opened coin', async () => {
+    vi.resetModules();
+    const fetchMock = vi.fn(async (url) => ({ ok: true, json: async () => String(url).includes('/tickers') ? { tickers: [{ market: { name: 'Test' } }] } : { prices: [[T0, 1]] } }));
+    vi.stubGlobal('fetch', fetchMock);
+    const { loadCoinChart } = await import('./api.js');
+    const data = {};
+    await loadCoinChart('USDT', data, { includeTickers: false });
+    expect(fetchMock.mock.calls.some(([url]) => String(url).includes('/tickers'))).toBe(false);
+    expect(data.cgUSDTChart.prices).toEqual([[T0, 1]]);
+    await loadCoinChart('USDT', data);
+    expect(fetchMock.mock.calls.filter(([url]) => String(url).includes('/tickers'))).toHaveLength(1);
+    expect(data.cgUSDT.tickers).toHaveLength(1);
   });
 });

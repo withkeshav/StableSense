@@ -60,13 +60,14 @@ const FOUNDATIONS = {
     {
       id: 'collateral-types',
       title: 'What is behind the token',
-      core: 'The backing model decides where the risk sits. Fiat-backed coins hold cash, bank deposits, T-bills or repo. Crypto-backed coins hold over-collateralized vaults. Synthetic coins hold a hedged position. Algorithmic coins hold an incentive, not a reserve.',
+      core: 'The backing model helps locate risk. Issuer-backed coins can hold cash, bank deposits or government instruments. Protocol-backed coins can combine crypto, other stablecoins and real-world assets. Synthetic designs use market strategies such as hedges. Designs based mainly on incentives need separate scrutiny of how losses are absorbed.',
       body: 'The label on the coin is less useful than the balance sheet behind it. Ask what the assets are, who custodies them, how quickly they can be sold, and who can redeem. A Treasury bill is high quality but may take a day to settle. A bank deposit is liquid until the bank is not.',
-      example: 'USDT, USDC and PYUSD are fiat-backed. DAI is crypto-collateralized through Sky vaults. USDe is synthetic: spot staked ETH plus a short futures position. UST was algorithmic and failed in May 2022.',
+      lastUpdated: '2026-11-05',
+      example: 'USDT, USDC and PYUSD use issuer reserve structures. DAI belongs to the Sky system, whose mechanisms include conversion against USDC as well as collateral. Ethena describes USDe as a synthetic dollar with changing backing strategies, not only staked ETH plus a short. These categories locate questions; they do not prove reserve quality.',
       caveat: 'An attestation is a snapshot, not a full audit of every custodian and claim. A reserve can be real and still be illiquid at par during a run.',
       check: {
-        q: 'Which risk is specific to a synthetic dollar?',
-        a: 'The hedge and the funding rate. If the basis or funding flips, the yield can turn into a cost and the position can be unwound under stress.',
+        q: 'What should you check beyond the synthetic-dollar label?',
+        a: 'The actual backing strategies, hedge costs, counterparties and redemption access. The label does not tell you current portfolio weights or guarantee a positive return.',
       },
       sources: [
         {
@@ -78,11 +79,11 @@ const FOUNDATIONS = {
           href: 'https://tether.io/transparency/',
         },
         {
-          label: 'MakerDAO documentation, DAI vaults',
-          href: 'https://docs.makerdao.com/',
+          label: 'Sky LitePSM, DAI and USDC conversion (reviewed 2026-11-05)',
+          href: 'https://developers.skyeco.com/protocol/liquidity/litepsm/',
         },
         {
-          label: 'Ethena documentation, USDe design',
+          label: 'Ethena USDe design (reviewed 2026-11-05; updated 2026-09-02)',
           href: 'https://docs.ethena.fi/',
         },
       ],
@@ -113,10 +114,10 @@ const FOUNDATIONS = {
     },
     {
       id: 'chain-flow',
-      title: 'A chain flow is a location change',
-      core: 'Supply on a chain can rise because of a mint, a bridge, an exchange transfer or a migration. It can fall because of a burn or a bridge out. The chain total is a location, not a payment to an end user.',
-      body: 'A bridge move can look like a payment and be an internal treasury move. The app pairs the largest outflow and inflow as a migration hint, not a directed path. Open the chain view before treating a flow as a customer transfer.',
-      example: 'USDT supply on Tron can fall while USDT on Ethereum rises in the same day; that is a location shift, not necessarily a redemption. The coin total supply may be unchanged.',
+      title: 'A chain flow measures supply change',
+      core: 'Supply on a chain can change through minting, burning or cross-chain movements. A transfer between wallets on the same chain does not by itself change the total supply on that chain. The chain total is a location, not a payment to an end user.',
+      body: 'A bridge move can look like a payment and be an internal treasury move. The app compares opposite chain changes as a migration hint, not a verified transfer path. Open the chain view before treating a flow as a customer transfer.',
+      example: 'USDT supply on Tron can fall while USDT on Ethereum rises in the same day; opposite changes alone do not prove a transfer or a redemption. The coin total supply may be unchanged.',
       caveat: 'Chain flow does not prove end-user payment volume, and a migration pair is an approximation. It is a place to look, not a settled route.',
       check: {
         q: 'What is the difference between a burn and a bridge-out?',

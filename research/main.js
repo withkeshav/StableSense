@@ -5,6 +5,7 @@
 // accordion expand/collapse. No new dependencies beyond Chart.js (already
 // a project dep). Respects prefers-reduced-motion throughout.
 import * as data from './data.js';
+import { getActiveCoins } from '../src/utils/coin-config.js';
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -201,13 +202,15 @@ async function heroCounter() {
   if (!el) return;
   // Show loading state immediately, never $0
   el.textContent = 'Loading...';
-  const trackedSyms = ['USDT', 'USDC', 'DAI', 'USDE', 'PYUSD'];
+  const trackedSyms = getActiveCoins().map((coin) => coin.symbol);
   let total = 0;
   let fetched = false;
+  let observedAt = null;
   let missing = [];
   try {
     const { fetchDashboardData } = await import('../src/lib/api.js');
     const d = await fetchDashboardData({});
+    observedAt = d?.supplyObservedAt ?? null;
     const supplies = {};
     for (const a of d?.allStables?.peggedAssets || []) {
       const v = a?.circulating?.peggedUSD;
@@ -221,7 +224,7 @@ async function heroCounter() {
       }
     }
     total = total / 1e9; // peggedUSD is raw dollars; fmt() below expects billions
-    if (total > 0) fetched = true;
+    if (total > 0 && missing.length === 0) fetched = true;
   } catch { /* keep static fallback */ }
 
   if (!fetched) {
@@ -235,11 +238,7 @@ async function heroCounter() {
     return;
   }
 
-  if (missing.length > 0) {
-    label.textContent = `Combined market cap of the 5 stablecoins tracked here, updated live - partial, waiting on ${missing.length} coin${missing.length > 1 ? 's' : ''} (${missing.join(', ')})`;
-  } else {
-    label.textContent = 'Combined market cap of the 5 stablecoins tracked here, updated live';
-  }
+  label.textContent = `Combined circulating value of all 5 tracked stablecoins. Source reading: ${observedAt ? new Date(observedAt).toISOString().replace('T', ' ').replace('.000Z', ' UTC') : 'time unavailable'}. Loaded once on this page.`;
 
   const target = total;
   const duration = prefersReducedMotion ? 0 : 1400;
@@ -389,24 +388,18 @@ async function taxonomyChart() {
   new Chart(canvas, {
     type: 'bar',
     data: {
-      labels: ['Total stablecoin market'],
-      datasets: data.taxonomy.map((t, i) => ({
-        label: `${t.label} (${t.scale})`,
-        data: [vals[i]],
-        backgroundColor: colors[i],
-        borderWidth: 0,
-        barThickness: 60,
-      })),
+      labels: labels,
+      datasets: [{ label: 'Dated category estimates ($B), not additive', data: vals, backgroundColor: colors, borderWidth: 0 }],
     },
     options: {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'bottom', labels: { color: inkColor(), font: { size: 11 }, boxWidth: 12 } },
-        tooltip: { callbacks: { label: (ctx) => `${data.taxonomy[ctx.datasetIndex].label}: ${data.taxonomy[ctx.datasetIndex].scale}` } },
+        legend: { display: false },
+        tooltip: { callbacks: { label: (ctx) => `${data.taxonomy[ctx.dataIndex].label}: ${data.taxonomy[ctx.dataIndex].scale}` } },
       },
-      scales: { x: { stacked: true, grid: { color: gridColor() }, ticks: { color: inkColor() } }, y: { stacked: true, display: false } },
+      scales: { x: { grid: { color: gridColor() }, ticks: { color: inkColor() }, title: { display: true, text: 'Dated estimates ($B), differing scopes' } }, y: { ticks: { color: inkColor() } } },
       animation: prefersReducedMotion ? false : { duration: 1200 },
     },
   });
@@ -455,7 +448,6 @@ async function forecastChart() {
   const ink = inkColor();
   const grid = gridColor();
   const gold = getComputedStyle(document.documentElement).getPropertyValue('--hub-gold').trim();
-  const currentAnchor = 316; // mid-2026 snapshot
 
   // Build a floating-bar dataset: each bar spans [low, high] on a shared axis.
   // Chart.js floating bars use [min, max] data points with type:'bar'.
@@ -464,29 +456,11 @@ async function forecastChart() {
 
   const buildData = (filter) => {
     const items = data.projections.filter((p) => filter === 'all' || p.name === filter);
-    // For floating bars, minBarLength does NOT reliably enforce minimum thickness.
-    // Compute visual padding: for single-point forecasters (low === high), expand
-    // to +/-10% visual extent; for narrow bands, add minimum padding so the bar
-    // is visible. The tooltip still shows the real range.
-    const visualData = items.map((p) => {
-      if (p.low === p.high) {
-        // single-point: render as a thick bar with +/-10% visual extent
-        const pad = p.low * 0.10;
-        return [Math.max(0, p.low - pad), p.high + pad];
-      }
-      // range: if the range is very narrow, add visual padding
-      const range = p.high - p.low;
-      const minVisualRange = 100; // $100B minimum visual range
-      if (range < minVisualRange) {
-        const pad = (minVisualRange - range) / 2;
-        return [Math.max(0, p.low - pad), p.high + pad];
-      }
-      return [p.low, p.high];
-    });
+    const visualData = items.map((p) => [p.low, p.high]);
     return {
-      labels: items.map((p) => p.name),
+      labels: items.map((p) => `${p.name} (${p.by})`),
       datasets: [{
-        label: 'Projected range by 2030 ($B)',
+        label: 'Attributed scenarios, target year per row ($B)',
         data: visualData,
         backgroundColor: items.map((p) => {
           return p.name === 'IMF' ? gold + 'cc' : catColor('fiat-usd') + '99';
@@ -495,14 +469,7 @@ async function forecastChart() {
         borderWidth: 1,
         barThickness: 'flex',
         maxBarThickness: 40,
-        minBarLength: 12, // belt: keep as fallback, but the visual padding above is the real fix
-      }, {
-        label: 'Current (mid-2026)',
-        data: items.map(() => [currentAnchor, currentAnchor]),
-        backgroundColor: items.map(() => gold),
-        barThickness: 2,
-        barPercentage: 1,
-        categoryPercentage: 1,
+        minBarLength: 0,
       }],
     };
   };
@@ -517,8 +484,7 @@ async function forecastChart() {
       plugins: {
         legend: { display: false },
         tooltip: { callbacks: { label: (ctx) => {
-          if (ctx.datasetIndex === 1) return `Current: ~$${currentAnchor}B (mid-2026)`;
-          const p = data.projections.find((x) => x.name === ctx.label);
+          const p = data.projections.filter((x) => activeFilter === 'all' || x.name === activeFilter)[ctx.dataIndex];
           return p ? `${p.name}: ${p.range} by ${p.by} - ${p.note}` : '';
         } } },
       },
@@ -1058,7 +1024,7 @@ function buildGeniusStatus() {
   const g = data.geniusStatus;
   if (!g || !block) return;
   block.innerHTML = `
-    <p>Enacted <strong>${escHtml(g.enacted)}</strong>. Historical tracker snapshot (${escHtml(g.asOf)}): <strong>${escHtml(g.totalRulemakings)}</strong> total rulemakings across <strong>${escHtml(g.agencies)}</strong> agencies; <strong>${escHtml(g.nprmsIssued)}</strong> Notices of Proposed Rulemaking issued. Final rules completed: <strong>${escHtml(g.finalRules == null ? 'UNKNOWN' : g.finalRules)}</strong>.</p>
+    <p>Enacted <strong>${escHtml(g.enacted)}</strong>. Reviewed ${escHtml(g.asOf)}. The OCC final rule is verified. An all-agency rulemaking count is not established here.</p>
     ${labelledPara('Commencement mechanics', escHtml(g.commencementMechanics))}
     ${labelledPara('Commencement status', escHtml(g.commencementStatus))}
     ${labelledPara('Reserves', escHtml(g.reserveClasses))}
@@ -1351,7 +1317,7 @@ function buildDistributionEconomics() {
       ${labelledPara('The challenger', escHtml(d.challenger))}
       ${labelledPara('Conclusion', escHtml(d.conclusion))}
       ${labelledAside('Still UNRESOLVED', escHtml(d.unresolved))}
-      ${sourceAside('', d.circleUrl, "Circle's Form 10-Q for the quarter ended 2026-06-30", ", and Open Standard's stated company structure.")}
+      ${sourceAside('', d.circleUrl, "Circle's Q3 release, published 2026-11-04", ", with historical Q2 contract disclosures and Open Standard's stated company structure.")}
     </div>
   `;
 }
@@ -1433,3 +1399,13 @@ window.addEventListener('resize', () => {
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
 else init();
+function labelTableCells() {
+  document.querySelectorAll('.hub-table').forEach((table) => {
+    const labels = [...table.querySelectorAll('thead th')].map((cell) => cell.textContent.trim());
+    table.querySelectorAll('tbody tr').forEach((row) => {
+      [...row.children].forEach((cell, index) => { if (cell.colSpan === 1 && labels[index]) cell.dataset.label = labels[index]; });
+    });
+  });
+}
+labelTableCells();
+new MutationObserver(labelTableCells).observe(document.body, { childList: true, subtree: true });

@@ -20,19 +20,24 @@ const SOURCES = [
     note: 'Reserve attestations and issuer disclosures.',
   },
   {
-    label: 'MakerDAO documentation, DAI vaults',
-    href: 'https://docs.makerdao.com/',
-    note: 'Over-collateralized vaults, liquidation and stable fees.',
+    label: 'Sky protocol documentation, LitePSM (reviewed 2026-11-05)',
+    href: 'https://developers.skyeco.com/protocol/liquidity/litepsm/',
+    note: 'DAI and USDS conversion against USDC; protocol-backed does not mean free of counterparties.',
   },
   {
     label: 'Ethena documentation, USDe',
     href: 'https://docs.ethena.fi/',
-    note: 'The spot-plus-short design, funding yield and custody.',
+    note: 'Dynamic backing strategies, USDe and sUSDe, redemption access and risks. Reviewed 2026-11-05.',
   },
   {
     label: 'GENIUS Act, enrolled text (2025-07-18)',
     href: 'https://www.congress.gov/bill/119th-congress/senate-bill/1582/text',
-    note: 'US reserve, disclosure and commencement terms. Commencement remains unresolved.',
+    note: 'Enacted framework; read alongside the October 2026 OCC final rule and its January 18, 2027 effective date.',
+  },
+  {
+    label: 'OCC GENIUS final rule (2026-10-21; effective 2027-01-18)',
+    href: 'https://www.occ.gov/news-issuances/bulletins/2026/bulletin-2026-50.html',
+    note: 'OCC jurisdiction; anti-money-laundering and sanctions matters have separate rulemaking.',
   },
   {
     label: 'ESMA, MiCA Article 49 (applies 2024-06-30)',
@@ -79,7 +84,7 @@ export default function LearnSources() {
           ))}
         </ul>
         <p class="mb-0">
-          <a class="learn-link-btn" href="/research/#sources" target="_blank" rel="noopener noreferrer">
+          <a class="learn-link-btn" href="/research/#sources-list" target="_blank" rel="noopener noreferrer">
             Full source ledger in the research hub &rsaquo;
           </a>
         </p>

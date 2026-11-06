@@ -1,4 +1,4 @@
-const OBSERVATION_NOTE = 'Live, computed from this dashboard\'s data - not AI-generated.';
+const OBSERVATION_NOTE = 'Computed from the dashboard readings, not AI-generated.';
 
 /**
  * One lesson: a core idea, the explanation, a dated example, the limit of the
@@ -27,8 +27,8 @@ export default function LearnLesson({ lesson, observation }) {
       ) : null}
       {lesson.check ? (
         <details class="learn-check">
-          <summary>Check yourself</summary>
-          <p><strong>{lesson.check.q}</strong> {lesson.check.a}</p>
+          <summary>Check yourself: {lesson.check.q}</summary>
+          <p>{lesson.check.a}</p>
         </details>
       ) : null}
       {lesson.sources && lesson.sources.length ? (
@@ -53,7 +53,7 @@ export default function LearnLesson({ lesson, observation }) {
         <div class="learn-observation">
           <div class="learn-observation-label">Live observation</div>
           <p class="mb-0">{observation.text}</p>
-          <p class="learn-observation-note mb-0">{OBSERVATION_NOTE}</p>
+          <p class="learn-observation-note mb-0">{OBSERVATION_NOTE} {observation.observedAt ? `Source reading: ${new Date(observation.observedAt).toISOString().replace('T', ' ').replace('.000Z', ' UTC')}.` : 'Source time unavailable.'}</p>
         </div>
       ) : null}
     </div>

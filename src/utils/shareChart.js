@@ -131,7 +131,7 @@ function drawBrandMark(ctx, x, y, size, palette) {
  * @param {string} formatKey story|square|landscape
  * @param {string} [theme='light'] light|dark, matching the dashboard theme.
  */
-export function shareSignalCard(chartInstance, meta, formatKey, theme = 'light') {
+export function renderSignalCard(chartInstance, meta, formatKey, theme = 'light') {
   requireShareText(meta);
   const fmt = SHARE_FORMATS[formatKey] || SHARE_FORMATS.landscape;
   const palette = CARD_THEMES[theme] || CARD_THEMES.light;
@@ -187,13 +187,18 @@ export function shareSignalCard(chartInstance, meta, formatKey, theme = 'light')
   ctx.font = `800 ${Math.round(fmt.w * 0.012)}px Manrope, Arial, sans-serif`;
   ctx.fillText(String(meta.title).toUpperCase(), pad, y);
 
-  y += Math.round(fmt.h * 0.035);
-  const titleSize = Math.round(fmt.w * (formatKey === 'story' ? 0.052 : formatKey === 'landscape' ? 0.034 : 0.038));
+  let titleSize = Math.round(Math.min(fmt.w, fmt.h) * (formatKey === 'story' ? 0.052 : formatKey === 'landscape' ? 0.034 : 0.038));
   ctx.fillStyle = ink;
   ctx.font = `800 ${titleSize}px Manrope, Arial, sans-serif`;
   // Story and landscape have more vertical or horizontal room; do not truncate
   // the read to the square card's four lines.
-  const maxInterpLines = formatKey === 'square' ? 4 : 5;
+  const maxInterpLines = formatKey === 'landscape' ? 3 : formatKey === 'square' ? 4 : 5;
+  // Keep the complete factual sentence in every format, including its caveat.
+  while (titleSize > 20 && textLineCount(ctx, meta.interpretation, fmt.w - pad * 2) > maxInterpLines) {
+    titleSize -= 1;
+    ctx.font = `800 ${titleSize}px Manrope, Arial, sans-serif`;
+  }
+  y += titleSize + 16;
   const interpLines = wrapText(ctx, meta.interpretation, pad, y, fmt.w - pad * 2, Math.round(titleSize * 1.15), maxInterpLines);
 
   y += Math.round(titleSize * 1.15) * interpLines + 8;
@@ -287,8 +292,12 @@ export function shareSignalCard(chartInstance, meta, formatKey, theme = 'light')
   ctx.textAlign = 'right';
   ctx.fillText('Research, not advice', fmt.w - pad, fmt.h - pad * 0.75);
 
+  return off;
+}
+
+export function downloadSignalCard(canvas, meta, formatKey, theme) {
   const safeTitle = String(meta.title).replace(/[^\w.-]+/g, '-').slice(0, 48);
-  download(off, `StableSense-${safeTitle}-${formatKey}-${theme}.png`);
+  download(canvas, `StableSense-${safeTitle}-${formatKey}-${theme}.png`);
 }
 
 /**
@@ -311,33 +320,18 @@ function fitText(ctx, text, maxWidth) {
  * @returns {number} Lines drawn, at least 1.
  */
 function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
-  const words = String(text).split(/\s+/).filter(Boolean);
-  if (!words.length) return 1;
+  const lines = [];
   let line = '';
-  let lines = 0;
-  for (let i = 0; i < words.length; i += 1) {
-    const test = line ? `${line} ${words[i]}` : words[i];
-    if (ctx.measureText(test).width > maxWidth && line) {
-      ctx.fillText(line, x, y + lines * lineHeight);
-      lines += 1;
-      line = words[i];
-      if (lines >= maxLines - 1) {
-        let rest = words.slice(i).join(' ').replace(/[.,;:!?\s]+$/, '');
-        while (ctx.measureText(`${rest}…`).width > maxWidth && rest.length > 1) {
-          rest = rest.slice(0, -1).replace(/[.,;:!?\s]+$/, '');
-        }
-        ctx.fillText(`${rest}…`, x, y + lines * lineHeight);
-        return lines + 1;
-      }
-    } else {
-      line = test;
-    }
+  for (const word of String(text).split(/\s+/).filter(Boolean)) {
+    const next = line ? `${line} ${word}` : word;
+    if (line && ctx.measureText(next).width > maxWidth) { lines.push(line); line = word; }
+    else line = next;
   }
-  if (line) {
-    ctx.fillText(line, x, y + lines * lineHeight);
-    return lines + 1;
-  }
-  return Math.max(1, lines);
+  if (line) lines.push(line);
+  const visible = lines.slice(0, maxLines);
+  if (lines.length > maxLines) visible[maxLines - 1] = fitText(ctx, lines.slice(maxLines - 1).join(' '), maxWidth);
+  visible.forEach((value, i) => ctx.fillText(value, x, y + i * lineHeight));
+  return Math.max(1, visible.length);
 }
 
 function download(canvas, filename) {
@@ -352,3 +346,13 @@ function download(canvas, filename) {
   }, 'image/png');
 }
 
+
+function textLineCount(ctx, text, width) {
+  let line = '', count = 1;
+  for (const word of String(text).split(/\s+/)) {
+    const next = line ? `${line} ${word}` : word;
+    if (line && ctx.measureText(next).width > width) { count += 1; line = word; }
+    else line = next;
+  }
+  return count;
+}

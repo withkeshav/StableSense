@@ -4,7 +4,30 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [3.14.0] - 2026-11-06
+
+### Added
+- One-shot market-input recorder retains source and arrival times, unavailable attempts and current alert decisions for later validation.
+- Offline historical price-alert replay with source-time preservation, coverage checks, independently labelled scoring and delayed-input sensitivity.
+
+### Fixed
+- AI explanations use the same current coin and chain coverage as the dashboard, with source dates and stale-input rejection.
+- Warning badges distinguish routine activity, amber warnings and critical price deviations; invalid and stale comparisons do not produce current warnings.
+- Share-card wording is calculated from plotted values, filters and dates without AI. Preview and download use the same captured image.
+- Coin supply-share charts require aligned observations; peg-deviation charts expand for large moves instead of clipping them.
+- Exchange-volume samples select the largest measured ticker per venue and exclude missing or flagged values.
+- Current chain totals use the latest explicitly fetched chain set, with incomplete or stale coverage shown as unavailable. Stored history no longer adds retired chains to current totals.
+- Price and supply observation times remain separate. Sparse comparisons retain their actual time span instead of being labelled 24h.
+- Helix events remain recorded history. Failed or limited event feeds cannot resolve incidents, and repeated imports preserve first publication time.
+- Learn links reopen their section, including repeated clicks and direct page loads. Self-check questions appear before their answers.
+- Home chart series align by source timestamp; chain summaries inspect the full measured set; share descriptions follow the selected series and units.
+- Research tables use labeled cards on narrow phones.
+
+### Changed
+- Central chart-description templates and lesson-content modules replace repeated page-level wording. Unused helpers and duplicate share-preview styling are removed.
+- November 5 research review updates OCC rule status, issuer reserve and income disclosures, payment definitions and the unresolved OUSD reserve discrepancy. Historical observations keep their original dates.
+- Forecast charts retain rechecked scenarios without invented visual ranges. Category estimates use separate bars and are not added into a market total.
+- Health separates a responding server from complete market coverage. Helix event history is separate from current dashboard alerts.
 
 ## [3.13.0] - 2026-10-18
 

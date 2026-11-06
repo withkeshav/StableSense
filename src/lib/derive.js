@@ -79,8 +79,8 @@ export function toPercentFromFirst(series) {
   const first = arr[0].value;
   // Percent change from zero is undefined. A gap is honest; a fabricated
   // flat 0.00% line says the data did not move.
-  if (!first) return arr.map((p) => ({ date: p.date, value: null }));
-  return arr.map((p) => ({ date: p.date, value: (p.value / first - 1) * 100 }));
+  if (!first) return arr.map((p) => ({ date: p.ts ?? p.date, value: null }));
+  return arr.map((p) => ({ date: p.ts ?? p.date, value: (p.value / first - 1) * 100 }));
 }
 
 export function buildSupplySeries(detail) {
@@ -113,7 +113,7 @@ export function rankChainFlows(detailsByCoin) {
         map[chain].missing = true;
         continue;
       }
-      if (!Number.isFinite(pd)) {
+      if (!Number.isFinite(pd) || !isNominal24h(intervalHours(tokenTsMs(tokens[tokens.length - 2]), tokenTsMs(tokens[tokens.length - 1])))) {
         // One reading is not a measured 24h change. Keep the coin visible as a
         // gap and never turn the missing prior point into a zero delta.
         map[chain].deltas[coin] = null;
@@ -130,16 +130,6 @@ export function rankChainFlows(detailsByCoin) {
     if (!Object.values(flow.deltas).some((value) => Number.isFinite(value))) flow.totalDelta = null;
   }
   return Object.values(map).sort((a, b) => Math.abs(b.totalDelta || 0) - Math.abs(a.totalDelta || 0));
-}
-
-export function buildMigrationPairs(flows) {
-  const inflows = flows.filter((f) => f.totalDelta > 0).sort((a, b) => b.totalDelta - a.totalDelta);
-  const outflows = flows.filter((f) => f.totalDelta < 0).sort((a, b) => a.totalDelta - b.totalDelta);
-  return outflows.slice(0, 3).map((out, i) => ({
-    from: out.chain,
-    to: inflows[i]?.chain || 'N/A',
-    amount: Math.min(Math.abs(out.totalDelta), inflows[i]?.totalDelta || 0),
-  }));
 }
 
 export function computePegStress({ pricesByCoin, alerts, topChainFlow }) {
@@ -268,7 +258,8 @@ export function dedupeTickers(tickers, limit = 8) {
   const seen = new Set();
   const nameCount = {};
   const out = [];
-  for (const t of tickers || []) {
+  const ranked = (tickers || []).filter((t) => Number.isFinite(t?.converted_volume?.usd) && t.converted_volume.usd >= 0 && !t.is_stale && !t.is_anomaly).sort((a, b) => b.converted_volume.usd - a.converted_volume.usd);
+  for (const t of ranked) {
     const id = t?.market?.identifier || `${t?.market?.name || ''}-${t?.base || ''}`;
     if (!id || seen.has(id)) continue;
     seen.add(id);
@@ -352,7 +343,7 @@ export function buildAlertSparkSeries(alert, data) {
   return null;
 }
 
-const SEVERITY_RANK = { CRITICAL: 0, HIGH: 1, WARNING: 2 };
+const SEVERITY_RANK = { CRITICAL: 0, HIGH: 1, WARNING: 2, INFO: 3 };
 const MIGRATION_MATCH_TOL = 0.10;
 const MIGRATION_NET_FRAC = 0.15;
 
@@ -464,7 +455,10 @@ function windowMeta(obsList) {
   const sourceTsCurrent = currents.length ? Math.max(...currents) : null;
   const sourceTsPrevious = previous.length ? Math.min(...previous) : null;
   const hours = hoursList.length ? hoursList.reduce((a, b) => a + b, 0) / hoursList.length : intervalHours(sourceTsPrevious, sourceTsCurrent);
-  const cadenceValid = hoursList.length ? hoursList.every((h) => isNominal24h(h)) : isNominal24h(hours);
+  const aligned = currents.length === obsList.length && previous.length === obsList.length
+    && Math.max(...currents) - Math.min(...currents) <= 3600000
+    && Math.max(...previous) - Math.min(...previous) <= 3600000;
+  const cadenceValid = aligned && hoursList.length > 0 && hoursList.every((h) => isNominal24h(h));
   return {
     sourceTsCurrent,
     sourceTsPrevious,
@@ -566,16 +560,17 @@ function chainObservations(detail) {
 function pegBreakAlert({ cfg, price, devBps, lastUpdatedAt, detectedAt, provenance }) {
   const absDev = Math.abs(devBps);
   let severity = null;
-  if (absDev >= cfg.thresholds.pegCriticalBps) severity = 'CRITICAL';
-  else if (absDev >= cfg.thresholds.pegWarnBps) severity = 'HIGH';
+  if (absDev + 1e-9 >= cfg.thresholds.pegCriticalBps) severity = 'CRITICAL';
+  else if (absDev + 1e-9 >= 2 * cfg.thresholds.pegWarnBps) severity = 'HIGH';
+  else if (absDev + 1e-9 >= cfg.thresholds.pegWarnBps) severity = 'WARNING';
   if (!severity) return null;
   const observedAt = tokenTsMs({ date: lastUpdatedAt });
   return makeAlert({
     rule: 'PEG_BREAK',
     coin: cfg.symbol,
     severity,
-    magnitude: absDev,
-    headline: `${cfg.symbol} is ${devBps} bps ${devBps < 0 ? 'below' : 'above'} the $1 peg (price ${price.toFixed(4)}).`,
+    magnitude: Number(absDev.toFixed(1)),
+    headline: `${cfg.symbol} is ${Number(devBps.toFixed(1))} bps ${devBps < 0 ? 'below' : 'above'} the $1 peg (price ${price.toFixed(4)}).`,
     explanation: `This is a secondary-market price observation, not a reserve or redemption proof.`,
     window: {
       sourceTsCurrent: observedAt,
@@ -624,7 +619,7 @@ function migrationAlerts(cfg, pairs, netSupplyDelta, detectedAt, provenance) {
     const netCap = Math.max(MIGRATION_NET_FRAC * grossFlow, cfg.thresholds.megaSupplyUsd);
     const window = windowMeta([pair.from, pair.to]);
     const cadenceOk = window.cadenceValid;
-    const confidence = cadenceOk ? 'high' : 'low';
+    const confidence = cadenceOk ? 'medium' : 'low';
     const netNote = Math.abs(netSupplyDelta) < netCap
       ? `net ${cfg.symbol} supply broadly unchanged (${signedUsd(netSupplyDelta)})`
       : `net ${cfg.symbol} supply ${signedUsd(netSupplyDelta)}`;
@@ -635,16 +630,16 @@ function migrationAlerts(cfg, pairs, netSupplyDelta, detectedAt, provenance) {
       chain: pair.from.chain,
       fromChain: pair.from.chain,
       toChain: pair.to.chain,
-      severity: spikeSeverity(grossFlow, cfg),
+      severity: 'INFO',
       magnitude: grossFlow,
       grossFlow,
       netSupplyDelta,
-      headline: `${cfg.symbol} liquidity moved: ${pair.from.chain} → ${pair.to.chain}`,
+      headline: `${cfg.symbol} opposite supply changes: ${pair.from.chain} and ${pair.to.chain}`,
       explanation: `${fmtUsd(grossFlow)} gross chain movement; ${netNote}. This is a chain allocation correlation from successive circulating-supply snapshots, not evidence on its own of a depeg, whale, or reserve problem.`,
       window,
       confidence,
       confidenceNote: cadenceOk
-        ? 'High: matched opposing chain movements.'
+        ? 'Matched magnitudes; a transfer between these chains is not verified.'
         : 'Low: matched opposing flows, but the observation interval is not a valid 24h window.',
       detectedAt,
       provenance,
@@ -667,7 +662,7 @@ function chainFlowAlerts(cfg, unpaired, netSupplyDelta, detectedAt, provenance) 
       netSupplyDelta,
       delta: spike.delta,
       headline: `${cfg.symbol} supply ${direction} by ${fmtUsd(spike.delta)} on ${spike.chain} ${spike.intervalLabel}.`,
-      explanation: `Single-chain circulating-supply change from the latest two DefiLlama snapshots. This is not by itself a mint, burn, whale, or depeg conclusion.`,
+      explanation: `Single-chain circulating-supply change from the latest two source snapshots. This is not by itself a mint, burn, whale, or depeg conclusion.`,
       window: spike,
       confidence: spike.cadenceValid ? 'medium' : 'low',
       confidenceNote: spike.cadenceValid
@@ -683,6 +678,7 @@ function chainFlowAlerts(cfg, unpaired, netSupplyDelta, detectedAt, provenance) 
 // threshold. Paired migrations are still emitted separately.
 function netSupplyAlert(cfg, detail, usable, netSupplyDelta, detectedAt, provenance) {
   if (!detail || !Object.keys(detail.chainBalances || {}).length) return null;
+  if (usable.length !== Object.keys(detail.chainBalances).length) return null;
   const total = netSupplyDelta;
   if (Math.abs(total) < cfg.thresholds.megaSupplyUsd) return null;
   const window = windowMeta(usable);
@@ -690,7 +686,7 @@ function netSupplyAlert(cfg, detail, usable, netSupplyDelta, detectedAt, provena
     rule: total >= 0 ? 'NET_MINT' : 'NET_BURN',
     coin: cfg.symbol,
     chains: usable.map((o) => o.chain),
-    severity: Math.abs(total) >= 3 * cfg.thresholds.megaSupplyUsd ? 'CRITICAL' : 'HIGH',
+    severity: 'HIGH',
     magnitude: Math.abs(total),
     grossFlow: usable.reduce((sum, o) => sum + Math.abs(o.delta), 0),
     netSupplyDelta: total,
@@ -730,7 +726,7 @@ function domShiftAlerts(coins, supplyByCoin, detectedAt) {
     const ref = share[share.length - 8];
     const drift = latest.share - ref.share;
     if (Math.abs(drift) < 1) continue;
-    const severity = Math.abs(drift) >= 3 ? 'HIGH' : 'WARNING';
+    const severity = 'INFO';
     const hours = intervalHours(ref.date, latest.date);
     const cadenceValid = hours != null && hours >= 5 * 24 && hours <= 9 * 24;
     out.push(makeAlert({
@@ -781,13 +777,12 @@ export function generateAlerts(data, opts = {}) {
     const price = data?.cgSimple?.[cfg.coingeckoId]?.usd;
     const lastUpdatedAt = data?.cgSimple?.[cfg.coingeckoId]?.last_updated_at;
     const detail = data?.[`${cfg.symbol.toLowerCase()}Detail`];
-    const provenance = { source: 'deflama+coingecko', coin: cfg.symbol };
+    const provenance = { source: data.coverage ? 'helix-via-stablesense' : 'source-snapshots', coin: cfg.symbol };
 
     // Zero or negative price is a feed failure, not a depeg observation: a
     // missing price must not become a CRITICAL alert (numeric-claim rule 6).
     if (typeof price === 'number' && Number.isFinite(price) && price > 0) {
-      const devBps = bps(price);
-      if (devBps == null) continue;
+      const devBps = (price - 1) * 10000;
       const pegAlert = pegBreakAlert({ cfg, price, devBps, lastUpdatedAt, detectedAt, provenance });
       if (pegAlert) alerts.push(pegAlert);
     }

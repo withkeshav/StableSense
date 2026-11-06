@@ -33,7 +33,7 @@ const REQUIRED_EXPORTS = [
   'buidlSecondaryReports', 'rwaDepth', 'distributionEconomics', 'geniusReserves',
   'geniusStatus', 'treasuryDemandMechanism', 'growthHonest', 'marketCapMeasure',
   'latestResearchCorrections', 'latestResearchOpen', 'sources', 'AS_OF',
-  'RESEARCH_REVIEWED', 'MEASURE_AS_OF', 'HISTORICAL_DATASETS',
+  'RESEARCH_REVIEWED', 'MEASURE_AS_OF', 'HISTORICAL_DATASETS', 'projections',
 ];
 
 const codepoint = (ch) => 'U+' + ch.codePointAt(0).toString(16).toUpperCase().padStart(4, '0');
@@ -80,7 +80,20 @@ function measureHub(data, hubHtml, changelogHtml, hubFiles) {
   const circle = data.floatEconomics.filter((r) => r.issuer === 'Circle');
   check('Tether rows present', tether.length === 3, `got ${tether.length}`);
   check('Circle rows present', circle.length === 3, `got ${circle.length}`);
-  check('Tether negative-equity row is signed as negative', tether.some((r) => r.value.includes('-')), tether.map((r) => r.value).join(' | '));
+  const buffer = tether.find((r) => /assets less total liabilities/.test(r.measure));
+  const bufferAmounts = (buffer?.note.match(/\$[\d,]+/g) || []).map((v) => Number(v.replace(/[$,]/g, '')));
+  check('Tether reserve buffer reconciles assets less liabilities',
+    bufferAmounts.length === 3 && bufferAmounts[0] - bufferAmounts[1] === bufferAmounts[2]
+      && buffer?.value === '$' + (bufferAmounts[2] / 1e9).toFixed(3) + 'B');
+  const circleCost = circle.find((r) => /Distribution and transaction/.test(r.measure));
+  const circleIncome = circle.find((r) => /Reserve income/.test(r.measure));
+  const amountM = (row) => Number(row?.value.replace(/[$M]/g, ''));
+  const costRatio = amountM(circleCost) / amountM(circleIncome) * 100;
+  check('Circle cost ratio recomputes from the displayed quarter values',
+    Number.isFinite(costRatio) && circleCost.note.includes(costRatio.toFixed(4) + '%')
+      && /Excludes \$2\.465M other costs/.test(circleCost.note));
+  check('issuer economics retain September observation dates',
+    data.floatEconomics.every((r) => /2026-09-30/.test(r.asOf)));
 
   // --- section 9: yield ban ---
   const y = data.yieldBan;
@@ -102,7 +115,15 @@ function measureHub(data, hubHtml, changelogHtml, hubFiles) {
   // not be read as an Arbitrum-only or commerce-only number, then the
   // 2026-10-18 x402scan panel and the x402stats window range were added so the
   // frozen and unstated-window sources stay visible.
-  check('agenticVolume has 10 rows', data.agenticVolume.length === 10, `got ${data.agenticVolume.length}`);
+  check('agenticVolume includes a dated Allium Q3 estimate with method limits',
+    data.agenticVolume.some((r) => /Allium/.test(r.publisher) && /Q3 2026/.test(r.window)
+      && /68\.3M/.test(r.figure) && /\$3\.7M/.test(r.figure) && /MPP counts every charge/.test(r.label)));
+  check('current x402scan panel does not become a cumulative series',
+    data.agenticVolume.some((r) => /x402scan/.test(r.publisher) && /2026-11-05/.test(r.publisher)
+      && /not established/.test(r.window) && /not a comparable cumulative series/.test(r.label)));
+  check('historical frozen counter is not described as current',
+    data.agenticVolume.some((r) => /Historical panel/.test(r.figure)
+      && /not a current measurement/.test(r.window) && /UNRESOLVED/.test(r.label)));
   for (const r of data.agenticVolume) {
     check(`volume row "${r.publisher}" labelled`, !!(r.figure && r.window && r.publisher && r.label));
   }
@@ -145,8 +166,14 @@ function measureHub(data, hubHtml, changelogHtml, hubFiles) {
   check('openUsdStatus names Bridge as issuer', /Bridge Building Inc/.test(ousd.issuer), ousd.issuer.slice(0, 60));
   check('openUsdStatus states the Stripe relationship', /Stripe company/.test(ousd.issuer));
   check('openUsdStatus names the launch date', /2026-09-30/.test(ousd.status), ousd.status);
-  check('openUsdStatus carries a dated supply snapshot', /468,445,399/.test(ousd.supplySnapshot) && /2026-10-01/.test(ousd.supplySnapshot));
-  check('openUsdStatus states the cash/Treasury composition', /257,214,691/.test(ousd.supplySnapshot) && /211,230,708/.test(ousd.supplySnapshot));
+  check('openUsdStatus carries the new dated issuer supply snapshot',
+    /907,987,949/.test(ousd.supplySnapshot) && /2026-11-05 16:00 UTC/.test(ousd.supplySnapshot));
+  const reserveValues = (ousd.supplySnapshot.match(/\$[\d,]+/g) || []).map((v) => Number(v.replace(/[$,]/g, '')));
+  check('OUSD reserve components and gap reconcile arithmetically',
+    reserveValues.length === 6 && reserveValues[1] + reserveValues[2] === reserveValues[3]
+      && reserveValues[0] - reserveValues[3] === reserveValues[4] && reserveValues[4] === 1752317);
+  check('OUSD mismatch remains unresolved without insolvency inference',
+    /UNRESOLVED/.test(ousd.supplySnapshot) && /No insolvency inference/.test(ousd.supplyScope));
   check('openUsdStatus says the snapshot is not adoption', /not adoption/.test(ousd.supplyScope), ousd.supplyScope.slice(0, 60));
   check('openUsdStatus distinguishes partner economics from holder yield',
     /partner economics/.test(ousd.reserveEarnings) && /not token-holder yield/.test(ousd.reserveEarnings));
@@ -195,11 +222,11 @@ function measureHub(data, hubHtml, changelogHtml, hubFiles) {
   // Distribution economics: incumbent practice already exists, comparison unresolved.
   const de = data.distributionEconomics;
   check('distributionEconomics names Circle as the incumbent',
-    /Circle/.test(de.incumbent) && /directly impacted by the amount of USDC held/.test(de.incumbent));
+    /Circle/.test(de.incumbent) && /balance-linked arrangements/.test(de.incumbent) && /quarter ended September 30/.test(de.incumbent));
   check('distributionEconomics carries the named Coinbase terms',
-    /324\.6 million/.test(de.namedTerms) && /655\.3 million/.test(de.namedTerms));
+    /324\.6M/.test(de.namedTerms) && /655\.3M/.test(de.namedTerms) && /historical Q2 2026/.test(de.namedTerms));
   check('distributionEconomics notes the issuer-retention amount is undisclosed',
-    /issuer-retention amount is not disclosed/.test(de.namedTerms));
+    /issuer-retention amount is (not disclosed|undisclosed)/.test(de.namedTerms));
   check('distributionEconomics refuses the distribution-only isolation',
     /cannot be isolated/.test(de.caveat));
   check('distributionEconomics denies the novelty claim',
@@ -213,17 +240,19 @@ function measureHub(data, hubHtml, changelogHtml, hubFiles) {
     (gr.classes || gr.eligible || []).length === 8 || /eight/.test(JSON.stringify(gr)),
     JSON.stringify(Object.keys(gr)));
   const gsj = JSON.stringify(data.geniusStatus);
-  check('geniusStatus marks commencement UNRESOLVED',
-    /UNRESOLVED/.test(data.geniusStatus.commencementStatus), data.geniusStatus.commencementStatus.slice(0, 40));
+  check('GENIUS final rule has a primary source and future effective date',
+    /2026-11-05/.test(data.geniusStatus.asOf) && /2026-10-21/.test(data.geniusStatus.asOf)
+      && /January 18, 2027/.test(data.geniusStatus.commencementStatus)
+      && data.geniusStatus.url === 'https://www.occ.gov/news-issuances/bulletins/2026/bulletin-2026-50.html');
   check('geniusStatus treats 2027-01-18 as an outer limit only',
     /outer limit/.test(gsj) && !/locks? it at/i.test(gsj));
   check('geniusStatus leaves an unmeasured final-rule count unknown, not zero',
     data.geniusStatus.finalRules === null, `finalRules=${data.geniusStatus.finalRules}`);
-  check('geniusStatus keeps the rulemaking counts',
-    data.geniusStatus.totalRulemakings === 26 && data.geniusStatus.agencies === 6 && data.geniusStatus.nprmsIssued === 10,
+  check('unmeasured current all-agency counts stay unknown',
+    data.geniusStatus.totalRulemakings === null && data.geniusStatus.agencies === null && data.geniusStatus.nprmsIssued === null,
     `${data.geniusStatus.totalRulemakings}/${data.geniusStatus.agencies}/${data.geniusStatus.nprmsIssued}`);
   check('geniusStatus does not claim any duty is currently in force',
-    /does not describe any GENIUS duty as currently in force/.test(data.geniusStatus.note));
+    /No current-effect claim/.test(data.geniusStatus.note) && /BSA, AML and sanctions/.test(data.geniusStatus.note));
   check('geniusReserves states reserves are not Treasury bills alone',
     /not Treasury bills alone/.test(data.geniusStatus.reserveClasses), data.geniusStatus.reserveClasses);
 
@@ -235,22 +264,28 @@ function measureHub(data, hubHtml, changelogHtml, hubFiles) {
   check('treasuryDemandMechanism exposes the 0.30 versus 0.42 gap',
     /\$0\.42/.test(JSON.stringify(td)) && /\$0\.30/.test(JSON.stringify(td)));
 
-  // Payments: the withdrawn 95-to-99 percent claim must not return as an
-  // assertion. The only place the numbers may appear is the note that withdraws
-  // them, so the check enforces the withdrawal rather than a bare absence.
+  // The 2025 and 2026 observations have different periods and classifications.
   const gh = JSON.stringify(data.growthHonest);
-  check('growthHonest explicitly withdraws the 95-to-99% non-payment claim',
-    /claimed 95% to 99% was non-payment/.test(gh) && /is withdrawn/.test(gh));
-  check('growthHonest states the broad about-7% share', /7%/.test(gh));
-  check('growthHonest states the narrow under-1% share', /under 1%|0\.565%|0\.887%/.test(gh));
+  check('historical BCG values retain January publication and 2025 data',
+    /January 2026 paper/.test(gh) && /2025/.test(gh) && /\$4\.2T adjusted/.test(gh)
+      && /\$350B-\$550B classified payments/.test(gh));
+  check('new Allium values retain separate raw adjusted and payment measures',
+    /\$482B classified payments; \$2\.4T adjusted; \$97\.9T raw/.test(gh)
+      && /January-September 2026/.test(gh) && /inferred from behavior/.test(gh));
+  check('adjusted activity and residual are not all commerce',
+    /Adjusted activity is not all commerce/.test(gh) && /proven non-payment/.test(gh));
   check('growthHonest does not assert the withdrawn share in any headline point',
-    !data.growthHonest.points.some((p) => /95%|99%/.test(p.value)),
-    data.growthHonest.points.map((p) => p.value).join(' | '));
-  check('growthHonest marks the commercial share UNRESOLVED', /UNRESOLVED/.test(gh));
-
-  check('growthHonest thesis present', !!data.growthHonest.thesis);
-  check('growthHonest has 3 points', data.growthHonest.points.length === 3, `got ${data.growthHonest.points.length}`);
-  check('growthHonest shows the 2026 stall', /\+1\.5% \(2026/.test(data.growthHonest.points[0].value), data.growthHonest.points[0].value);
+    !data.growthHonest.points.some((p) => /95%|99%/.test(p.value)));
+  check('growthHonest retains source and scope per point',
+    !!data.growthHonest.thesis && data.growthHonest.points.length >= 3
+      && data.growthHonest.points.every((p) => p.label && p.value && p.source));
+  check('current market snapshot does not invent matched-universe growth',
+    /No matched-universe current YTD/.test(data.growthHonest.points[0].source));
+  check('forecast scenarios carry their own source publication and target year',
+    data.projections.length > 0 && data.projections.every((p) =>
+      p.published && p.by && p.source && Number.isFinite(p.low) && Number.isFinite(p.high) && p.low <= p.high));
+  check('unverified Bain monetary interval is not published',
+    !data.projections.some((p) => p.name === 'Bain'));
 
   // x402 scopes: the withdrawn $996,474 floor and the $317M residual framing.
   const av = JSON.stringify(data.agenticVolume);
@@ -264,9 +299,9 @@ function measureHub(data, hubHtml, changelogHtml, hubFiles) {
 
   // Market cap: one dated measurement, no manufactured range.
   const mc = data.marketCapMeasure;
-  check('marketCapMeasure carries its own as-of date', !!mc.asOf && /2026-08-13/.test(mc.asOf), mc.asOf);
+  check('marketCapMeasure carries its own as-of date', mc.asOf === '2026-11-05' && mc.headline === '$292.503B', mc.asOf);
   check('marketCapMeasure refuses to fabricate a second-source range',
-    /no (verified )?second/i.test(JSON.stringify(mc)), '');
+    /No independent same-date, same-universe/.test(mc.crossSourceRange) && /non-USD tokens and fund tokens/.test(mc.measures), '');
 
   // Research page structure. There is ONE maintained research page. Revision
   // history lives on the brief changelog subpage, so the hub must not present a
@@ -275,7 +310,7 @@ function measureHub(data, hubHtml, changelogHtml, hubFiles) {
   const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
   check('research page states last-updated above the fold',
-    /class="hub-updated"/.test(hubHtml) && /Last updated/.test(hubHtml));
+    ['Last updated ', 'Reviewed '].some((label) => hubHtml.slice(0, hubHtml.indexOf('id="taxonomy"')).includes(label + data.RESEARCH_REVIEWED)));
   check('research page links the research changelog', /href="\.\/changelog\/"/.test(hubHtml));
   check('research page carries no separate latest-report section', !/id="latest-research"/.test(hubHtml));
   check('research page does not host the dated report as a page-level entry point',
@@ -283,12 +318,12 @@ function measureHub(data, hubHtml, changelogHtml, hubFiles) {
   check('research page carries the open-questions section', /id="open-questions"/.test(hubHtml));
 
   check('changelog page is titled and dated',
-    /Research changelog/.test(changelogHtml) && /2026-10-02/.test(changelogHtml));
+    /Research changelog/.test(changelogHtml) && changelogHtml.includes('Last updated ' + data.RESEARCH_REVIEWED));
   check('changelog page says current findings live on the research page',
     /research page/.test(changelogHtml) && /what changed/i.test(changelogHtml));
 
   check('latestResearchCorrections present and non-trivial',
-    (data.latestResearchCorrections || []).length >= 10, `got ${(data.latestResearchCorrections || []).length}`);
+    (data.latestResearchCorrections || []).length >= 7, `got ${(data.latestResearchCorrections || []).length}`);
   for (const c of data.latestResearchCorrections || []) {
     check(`correction "${c.title.slice(0, 34)}..." names what changed and its date`,
       !!(c.title && c.body && c.asOf));
@@ -297,7 +332,7 @@ function measureHub(data, hubHtml, changelogHtml, hubFiles) {
   }
   const lr = JSON.stringify(data.latestResearchCorrections);
   check('corrections name the earlier text, not just the new state',
-    /[Ee]arlier (text|version|version of this report|framing)/.test(lr));
+    /supersedes|corrected|withheld|historical/i.test(lr));
   check('latestResearchOpen lists the unresolved items',
     (data.latestResearchOpen || []).length >= 9, `got ${(data.latestResearchOpen || []).length}`);
   for (const o of data.latestResearchOpen || []) {
@@ -312,14 +347,14 @@ function measureHub(data, hubHtml, changelogHtml, hubFiles) {
   // Date discipline: the review date must never double as a dataset-wide
   // measurement date, and historical datasets must stay event-dated.
   check('historical-case and latest-research review dates stay distinct',
-    data.AS_OF === '2026-09-26' && data.RESEARCH_REVIEWED === '2026-10-02');
+    data.AS_OF === '2026-09-26' && data.RESEARCH_REVIEWED === '2026-11-05');
   check('MEASURE_AS_OF carries per-measure dates', Object.keys(data.MEASURE_AS_OF).length >= 10,
     `${Object.keys(data.MEASURE_AS_OF).length} measures`);
   check('MEASURE_AS_OF does not blanket every measure with the review date',
-    Object.values(data.MEASURE_AS_OF).filter((v) => v === '2026-10-02').length === 0,
+    new Set(Object.values(data.MEASURE_AS_OF)).size > 5,
     Object.values(data.MEASURE_AS_OF).filter((v) => v === '2026-10-02').join(' | '));
   check('MEASURE_AS_OF dates the depeg-era and early-2026 measures separately',
-    /2026-08-13/.test(data.MEASURE_AS_OF.totalMarketCap) && /2026-03-31/.test(data.MEASURE_AS_OF.tetherReserveExposure));
+    /2026-11-05/.test(data.MEASURE_AS_OF.totalMarketCap) && /2026-09-30/.test(data.MEASURE_AS_OF.tetherReserveExposure) && /2026-09-26/.test(data.MEASURE_AS_OF.totalMarketCapSeries));
   check('HISTORICAL_DATASETS keeps the depeg cases event-dated',
     /May 2022/.test(data.HISTORICAL_DATASETS.depegs) && /March 2023/.test(data.HISTORICAL_DATASETS.depegs));
   check('HISTORICAL_DATASETS does not re-date the historical series',

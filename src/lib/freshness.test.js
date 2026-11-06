@@ -3,7 +3,6 @@ import {
   FRESHNESS_STATES,
   buildFreshness,
   classifyFreshness,
-  extractMarketObservedAt,
   formatIntervalLabel,
   intervalHours,
   isNominal24h,
@@ -63,21 +62,7 @@ describe('classifyFreshness', () => {
   });
 });
 
-describe('extractMarketObservedAt / buildFreshness', () => {
-  const t1 = Math.floor(NOW / 1000);
-
-  it('takes the latest CoinGecko last_updated_at when present', () => {
-    const observed = extractMarketObservedAt({
-      daiDetail: {
-        chainBalances: {
-          Ethereum: { tokens: [{ date: t1 - 86_400, circulating: { peggedUSD: 1 } }, { date: t1, circulating: { peggedUSD: 2 } }] },
-        },
-      },
-      cgSimple: { dai: { usd: 1, last_updated_at: t1 - 60 } },
-    });
-    expect(observed).toBe((t1 - 60) * 1000);
-  });
-
+describe('buildFreshness', () => {
   it('keeps the three clocks independent and warns when they disagree', () => {
     const freshness = buildFreshness({
       checkedAt: NOW,

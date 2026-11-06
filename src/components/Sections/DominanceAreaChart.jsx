@@ -3,9 +3,8 @@ import ChartWrapper from '../ui/ChartWrapper.jsx';
 import { buildDominanceSeries } from '../../lib/graphs.js';
 import { buildSupplySeries } from '../../lib/derive.js';
 import { getActiveCoins } from '../../utils/coin-config.js';
-import { rangeWithYear } from '../../utils/formatters.js';
 
-export default function DominanceAreaChart({ data, observedAt = null }) {
+export default function DominanceAreaChart({ data }) {
   const coins = useMemo(() => getActiveCoins(), []);
 
   const supplyByCoin = useMemo(() => {
@@ -29,7 +28,7 @@ export default function DominanceAreaChart({ data, observedAt = null }) {
   );
 
   const chartData = useMemo(
-    () => (dom ? { labels: dom.labels, datasets: dom.datasets } : null),
+    () => (dom ? { labels: dom.labels, dates: dom.dates, datasets: dom.datasets } : null),
     [dom]
   );
 
@@ -48,21 +47,6 @@ export default function DominanceAreaChart({ data, observedAt = null }) {
     plugins: { legend: { position: 'bottom' } },
   }), []);
 
-  const lead = latestSorted[0] || null;
-  const leadDataset = lead && dom ? dom.datasets.find((d) => d.label === lead.symbol) : null;
-  const firstShare = leadDataset ? leadDataset.data[0] : null;
-  const changePts = lead && Number.isFinite(firstShare) ? lead.share - firstShare : null;
-
-  const shareInterpretation = lead && changePts != null
-    ? Math.abs(changePts) < 0.05
-      ? `${lead.symbol} leads with ${lead.share.toFixed(1)}% of tracked supply, broadly flat over the window.`
-      : `${lead.symbol} leads with ${lead.share.toFixed(1)}% of tracked supply, ${changePts > 0 ? 'up' : 'down'} ${Math.abs(changePts).toFixed(1)} pts over the window.`
-    : 'Share of combined tracked stablecoin supply over the window.';
-
-  const rangeDetail = dom
-    ? rangeWithYear(`${dom.labels[0]} to ${dom.labels[dom.labels.length - 1]}`, observedAt)
-    : '';
-
   return (
     <article class="card mb-4">
       <div class="card-header">
@@ -80,14 +64,8 @@ export default function DominanceAreaChart({ data, observedAt = null }) {
               options={options}
               height={260}
               ariaLabel="Tracked stablecoin supply share over time"
-              shareTitle="Tracked supply share"
-              shareRange="Tracked supply"
-              shareRangeDetail={rangeDetail}
-              shareInterpretation={shareInterpretation}
-              shareDefinition={`Share of combined circulating supply of the ${coins.length} tracked stablecoins. Not global market share.`}
-              shareSource="Helix supply history"
-              shareAsOf={observedAt}
-            />
+              shareSpec={{ kind: 'dominance' }}
+              />
           </div>
         ) : (
           <div class="info-empty">Not enough aligned supply history to measure share.</div>

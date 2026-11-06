@@ -1,6 +1,7 @@
 import { realpathSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { getActiveCoins } from '../../src/utils/coin-config.js';
+import { readMarketView } from '../lib/market-read.js';
+import { buildNarrativeInput, narrativeIsCurrent, parseNarrative } from './lib/aiContext.js';
 import { loadEnv } from '../lib/env.js';
 import db from '../lib/db.js';
 import { finishJob, startJob } from '../lib/job-run.js';
@@ -14,10 +15,10 @@ const FALLBACK_MODEL = process.env.OPENAI_FALLBACK_MODEL || '';
 
 const SYSTEM_PROMPT = [
   'You are an educational AI explaining stablecoin market movements to a student.',
-  'Rules: only use the provided numbers; never invent figures or chains; mention concrete coins and chains; no markdown; no emojis; no financial advice; objective, educational tone.',
+  'Rules: preserve the tracked-coin scope and source dates; only use the provided numbers; never invent figures or chains; mention concrete coins and chains; no markdown; no emojis; no financial advice; objective, educational tone.',
   'Your brief must answer two questions for a learner:',
   '  1. "Why is this interesting?" - the educational point of the current market state.',
-  '  2. "How was this computed?" - briefly explain the Peg Stress Index and Z-score in simple terms.',
+  '  2. "How was this computed?" - explain the supplied dashboard stress score in simple terms. Do not invent a z-score or confuse it with Helix scores.',
   'Return valid JSON only with exactly these keys:',
   '  "headline": string, at most 120 characters, one educational hook',
   '  "narrative": string, at most 400 characters, the "why is this interesting" answer',
@@ -25,92 +26,22 @@ const SYSTEM_PROMPT = [
 ].join('\n');
 
 function skipIfWithinCadence() {
-  const row = db.prepare('SELECT MAX(ts) AS ts FROM intelligence').get();
-  if (row?.ts && Date.now() - row.ts < AI_CADENCE_MIN * 60_000) {
+  const row = db.prepare('SELECT ts, meta FROM intelligence ORDER BY ts DESC LIMIT 1').get();
+  if (narrativeIsCurrent(row, Date.now(), AI_CADENCE_MIN * 60_000)) {
     console.log(`[ai] last run ${Math.round((Date.now() - row.ts) / 60000)}m ago, within ${AI_CADENCE_MIN}m cadence; skipping`);
     process.exit(0);
   }
 }
 
-/**
- * Assemble the model input from the persisted snapshot, price, stress and alert
- * tables.
- * @param {object} [dataSource] better-sqlite3 handle used for every query.
- *   Defaults to the module-level db, so `buildContext()` behaves exactly as
- *   before; tests and tooling can inject an isolated in-memory database.
- * @returns {string} Newline-joined context lines.
- */
-export function buildContext(dataSource = db) {
-  const lines = [];
-  const market = dataSource.prepare('SELECT * FROM market_snapshots ORDER BY ts DESC LIMIT 1').get();
-  if (market) {
-    const delta = typeof market.delta_24h_usd === 'number' ? `${market.delta_24h_usd >= 0 ? '+' : ''}$${(market.delta_24h_usd / 1e9).toFixed(2)}B` : 'n/a';
-    lines.push(`Total stablecoin market cap: $${(market.total_circulating_usd / 1e9).toFixed(2)}B (24h ${delta})`);
-  }
-
-  for (const coin of getActiveCoins()) {
-    const latest = dataSource
-      .prepare(
-        `SELECT chain, circulating_usd, delta_24h_usd FROM snapshots
-         WHERE coin = ? AND ts = (SELECT MAX(ts) FROM snapshots WHERE coin = ?)
-         ORDER BY circulating_usd DESC LIMIT 5`
-      )
-      .all(coin.symbol, coin.symbol);
-    if (!latest.length) continue;
-    const total = latest.reduce((sum, r) => sum + r.circulating_usd, 0);
-    const top = latest
-      .slice(0, 3)
-      .map((r) => {
-        const delta = typeof r.delta_24h_usd === 'number' ? `${r.delta_24h_usd >= 0 ? '+' : ''}$${(r.delta_24h_usd / 1e6).toFixed(0)}M` : 'n/a';
-        return `${r.chain} $${(r.circulating_usd / 1e9).toFixed(2)}B (${delta} 24h)`;
-      })
-      .join('; ');
-    const price = dataSource.prepare('SELECT price, change_24h FROM prices WHERE coin = ? ORDER BY ts DESC LIMIT 1').get(coin.symbol);
-    const spot = price?.price != null ? `$${price.price.toFixed(4)} (${price.change_24h ?? 'n/a'}% 24h)` : 'n/a';
-    lines.push(`${coin.symbol}: total $${(total / 1e9).toFixed(2)}B. Top chains: ${top}. Spot ${spot}.`);
-  }
-
-  // Stress series (Pass 4): the latest per-coin peg stress index, z-score,
-  // and normalized delta, so the narrative can explain "how this was computed".
-  for (const coin of getActiveCoins()) {
-    const row = dataSource
-      .prepare('SELECT peg_stress_index, z_score, normalized_delta FROM stress_series WHERE symbol = ? ORDER BY ts DESC LIMIT 1')
-      .get(coin.symbol);
-    if (row) {
-      lines.push(`${coin.symbol} stress: Peg Stress Index ${row.peg_stress_index}/100, z-score ${row.z_score.toFixed(1)}sigma, normalized delta ${row.normalized_delta.toFixed(2)}%.`);
-    }
-  }
-
-  // Recent alert labels (Pass 4): the last cycle's active alerts, so the
-  // narrative can name the specific rule that fired.
-  const recentEvents = dataSource
-    .prepare('SELECT symbol, rule, severity, headline FROM alert_events WHERE state = ? ORDER BY detected_at DESC LIMIT 5')
-    .all('open');
-  if (recentEvents.length) {
-    lines.push('Recent alerts:');
-    for (const l of recentEvents) {
-      lines.push(`- ${l.symbol} ${l.rule} (${l.severity}): ${l.headline}`);
-    }
-  } else {
-    const recentLabels = dataSource
-      .prepare('SELECT symbol, alert_type, severity, explanation FROM labels ORDER BY ts DESC LIMIT 5')
-      .all();
-    if (recentLabels.length) {
-      lines.push('Recent alerts:');
-      for (const l of recentLabels) {
-        lines.push(`- ${l.symbol} ${l.alert_type} (${l.severity}): ${l.explanation}`);
-      }
-    } else {
-      lines.push('No persisted alert events yet. The event log starts empty until the first stress job writes rows.');
-    }
-  }
-
-  return lines.join('\n');
+/** Same current-membership snapshot as GET /api/market. */
+export function buildContext(dataSource = db, nowMs = Date.now()) {
+  return buildNarrativeInput(readMarketView(dataSource, { nowMs }), nowMs);
 }
 
-async function callModel(model) {
+async function callModel(model, context) {
   const res = await fetch(`${BASE_URL}/chat/completions`, {
     method: 'POST',
+    signal: AbortSignal.timeout(45000),
     headers: {
       'content-type': 'application/json',
       'x-opencode-session': 'stablesense-ai-' + new Date().toISOString().slice(0, 10),
@@ -120,7 +51,7 @@ async function callModel(model) {
       model,
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
-        { role: 'user', content: `StableSense snapshot data:\n${buildContext()}` },
+        { role: 'user', content: `StableSense snapshot data:\n${context.text}` },
       ],
       temperature: 0.4,
       max_tokens: 2048,
@@ -133,31 +64,7 @@ async function callModel(model) {
   return content;
 }
 
-function parse(content) {
-  try {
-    const obj = JSON.parse(content);
-    return {
-      headline: String(obj.headline || '').slice(0, 140),
-      narrative: String(obj.narrative || '').slice(0, 500),
-      implications: String(obj.implications || '').slice(0, 360),
-    };
-  } catch {
-    const text = content.trim().replace(/```json\s*/g, '').replace(/```/g, '');
-    return {
-      headline: text.slice(0, 140),
-      narrative: text.slice(0, 500),
-      implications: '',
-    };
-  }
-}
-
-// CLI body gate. This module is both a cron entry point and (now) an importable
-// module for tests. Before this guard, `await import('./jobs/ai.js')` ran the
-// cron sequence: it opened the production db, could process.exit(0) from the
-// cadence check, and process.exit(1) when OPENAI_API_KEY was unset (verified:
-// exit code 1). The gate runs the identical sequence when this file is the
-// executed entry point (`node jobs/ai.js`, `npm run ai`, cron) and skips it when
-// the module is imported instead.
+// Importing the job must not run its scheduled generation.
 const isEntryPoint = (() => {
   const entry = process.argv[1];
   if (!entry) return false;
@@ -180,27 +87,29 @@ if (isEntryPoint) {
 
   const job = startJob('ai');
   try {
+  const context = buildContext();
+  if (!context.ready) throw new Error(context.text);
   let content;
   let modelUsed = MODEL;
   try {
-    content = await callModel(MODEL);
+    content = await callModel(MODEL, context);
   } catch (err) {
     console.error(`[ai] primary model failed: ${err.message}`);
     if (!FALLBACK_MODEL || FALLBACK_MODEL === MODEL) {
       throw err;
     }
     modelUsed = FALLBACK_MODEL;
-    content = await callModel(FALLBACK_MODEL);
+    content = await callModel(FALLBACK_MODEL, context);
   }
 
-  const parsed = parse(content);
+  const parsed = parseNarrative(content);
   const savedAt = Date.now();
   db.prepare(
     'INSERT INTO intelligence (ts, headline, narrative, implications, model, meta) VALUES (?, ?, ?, ?, ?, ?)'
-  ).run(savedAt, parsed.headline, parsed.narrative, parsed.implications, modelUsed, JSON.stringify({ source: 'cron' }));
+  ).run(savedAt, parsed.headline, parsed.narrative, parsed.implications, modelUsed, JSON.stringify({ source: 'cron', ...context.meta }));
 
   console.log(`[ai] saved narrative (${modelUsed}): ${parsed.headline}`);
-    finishJob(job, { ok: true, sourceTs: savedAt });
+    finishJob(job, { ok: true, sourceTs: context.meta.marketObservedAt });
   } catch (err) {
     finishJob(job, { ok: false, error: err });
     console.error(`[ai] failed: ${err.message || err}`);

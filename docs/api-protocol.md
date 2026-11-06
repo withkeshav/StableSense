@@ -11,6 +11,28 @@ This document covers how the frontend gets data: the optional same-origin backen
   2. `import.meta.env.STABLESENSE_AI_API_BASE` (build time)
   3. Default `''` (same origin; AI disabled unless a backend is served alongside)
 
+### Current market coverage and event history
+
+The fetch job publishes one explicit chain set per tracked coin in `chain_batches`.
+`snapshots` retains history, but does not determine current chain membership.
+`GET /api/market` withholds a coin's supply and chain list if any reported chain is
+invalid, duplicated, future-dated, missing, or older than 48 hours. The combined
+five-coin total requires all five supplies. A missing comparison stays null.
+
+Each chain carries `previousTs`, `intervalHours`, and `delta` for its actual
+comparison. `delta24h` is populated only for the existing nominal 20-28 hour
+window. `spotObservedAt` and `supplyObservedAt` are separate oldest contributing
+source times; `observedAt` requires both. The response includes `coverage` and
+per-coin coverage information. Existing installations need a successful fetch
+before the new current-membership table can supply readings.
+
+Helix's bounded event feed is history, not an incident lifecycle. Its entries are
+returned with `classification: event-history` and `state: recorded`, including
+older imported entries. `/api/alerts` sets `meta.canonical` false on the Helix
+path, so the dashboard keeps computing current alerts from current measurements.
+Missing events never imply resolution. `/api/healthz` keeps `ok` for server
+liveness and adds `ready` plus `coverage` for market availability.
+
 ## Data endpoints (`src/lib/api.js`)
 
 | Endpoint | Purpose | Cache / TTL |
@@ -99,7 +121,7 @@ Per-coin peg stress index over time, from the `stress_series` table (written eve
 
 ### `GET /api/labels?[coin=USDT][&days=30][&limit=50]`
 
-Stored alert history from the `labels` table (written by `jobs/stress.js` from the same `generateAlerts()` the frontend uses). Optional coin filter, day window, and row limit (default 50, max 200):
+Stored observations from the `labels` table. The default job imports Helix event history; the explicit legacy path uses `generateAlerts()`. These labels do not establish current incident state. Optional coin filter, day window, and row limit (default 50, max 200):
 
 ```jsonc
 {

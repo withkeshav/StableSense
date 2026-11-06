@@ -1,3 +1,4 @@
+import { getActiveCoins } from '../../utils/coin-config.js';
 /**
  * Empty-state primer for zero active alerts.
  * Positive framing + four short rule cards with Learn links.
@@ -12,7 +13,7 @@ export default function AlertPrimer({ compact = false, onLearn }) {
       <div class="alert-primer-title">No alerts are displayed.</div>
       <p class="alert-primer-body">
         An empty feed is not proof of normal market conditions. Missing or partial observations can prevent alert generation. Check data freshness before interpreting this view.
-        {compact ? null : ' When the backend event log is empty, this feed is live derivation only and is not stored history.'}
+        {compact ? null : ' Current warnings are calculated from source readings; historical Helix events are separate.'}
       </p>
       {compact ? (
         <p class="alert-primer-body">
@@ -22,7 +23,7 @@ export default function AlertPrimer({ compact = false, onLearn }) {
       <div class="alert-rule-cards" aria-label="Alert rules checked">
         <article class="alert-rule-card">
           <b>PEG_BREAK</b>
-          <p>Fires when a coin drifts beyond its bps threshold from $1 (example: critical around 50 bps).</p>
+          <p>Flags a price deviation from $1. One basis point is 0.01%. {getActiveCoins().map(({ symbol, thresholds: t }) => `${symbol}: watch ${(t.pegWarnBps / 100).toFixed(2)}%, high ${(t.pegWarnBps * 2 / 100).toFixed(2)}%, critical ${(t.pegCriticalBps / 100).toFixed(2)}%.`).join(' ')}</p>
           <a href="#lesson-peg-mechanics" onClick={(e) => { e.preventDefault(); go('peg-mechanics'); }}>Learn pegs</a>
         </article>
         <article class="alert-rule-card">
@@ -32,7 +33,7 @@ export default function AlertPrimer({ compact = false, onLearn }) {
         </article>
         <article class="alert-rule-card">
           <b>MIGRATION</b>
-          <p>Fires when two chains move similar amounts in opposite directions, with net supply broadly unchanged.</p>
+          <p>Records routine activity when two chains move similar amounts in opposite directions, with net supply broadly unchanged. This does not prove a transfer.</p>
           <a href="#lesson-read-dashboard" onClick={(e) => { e.preventDefault(); go('read-dashboard'); }}>Learn signals</a>
         </article>
         <article class="alert-rule-card">
@@ -42,7 +43,7 @@ export default function AlertPrimer({ compact = false, onLearn }) {
         </article>
         <article class="alert-rule-card">
           <b>DOM_SHIFT</b>
-          <p>Fires when a coin's share of tracked supply moves by about a point or more in a week.</p>
+          <p>Records activity when a coin's share of tracked supply moves by about a point or more in a week.</p>
           <a href="#lesson-read-dashboard" onClick={(e) => { e.preventDefault(); go('read-dashboard'); }}>Learn signals</a>
         </article>
       </div>

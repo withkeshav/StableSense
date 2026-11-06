@@ -10,7 +10,7 @@ import {
   toMs,
 } from './lib/helixMap.js';
 import { mapBulkMarketPayload } from './lib/helixV2.js';
-import { upsertMarketRow, writePriceRows, writeSnapshotRows } from './lib/marketWrites.js';
+import { upsertMarketRow, writePriceRows, writeSnapshotRows, writeChainBatch } from './lib/marketWrites.js';
 
 loadEnv();
 
@@ -78,10 +78,14 @@ for (const coin of coins) {
         ts: tokens[i].date * 1000,
         circulating: tokens[i].circulating.peggedUSD,
         delta: typeof prev === 'number' ? tokens[i].circulating.peggedUSD - prev : null,
+        prevTs: i > 0 ? tokens[i - 1].date * 1000 : null,
       });
     }
   }
   insertSnapshots(rows);
+  const latestByChain = new Map();
+  for (const row of rows) if (!latestByChain.has(row.chain) || row.ts > latestByChain.get(row.chain).ts) latestByChain.set(row.chain, row);
+  writeChainBatch(db, { coin: coin.symbol, rows: [...latestByChain.values()], complete: latestByChain.size === Object.keys(detail.chainBalances || {}).length && rows.length > 0, source: 'defillama' });
   console.log(`[fetch] ${coin.symbol}: ${rows.length} snapshot rows`);
 }
 
@@ -144,6 +148,15 @@ const mapped = mapBulkMarketPayload(bulk);
 const priceCount = writePriceRows(db, mapped.priceRows);
 const snapshotCount = writeSnapshotRows(db, mapped.snapshotRows);
 const marketWritten = upsertMarketRow(db, mapped.marketRow);
+let completeAssets = 0;
+for (const coin of v2Coins) {
+  const entry = bulk.assets?.find((e) => String(e.asset).toUpperCase() === coin.symbol);
+  const rows = mapped.snapshotRows.filter((r) => r.coin === coin.symbol);
+  const complete = !entry?.error && rows.length > 0 && rows.length === entry?.chains?.length;
+  if (complete) completeAssets += 1;
+  writeChainBatch(db, { coin: coin.symbol, rows, complete, source: 'helix-v2' });
+}
+
 if (mapped.failed.length) {
   console.log(`[fetch] helix v2 failed assets: ${mapped.failed.map((f) => `${f.asset}:${f.code}`).join(', ')}`);
 }
@@ -154,7 +167,7 @@ if (mapped.coverage) {
 }
 console.log(`[fetch] helix v2 prices=${priceCount} snapshots=${snapshotCount} market=${marketWritten ? 'yes' : 'no'}`);
 console.log('[fetch] done');
-finishJob(job, { ok: true, sourceTs: mapped.marketRow?.ts ?? Date.now() });
+finishJob(job, { ok: completeAssets === v2Coins.length && mapped.priceRows.length === v2Coins.length, error: completeAssets === v2Coins.length ? null : 'Incomplete Helix market coverage', sourceTs: mapped.marketRow?.ts ?? null });
 } else {
 const helixBase = process.env.HELIX_API_BASE || 'https://helix.withkeshav.com';
 const coins = getActiveCoins();
@@ -176,6 +189,7 @@ const insertPrices = db.transaction((rows) => {
 });
 
 const trendsBySymbol = {};
+let completeChainAssets = 0;
 let newestSourceTs = 0;
 const priceRows = [];
 
@@ -187,6 +201,7 @@ for (const coin of coins) {
   if (!newest || newestMs == null) {
     // Skip coins with no usable points: prices.ts / snapshots are NOT NULL,
     // one dead symbol must not crash the job or void the market sum.
+    writeChainBatch(db, { coin: coin.symbol, source: 'helix-v1' });
     console.log(`[fetch] ${coin.symbol}: no Helix points, skipped`);
     continue;
   }
@@ -195,6 +210,7 @@ for (const coin of coins) {
   priceRows.push(mapPriceRow(coin.symbol, newest, points));
 
   let chainRows = null;
+  let expectedChains = 0;
   // Optional gate: /api/trends/chains is ~3MB per asset (7d x ~10min points).
   // Set HELIX_FETCH_CHAINS=0 to skip chain snapshots until Helix-side caching
   // or a lighter window exists. Default keeps chains on.
@@ -205,6 +221,7 @@ for (const coin of coins) {
     } catch {
       chainsPayload = null;
     }
+    expectedChains = (chainsPayload?.series || chainsPayload?.chains || []).length;
     chainRows = chainsPayload ? mapChainRows(coin.symbol, chainsPayload, newest.price) : null;
     if (chainRows == null) {
       console.log(`[fetch] chains: unmapped for ${coin.symbol}`);
@@ -213,6 +230,8 @@ for (const coin of coins) {
       console.log(`[fetch] ${coin.symbol}: ${chainRows.length} snapshot rows`);
     }
   }
+  if (expectedChains > 0 && chainRows?.length === expectedChains) completeChainAssets += 1;
+  writeChainBatch(db, { coin: coin.symbol, rows: chainRows || [], complete: expectedChains > 0 && chainRows?.length === expectedChains, source: 'helix-v1' });
 }
 insertPrices(priceRows);
 console.log(`[fetch] prices: ${priceRows.length} rows`);
@@ -239,7 +258,7 @@ if (market && typeof market.total === 'number' && market.total > 0) {
 }
 
 console.log('[fetch] done');
-  finishJob(job, { ok: true, sourceTs: newestSourceTs || Date.now() });
+  finishJob(job, { ok: completeChainAssets === coins.length && priceRows.length === coins.length, sourceTs: newestSourceTs || null, error: completeChainAssets < coins.length || priceRows.length < coins.length ? 'Incomplete Helix market coverage' : null });
 }
 } catch (err) {
   finishJob(job, { ok: false, error: err });

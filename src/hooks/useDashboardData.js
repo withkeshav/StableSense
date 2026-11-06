@@ -3,7 +3,7 @@ import { REFRESH_KEY } from '../utils/storage.js';
 import { getActiveCoins } from '../utils/coin-config.js';
 import { fetchDashboardData, fetchCanonicalAlerts, fetchHealthz, loadCoinChart } from '../lib/api.js';
 import { fetchIntelligence } from '../lib/ai.js';
-import { generateAlerts } from '../lib/derive.js';
+import { generateCurrentAlerts } from '../lib/alert-policy.js';
 import { buildFreshness } from '../lib/freshness.js';
 import { aiApiBase } from '../config.js';
 
@@ -34,7 +34,6 @@ export default function useDashboardData() {
   const [apiStatus, setApiStatus] = useState({ message: '' });
   const [alerts, setAlerts] = useState([]);
   const [alertHistory, setAlertHistory] = useState([]);
-  const [alertSource, setAlertSource] = useState('local');
   const [lastUpdated, setLastUpdated] = useState(null);
   const [freshness, setFreshness] = useState(null);
   const [refreshIntervalSec, setRefreshIntervalSec] = useState(() => readStoredRefresh() ?? DEFAULT_REFRESH_SEC);
@@ -77,25 +76,16 @@ export default function useDashboardData() {
       const health = healthRes.status === 'fulfilled' ? healthRes.value : null;
       const canonical = canonicalRes.status === 'fulfilled' ? canonicalRes.value : null;
       const nextData = { ...result, intelligence: intelligenceRef.current || null };
-      const localAlerts = generateAlerts(nextData);
-      const persistedCount = canonical?.meta?.persistedCount || 0;
+      const localAlerts = generateCurrentAlerts(nextData);
       const rows = canonical?.data || [];
-      const open = rows.filter((a) => a.state === 'open');
-      let nextAlerts = localAlerts;
-      let source = 'local';
-      if (canonical && persistedCount > 0) {
-        nextAlerts = open;
-        source = 'canonical';
-      } else if (canonical && canonical.meta?.empty) {
-        source = 'provisional';
-      }
+      const nextAlerts = localAlerts;
       setData(nextData);
       setAlerts(nextAlerts);
       setAlertHistory(rows);
-      setAlertSource(source);
       setLastUpdated(result.fetchedAt);
       setFreshness(buildFreshness({
         checkedAt: result.fetchedAt,
+        complete: result.coverage?.complete,
         spotObservedAt: result.spotObservedAt,
         supplyObservedAt: result.supplyObservedAt,
         marketObservedAt: result.marketObservedAt,
@@ -105,6 +95,8 @@ export default function useDashboardData() {
     } catch (err) {
       if (!aliveRef.current || err?.name === 'AbortError') return;
       console.error(err);
+      setAlerts([]);
+      setFreshness((previous) => ({ ...previous, overallState: 'Unavailable' }));
       setApiStatus({ message: FAILURE_MESSAGE });
     } finally {
       if (aliveRef.current) {
@@ -126,13 +118,14 @@ export default function useDashboardData() {
 
   useEffect(() => {
     if (!aiApiBase) return undefined;
+    let alive = true;
     fetchIntelligence().then((ai) => {
-      if (!aliveRef.current || !ai) return;
+      if (!alive || !aliveRef.current) return;
       intelligenceRef.current = ai;
       setData((prev) => (prev ? { ...prev, intelligence: ai } : prev));
     });
-    return undefined;
-  }, [refresh]);
+    return () => { alive = false; };
+  }, [data?.fetchedAt]);
 
   useEffect(() => {
     try {
@@ -142,13 +135,24 @@ export default function useDashboardData() {
     }
   }, [refreshIntervalSec]);
 
-  // Warm every tracked coin's 90d chart and tickers into `data`. Not gated on
+  // Age the feed between network refreshes, without making more requests.
+  useEffect(() => {
+    if (!data || apiStatus.message) return undefined;
+    const timer = setInterval(() => {
+      setAlerts(generateCurrentAlerts(data));
+      setFreshness((previous) => buildFreshness({ ...previous, complete: data.coverage?.complete }));
+    }, 60000);
+    return () => clearInterval(timer);
+  }, [data?.fetchedAt, apiStatus.message]);
+
+  // Warm the price histories used on Home; exchange tickers load on their coin tab.
+  // Not gated on
   // the open tab: the snapshot is shared, so one pass per fetchedAt serves all
   // coin tabs. The state bump hands the mutated payload to the renderers.
   useEffect(() => {
     if (!data) return undefined;
     let alive = true;
-    Promise.all(getActiveCoins().map((coin) => loadCoinChart(coin.symbol, data))).then(() => {
+    Promise.all(getActiveCoins().map((coin) => loadCoinChart(coin.symbol, data, { includeTickers: false }))).then(() => {
       if (alive) setData((prev) => ({ ...prev }));
     });
     return () => { alive = false; };
@@ -172,7 +176,6 @@ export default function useDashboardData() {
     apiStatus,
     alerts,
     alertHistory,
-    alertSource,
     lastUpdated,
     freshness,
     refresh,

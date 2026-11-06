@@ -9,9 +9,8 @@ import { STABLECOIN_REGISTRY } from '../utils/coin-config.js';
  * Backend chain supplies are circulating USD (snapshots.circulating_usd), so
  * the Detail shim carries them through as peggedUSD directly.
  *
- * The *Detail shims hold the latest point only, so derive.js chainObservation
- * (which needs two points) yields no flow observations; PEG_BREAK price
- * alerts still work and canonical backend alerts arrive via /api/alerts.
+ * Detail shims retain the actual previous source timestamp when available.
+ * Current alerts use those observations; Helix events remain separate history.
  *
  * @param {object} payload /api/market JSON.
  * @returns {object} Internal dashboard data object.
@@ -54,11 +53,12 @@ export function transformMarketPayload(payload) {
       // first. Previously this was inverted, which flipped flow direction.
       const curTs = epochSeconds(ch.ts);
       const curSupply = typeof ch.supply === 'number' && Number.isFinite(ch.supply) ? ch.supply : null;
-      const prevDelta = typeof ch.delta24h === 'number' && Number.isFinite(ch.delta24h) ? ch.delta24h : null;
+      const prevDelta = typeof ch.delta === 'number' && Number.isFinite(ch.delta) ? ch.delta : ch.delta24h ?? null;
+      const prevTs = epochSeconds(ch.previousTs);
       const tokens = [];
-      if (prevDelta != null && curSupply != null && curTs != null) {
+      if (prevDelta != null && curSupply != null && curTs != null && prevTs != null && prevTs < curTs) {
         tokens.push({
-          date: curTs - 86400,
+          date: prevTs,
           circulating: { peggedUSD: curSupply - prevDelta },
         });
       }
@@ -130,8 +130,9 @@ export function transformMarketPayload(payload) {
 
   data.fetchedAt = Date.now();
   const observed = payload?.observedAt ?? null;
-  data.spotObservedAt = observed;
-  data.supplyObservedAt = observed;
+  data.spotObservedAt = payload?.spotObservedAt ?? null;
+  data.supplyObservedAt = payload?.supplyObservedAt ?? null;
+  data.coverage = payload?.coverage ?? { complete: false };
   data.marketObservedAt = observed;
   // Backward-compatible alias: HomeTab and CoinTab read data.observedAt for
   // share-card timestamps. Keep it in sync with the canonical market clock.

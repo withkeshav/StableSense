@@ -1,0 +1,60 @@
+name: Deploy approved release
+on:
+  workflow_dispatch:
+    inputs:
+      release_sha:
+        description: Approved full commit SHA (40 lowercase hex characters)
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: production-stablesense
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Verify exact commit and successful CI
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_SHA: ${{ inputs.release_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_SHA" =~ ^[0-9a-f]{40}$ ]] || exit 1
+          gh api "repos/${{ github.repository }}/commits/$RELEASE_SHA" --jq .sha | grep -Fx "$RELEASE_SHA"
+          gh run list --repo "${{ github.repository }}" --workflow ci.yml --commit "$RELEASE_SHA" --status success --json headSha,event --limit 30 | jq -e --arg sha "$RELEASE_SHA" 'any(.[]; .headSha == $sha and .event == "push")'
+      - name: Verify deployment credentials are configured
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_HOST_FINGERPRINT: ${{ secrets.DEPLOY_HOST_FINGERPRINT }}
+        run: |
+          test -n "$DEPLOY_HOST"
+          test -n "$DEPLOY_USER"
+          test -n "$DEPLOY_SSH_KEY"
+          test -n "$DEPLOY_HOST_FINGERPRINT"
+      - name: Deploy StableSense to Hostinger
+        uses: appleboy/ssh-action@v1.2.2
+        env:
+          RELEASE_SHA: ${{ inputs.release_sha }}
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          fingerprint: ${{ secrets.DEPLOY_HOST_FINGERPRINT }}
+          envs: RELEASE_SHA
+          command_timeout: 30m
+          script: |
+            set -eu
+            case "$RELEASE_SHA" in *[!0-9a-f]*|'') exit 1 ;; esac
+            test "${#RELEASE_SHA}" -eq 40
+            cd /opt/stablesense
+            git fetch origin "$RELEASE_SHA"
+            script_path=$(mktemp)
+            trap 'rm -f "$script_path"' EXIT
+            git show "$RELEASE_SHA:scripts/deploy-production.sh" > "$script_path"
+            bash "$script_path" "$RELEASE_SHA"

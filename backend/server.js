@@ -2,7 +2,9 @@ import Fastify from 'fastify';
 import { loadEnv } from './lib/env.js';
 import db from './lib/db.js';
 import { readJobs } from './lib/job-run.js';
-import { buildMarketView } from './jobs/lib/marketView.js';
+import { normalizeSeverity } from './jobs/lib/stressHelix.js';
+import { readMarketView } from './lib/market-read.js';
+import { narrativeIsCurrent } from './jobs/lib/aiContext.js';
 
 loadEnv();
 
@@ -19,9 +21,12 @@ app.get('/api/healthz', async () => {
   const failed = Object.values(jobs).find((j) => j && j.finishedAt && !j.ok);
   const helixBase = process.env.HELIX_API_BASE || 'https://helix.withkeshav.com';
   const helixLegacy = process.env.LEGACY_UPSTREAMS === '1';
-  const helixJob = jobs?.stress ?? null;
+  const helixJob = jobs?.fetch ?? null;
+  const coverage = readMarketView(db).coverage;
   return {
     ok: true,
+    ready: coverage.complete && Boolean(helixJob?.ok),
+    coverage,
     db: 'ok',
     lastMarketSync: market?.ts ?? null,
     lastSnapshotTs: snapshot?.ts ?? null,
@@ -40,8 +45,8 @@ app.get('/api/healthz', async () => {
 });
 
 app.get('/api/ai', async () => {
-  const row = db.prepare('SELECT headline, narrative, implications, model, ts FROM intelligence ORDER BY ts DESC LIMIT 1').get();
-  if (!row) {
+  const row = db.prepare('SELECT headline, narrative, implications, model, ts, meta FROM intelligence ORDER BY ts DESC LIMIT 1').get();
+  if (!narrativeIsCurrent(row, Date.now(), AI_CADENCE_MIN * 60000)) {
     return { intelligence: null };
   }
   const cadenceMs = AI_CADENCE_MIN * 60_000;
@@ -83,26 +88,11 @@ app.get('/api/history', async (req) => {
   return { data: chains };
 });
 
-// Local market snapshot written by the fetch cron (Helix via cron). Serves the
-// newest prices row per coin, the newest snapshot row per coin+chain, and the
-// newest market_snapshots row. SQLite only; no upstream calls in this path.
+// Shared current-membership read; history is included only for dashboard charts.
 app.get('/api/market', async (req) => {
   const symbol = req.query?.symbol ? String(req.query.symbol).toUpperCase() : null;
   const supplyDays = Math.max(7, Math.min(90, Number(req.query?.supplyDays) || 30));
-  const historyCutoff = Date.now() - supplyDays * 86_400_000;
-  const priceRows = db.prepare(
-    'SELECT p.coin AS coin, p.ts AS ts, p.price AS price, p.change_24h AS change24h FROM prices p WHERE p.ts = (SELECT MAX(ts) FROM prices WHERE coin = p.coin)'
-  ).all();
-  const snapshotRows = db.prepare(
-    'SELECT s.coin AS coin, s.chain AS chain, s.ts AS ts, s.circulating_usd AS circulatingUsd, s.delta_24h_usd AS delta24h FROM snapshots s WHERE s.ts = (SELECT MAX(ts) FROM snapshots WHERE coin = s.coin AND chain = s.chain)'
-  ).all();
-  const historyRows = db.prepare(
-    'SELECT coin, chain, ts, circulating_usd AS circulatingUsd FROM snapshots WHERE ts >= ?'
-  ).all(historyCutoff);
-  const marketRow = db.prepare(
-    'SELECT ts AS ts, total_circulating_usd AS total, delta_24h_usd AS delta FROM market_snapshots ORDER BY ts DESC LIMIT 1'
-  ).get() || null;
-  return buildMarketView({ priceRows, snapshotRows, marketRow, nowMs: Date.now(), symbol, historyRows, supplySeriesDays: supplyDays });
+  return readMarketView(db, { symbol, supplyDays, includeHistory: true });
 });
 
 // Stored alert labels (Pass 4). Returns recent alert history so the Learn tab
@@ -146,13 +136,13 @@ function rowToAlert(row) {
   return {
     id: row.event_id,
     rule: row.rule,
-    classification: row.classification,
+    classification: provenance.source === 'helix-events' ? 'event-history' : row.classification,
     coin: row.symbol,
     chain: chains[0] || null,
     chains,
     fromChain: provenance.fromChain || chains[0] || null,
     toChain: provenance.toChain || chains[1] || null,
-    severity: row.severity,
+    severity: normalizeSeverity(row.severity),
     magnitude: row.magnitude,
     grossFlow: row.gross_flow,
     netSupplyDelta: row.net_supply_delta,
@@ -169,7 +159,7 @@ function rowToAlert(row) {
     intervalLabel: row.interval_label,
     cadenceValid: Boolean(row.cadence_valid),
     confidence: row.confidence,
-    state: row.state,
+    state: provenance.source === 'helix-events' ? 'recorded' : row.state,
     provenance,
   };
 }
@@ -188,7 +178,7 @@ app.get('/api/alerts', async (req) => {
   let rows;
   if (symbol && wantedState !== 'all') {
     rows = db.prepare(
-      `SELECT * FROM alert_events WHERE symbol = ? AND state = ? AND COALESCE(observed_at, detected_at, updated_at) >= ? ORDER BY COALESCE(observed_at, detected_at) DESC LIMIT ?`
+      `SELECT * FROM alert_events WHERE symbol = ? AND (CASE WHEN event_id LIKE 'helix-%' THEN 'recorded' ELSE state END) = ? AND COALESCE(observed_at, detected_at, updated_at) >= ? ORDER BY COALESCE(observed_at, detected_at) DESC LIMIT ?`
     ).all(symbol, wantedState, since, nLimit);
   } else if (symbol) {
     rows = db.prepare(
@@ -196,7 +186,7 @@ app.get('/api/alerts', async (req) => {
     ).all(symbol, since, nLimit);
   } else if (wantedState !== 'all') {
     rows = db.prepare(
-      `SELECT * FROM alert_events WHERE state = ? AND COALESCE(observed_at, detected_at, updated_at) >= ? ORDER BY COALESCE(observed_at, detected_at) DESC LIMIT ?`
+      `SELECT * FROM alert_events WHERE (CASE WHEN event_id LIKE 'helix-%' THEN 'recorded' ELSE state END) = ? AND COALESCE(observed_at, detected_at, updated_at) >= ? ORDER BY COALESCE(observed_at, detected_at) DESC LIMIT ?`
     ).all(wantedState, since, nLimit);
   } else {
     rows = db.prepare(
@@ -209,7 +199,7 @@ app.get('/api/alerts', async (req) => {
     meta: {
       persistedCount,
       empty: persistedCount === 0,
-      canonical: true,
+      canonical: process.env.LEGACY_UPSTREAMS === '1',
     },
   };
 });

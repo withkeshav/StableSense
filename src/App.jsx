@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'preact/hooks';
+import { alertSummary } from './lib/alert-policy.js';
 import Header from './components/Header.jsx';
 import Sidebar from './components/Sidebar.jsx';
 import MobileNav from './components/MobileNav.jsx';
@@ -29,7 +30,7 @@ function readStoredCompact() {
 
 export default function App() {
   const { theme, setTheme, effectiveTheme } = useTheme();
-  const [activeTab, setActiveTab] = useState('home');
+  const [activeTab, setActiveTab] = useState(() => /^(#lesson-|#term-)/.test(window.location.hash) ? 'learn' : 'home');
   const [railOpen, setRailOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [compactMode, setCompactMode] = useState(readStoredCompact);
@@ -41,7 +42,6 @@ export default function App() {
     apiStatus,
     alerts,
     alertHistory,
-    alertSource,
     lastUpdated,
     freshness,
     refresh,
@@ -62,6 +62,15 @@ export default function App() {
     }
   }, [compactMode]);
 
+  useEffect(() => {
+    const followLearnLink = () => {
+      if (/^(#lesson-|#term-)/.test(window.location.hash)) setActiveTab('learn');
+    };
+    window.addEventListener('hashchange', followLearnLink);
+    return () => window.removeEventListener('hashchange', followLearnLink);
+  }, []);
+
+  const badge = alertSummary(alerts);
   const coinTab = coinFromTabId(activeTab);
 
   const setTab = useCallback((id) => {
@@ -75,7 +84,8 @@ export default function App() {
       <Sidebar
         activeTab={activeTab}
         setActiveTab={setTab}
-        alertCount={alerts.length}
+        alertCount={badge.count}
+        alertTone={badge.tone}
         alerts={alerts}
         priceByCoin={priceByCoin}
         data={data}
@@ -95,7 +105,8 @@ export default function App() {
           buildVersion={APP_VERSION}
           theme={theme}
           setTheme={setTheme}
-          alertCount={alerts.length}
+          alertCount={badge.count}
+        alertTone={badge.tone}
           onJumpToAlerts={() => setTab('alerts')}
           activeTab={activeTab}
           onOpenRail={() => setRailOpen(true)}
@@ -145,11 +156,11 @@ export default function App() {
                       intelligence={data?.intelligence}
                       data={data}
                       setActiveTab={setTab}
-                      alertSource={alertSource}
                       alertHistory={alertHistory}
+                      freshness={freshness}
                     />
                   )}
-                {activeTab === 'learn' && <LearnTab data={data} alerts={alerts} alertHistory={alertHistory} alertSource={alertSource} />}
+                {activeTab === 'learn' && <LearnTab data={data} alerts={alerts} />}
                 {activeTab === 'research' && <ResearchTab />}
                 {activeTab === 'about' && <AboutTab />}
                 </>
@@ -161,7 +172,8 @@ export default function App() {
       <MobileNav
         activeTab={activeTab}
         setActiveTab={setTab}
-        alertCount={alerts.length}
+        alertCount={badge.count}
+        alertTone={badge.tone}
         onOpenRail={() => setRailOpen(true)}
       />
       <SettingsPanel

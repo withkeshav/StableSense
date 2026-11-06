@@ -123,6 +123,9 @@ describe('collateralMixObservation', () => {
 });
 
 describe('alertCountObservation', () => {
+  it('excludes routine activity from warning counts', () => {
+    expect(alertCountObservation([{ coin: 'USDT', severity: 'INFO' }]).text).toContain('No alerts are open');
+  });
   it('handles no alerts', () => {
     expect(alertCountObservation([]).text).toContain('No alerts are open');
   });
