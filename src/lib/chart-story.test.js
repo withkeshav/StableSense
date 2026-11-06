@@ -55,5 +55,28 @@ describe('shared chart stories', () => {
     const story=buildChartStory(chart([10,20]),{kind:'volume'});
     expect(story.definition).toContain('one highest-volume ticker per venue');
   });
+  it('does not describe zero trading volume as a change', () => {
+    const story = buildChartStory(chart([0, 0]), { kind: 'volume' });
+    expect(story.interpretation).toBe('All displayed venues have zero sampled volume.');
+  });
   it('all supported chart kinds have one central template', () => expect(Object.keys(CHART_STORIES)).toHaveLength(7));
+});
+
+it('recomputes every card kind from changed chart values', () => {
+  const cases = [
+    ['supply', [1e9, 2e9], [1e9, 3e9], '$3.00B'],
+    ['supplyPct', [0, 10], [0, 20], '+20.00 percentage points'],
+    ['dominance', [10, 11], [10, 13], '+3.00 percentage points'],
+    ['price', [1, 0.99], [1, 0.98], '-200.00 bps'],
+    ['deviation', [0, -100], [0, -200], '-200.00 bps'],
+    ['flow', [100, 200], [100, 300], '$300'],
+    ['volume', [100, 200], [100, 300], '$300'],
+  ];
+  for (const [kind, before, after, expected] of cases) {
+    const original = buildChartStory(chart(before), { kind });
+    const updated = buildChartStory(chart(after), { kind });
+    expect(updated.interpretation).not.toBe(original.interpretation);
+    expect(updated.interpretation).toContain(expected);
+    expect(updated.asOf).toBe(dates[1]);
+  }
 });

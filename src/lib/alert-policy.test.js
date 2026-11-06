@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { generateCurrentAlerts, alertSummary } from './alert-policy.js';
+import { generateCurrentAlerts, alertSummary, isRecentAlert } from './alert-policy.js';
 import { generateAlerts, rankChainFlows } from './derive.js';
 const NOW = Date.UTC(2026, 10, 5, 12);
 const HOUR = 3600000;
@@ -56,5 +56,21 @@ describe('current alert policy', () => {
   it('does not let a 72h change enter a 24h chart or stress contribution', () => {
     const flows = rankChainFlows({ USDT: { chainBalances: { eth: chain(9e9, 1e9, NOW, NOW - 72 * HOUR) } } });
     expect(flows[0].totalDelta).toBeNull();
+  });
+});
+
+describe('24-hour alert visibility', () => {
+  it('expires at 24 hours using evidence time, not a newer fetch or resolution', () => {
+    expect(isRecentAlert({ observedAt: NOW - 24 * HOUR + 1 }, NOW)).toBe(true);
+    expect(isRecentAlert({ observedAt: NOW - 24 * HOUR, timestamp: NOW, updatedAt: NOW }, NOW)).toBe(false);
+    expect(isRecentAlert({ timestamp: NOW - HOUR }, NOW)).toBe(true);
+    for (const observedAt of [0, NaN, NOW + 1]) expect(isRecentAlert({ observedAt }, NOW)).toBe(false);
+  });
+  it('expires supply warnings unless fresh evidence supports them', () => {
+    const data = { usdtDetail: { chainBalances: { eth: chain(7e9, 1e9) } } };
+    expect(generateCurrentAlerts(data, NOW + 23 * HOUR).length).toBeGreaterThan(0);
+    expect(generateCurrentAlerts(data, NOW + 24 * HOUR)).toEqual([]);
+    const refreshed = { usdtDetail: { chainBalances: { eth: chain(7e9, 1e9, NOW + 24 * HOUR, NOW) } } };
+    expect(generateCurrentAlerts(refreshed, NOW + 24 * HOUR).length).toBeGreaterThan(0);
   });
 });

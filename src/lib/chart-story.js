@@ -31,7 +31,7 @@ export function buildChartStory(data, spec = {}) {
   if (spec.kind === 'flow' || spec.kind === 'volume') {
     const points = series.flatMap((d) => d.points);
     const top = [...points].sort((a, b) => Math.abs(b.value) - Math.abs(a.value))[0];
-    interpretation = top.value === 0 ? 'All displayed bars measure zero change.'
+    interpretation = top.value === 0 ? (spec.kind === 'volume' ? 'All displayed venues have zero sampled volume.' : 'All displayed bars measure zero change.')
       : `${top.label}: ${fmtB(top.value)}, the largest ${spec.kind === 'flow' ? 'absolute supply change' : 'sampled volume'} among ${points.length} displayed ${spec.kind === 'flow' ? 'chains' : 'venues'}.`;
     if (spec.kind === 'flow') interpretation += ` ${spec.scope || 'Tracked coins'}. ${spec.complete === false ? 'Coverage is partial.' : 'No transfer between chains is established.'}`;
   } else if (spec.kind === 'price' || spec.kind === 'deviation') {

@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'preact/hooks';
+import { useEffect, useMemo, useState } from 'preact/hooks';
 import AlertHero from '../Alerts/AlertHero.jsx';
 import AlertCard from '../Alerts/AlertCard.jsx';
 import AlertPrimer from '../Sections/AlertPrimer.jsx';
+import { isRecentAlert } from '../../lib/alert-policy.js';
 import { buildAlertSparkSeries } from '../../lib/derive.js';
 
 function AlertsEmptyState() {
@@ -25,6 +26,15 @@ function AlertsEmptyState() {
 }
 
 export default function AlertsTab({ alerts, intelligence, data, setActiveTab, alertHistory = [], freshness = null }) {
+  const [showHistory, setShowHistory] = useState(false);
+  const [nowMs, setNowMs] = useState(() => Date.now());
+  useEffect(() => {
+    const update = () => setNowMs(Date.now());
+    const timer = setInterval(update, 60000);
+    window.addEventListener('focus', update);
+    return () => { clearInterval(timer); window.removeEventListener('focus', update); };
+  }, []);
+  const visibleHistory = alertHistory.filter((alert) => showHistory || isRecentAlert(alert, nowMs));
   const [severity, setSeverity] = useState('all');
   const [coin, setCoin] = useState('all');
   const [sortBy, setSortBy] = useState('latest');
@@ -99,7 +109,7 @@ export default function AlertsTab({ alerts, intelligence, data, setActiveTab, al
       <AlertHero intelligence={intelligence} alertCount={counts.all - counts.INFO} activityCount={counts.INFO} />
       {freshness?.overallState !== 'Current' ? <p class="alert-source-note">Some readings are delayed or unavailable. Only fresh source observations can raise current warnings; an empty list does not mean all checks passed.</p> : null}
 
-      <p class="alert-source-note">Counts are current warnings, not unread notifications. Amber means watch; red is reserved for critical price deviations. Matched chain changes and share shifts are activity, not proof of danger. Historical Helix events are listed separately.</p>
+      <p class="alert-source-note">Counts are current warnings, not unread notifications. Amber means watch; red is reserved for critical price deviations. Matched chain changes and share shifts are activity, not proof of danger. Alerts leave this feed within a minute of reaching 24 hours since their last supporting observation. Price warnings expire sooner if their readings become stale. Older records remain in history.</p>
 
       {counts.all === 0 ? (
         <div class="card mb-4">
@@ -153,18 +163,21 @@ export default function AlertsTab({ alerts, intelligence, data, setActiveTab, al
           )}
         </div>
       </div>
-      {(alertHistory || []).some((a) => a.state === 'recorded') ? (
+      <button type="button" class="filter-chip" style={{ minHeight: '44px' }} aria-pressed={showHistory} onClick={() => setShowHistory((value) => !value)}>
+        {showHistory ? 'Hide older history' : 'Show older history'}
+      </button>
+      {visibleHistory.some((a) => a.state === 'recorded') ? (
         <section class="card mb-4">
           <div class="card-header"><div class="card-title">Helix event history</div></div>
           <p class="panel-sub">Past observations from Helix. These entries do not establish whether an incident is currently open or resolved.</p>
-          <div class="card-body p0">{alertHistory.filter((a) => a.state === 'recorded').slice(0, 8).map(renderCard)}</div>
+          <div class="card-body p0">{visibleHistory.filter((a) => a.state === 'recorded').slice(0, showHistory ? undefined : 8).map(renderCard)}</div>
         </section>
       ) : null}
-      {(alertHistory || []).some((a) => a.state === 'resolved') ? (
+      {visibleHistory.some((a) => a.state === 'resolved') ? (
         <div class="card mb-4">
-          <div class="card-header"><div class="card-title">Recently resolved</div></div>
+          <div class="card-header"><div class="card-title">{showHistory ? 'Resolved history' : 'Recently resolved'}</div></div>
           <div class="card-body p0">
-            {alertHistory.filter((a) => a.state === 'resolved').slice(0, 8).map(renderCard)}
+            {visibleHistory.filter((a) => a.state === 'resolved').slice(0, showHistory ? undefined : 8).map(renderCard)}
           </div>
         </div>
       ) : null}

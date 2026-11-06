@@ -4,6 +4,15 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.16.1] - 2026-11-06
+
+### Changed
+- Limit the main alert feed to observations from the last 24 hours, keeping stricter price freshness checks.
+- Hide older recorded and resolved events by default; make retained history available through an explicit control.
+
+### Fixed
+- Describe zero sampled exchange volume accurately in chart share cards.
+
 ## [3.16.0] - 2026-11-06
 
 ### Changed
