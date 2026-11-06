@@ -4,8 +4,8 @@
  *   2. import.meta.env.STABLESENSE_AI_API_BASE (build-time env var)
  *   3. '' -> same origin (nginx serves /api/ai next to the static frontend)
  *
- * An empty base means the AI layer is disabled and the UI degrades to
- * deterministic, locally computed signals.
+ * An empty base reads the same-origin backend. Missing commentary does not
+ * affect deterministic, locally computed signals.
  */
 function resolveAiApiBase() {
   const fromWindow = typeof window !== 'undefined' ? window.STABLESENSE_CONFIG?.aiApiBase : undefined;
@@ -14,5 +14,5 @@ function resolveAiApiBase() {
   return String(candidate).replace(/\/+$/, '');
 }
 
-export const APP_VERSION = typeof __APP_VERSION__ === 'string' ? __APP_VERSION__ : 'v3.15.0';
+export const APP_VERSION = typeof __APP_VERSION__ === 'string' ? __APP_VERSION__ : 'v3.16.0';
 export const aiApiBase = resolveAiApiBase();

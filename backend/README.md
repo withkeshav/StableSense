@@ -1,62 +1,27 @@
 # StableSense Backend
 
-Lite VPS service that accumulates a proprietary historical dataset and serves
-the AI narrative endpoint. It is the only part of StableSense that runs on an
-operator-controlled IP: everything else is served to visitors directly from
-the browser.
+Fastify and SQLite serve stored market readings, history, alerts and Helix commentary.
 
-## What it does
+- `jobs/fetch.js` reads Helix market and chain history every ten minutes.
+- `jobs/stress.js` derives stored stress and alert events after market ingestion.
+- `jobs/ai.js` reads stored per-coin Helix commentary every thirty minutes. The
+  filename is retained for existing cron installations. It never calls a model.
+- `/api/ai` returns `{ intelligence: { source: "helix", insights: [...] } }`.
+  Each insight has `asset`, `narrative`, `model`, original `ts`, `validUntil`,
+  `source` and `helixId`. Missing or expired insights are omitted.
+- `/api/healthz` distinguishes `lastInsightSync` from `lastAiRun` (the original
+  Helix generation time). Job failures remain visible in job status.
 
-- **`jobs/fetch.js`** (cron, every 10 min): pulls per-coin daily chain history
-  from DefiLlama, spot prices + 24h change/volume from CoinGecko, and the
-  aggregate stablecoin market cap. Rows are upserted into SQLite. The first
-  run backfills the full daily history; later runs append only the newest day.
-- **`jobs/stress.js`** (cron, every 10 min, after fetch): reads stored snapshots,
-  runs the same `generateAlerts` / `computePegStress` logic as the dashboard, and
-  writes `stress_series`, `labels`, and canonical `alert_events` (open/resolved).
-  Event IDs are deterministic from coin, observation window, rule, and chains.
-- **`jobs/ai.js`** (cron, checked every 30 min, self-gated on `AI_CADENCE_MIN`): builds a compact
-  data brief from the accumulated snapshots and asks an OpenAI-compatible
-  model for a short narrative. Falls back to `OPENAI_FALLBACK_MODEL` if the
-  primary model errors. Freeform output is tolerated, JSON preferred. The
-  crontab entry is only a cheap check; the model is called at most once per
-  `AI_CADENCE_MIN` (default 120 minutes).
-- **`server.js`**: Fastify API on `127.0.0.1:8787`.
-  - `GET /api/healthz` - liveness, last market sync, last AI run, alert event count, per-job run status
-  - `GET /api/ai` - latest narrative `{ intelligence: { headline, narrative, implications, model, ts, nextUpdateAt, cadenceMin } }`
-  - `GET /api/history?coin=USDT[&chain=Ethereum][&days=30]` - daily supply series from the stored dataset
-  - `GET /api/alerts?[coin=DAI][&days=30][&state=open|resolved|all]` - canonical alert lifecycle
-  - `GET /api/labels` / `GET /api/stress` - stored labels and stress series
+Use Node.js 20 or newer. Copy `.env.example` to `.env`, then set `HELIX_API_BASE`
+and `HELIX_API_KEY` with `trends:read`, `events:read` and `narratives:read` permissions
+for the tracked coins. Keys stay server-side. `PORT` defaults to 8787 and
+`DATA_DIR` defaults to `backend/data`. No AI provider key is required here.
 
-## Requirements
-
-- Node.js >= 20 (better-sqlite3 ships prebuilds for Node 20/22/24)
-- Ubuntu/Debian VPS (developed against Hostinger KVM2)
-
-## Setup
-
-```bash
-cd backend
-npm install
-cp .env.example .env        # fill OPENAI_* values; never commit .env
-npm run fetch               # backfills the dataset, creates data/stablesense.db
-npm run stress              # writes stress series and canonical alert events
-npm run ai                  # generates the first narrative (needs a valid key)
-npm start                   # serves the API on 127.0.0.1:8787
-```
-
-Environment (`backend/.env`, git-ignored):
-
-| Variable | Purpose |
-|---|---|
-| `PORT` | Fastify listen port (default 8787) |
-| `DATA_DIR` | Where the SQLite DB lives (default `backend/data`) |
-| `OPENAI_BASE_URL` | Required OpenAI-compatible endpoint root, e.g. `https://api.openai.com/v1` |
-| `OPENAI_API_KEY` | Model API key (server-side only, never in the frontend) |
-| `OPENAI_MODEL` | Required, explicitly approved provider model ID |
-| `OPENAI_FALLBACK_MODEL` | Model used if the primary call fails |
-| `AI_DAILY_REQUEST_LIMIT` | Optional nonnegative UTC-day request cap; 0 disables requests; unset means uncapped |
-| `AI_CADENCE_MIN` | Minimum minutes between narratives (default 120; self-gated) |
+Run `npm install`, `npm run fetch`, `npm run stress`, `npm run ai`, then `npm start`.
+The insight sync validates the complete response before an atomic database update.
+A failed sync keeps previously saved insights until their original expiry, at most
+two hours after generation. It never renews timestamps or creates replacement prose.
+Historical narrative and usage tables are retained; current reads use `helix_insights`.
 
 ## Deploy
 
@@ -104,18 +69,12 @@ These origin steps are not done by a git push. After building and copying
 
 - WAL mode is on; the daily backup uses `sqlite3 .backup` which is
   WAL-safe (no plain `cp` of the db file).
-- The frontend never talks to the model. The key exists only in `backend/.env`.
-- No visitor traffic touches this service except the light `/api/ai`, `/api/alerts`, and `/api/healthz` reads.
+- The frontend never talks to a model. The Helix service key exists only in `backend/.env`.
+- Visitor reads also include market snapshots, history and stress data.
 
 ### AI usage records
 
-`ai_attempts` records each outbound attempt before it is sent, including the
-provider origin, requested model, task, input fingerprint, context version,
-latency, HTTP status and provider-reported token counts. Missing usage remains
-NULL, including timeouts. A received response is not proof that its narrative
-passed validation or was published. These records are not billing invoices.
-
-Provider URL, model and key must all be explicitly configured. There is no default
-model or provider. A fallback is used only when explicitly configured. Request
-limits count primary and fallback attempts, failures and incomplete attempts.
-An unset request limit is not a spending limit; no currency budget is inferred.
+The historical `ai_attempts` and `intelligence` tables are retained for audit.
+New syncs do not add model usage records because StableSense no longer calls a
+model. Original token counts remain as recorded, with unknown usage left NULL.
+Helix owns provider selection, fallback and new AI usage accounting.

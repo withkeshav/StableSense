@@ -6,6 +6,17 @@ import { fileURLToPath } from 'node:url';
 const here = path.dirname(fileURLToPath(import.meta.url));
 
 const SCHEMA = `
+-- Current public prose cache only. Original prompts and input evidence remain in Helix.
+CREATE TABLE IF NOT EXISTS helix_insights (
+  coin TEXT PRIMARY KEY,
+  narrative TEXT,
+  model TEXT,
+  generated_at INTEGER,
+  valid_until INTEGER,
+  helix_id INTEGER,
+  fetched_at INTEGER NOT NULL
+);
+
 -- Provider-reported usage only. NULL means unknown, including timed-out requests.
 CREATE TABLE IF NOT EXISTS ai_attempts (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

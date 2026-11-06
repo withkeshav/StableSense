@@ -5,7 +5,6 @@ import { fetchDashboardData, fetchCanonicalAlerts, fetchHealthz, loadCoinChart }
 import { fetchIntelligence } from '../lib/ai.js';
 import { generateCurrentAlerts } from '../lib/alert-policy.js';
 import { buildFreshness } from '../lib/freshness.js';
-import { aiApiBase } from '../config.js';
 
 const REFRESH_OPTIONS = [60, 180, 300, 600, 900];
 const DEFAULT_REFRESH_SEC = 900;
@@ -117,10 +116,9 @@ export default function useDashboardData() {
   }, [refreshIntervalSec, refresh]);
 
   useEffect(() => {
-    if (!aiApiBase) return undefined;
     let alive = true;
     fetchIntelligence().then((ai) => {
-      if (!alive || !aliveRef.current) return;
+      if (!alive || !aliveRef.current || !ai) return;
       intelligenceRef.current = ai;
       setData((prev) => (prev ? { ...prev, intelligence: ai } : prev));
     });

@@ -4,18 +4,17 @@ import db from './lib/db.js';
 import { readJobs } from './lib/job-run.js';
 import { normalizeSeverity } from './jobs/lib/stressHelix.js';
 import { readMarketView } from './lib/market-read.js';
-import { narrativeIsCurrent } from './jobs/lib/aiContext.js';
+import { readHelixInsights } from './lib/helix-insights.js';
 
 loadEnv();
 
 const PORT = Number(process.env.PORT || 8787);
-const AI_CADENCE_MIN = Math.max(1, Number(process.env.AI_CADENCE_MIN || 120));
 const app = Fastify({ logger: true });
 
 app.get('/api/healthz', async () => {
   const market = db.prepare('SELECT MAX(ts) AS ts FROM market_snapshots').get();
   const snapshot = db.prepare('SELECT MAX(ts) AS ts FROM snapshots').get();
-  const ai = db.prepare('SELECT MAX(ts) AS ts FROM intelligence').get();
+  const ai = db.prepare('SELECT MAX(generated_at) AS ts, MAX(fetched_at) AS synced FROM helix_insights').get();
   const events = db.prepare('SELECT COUNT(*) AS n, MAX(updated_at) AS ts FROM alert_events').get();
   const jobs = readJobs();
   const failed = Object.values(jobs).find((j) => j && j.finishedAt && !j.ok);
@@ -30,7 +29,9 @@ app.get('/api/healthz', async () => {
     db: 'ok',
     lastMarketSync: market?.ts ?? null,
     lastSnapshotTs: snapshot?.ts ?? null,
-    lastAiRun: ai?.ts ?? null,
+    lastAiRun: ai?.ts ?? null, // Original Helix generation time, never sync time.
+    lastInsightSync: ai?.synced ?? null,
+    insightSource: 'helix',
     lastAlertEvent: events?.ts ?? null,
     alertEventCount: events?.n ?? 0,
     jobs,
@@ -44,24 +45,7 @@ app.get('/api/healthz', async () => {
   };
 });
 
-app.get('/api/ai', async () => {
-  const row = db.prepare('SELECT headline, narrative, implications, model, ts, meta FROM intelligence ORDER BY ts DESC LIMIT 1').get();
-  if (!narrativeIsCurrent(row, Date.now(), AI_CADENCE_MIN * 60000)) {
-    return { intelligence: null };
-  }
-  const cadenceMs = AI_CADENCE_MIN * 60_000;
-  return {
-    intelligence: {
-      headline: row.headline,
-      narrative: row.narrative,
-      implications: row.implications,
-      model: row.model,
-      ts: row.ts,
-      nextUpdateAt: row.ts + cadenceMs,
-      cadenceMin: AI_CADENCE_MIN,
-    },
-  };
-});
+app.get('/api/ai', async () => ({ intelligence: readHelixInsights(db) }));
 
 app.get('/api/history', async (req) => {
   const { coin, chain, days = '30' } = req.query || {};

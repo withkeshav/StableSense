@@ -14,7 +14,7 @@ Visitor's browser
 Backend (optional, lite VPS)
   |- jobs/fetch.js (cron, 10 min): Helix trends -> SQLite market dataset (LEGACY_UPSTREAMS=1: DefiLlama + CoinGecko)
   |- jobs/stress.js (cron, 10 min, runs after fetch): derive.js computePegStress + generateAlerts -> stress_series + labels + alert_events
-  |- jobs/ai.js (cron, gated by AI_CADENCE_MIN): student-explainable narrative from snapshots + stress_series + alert_events
+  |- jobs/ai.js (cron): read-only sync of stored per-coin Helix commentary
   |- server.js: /api/healthz, /api/ai, /api/history, /api/stress, /api/labels, /api/alerts
   |- job_runs: last fetch / stress / ai cycle (run id, ok, error, source timestamp)
 ```
@@ -128,4 +128,4 @@ The "State of Stablecoins" research hub is a separate static build, not a Preact
 - Supply and price cards use plotted observation dates, including both years when a range crosses New Year. Missing observations remain gaps. Supply-share charts require aligned, nonnegative readings and a positive denominator.
 - Learn uses `LearnTab` and reusable lesson components for layout, `Learn/modules.js` and `Learn/foundations.js` for reviewed content. Updating lesson data does not require editing the page layout.
 - `alert-policy.js` owns current-warning freshness and badge rules. Routine INFO activity does not increase warning badges. WARNING/HIGH use amber; CRITICAL price deviations use red. These are monitoring rules, not validated predictions of failure.
-- Dashboard and AI read the same current market view through `backend/lib/market-read.js`. The optional AI layer rejects incomplete or stale source inputs and cannot supply chart-card wording.
+- Dashboard calculations use `backend/lib/market-read.js`. Optional commentary comes from saved Helix narratives, labeled by coin and original generation time. It cannot supply chart-card wording.

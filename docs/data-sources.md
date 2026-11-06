@@ -1,6 +1,6 @@
 # Data Sources
 
-The dashboard's market figures come from the market dataset the backend persists from Helix trends (the live market path). Coin-tab 90-day charts and tickers come from CoinGecko in the browser. The backend cron jobs write stress series, canonical alert events, and AI narratives.
+The dashboard's market figures come from the market dataset the backend persists from Helix trends (the live market path). Coin-tab 90-day charts and tickers come from CoinGecko in the browser. The backend cron jobs write stress series, canonical alert events, and cached Helix per-coin commentary.
 
 ## Upstreams
 
@@ -35,7 +35,7 @@ The dashboard shows three clocks (`src/lib/freshness.js`), not one "last updated
 - **Market observed:** upstream observation time. On the Helix path this is the trends point timestamp carried into the market payload; on the legacy path it is CoinGecko `last_updated_at` when present, otherwise the assembled supply timestamps. Daily supply can be several hours old and still on cadence.
 - **Historical snapshot:** optional SQLite last-sync from `/api/healthz`. If the backend is not connected, this clock says so and does not mark a successful live fetch as Unavailable.
 
-Overall state is Current / Delayed / Stale / Unavailable from the market (or checked) clock, with supply cadence treating under 28h as Current. AI narratives follow `AI_CADENCE_MIN` (default 120 min).
+Overall state is Current / Delayed / Stale / Unavailable from the market (or checked) clock, with supply cadence treating under 28h as Current. Helix commentary keeps its original generation time and expires after at most two hours. Syncing it does not generate new AI text.
 
 ## Replacing the source
 

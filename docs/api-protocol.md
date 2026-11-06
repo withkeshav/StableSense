@@ -61,7 +61,7 @@ The market payload comes from the backend; the CoinGecko calls come from the vis
   "daiDetail": { ... },
   "usdeDetail": { ... },
   "pyusdDetail": { ... },
-  "intelligence": { "headline": "...", "narrative": "...", "implications": "...", "ts": 1720000000000 } | null,
+  "intelligence": { "source": "helix", "insights": [] },
   "fetchedAt": 1720000000000,
   "marketObservedAt": 1720000000000
 }
@@ -83,21 +83,26 @@ The backend is optional. When present it is served same-origin behind nginx (no 
 
 ### `GET /api/ai`
 
-Latest AI narrative, or `{ "intelligence": null }` if not generated yet:
+Stored Helix per-coin commentary. No model runs on this request. Example shape
+(values below are illustrative, not market claims):
 
-```jsonc
+```json
 {
   "intelligence": {
-    "headline": "Stablecoin flows show mild flight to Tron.",
-    "narrative": "Net issuance remains positive while yields compress.",
-    "implications": "Watch peg drift on Tron if inflows persist.",
-    "model": "gpt-4o-mini",
-    "ts": 1720000000000,
-    "nextUpdateAt": 1720007200000,
-    "cadenceMin": 120
+    "source": "helix",
+    "insights": [{
+      "asset": "USDT", "narrative": "Example coin commentary", "model": "configured-model",
+      "ts": 1720000000000, "validUntil": 1720007200000,
+      "source": "helix", "helixId": 1
+    }]
   }
 }
 ```
+
+Missing or expired commentary yields an empty `insights` array. `ts` is the original
+Helix generation time, never the sync time. A failed sync preserves valid cached
+commentary until its original expiry. Private evidence and prompts are not exported.
+Health fields `lastInsightSync` and `lastAiRun` distinguish sync from generation.
 
 ### `GET /api/history?coin=USDT[&chain=Ethereum][&days=30]`
 

@@ -4,6 +4,15 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.16.0] - 2026-11-06
+
+### Changed
+- Reuse stored Helix per-coin AI commentary with coin labels and original generation time.
+- Replace local model generation with a read-only insight sync; retain historical records.
+- Keep valid cached commentary through sync failures and hide it at its original expiry.
+- Read insights from the same-origin backend by default. Charts and alerts remain independent of AI.
+
+
 ## [3.15.0] - 2026-11-06
 
 ### Added
