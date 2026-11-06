@@ -19,7 +19,7 @@ import Database from './backend/node_modules/better-sqlite3/lib/index.js';
 import { loadEnv } from './backend/lib/env.js';
 import path from 'node:path';
 loadEnv();
-const source = path.resolve(process.env.DATA_DIR || './backend/data', 'stablesense.db');
+const source = path.resolve('./backend', process.env.DATA_DIR || './data', 'stablesense.db');
 const db = new Database(source, { readonly: true, fileMustExist: true });
 await db.backup(path.join(process.env.RELEASE_BACKUP_DIR, 'stablesense.db'));
 db.close();
