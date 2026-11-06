@@ -1,3 +1,4 @@
+import { aiConfiguration, recordedCompletion } from '../lib/ai-attempt.js';
 import { realpathSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { readMarketView } from '../lib/market-read.js';
@@ -9,8 +10,7 @@ import { finishJob, startJob } from '../lib/job-run.js';
 loadEnv();
 
 const AI_CADENCE_MIN = Math.max(1, Number(process.env.AI_CADENCE_MIN || 120));
-const BASE_URL = (process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1').replace(/\/+$/, '');
-const MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+const MODEL = process.env.OPENAI_MODEL || '';
 const FALLBACK_MODEL = process.env.OPENAI_FALLBACK_MODEL || '';
 
 const SYSTEM_PROMPT = [
@@ -39,29 +39,7 @@ export function buildContext(dataSource = db, nowMs = Date.now()) {
 }
 
 async function callModel(model, context) {
-  const res = await fetch(`${BASE_URL}/chat/completions`, {
-    method: 'POST',
-    signal: AbortSignal.timeout(45000),
-    headers: {
-      'content-type': 'application/json',
-      'x-opencode-session': 'stablesense-ai-' + new Date().toISOString().slice(0, 10),
-      authorization: `Bearer ${process.env.OPENAI_API_KEY || ''}`,
-    },
-    body: JSON.stringify({
-      model,
-      messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
-        { role: 'user', content: `StableSense snapshot data:\n${context.text}` },
-      ],
-      temperature: 0.4,
-      max_tokens: 2048,
-    }),
-  });
-  if (!res.ok) throw new Error(`model ${model} returned ${res.status}`);
-  const payload = await res.json();
-  const content = payload?.choices?.[0]?.message?.content || '';
-  if (!content) throw new Error(`model ${model} returned empty content`);
-  return content;
+  return recordedCompletion({ db, config: aiConfiguration(), model, context, system: SYSTEM_PROMPT });
 }
 
 // Importing the job must not run its scheduled generation.
@@ -87,6 +65,7 @@ if (isEntryPoint) {
 
   const job = startJob('ai');
   try {
+  aiConfiguration(); // Fail before any request if provider/model settings are incomplete.
   const context = buildContext();
   if (!context.ready) throw new Error(context.text);
   let content;

@@ -5,6 +5,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { getActiveCoins } from '../../src/utils/coin-config.js';
 import { readMarketView } from '../lib/market-read.js';
 import { buildNarrativeInput, narrativeIsCurrent, CONTEXT_VERSION } from './lib/aiContext.js';
+import { aiConfiguration, recordedCompletion } from '../lib/ai-attempt.js';
 
 const NOW = Date.UTC(2026, 10, 5, 12);
 const HOUR = 3600000;
@@ -17,7 +18,7 @@ beforeAll(async () => {
   db = (await import('../lib/db.js')).default;
 });
 beforeEach(() => {
-  for (const table of ['chain_batches', 'prices', 'snapshots', 'market_snapshots', 'labels', 'alert_events', 'stress_series']) db.prepare(`DELETE FROM ${table}`).run();
+  for (const table of ['ai_attempts', 'chain_batches', 'prices', 'snapshots', 'market_snapshots', 'labels', 'alert_events', 'stress_series']) db.prepare(`DELETE FROM ${table}`).run();
 });
 afterAll(() => {
   db.close();
@@ -32,6 +33,48 @@ function seed() {
   }
 }
 function replaceRows(rows) { db.prepare('UPDATE chain_batches SET rows_json = ? WHERE coin = ?').run(JSON.stringify(rows), 'USDT'); }
+
+describe('AI request accounting', () => {
+  const settings = { OPENAI_BASE_URL: 'https://provider.example/v1', OPENAI_MODEL: 'approved-model', OPENAI_API_KEY: 'test-only' };
+  const context = { text: 'fixture facts', meta: { contextVersion: CONTEXT_VERSION } };
+  function attempt(fetchImpl, extra = {}) {
+    return recordedCompletion({ db, config: aiConfiguration({ ...settings, ...extra }),
+      model: settings.OPENAI_MODEL, context, system: 'fixture instructions', fetchImpl, now: () => NOW });
+  }
+  it('requires explicit provider/model and rejects unsafe configuration', () => {
+    expect(() => aiConfiguration({})).toThrow('Explicit');
+    expect(() => aiConfiguration({ ...settings, OPENAI_BASE_URL: 'http://remote.example' })).toThrow('HTTPS');
+    expect(() => aiConfiguration({ ...settings, AI_DAILY_REQUEST_LIMIT: 'invalid' })).toThrow('nonnegative');
+    expect(aiConfiguration(settings).dailyLimit).toBeNull();
+  });
+  it('stores only provider-reported tokens and a fingerprint of inputs', async () => {
+    await attempt(async () => ({ ok: true, status: 200, json: async () => ({
+      usage: { prompt_tokens: 12, completion_tokens: 4, total_tokens: 16 },
+      choices: [{ message: { content: 'fixture response' } }],
+    }) }));
+    const row = db.prepare('SELECT * FROM ai_attempts').get();
+    expect(row).toMatchObject({ outcome: 'response_received', prompt_tokens: 12, completion_tokens: 4,
+      total_tokens: 16, task: 'educational_narrative', provider: 'https://provider.example' });
+    expect(row.input_hash).toMatch(/^[a-f0-9]{64}$/);
+    expect(JSON.stringify(row)).not.toContain('test-only');
+    expect(JSON.stringify(row)).not.toContain('fixture facts');
+  });
+  it('counts failed attempts toward the cap without inventing token usage', async () => {
+    await expect(attempt(async () => { throw new Error('timeout'); }, { AI_DAILY_REQUEST_LIMIT: '1' })).rejects.toThrow('timeout');
+    let called = false;
+    await expect(attempt(async () => { called = true; }, { AI_DAILY_REQUEST_LIMIT: '1' })).rejects.toThrow('limit reached');
+    expect(called).toBe(false);
+    expect(db.prepare('SELECT * FROM ai_attempts').get()).toMatchObject({ outcome: 'failed', total_tokens: null });
+  });
+  it('keeps unknown usage unknown on a successful response', async () => {
+    await attempt(async () => ({ ok: true, status: 200, json: async () => ({ choices: [{ message: { content: 'answer' } }] }) }));
+    expect(db.prepare('SELECT total_tokens FROM ai_attempts').get().total_tokens).toBeNull();
+  });
+  it('records usage even when the provider returns empty content', async () => {
+    await expect(attempt(async () => ({ ok: true, status: 200, json: async () => ({ usage: { total_tokens: 7 }, choices: [] }) }))).rejects.toThrow('empty');
+    expect(db.prepare('SELECT outcome, total_tokens FROM ai_attempts').get()).toEqual({ outcome: 'failed', total_tokens: 7 });
+  });
+});
 
 describe('AI input shares the dashboard market read', () => {
   it('imports without generating or saving a narrative', () => {

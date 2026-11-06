@@ -6,6 +6,25 @@ import { fileURLToPath } from 'node:url';
 const here = path.dirname(fileURLToPath(import.meta.url));
 
 const SCHEMA = `
+-- Provider-reported usage only. NULL means unknown, including timed-out requests.
+CREATE TABLE IF NOT EXISTS ai_attempts (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  started_at INTEGER NOT NULL,
+  finished_at INTEGER,
+  latency_ms INTEGER,
+  provider TEXT NOT NULL,
+  model TEXT NOT NULL,
+  task TEXT NOT NULL,
+  input_hash TEXT NOT NULL,
+  context_version INTEGER,
+  outcome TEXT NOT NULL,
+  http_status INTEGER,
+  prompt_tokens INTEGER,
+  completion_tokens INTEGER,
+  total_tokens INTEGER
+);
+CREATE INDEX IF NOT EXISTS idx_ai_attempts_started ON ai_attempts(started_at);
+
 -- Current chain membership is published separately from append-only history.
 -- Replacing this record never deletes a historical snapshot.
 CREATE TABLE IF NOT EXISTS chain_batches (

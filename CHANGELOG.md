@@ -4,6 +4,15 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.15.0] - 2026-11-06
+
+### Added
+- AI attempt records retain provider-reported token usage, response timing and outcomes, including failed and fallback requests. Unknown usage remains unknown.
+- Optional daily AI request limit; zero disables requests and an unset limit remains explicit.
+
+### Fixed
+- AI requests require an explicitly configured provider endpoint and model rather than silently selecting a default.
+
 ## [3.14.0] - 2026-11-06
 
 ### Added

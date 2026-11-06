@@ -51,10 +51,11 @@ Environment (`backend/.env`, git-ignored):
 |---|---|
 | `PORT` | Fastify listen port (default 8787) |
 | `DATA_DIR` | Where the SQLite DB lives (default `backend/data`) |
-| `OPENAI_BASE_URL` | OpenAI-compatible endpoint root, e.g. `https://api.openai.com/v1` |
+| `OPENAI_BASE_URL` | Required OpenAI-compatible endpoint root, e.g. `https://api.openai.com/v1` |
 | `OPENAI_API_KEY` | Model API key (server-side only, never in the frontend) |
-| `OPENAI_MODEL` | Primary model, e.g. `gpt-4o-mini` |
+| `OPENAI_MODEL` | Required, explicitly approved provider model ID |
 | `OPENAI_FALLBACK_MODEL` | Model used if the primary call fails |
+| `AI_DAILY_REQUEST_LIMIT` | Optional nonnegative UTC-day request cap; 0 disables requests; unset means uncapped |
 | `AI_CADENCE_MIN` | Minimum minutes between narratives (default 120; self-gated) |
 
 ## Deploy
@@ -105,3 +106,16 @@ These origin steps are not done by a git push. After building and copying
   WAL-safe (no plain `cp` of the db file).
 - The frontend never talks to the model. The key exists only in `backend/.env`.
 - No visitor traffic touches this service except the light `/api/ai`, `/api/alerts`, and `/api/healthz` reads.
+
+### AI usage records
+
+`ai_attempts` records each outbound attempt before it is sent, including the
+provider origin, requested model, task, input fingerprint, context version,
+latency, HTTP status and provider-reported token counts. Missing usage remains
+NULL, including timeouts. A received response is not proof that its narrative
+passed validation or was published. These records are not billing invoices.
+
+Provider URL, model and key must all be explicitly configured. There is no default
+model or provider. A fallback is used only when explicitly configured. Request
+limits count primary and fallback attempts, failures and incomplete attempts.
+An unset request limit is not a spending limit; no currency budget is inferred.
