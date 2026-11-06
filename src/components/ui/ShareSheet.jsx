@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { createPortal } from 'preact/compat';
-import { SHARE_FORMATS, renderSignalCard, downloadSignalCard, shareAttribution } from '../../utils/shareChart.js';
+import { SHARE_FORMATS, renderSignalCard, downloadSignalCard, shareDataCredit } from '../../utils/shareChart.js';
 
 const FORMAT_LIST = Object.entries(SHARE_FORMATS).map(([id, f]) => ({
   id,
@@ -131,7 +131,10 @@ export default function ShareSheet({ snapshot, onClose }) {
                   </button>
                 ))}
               </div>
-              <p class="share-theme-note">{shareAttribution(meta)}</p>
+              <div class="share-attribution">
+                <strong>Powered by Helix</strong>
+                {shareDataCredit(meta) && <a href="https://www.coingecko.com/en/api" target="_blank" rel="noopener noreferrer">{shareDataCredit(meta)}</a>}
+              </div>
               <p class="share-theme-note">Card theme: <b>{cardTheme === 'dark' ? 'Dark' : 'Light'}</b> (matches the dashboard)</p>
             </div>
             <div class="share-read">

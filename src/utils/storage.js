@@ -1,6 +1,4 @@
 export const THEME_KEY = 'stablesense:theme';
-export const REFRESH_KEY = 'stablesense:refresh';
-export const COMPACT_KEY = 'stablesense:compact';
 export const CACHE_PREFIX = 'stablesense:v2:';
 
 const LEGACY = {
@@ -17,15 +15,9 @@ export function migrateLegacyKeys() {
       if (localStorage.getItem(THEME_KEY) === null) localStorage.setItem(THEME_KEY, theme);
       localStorage.removeItem(LEGACY.theme);
     }
-    const refresh = localStorage.getItem(LEGACY.refresh);
-    if (refresh !== null) {
-      if (localStorage.getItem(REFRESH_KEY) === null) localStorage.setItem(REFRESH_KEY, refresh);
-      localStorage.removeItem(LEGACY.refresh);
-    }
-    const compact = localStorage.getItem(LEGACY.compact);
-    if (compact !== null) {
-      if (localStorage.getItem(COMPACT_KEY) === null) localStorage.setItem(COMPACT_KEY, compact);
-      localStorage.removeItem(LEGACY.compact);
+    // Retired preferences must not silently change the managed layout or cadence.
+    for (const key of [LEGACY.refresh, LEGACY.compact, 'stablesense:refresh', 'stablesense:compact']) {
+      localStorage.removeItem(key);
     }
     pruneLegacyCache();
   } catch {

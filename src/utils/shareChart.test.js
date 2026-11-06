@@ -40,7 +40,7 @@ describe('shareTextIssues', () => {
 });
 
 it('keeps platform branding distinct from actual upstream credit', () => {
-  expect(shareAttribution({ sourceLabel: 'CoinGecko price history' })).toBe('Powered by Helix · Powered by CoinGecko');
-  expect(shareAttribution({ sourceLabel: 'CoinGecko ticker sample' })).toContain('Powered by CoinGecko');
+  expect(shareAttribution({ sourceLabel: 'CoinGecko price history' })).toBe('Powered by Helix · Source: CoinGecko');
+  expect(shareAttribution({ sourceLabel: 'CoinGecko ticker sample' })).toContain('Source: CoinGecko');
   expect(shareAttribution({ sourceLabel: 'Helix supply history' })).toBe('Powered by Helix');
 });

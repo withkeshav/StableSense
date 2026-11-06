@@ -13,7 +13,6 @@ export default function Header({
   loading,
   refreshing,
   apiStatus,
-  onOpenSettings,
   onRefresh,
   buildVersion,
   theme,
@@ -57,7 +56,7 @@ export default function Header({
         <span id="status-text">{statusText}</span>
       </div>
       <div class="top-actions">
-        <ThemeToggle theme={theme} setTheme={setTheme} compact />
+        <ThemeToggle theme={theme} setTheme={setTheme} />
         <button type="button" class="alert-cta" title="Current warnings, not unread notifications" onClick={onJumpToAlerts}>
           Alerts {alertCount ? <span class={`alert-pill tone-${alertTone}`}>{alertCount}</span> : null}
         </button>
@@ -66,9 +65,6 @@ export default function Header({
         </a>
         <button type="button" id="refresh-btn" class="icon-btn hdr-btn" onClick={onRefresh} title="Refresh now" aria-label="Refresh now" disabled={refreshing}>
           ↻
-        </button>
-        <button type="button" id="settings-btn" class="icon-btn hdr-btn" onClick={onOpenSettings} title="Settings" aria-label="Open settings">
-          ⚙
         </button>
       </div>
     </header>

@@ -22,13 +22,17 @@ describe('shared chart stories', () => {
   it('never turns missing prices into depegs or uses the reference line as a coin', () => {
     const data=chart([null,0.99]);data.datasets.push({label:'$1 peg',data:[1,1]});
     const story=buildChartStory(data,{kind:'price'});
-    expect(story.interpretation).toContain('-100.00 bps');expect(story.highlight).toBe('Displayed: USDT');
+    expect(story.interpretation).toContain('-100.00 bps');expect(story.highlight).toContain('Historical window peak: USDT');
     expect(story.definition).toContain('Missing readings');
   });
-  it('uses the greatest measured deviation, not a different current spot price', () => {
+  it('leads with the latest plotted reading and separates the historical peak', () => {
     const data=chart([0.98,1.001]);
-    expect(buildChartStory(data,{kind:'price'}).interpretation).toContain('-200.00 bps');
-    expect(buildChartStory(data,{kind:'price'}).interpretation).toContain('31 Dec 2025');
+    const story = buildChartStory(data,{kind:'price'});
+    expect(story.interpretation).toContain('$1.0010 (+10.00 bps)');
+    expect(story.interpretation).toContain('01 Jan 2026');
+    expect(story.interpretation).not.toContain('31 Dec 2025');
+    expect(story.highlight).toContain('-200.00 bps');
+    expect(story.highlight).toContain('31 Dec 2025');
   });
   it('excludes hidden lines', () => {
     const data=chart([1,1]);data.datasets.push({label:'Hidden coin',hidden:true,data:[0.9,1]});
@@ -78,5 +82,38 @@ it('recomputes every card kind from changed chart values', () => {
     expect(updated.interpretation).not.toBe(original.interpretation);
     expect(updated.interpretation).toContain(expected);
     expect(updated.asOf).toBe(dates[1]);
+  }
+});
+
+it('selects the latest available time before comparing price deviations', () => {
+  const data = chart([0.98, null], 'Older coin');
+  data.datasets.push({ label: 'Fresh coin', data: [1, 1.001] });
+  for (const kind of ['price', 'deviation']) {
+    const story = buildChartStory(data, { kind });
+    expect(story.interpretation).toContain('Latest plotted reading: Fresh coin');
+    expect(story.interpretation).toContain('01 Jan 2026');
+    expect(story.interpretation).not.toContain('Older coin');
+    expect(story.asOf).toBe(dates[1]);
+    expect(story.definition).toContain('Missing readings are gaps.');
+  }
+});
+
+it('uses the last actual reading when the end of a chart is missing', () => {
+  const story = buildChartStory(chart([0.99, null]), { kind: 'price' });
+  expect(story.asOf).toBe(dates[0]);
+  expect(story.interpretation).toContain('31 Dec 2025');
+  expect(story.interpretation).not.toContain('01 Jan 2026');
+  expect(story.timestamp).toContain('31 Dec 2025');
+});
+
+it('requires the source observation clock for undated flow and volume snapshots', () => {
+  const data = chart([10, 20]);
+  delete data.dates;
+  for (const kind of ['flow', 'volume']) {
+    expect(buildChartStory(data, { kind })).toBeNull();
+    const story = buildChartStory(data, { kind, asOf: dates[0] });
+    expect(story.asOf).toBe(dates[0]);
+    expect(story.timestamp).toContain('31 Dec 2025');
+    expect(story.rangeDetail).toContain('underlying windows may differ');
   }
 });

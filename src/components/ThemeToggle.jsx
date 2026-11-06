@@ -6,7 +6,7 @@ const OPTIONS = [
   { id: 'system', label: 'System' },
 ];
 
-export default function ThemeToggle({ theme, setTheme, compact = false }) {
+export default function ThemeToggle({ theme, setTheme }) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
 
@@ -28,25 +28,8 @@ export default function ThemeToggle({ theme, setTheme, compact = false }) {
 
   const label = OPTIONS.find((o) => o.id === theme)?.label || 'Light';
 
-  if (!compact) {
-    return (
-      <div class="theme-toggle" role="group" aria-label="Theme mode">
-        {OPTIONS.map((opt) => (
-          <button
-            type="button"
-            key={opt.id}
-            class={`theme-option ${theme === opt.id ? 'active' : ''}`}
-            onClick={() => setTheme(opt.id)}
-          >
-            {opt.label}
-          </button>
-        ))}
-      </div>
-    );
-  }
-
   return (
-    <div class={`theme-control ${compact ? 'compact' : ''}`} ref={rootRef}>
+    <div class="theme-control" ref={rootRef}>
       <button
         type="button"
         class="theme-trigger"

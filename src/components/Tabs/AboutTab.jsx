@@ -71,7 +71,8 @@ export default function AboutTab() {
             <li><strong>AI narrative</strong> - a plain-language read of the signals, refreshed on a slow cadence.</li>
           </ul>
           <p class="text-muted small mb-0">
-            Data sources: StableSense backend market snapshots (Helix trends via cron, served same-origin) for supply and prices, with CoinGecko 90-day charts and tickers loaded in coin tabs.
+            Powered by Helix for market snapshots, supply history and stored commentary. Historical price charts and exchange samples also use CoinGecko directly.{' '}
+            <a href="https://helix.withkeshav.com/sources.html" target="_blank" rel="noopener noreferrer">Data sources, methodology and limitations</a>.
           </p>
         </div>
       </section>

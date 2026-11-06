@@ -28,6 +28,7 @@ export function buildChartStory(data, spec = {}) {
   if (!finite(asOf) || asOf <= 0) return null;
   const scope = series.map((d) => d.label).join(', ');
   let interpretation;
+  let historicalNote;
   if (spec.kind === 'flow' || spec.kind === 'volume') {
     const points = series.flatMap((d) => d.points);
     const top = [...points].sort((a, b) => Math.abs(b.value) - Math.abs(a.value))[0];
@@ -37,7 +38,10 @@ export function buildChartStory(data, spec = {}) {
   } else if (spec.kind === 'price' || spec.kind === 'deviation') {
     const all = series.flatMap((d) => d.points.map((p) => ({ ...p, coin: d.label, drift: spec.kind === 'price' ? (p.value - 1) * 10000 : p.value })));
     const peak = all.reduce((a, b) => Math.abs(a.drift) >= Math.abs(b.drift) ? a : b);
-    interpretation = `Largest observed deviation: ${peak.coin}, ${signed(peak.drift, ' bps')} on ${utc(peak.date)}. Between-sample moves are not measured.`;
+    const latest = all.filter((p) => p.date === asOf).reduce((a, b) => Math.abs(a.drift) >= Math.abs(b.drift) ? a : b);
+    const reading = spec.kind === 'price' ? `$${latest.value.toFixed(4)} (${signed(latest.drift, ' bps')})` : signed(latest.drift, ' bps');
+    interpretation = `Latest plotted reading: ${latest.coin}, ${reading} at ${utc(latest.date)}.${series.length > 1 ? ' Largest deviation among coins with a reading at this time.' : ''}`;
+    historicalNote = `Historical window peak: ${peak.coin}, ${signed(peak.drift, ' bps')} on ${utc(peak.date)}.`;
   } else {
     const ranked = [...series].sort((a, b) => Math.abs(b.points.at(-1).value - b.points[0].value) - Math.abs(a.points.at(-1).value - a.points[0].value));
     const lead = ranked[0], first = lead.points[0], last = lead.points.at(-1), delta = last.value - first.value;
@@ -49,6 +53,6 @@ export function buildChartStory(data, spec = {}) {
   const gaps = series.some((d) => d.points.length < (data.labels || []).length);
   return { title: `${template.title}${spec.scope ? `: ${spec.scope}` : ''}`, rangeLabel: spec.kind === 'flow' ? 'Daily comparison' : spec.kind === 'volume' ? '24h ticker sample' : 'Plotted observations',
     rangeDetail: dates.length ? `${utc(Math.min(...dates))} to ${utc(Math.max(...dates))}` : `Snapshot ${utc(asOf)}; underlying windows may differ`,
-    interpretation, definition: `${template.definition}${gaps ? ' Missing readings are gaps.' : ''}`,
-    sourceLabel: template.source, asOf, timestamp: utc(asOf), highlight: spec.kind === 'volume' || spec.kind === 'flow' ? '' : `Displayed: ${scope}` };
+    interpretation, definition: `${template.definition}${historicalNote ? ' Between-sample moves are not measured.' : ''}${gaps ? ' Missing readings are gaps.' : ''}`,
+    sourceLabel: template.source, asOf, timestamp: utc(asOf), highlight: historicalNote || (spec.kind === 'volume' || spec.kind === 'flow' ? '' : `Displayed: ${scope}`) };
 }

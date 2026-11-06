@@ -4,6 +4,17 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.16.3] - 2026-11-07
+
+### Changed
+- Remove the legacy settings panel, compact mode and user-adjustable refresh interval. Retain theme switching, manual refresh and automatic checks every 15 minutes.
+- Simplify shared-image credits: prominent Helix branding and one smaller CoinGecko source credit where applicable.
+- Link the About page to Helix's public sources and methodology.
+
+### Fixed
+- Lead price and peg-deviation cards with the latest plotted observation and its UTC timestamp; label historical peaks separately.
+- Verify missing readings and uneven source timestamps without replacing observation dates with export time.
+
 ## [3.16.2] - 2026-11-06
 
 ### Changed

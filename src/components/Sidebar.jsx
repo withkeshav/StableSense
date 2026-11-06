@@ -25,7 +25,6 @@ export default function Sidebar({
   lastUpdated,
   open = false,
   onClose,
-  onOpenSettings,
   onOpenMethodology,
 }) {
   const coinAlertCounts = {};
@@ -109,9 +108,6 @@ export default function Sidebar({
           </div>
           <button type="button" class="settings-link" onClick={() => { onOpenMethodology?.(); onClose?.(); }}>
             Signal methodology
-          </button>
-          <button type="button" class="settings-link" onClick={() => { onOpenSettings?.(); onClose?.(); }}>
-            Settings
           </button>
         </div>
       </aside>

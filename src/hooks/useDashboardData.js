@@ -1,23 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
-import { REFRESH_KEY } from '../utils/storage.js';
 import { getActiveCoins } from '../utils/coin-config.js';
 import { fetchDashboardData, fetchCanonicalAlerts, fetchHealthz, loadCoinChart } from '../lib/api.js';
 import { fetchIntelligence } from '../lib/ai.js';
 import { generateCurrentAlerts } from '../lib/alert-policy.js';
 import { buildFreshness } from '../lib/freshness.js';
 
-const REFRESH_OPTIONS = [60, 180, 300, 600, 900];
 const DEFAULT_REFRESH_SEC = 900;
 const FAILURE_MESSAGE = 'Failed to load market data. Retry shortly; the last snapshot is shown if a cache exists.';
-
-function readStoredRefresh() {
-  try {
-    const raw = localStorage.getItem(REFRESH_KEY);
-    if (raw === null) return null;
-    const value = Number(raw);
-    return REFRESH_OPTIONS.includes(value) ? value : null;
-  } catch { return null; }
-}
 
 /**
  * Dashboard data lifecycle for App.jsx: the market snapshot, backend health,
@@ -35,7 +24,7 @@ export default function useDashboardData() {
   const [alertHistory, setAlertHistory] = useState([]);
   const [lastUpdated, setLastUpdated] = useState(null);
   const [freshness, setFreshness] = useState(null);
-  const [refreshIntervalSec, setRefreshIntervalSec] = useState(() => readStoredRefresh() ?? DEFAULT_REFRESH_SEC);
+  const refreshIntervalSec = DEFAULT_REFRESH_SEC;
 
   const intelligenceRef = useRef(null);
 
@@ -125,14 +114,6 @@ export default function useDashboardData() {
     return () => { alive = false; };
   }, [data?.fetchedAt]);
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(REFRESH_KEY, String(refreshIntervalSec));
-    } catch {
-      // ignore storage errors (private mode)
-    }
-  }, [refreshIntervalSec]);
-
   // Age the feed between network refreshes, without making more requests.
   useEffect(() => {
     if (!data || apiStatus.message) return undefined;
@@ -178,7 +159,6 @@ export default function useDashboardData() {
     freshness,
     refresh,
     refreshIntervalSec,
-    setRefreshIntervalSec,
     priceByCoin,
   };
 }

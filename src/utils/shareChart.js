@@ -204,8 +204,9 @@ export function renderSignalCard(chartInstance, meta, formatKey, theme = 'light'
   const footerY = fmt.h - 124;
   ctx.fillStyle = palette.line;
   ctx.fillRect(pad, footerY, width, 1);
-  text(shareAttribution(meta), pad, footerY + 38, width, 24, palette.ink, 700, 1);
-  text(meta.sourceLabel, pad, footerY + 68, width, 18, palette.soft, 500, 1);
+  text('Powered by Helix', pad, footerY + 38, width, 28, palette.ink, 700, 1);
+  const sourceCredit = shareDataCredit(meta);
+  text(sourceCredit || meta.sourceLabel, pad, footerY + 68, width, 18, palette.soft, 400, 1);
   const bottomY = fmt.h - 24;
   text(meta.sourceUrl || 'stablesense.withkeshav.com', pad, bottomY, width * 0.65, 18, palette.soft, 500, 1);
   ctx.textAlign = 'right';
@@ -218,9 +219,12 @@ export function renderSignalCard(chartInstance, meta, formatKey, theme = 'light'
 
 /** Platform credit stays separate from the original chart data source. */
 export function shareAttribution(meta = {}) {
-  return meta.sourceLabel?.startsWith('CoinGecko ')
-    ? 'Powered by Helix · Powered by CoinGecko'
-    : 'Powered by Helix';
+  const sourceCredit = shareDataCredit(meta);
+  return sourceCredit ? `Powered by Helix · ${sourceCredit}` : 'Powered by Helix';
+}
+
+export function shareDataCredit(meta = {}) {
+  return meta.sourceLabel?.startsWith('CoinGecko ') ? 'Source: CoinGecko' : '';
 }
 
 export function downloadSignalCard(canvas, meta, formatKey, theme) {

@@ -12,28 +12,16 @@ import LearnTab from './components/Tabs/LearnTab.jsx';
 import ResearchTab from './components/Tabs/ResearchTab.jsx';
 import SkeletonLoader from './components/ui/SkeletonLoader.jsx';
 import RefreshCountdown from './components/ui/RefreshCountdown.jsx';
-import SettingsPanel from './components/SettingsPanel.jsx';
 import useTheme from './hooks/useTheme.js';
 import useDashboardData from './hooks/useDashboardData.js';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import { APP_VERSION } from './config.js';
-import { COMPACT_KEY } from './utils/storage.js';
 import { coinFromTabId } from './utils/coin-config.js';
-
-function readStoredCompact() {
-  try {
-    const raw = localStorage.getItem(COMPACT_KEY);
-    if (raw === null) return true;
-    return raw === '1';
-  } catch { return true; }
-}
 
 export default function App() {
   const { theme, setTheme, effectiveTheme } = useTheme();
   const [activeTab, setActiveTab] = useState(() => /^(#lesson-|#term-)/.test(window.location.hash) ? 'learn' : 'home');
   const [railOpen, setRailOpen] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [compactMode, setCompactMode] = useState(readStoredCompact);
 
   const {
     data,
@@ -46,21 +34,8 @@ export default function App() {
     freshness,
     refresh,
     refreshIntervalSec,
-    setRefreshIntervalSec,
     priceByCoin,
   } = useDashboardData();
-
-  useEffect(() => {
-    document.body.classList.toggle('compact', compactMode);
-  }, [compactMode]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(COMPACT_KEY, compactMode ? '1' : '0');
-    } catch {
-      // ignore storage errors (private mode)
-    }
-  }, [compactMode]);
 
   useEffect(() => {
     const followLearnLink = () => {
@@ -92,7 +67,6 @@ export default function App() {
         lastUpdated={lastUpdated}
         open={railOpen}
         onClose={() => setRailOpen(false)}
-        onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenMethodology={() => setTab('about')}
       />
       <div class="site-main">
@@ -100,7 +74,6 @@ export default function App() {
           loading={loading}
           refreshing={refreshing}
           apiStatus={apiStatus}
-          onOpenSettings={() => setIsSettingsOpen(true)}
           onRefresh={() => refresh({ background: true })}
           buildVersion={APP_VERSION}
           theme={theme}
@@ -175,16 +148,6 @@ export default function App() {
         alertCount={badge.count}
         alertTone={badge.tone}
         onOpenRail={() => setRailOpen(true)}
-      />
-      <SettingsPanel
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-        refreshIntervalSec={refreshIntervalSec}
-        setRefreshIntervalSec={setRefreshIntervalSec}
-        compactMode={compactMode}
-        setCompactMode={setCompactMode}
-        theme={theme}
-        setTheme={setTheme}
       />
     </div>
   );
