@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { shareTextIssues, shareAttribution } from './shareChart.js';
+import { shareTextIssues, shareDataCredit } from './shareChart.js';
 
 const complete = {
   title: 'USDT price vs $1.00',
@@ -40,7 +40,7 @@ describe('shareTextIssues', () => {
 });
 
 it('keeps platform branding distinct from actual upstream credit', () => {
-  expect(shareAttribution({ sourceLabel: 'CoinGecko price history' })).toBe('Powered by Helix · Source: CoinGecko');
-  expect(shareAttribution({ sourceLabel: 'CoinGecko ticker sample' })).toContain('Source: CoinGecko');
-  expect(shareAttribution({ sourceLabel: 'Helix supply history' })).toBe('Powered by Helix');
+  expect(shareDataCredit({ sourceLabel: 'CoinGecko price history' })).toBe('Source: CoinGecko');
+  expect(shareDataCredit({ sourceLabel: 'CoinGecko ticker sample' })).toContain('Source: CoinGecko');
+  expect(shareDataCredit({ sourceLabel: 'Helix supply history' })).toBe('');
 });

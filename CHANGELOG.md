@@ -4,6 +4,14 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.16.4] - 2026-11-18
+
+### Changed
+- Remove unused share-credit and date-formatting helpers; test the shared credit formatter used by the current cards.
+- Update architecture and operating guidance for Helix-backed market data and stored narrative delivery.
+- Align frontend and backend package versions.
+- Refresh the research review date to November 18. The Open USD reserve panel is a new unresolved snapshot. OCC timing, Tether, and Circle observations stay on their earlier dates. BUIDL still has no current fund figure.
+
 ## [3.16.3] - 2026-11-07
 
 ### Changed

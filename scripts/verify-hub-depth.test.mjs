@@ -125,7 +125,7 @@ const tamperCases = [
   { name: 'U+FFFD replacement char, inside a data.js value', file: 'research/data.js',
     from: '"value": "+$1.50B"', to: '"value": "+$1.50B\uFFFD"' },
   { name: 'U+2014 em dash, inside research/index.html', file: 'research/index.html',
-    from: 'Reviewed 2026-11-05', to: 'Reviewed 2026-11-05\u2014' },
+    from: 'Reviewed 2026-11-18', to: 'Reviewed 2026-11-18\u2014' },
   { name: 'U+FFFD replacement char, inside the changelog page', file: 'research/changelog/index.html',
     from: 'Research changelog', to: 'Research changelog\uFFFD' },
   { name: 'U+2014 written as an escape sequence (only visible after parsing)', file: 'research/data.js',
@@ -174,7 +174,7 @@ test('a bad root argument exits 2 rather than throwing', () => {
 // Plant independently meaningful regressions in a throwaway module, rather
 // than asserting only that the current prose repeats itself.
 const evidenceRegressions = [
-  ['OUSD component mismatch', 'openUsdStatus.supplySnapshot = openUsdStatus.supplySnapshot.replace("$1,752,317", "$1,752,318");', 'OUSD reserve components and gap reconcile'],
+  ['OUSD component mismatch', 'openUsdStatus.supplySnapshot = openUsdStatus.supplySnapshot.replace("$1,990,115", "$1,990,116");', 'OUSD reserve components and gap reconcile'],
   ['Circle cost denominator', 'floatEconomics.find(r => /Reserve income/.test(r.measure)).value = "$865M";', 'Circle cost ratio recomputes'],
   ['GENIUS invented zero count', 'geniusStatus.finalRules = 0;', 'unmeasured final-rule count'],
   ['current source date erased', 'marketCapMeasure.asOf = RESEARCH_REVIEWED.slice(0, 4);', 'marketCapMeasure carries its own'],

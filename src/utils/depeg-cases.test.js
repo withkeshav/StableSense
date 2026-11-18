@@ -6,7 +6,7 @@ describe('research publication date discipline', () => {
   it('does not re-date the historical cases when publishing a new review', () => {
     expect(AS_OF).toBe('2026-09-26');
     expect(REVIEW_AS_OF).toBe(RESEARCH_REVIEWED);
-    expect(REVIEW_AS_OF).toBe('2026-11-05');
+    expect(REVIEW_AS_OF).toBe('2026-11-18');
     expect(REVIEW_AS_OF).not.toBe(AS_OF);
   });
 

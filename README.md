@@ -1,6 +1,6 @@
 # StableSense
 
-![Version](https://img.shields.io/badge/version-3.12.0-2A6FDB)
+![Version](https://img.shields.io/badge/version-3.16.4-2A6FDB)
 ![Code license: Apache-2.0](https://img.shields.io/badge/code%20license-Apache--2.0-blue)
 ![CI](https://github.com/withkeshav/StableSense/actions/workflows/ci.yml/badge.svg)
 ![Node](https://img.shields.io/badge/node-%3E%3D18-339933)
@@ -31,7 +31,7 @@ Created by [Keshav Maheshwari](https://www.withkeshav.com)
 - **Research (two surfaces, one source):** in-app Research tab for shelf + case study; canonical full hub at `/research/`. Slashless `/research` redirects to `/research/`. Depeg case facts share `research/data.js`.
 - **Signal Cards**: share charts as Story / Square / Landscape cards (mobile uses a bottom sheet).
 - **Multi-coin ready**: the UI is driven entirely by `ACTIVE_STABLECOINS`; adding a coin is a config change.
-- **Themes**: Light default, plus Dark and System. Compact mode, auto-refresh with a manual **Refresh now** button.
+- **Themes**: Light default, plus Dark and System. The dashboard checks for new data every 15 minutes, and **Refresh now** is still available.
 - **Mobile-first**: five-item bottom bar, card-based tables, safe-area aware, charts rescale without page-level horizontal scroll.
 
 ## Tech stack
@@ -125,8 +125,8 @@ The backend is served same-origin behind nginx, so no CORS configuration is need
 ### Settings (persisted to localStorage)
 
 - Theme (`stablesense:theme`), default Light.
-- Auto-refresh interval (`stablesense:refresh`): 1/3/5/10/15 min.
-- Compact mode (`stablesense:compact`).
+- Automatic refresh is managed at 15 minutes; manual refresh remains available.
+- The dashboard uses one standard-density layout. Retired refresh and compact preferences are removed on load.
 
 Legacy `stablepulse:*` keys are migrated automatically on first load.
 
@@ -185,7 +185,7 @@ The frontend is static files: deploy the complete `dist/` anywhere and set `aiAp
    |- main.jsx                Preact mount
    |- App.jsx                 fetch loop, refresh state, tab routing
    |- components/
-      |- Header.jsx, Sidebar.jsx, MobileNav.jsx, SettingsPanel.jsx, ThemeToggle.jsx, BrandMark.jsx
+      |- Header.jsx, Sidebar.jsx, MobileNav.jsx, ThemeToggle.jsx, BrandMark.jsx
       |- Tabs/                HomeTab, CoinTab, ResearchTab, LearnTab, ChainsTab, AlertsTab, AboutTab
       |- Sections/            PegBandHero, CoinStrip, MarketPulse, ChainFlowChart, DominanceAreaChart, SignalSummary, WhaleWatch, DepegCaseStudy
       |- ui/                  Sparkline, ChartWrapper, ShareSheet, Subtabs, RefreshCountdown, SkeletonLoader, AiTicker
@@ -198,7 +198,7 @@ The frontend is static files: deploy the complete `dist/` anywhere and set `aiAp
    |- utils/                  formatters, coin-config, depeg-cases, asset-meta + tests
 |- research/                  canonical State of Stablecoins hub (shared data for in-app Research)
 |- backend/                   optional lite VPS backend (Fastify + SQLite)
-   |- jobs/                   fetch.js (history), ai.js (narratives), stress.js
+   |- jobs/                   fetch.js (history), ai.js (stored Helix insight sync), stress.js
    |- lib/                    db.js, env.js
    |- deploy/                 systemd unit, nginx conf, crontab
 |- docs/                      architecture, API protocol, data sources, scaling

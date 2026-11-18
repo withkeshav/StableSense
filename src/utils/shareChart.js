@@ -217,12 +217,7 @@ export function renderSignalCard(chartInstance, meta, formatKey, theme = 'light'
   return off;
 }
 
-/** Platform credit stays separate from the original chart data source. */
-export function shareAttribution(meta = {}) {
-  const sourceCredit = shareDataCredit(meta);
-  return sourceCredit ? `Powered by Helix · ${sourceCredit}` : 'Powered by Helix';
-}
-
+/** Original data credit stays separate from platform branding. */
 export function shareDataCredit(meta = {}) {
   return meta.sourceLabel?.startsWith('CoinGecko ') ? 'Source: CoinGecko' : '';
 }

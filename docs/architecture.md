@@ -42,7 +42,7 @@ The frontend makes its live-data calls from the visitor's own IP, so no single o
 | `src/components/Tabs/` | Views: Home, Coin, Research, Learn, Chains, Alerts, About. Learn covers the value-referenced-token taxonomy (peg mechanics, collateral types, gold/commodity, crypto-collateralized, synthetic, algorithmic, tokenized funds) plus the macroeconomic impact (Treasury demand, bank disintermediation, cross-border, depeg history, regulation); fast-decaying lessons carry a per-lesson `lastUpdated` date rendered next to the title |
 | `src/components/Sections/` | Page content: signal hero, market pulse, capital flows, whale watch, summary, depeg case study |
 | `src/components/ui/` | Sparkline, ChartWrapper, ShareSheet, Subtabs, RefreshCountdown, SkeletonLoader, AiTicker |
-| `src/components/` | Header, Sidebar (instrument rail), MobileNav, SettingsPanel, ThemeToggle, BrandMark |
+| `src/components/` | Header, Sidebar (instrument rail), MobileNav, ThemeToggle, BrandMark |
 | `src/styles.css` | Single stylesheet: Icewater tokens (`--page-bg`, Glacier Blue accent), light/dark themes, responsive rules |
 | `backend/` | Optional Fastify + SQLite service: history, canonical alert events, AI narratives |
 

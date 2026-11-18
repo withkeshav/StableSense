@@ -1,39 +1,24 @@
-# Scaling & Operations
+# Scaling & operations
 
-Guidance for operating and scaling the lite VPS backend (`backend/`) plus the browser-direct data layer.
+StableSense serves market snapshots, supply history, alerts and stored Helix commentary through its same-origin backend. CoinGecko price histories and exchange samples are fetched separately by the browser.
 
-## Why browser-direct scales for free
+## Collection and serving
 
-Live market data is fetched from each visitor's own IP, so traffic is spread across many client IPs rather than hammering one origin. The backend is never in the hot path for live data, which keeps it tiny: it only accumulates history, persists alert events, and serves the occasional AI narrative.
+- Scheduled fetch jobs read Helix and store observations in SQLite. Browser refreshes read the backend; they do not each trigger a new Helix collection.
+- `backend/jobs/ai.js` is a compatibility entry point for a read-only Helix insight sync. StableSense does not call an AI provider. Helix controls generation, fallback and budgets.
+- Commentary keeps its original generation time and expires two hours after generation. A successful sync does not extend that expiry.
+- The dashboard checks automatically every 15 minutes and offers manual refresh. Browser caches reduce repeated requests; separate tabs do not have a shared in-flight request coordinator.
 
-## Backend capacity
+## Capacity and monitoring
 
-- SQLite (WAL) with 10-minute snapshots across 5 coins is tiny: roughly **0.5-1 MB per month**. Years of history fit in tens of MB; no database tuning needed until well past that.
-- The backend handles a handful of requests per minute in normal operation (`/api/healthz`, `/api/ai`, `/api/alerts`, occasional `/api/history`).
-- `AI_CADENCE_MIN` (default 120) caps model spend and rate-limit pressure on the OpenAI-compatible provider.
+Measure database growth, response times and upstream usage before changing retention or adding infrastructure. Growth depends on asset count, chain coverage, sampling and retained history; there is no fixed storage estimate for every deployment.
 
-## Operations
+`GET /api/healthz` reports readiness, asset coverage, market observation time, insight sync time and job failures. Check source observation age separately from job completion time. A completed fetch does not prove its upstream observations are new. An empty insight list may mean missing or expired commentary rather than a failed market feed.
 
-### Backups
+CoinGecko rate limits still apply to browser-direct charts and ticker requests. Local throttling is not a guarantee that a provider quota cannot be exceeded.
 
-- Use `sqlite3 backend/data/stablesense.db ".backup /path/to/backup.db"` (WAL-safe) on a cron, then ship the backup off-box. Do **not** `cp` the live DB file.
+## Backups and growth
 
-### Monitoring
+Use SQLite's backup API or the SQLite backup command to include committed WAL data. Do not copy the live database file on its own. Verify backup integrity and retain a tested recovery procedure.
 
-- `GET /api/healthz` reports `lastMarketSync` and `lastAiRun`; alert if either goes stale (e.g. older than 30 min for market sync, 3x cadence for AI).
-- Add a cron ping to an uptime monitor that hits `/api/healthz` and fails on non-`{"ok":true}`.
-- Watch job logs for repeated upstream failures (DefiLlama/CoinGecko rate limits are the main risk).
-
-## Growth paths
-
-- **More coins:** registry-only change in `src/utils/coin-config.js`; snapshot rows grow a few percent. Nothing else changes.
-- **More history:** the `snapshots` table is append-only per (coin, chain, ts); indexes on (coin, chain, ts) keep queries fast. At extreme size, archive partitions by month.
-- **Postgres:** if SQLite is ever a bottleneck, the schema is simple and portable; only `lib/db.js` and the jobs' inserts change.
-- **Multiple regions:** the backend is stateless except the DB. Run a primary writer; replicas can serve `/api/ai` reads with nightly backups shipped to them.
-
-## Known limits
-
-- `tickers` (~65 KB) is fetched lazily only when a coin tab opens and sliced to the top 8 exchange pairs client-side.
-- Browser-direct data means each visitor pays the upstream rate limit of their own IP; the 60s throttle keeps this well within CoinGecko's free tier.
-- The AI narrative is recomputed on a cadence, not on every refresh; the dashboard shows last-updated / next-update times so users know how fresh it is.
-- Multi-tab dedupe is handled via inflight-request sharing + the localStorage cache; no BroadcastChannel coordination (acceptable at this scale).
+Add tracked assets through the shared coin registry only after checking upstream coverage and consumer permissions. Review storage and query performance before expanding history. Database migrations and deployment remain separate operations from frontend configuration changes.

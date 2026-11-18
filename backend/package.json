@@ -1,9 +1,9 @@
 {
   "name": "stablesense-backend",
-  "version": "3.12.0",
+  "version": "3.16.4",
   "private": true,
   "type": "module",
-  "description": "StableSense lite VPS backend: history accumulation (SQLite) + AI narrative service.",
+  "description": "StableSense lite VPS backend: SQLite history, alert records and stored Helix insight delivery.",
   "scripts": {
     "start": "node server.js",
     "fetch": "node jobs/fetch.js",

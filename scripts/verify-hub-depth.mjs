@@ -167,11 +167,11 @@ function measureHub(data, hubHtml, changelogHtml, hubFiles) {
   check('openUsdStatus states the Stripe relationship', /Stripe company/.test(ousd.issuer));
   check('openUsdStatus names the launch date', /2026-09-30/.test(ousd.status), ousd.status);
   check('openUsdStatus carries the new dated issuer supply snapshot',
-    /907,987,949/.test(ousd.supplySnapshot) && /2026-11-05 16:00 UTC/.test(ousd.supplySnapshot));
+    /976,090,433/.test(ousd.supplySnapshot) && /2026-11-18/.test(ousd.supplySnapshot));
   const reserveValues = (ousd.supplySnapshot.match(/\$[\d,]+/g) || []).map((v) => Number(v.replace(/[$,]/g, '')));
   check('OUSD reserve components and gap reconcile arithmetically',
     reserveValues.length === 6 && reserveValues[1] + reserveValues[2] === reserveValues[3]
-      && reserveValues[0] - reserveValues[3] === reserveValues[4] && reserveValues[4] === 1752317);
+      && reserveValues[0] - reserveValues[3] === reserveValues[4] && reserveValues[4] === 1990115);
   check('OUSD mismatch remains unresolved without insolvency inference',
     /UNRESOLVED/.test(ousd.supplySnapshot) && /No insolvency inference/.test(ousd.supplyScope));
   check('openUsdStatus says the snapshot is not adoption', /not adoption/.test(ousd.supplyScope), ousd.supplyScope.slice(0, 60));
@@ -241,7 +241,7 @@ function measureHub(data, hubHtml, changelogHtml, hubFiles) {
     JSON.stringify(Object.keys(gr)));
   const gsj = JSON.stringify(data.geniusStatus);
   check('GENIUS final rule has a primary source and future effective date',
-    /2026-11-05/.test(data.geniusStatus.asOf) && /2026-10-21/.test(data.geniusStatus.asOf)
+    /2026-11-18/.test(data.geniusStatus.asOf) && /2026-10-21/.test(data.geniusStatus.asOf)
       && /January 18, 2027/.test(data.geniusStatus.commencementStatus)
       && data.geniusStatus.url === 'https://www.occ.gov/news-issuances/bulletins/2026/bulletin-2026-50.html');
   check('geniusStatus treats 2027-01-18 as an outer limit only',
@@ -347,7 +347,7 @@ function measureHub(data, hubHtml, changelogHtml, hubFiles) {
   // Date discipline: the review date must never double as a dataset-wide
   // measurement date, and historical datasets must stay event-dated.
   check('historical-case and latest-research review dates stay distinct',
-    data.AS_OF === '2026-09-26' && data.RESEARCH_REVIEWED === '2026-11-05');
+    data.AS_OF === '2026-09-26' && data.RESEARCH_REVIEWED === '2026-11-18');
   check('MEASURE_AS_OF carries per-measure dates', Object.keys(data.MEASURE_AS_OF).length >= 10,
     `${Object.keys(data.MEASURE_AS_OF).length} measures`);
   check('MEASURE_AS_OF does not blanket every measure with the review date',
