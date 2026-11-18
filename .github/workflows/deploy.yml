@@ -49,8 +49,9 @@ jobs:
           envs: RELEASE_SHA
           command_timeout: 30m
           script: |
-            set -eu
-            case "$RELEASE_SHA" in *[!0-9a-f]*|'') exit 1 ;; esac
+            echo "deploy wrapper start"
+            set -eux
+            case "$RELEASE_SHA" in *[!0-9a-f]*|'') echo "release sha rejected"; exit 1 ;; esac
             test "${#RELEASE_SHA}" -eq 40
             cd /opt/stablesense
             git fetch origin "$RELEASE_SHA"
