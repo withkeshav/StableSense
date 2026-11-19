@@ -74,10 +74,26 @@ describe('mapPriceRow', () => {
     expect(row).toEqual({
       coin: 'USDT',
       ts: T0 + 30 * 3600000,
+      observedAt: T0 + 30 * 3600000,
       price: 1.0,
       change: null,
       volume: null,
     });
+  });
+
+  it('prefers checked_at for sync ts when the observation is quiet', () => {
+    const observed = T0;
+    const checked = T0 + 5 * 60 * 1000;
+    const point = {
+      timestamp: observed,
+      observed_at: observed,
+      checked_at: checked,
+      price: 1.0,
+      total_supply: 1,
+    };
+    const row = mapPriceRow('USDT', point);
+    expect(row.ts).toBe(checked);
+    expect(row.observedAt).toBe(observed);
   });
 });
 

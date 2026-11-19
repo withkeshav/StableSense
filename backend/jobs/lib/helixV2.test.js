@@ -125,4 +125,22 @@ describe('mapBulkMarketPayload', () => {
       coverage: null,
     });
   });
+
+  it('uses checked_at for freshness while keeping observedAt on the row', () => {
+    const checked = Date.parse('2026-10-18T12:05:00Z');
+    const observed = Date.parse('2026-10-18T11:00:00Z');
+    const fixture = bulkFixture();
+    fixture.checked_at = '2026-10-18T12:05:00Z';
+    fixture.assets[0].latest = {
+      ...fixture.assets[0].latest,
+      timestamp: '2026-10-18T11:00:00Z',
+      observed_at: '2026-10-18T11:00:00Z',
+      checked_at: '2026-10-18T12:05:00Z',
+    };
+    const { priceRows, marketRow } = mapBulkMarketPayload(fixture);
+    const usdt = priceRows.find((r) => r.coin === 'USDT');
+    expect(usdt.ts).toBe(checked);
+    expect(usdt.observedAt).toBe(observed);
+    expect(marketRow.ts).toBe(checked);
+  });
 });

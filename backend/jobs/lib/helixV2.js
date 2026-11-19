@@ -59,8 +59,9 @@ export function mapBulkMarketPayload(payload) {
     }
 
     const latest = entry?.latest;
-    const ts = toMs(latest?.timestamp);
-    if (!latest || ts == null) {
+    const syncTs = toMs(latest?.checked_at) ?? toMs(latest?.timestamp);
+    const observedTs = toMs(latest?.observed_at ?? latest?.timestamp);
+    if (!latest || syncTs == null) {
       failed.push({ asset: symbol, code: 'no_latest', detail: 'No latest point' });
       continue;
     }
@@ -69,7 +70,8 @@ export function mapBulkMarketPayload(payload) {
     const prevPrice = finiteNumber(entry?.prev_24h?.price);
     priceRows.push({
       coin: symbol,
-      ts,
+      ts: syncTs,
+      observedAt: observedTs,
       price,
       // Percent, matching the legacy CoinGecko path and every UI consumer.
       change: priceChangePct(price, prevPrice),
@@ -84,7 +86,7 @@ export function mapBulkMarketPayload(payload) {
       const chainKey = chain?.chain_key;
       const latestSupply = finiteNumber(chain?.latest?.supply);
       if (!chainKey || latestSupply == null) continue;
-      const chainTs = toMs(chain.latest.timestamp) ?? ts;
+      const chainTs = toMs(chain.latest.checked_at) ?? toMs(chain.latest.timestamp) ?? syncTs;
       const prevSupply = finiteNumber(chain?.prev_24h?.supply);
       snapshotRows.push({
         coin: symbol,
@@ -99,7 +101,8 @@ export function mapBulkMarketPayload(payload) {
 
   const market = payload?.market;
   const total = finiteNumber(market?.total_supply);
-  const marketTs = toMs(payload?.as_of)
+  const marketTs = toMs(payload?.checked_at)
+    ?? toMs(payload?.as_of)
     ?? (priceRows.length ? Math.max(...priceRows.map((row) => row.ts || 0)) : null);
   const marketRow = total == null ? null : {
     ts: marketTs,

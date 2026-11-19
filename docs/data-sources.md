@@ -32,7 +32,7 @@ The dashboard's market figures come from the market dataset the backend persists
 The dashboard shows three clocks (`src/lib/freshness.js`), not one "last updated" time:
 
 - **Checked:** when this browser fetch succeeded.
-- **Market observed:** upstream observation time. On the Helix path this is the trends point timestamp carried into the market payload; on the legacy path it is CoinGecko `last_updated_at` when present, otherwise the assembled supply timestamps. Daily supply can be several hours old and still on cadence.
+- **Market observed:** upstream observation time. On the Helix path the sync clock is Helix `checked_at` (the last successful check). `observed_at` stays on the row as the last stored price or supply change. On the legacy path the clock is CoinGecko `last_updated_at` when present, otherwise the assembled supply timestamps. Daily supply can be several hours old and still on cadence.
 - **Historical snapshot:** optional SQLite last-sync from `/api/healthz`. If the backend is not connected, this clock says so and does not mark a successful live fetch as Unavailable.
 
 Overall state is Current / Delayed / Stale / Unavailable from the market (or checked) clock, with supply cadence treating under 28h as Current. Helix commentary keeps its original generation time and expires after at most two hours. Syncing it does not generate new AI text.

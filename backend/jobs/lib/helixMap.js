@@ -17,6 +17,20 @@ export const H24_MS = 24 * 3600 * 1000;
  * @param {number|string} ts
  * @returns {number|null} Epoch ms, or null when unparseable.
  */
+/**
+ * Prefer the refresh check clock for freshness; keep observed_at when present.
+ * @param {object|null} point
+ * @returns {{ syncMs: number|null, observedMs: number|null }}
+ */
+export function helixSyncTimestamps(point) {
+  if (!point || typeof point !== 'object') {
+    return { syncMs: null, observedMs: null };
+  }
+  const observedMs = toMs(point.observed_at ?? point.timestamp);
+  const syncMs = toMs(point.checked_at) ?? observedMs;
+  return { syncMs, observedMs };
+}
+
 export function toMs(ts) {
   if (typeof ts === 'number' && Number.isFinite(ts)) {
     if (ts >= 1e12) return Math.floor(ts);
@@ -229,7 +243,8 @@ export function extractChainSeries(payload) {
  * @returns {{coin: string, ts: number|null, price: number|null, change: number|null, volume: null}}
  */
 export function mapPriceRow(symbol, point, points) {
-  const newestMs = point ? toMs(point.timestamp) : null;
+  const { syncMs, observedMs } = helixSyncTimestamps(point);
+  const newestMs = observedMs;
   const price = point && typeof point.price === 'number' && Number.isFinite(point.price) ? point.price : null;
   // 24h change percent: newest price versus the point closest to 24h ago.
   let change = null;
@@ -242,7 +257,8 @@ export function mapPriceRow(symbol, point, points) {
   }
   return {
     coin: symbol,
-    ts: newestMs,
+    ts: syncMs ?? newestMs,
+    observedAt: newestMs,
     price,
     change,
     volume: null,
@@ -318,7 +334,8 @@ export function buildMarketSnapshot(trendsBySymbol) {
     const newest = selectNewestPoint(points);
     if (!newest) return null;
     const supply = getTotalSupply(newest);
-    const tsMs = toMs(newest.timestamp);
+    const { syncMs, observedMs } = helixSyncTimestamps(newest);
+    const tsMs = syncMs ?? observedMs;
     if (supply == null || tsMs == null) return null;
     validCoins += 1;
     total += supply;
